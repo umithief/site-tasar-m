@@ -12,7 +12,7 @@ import { negotiationService } from '../services/negotiationService';
 import { orderService } from '../services/orderService';
 import { authService } from '../services/auth';
 import { modelService } from '../services/modelService';
-import { ToastType } from './toast';
+import { ToastType } from './Toast';
 import { CONFIG } from '../services/config';
 import { useLanguage } from '../contexts/LanguageProvider';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -71,8 +71,8 @@ const NavItem = ({ id, label, icon: Icon, active, onClick }: any) => (
     <button
         onClick={() => onClick(id)}
         className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200 group relative overflow-hidden ${active
-                ? 'bg-[#F2A619] text-black shadow-lg shadow-[#F2A619]/20 font-bold'
-                : 'text-gray-400 hover:bg-white/5 hover:text-white font-medium'
+            ? 'bg-[#F2A619] text-black shadow-lg shadow-[#F2A619]/20 font-bold'
+            : 'text-gray-400 hover:bg-white/5 hover:text-white font-medium'
             }`}
     >
         <Icon className={`w-5 h-5 ${active ? 'scale-110' : 'group-hover:scale-110'} transition-transform`} strokeWidth={active ? 2.5 : 2} />
@@ -612,8 +612,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
                                                     <td className="p-5 text-gray-400">{route.location}</td>
                                                     <td className="p-5">
                                                         <span className={`px-2 py-1 rounded text-[10px] font-bold uppercase ${route.difficulty === 'Kolay' ? 'bg-green-500/20 text-green-500' :
-                                                                route.difficulty === 'Orta' ? 'bg-yellow-500/20 text-yellow-500' :
-                                                                    'bg-red-500/20 text-red-500'
+                                                            route.difficulty === 'Orta' ? 'bg-yellow-500/20 text-yellow-500' :
+                                                                'bg-red-500/20 text-red-500'
                                                             }`}>
                                                             {route.difficulty}
                                                         </span>

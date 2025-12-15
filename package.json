@@ -1,11 +1,11 @@
 {
-  "name": "motovibe---premium-motosiklet-aksesuarları",
+  "name": "motovibe-premium-motosiklet-aksesuarlari",
   "private": true,
   "version": "0.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "chmod +x node_modules/.bin/vite && vite build",
     "preview": "vite preview",
     "server": "node backend/server.js"
   },

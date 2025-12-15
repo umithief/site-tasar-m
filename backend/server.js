@@ -4,6 +4,9 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import multer from 'multer';
 import * as Minio from 'minio';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
 
 dotenv.config();
 
@@ -782,13 +785,17 @@ app.post('/api/forum/topics/:id/comments', async (req, res) => {
 });
 
 // --- START SERVER ---
-mongoose.connect(MONGO_URI)
-    .then(async () => {
-        console.log('✅ MongoDB bağlantısı başarılı');
-        await initMinio(); // Initialize MinIO Bucket
-        await seedDatabase();
-        app.listen(PORT, () => console.log(`🚀 Server çalışıyor: http://localhost:${PORT}`));
-    })
-    .catch(err => {
-        console.error('❌ MongoDB bağlantı hatası:', err.message);
-    });
+if (process.argv[1] === __filename) {
+    mongoose.connect(MONGO_URI)
+        .then(async () => {
+            console.log('✅ MongoDB bağlantısı başarılı');
+            await initMinio(); // Initialize MinIO Bucket
+            await seedDatabase();
+            app.listen(PORT, () => console.log(`🚀 Server çalışıyor: http://localhost:${PORT}`));
+        })
+        .catch(err => {
+            console.error('❌ MongoDB bağlantı hatası:', err.message);
+        });
+}
+
+export default app;

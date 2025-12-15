@@ -15,13 +15,13 @@ const env = getEnv();
 // LocalStorage'dan ayarı oku, yoksa varsayılan olarak TRUE (Mock) yap.
 const getMockSetting = () => {
     const stored = localStorage.getItem('mv_use_mock_api');
-    return stored !== null ? JSON.parse(stored) : true;
+    return stored !== null ? JSON.parse(stored) : false;
 };
 
 export const CONFIG = {
-    USE_MOCK_API: getMockSetting(), 
+    USE_MOCK_API: getMockSetting(),
     API_URL: env.VITE_API_URL || 'http://localhost:5000/api',
-    
+
     // Modu değiştir ve sayfayı yenile
     toggleApiMode: (useMock: boolean) => {
         localStorage.setItem('mv_use_mock_api', JSON.stringify(useMock));

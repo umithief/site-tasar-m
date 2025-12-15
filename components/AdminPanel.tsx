@@ -146,7 +146,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
         setFiles([]);
         setModelFiles([]);
 
-        setImageSource(item.image && item.image.startsWith('http') && !item.image.includes('localhost') && !item.image.includes('minio') ? 'url' : 'upload');
+        setImageSource(item.image && item.image.startsWith('http') && !item.image.includes('https://motovibe-frontend.onrender.com') && !item.image.includes('minio') ? 'url' : 'upload');
 
         const hasModelUrl = item.model3d && item.model3d.startsWith('http');
         setModelSource(hasModelUrl ? 'url' : 'upload');

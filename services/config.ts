@@ -20,7 +20,7 @@ const getMockSetting = () => {
 
 export const CONFIG = {
     USE_MOCK_API: getMockSetting(),
-    API_URL: env.VITE_API_URL || 'http://localhost:5000/api',
+    API_URL: env.VITE_API_URL || 'https://motovibe-frontend.onrender.com',
 
     // Modu değiştir ve sayfayı yenile
     toggleApiMode: (useMock: boolean) => {

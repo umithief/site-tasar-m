@@ -21,7 +21,7 @@ if (MONGO_URI.includes('14531453')) {
 }
 
 // --- MINIO YAPILANDIRMASI ---
-const MINIO_ENDPOINT = process.env.MINIO_ENDPOINT || 'localhost';
+const MINIO_ENDPOINT = process.env.MINIO_ENDPOINT || 'https://motovibe-frontend.onrender.com';
 const MINIO_PORT = parseInt(process.env.MINIO_PORT || '9000');
 const MINIO_USE_SSL = process.env.MINIO_USE_SSL === 'true';
 const MINIO_ACCESS_KEY = process.env.MINIO_ACCESS_KEY || 'minioadmin';

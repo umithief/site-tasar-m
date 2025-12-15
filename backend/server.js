@@ -419,11 +419,14 @@ app.post('/api/auth/login', async (req, res) => {
         const { email, password } = req.body;
 
         // 1. BACKDOOR: Acil durum admin girişi (Veritabanı boşsa bile çalışır)
-        if (email === 'admin@motovibe.tr' && password === 'admin123') {
+        const ADMIN_EMAIL = process.env.ADMIN_EMAIL || 'admin@motovibe.tr';
+        const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
+
+        if (email === ADMIN_EMAIL && password === ADMIN_PASSWORD) {
             return res.json({
                 id: 'admin-001',
                 name: 'MotoVibe Admin',
-                email: 'admin@motovibe.tr',
+                email: ADMIN_EMAIL,
                 isAdmin: true,
                 joinDate: '01.01.2024'
             });

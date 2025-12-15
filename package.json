@@ -52,6 +52,10 @@
     "react-card-flip": {
       "react": "$react",
       "react-dom": "$react-dom"
+    },
+    "react-filepond": {
+      "react": "$react",
+      "react-dom": "$react-dom"
     }
   }
 }

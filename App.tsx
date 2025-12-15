@@ -12,7 +12,7 @@ import { About } from './components/About';
 import { Forum } from './components/Forum';
 import { AdminPanel } from './components/AdminPanel';
 import { ProductQuickViewModal } from './components/ProductQuickViewModal';
-import { ToastType, ToastContainer, ToastMessage } from './components/toast';
+import { ToastType, ToastContainer, ToastMessage } from './components/Toast';
 import { RideMode } from './components/RideMode';
 import { MotoTool } from './components/MotoTool';
 import { RouteExplorer } from './components/RouteExplorer';

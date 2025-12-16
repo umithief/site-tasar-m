@@ -26,6 +26,17 @@ router.post('/', async (req, res) => {
     }
 });
 
+// PUT /api/categories/:id
+router.put('/:id', async (req, res) => {
+    try {
+        const Category = mongoose.model('Category');
+        const updatedCategory = await Category.findByIdAndUpdate(req.params.id, req.body, { new: true });
+        res.json(updatedCategory);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
 // DELETE /api/categories/:id
 router.delete('/:id', async (req, res) => {
     try {

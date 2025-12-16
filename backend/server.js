@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import multer from 'multer';
-import * as Minio from 'minio';
+
 import { fileURLToPath } from 'url';
 import uploadRoutes from './routes/uploadRoutes.js';
 import authRoutes from './routes/authRoutes.js';
@@ -22,54 +22,7 @@ if (MONGO_URI.includes('14531453')) {
     console.warn('⚠️ UYARI: MongoDB bağlantı adresindeki <password> alanını değiştirmediniz.');
 }
 
-// --- MINIO YAPILANDIRMASI ---
-const MINIO_ENDPOINT = process.env.MINIO_ENDPOINT || 'motovibe-api.onrender.com';
-const MINIO_PORT = parseInt(process.env.MINIO_PORT || '9000');
-const MINIO_USE_SSL = process.env.MINIO_USE_SSL === 'true';
-const MINIO_ACCESS_KEY = process.env.MINIO_ACCESS_KEY || 'minioadmin';
-const MINIO_SECRET_KEY = process.env.MINIO_SECRET_KEY || 'minioadmin';
-const BUCKET_NAME = process.env.MINIO_BUCKET_NAME || 'motovibe-assets';
 
-let minioClient;
-try {
-    minioClient = new Minio.Client({
-        endPoint: MINIO_ENDPOINT,
-        port: MINIO_PORT,
-        useSSL: MINIO_USE_SSL,
-        accessKey: MINIO_ACCESS_KEY,
-        secretKey: MINIO_SECRET_KEY
-    });
-} catch (err) {
-    console.warn('⚠️ MinIO Client başlatılamadı. MinIO bağımlılıklarının kurulu olduğundan emin olun.');
-}
-
-// Bucket Kontrolü ve Oluşturma
-const initMinio = async () => {
-    if (!minioClient) return;
-    try {
-        const exists = await minioClient.bucketExists(BUCKET_NAME);
-        if (!exists) {
-            await minioClient.makeBucket(BUCKET_NAME, 'us-east-1');
-            console.log(`✅ MinIO Bucket oluşturuldu: ${BUCKET_NAME}`);
-
-            // Public Read Policy (Basitleştirilmiş)
-            const policy = {
-                Version: "2012-10-17",
-                Statement: [
-                    {
-                        Effect: "Allow",
-                        Principal: { AWS: ["*"] },
-                        Action: ["s3:GetObject"],
-                        Resource: [`arn:aws:s3:::${BUCKET_NAME}/*`]
-                    }
-                ]
-            };
-            await minioClient.setBucketPolicy(BUCKET_NAME, JSON.stringify(policy));
-        }
-    } catch (err) {
-        console.error('❌ MinIO Başlatma Hatası:', err);
-    }
-};
 
 // Multer (Memory Storage)
 const upload = multer({ storage: multer.memoryStorage() });
@@ -358,7 +311,7 @@ const seedDatabase = async () => {
 
 // --- ROUTES ---
 
-// 0. Upload Route (MinIO + Mock Fallback)
+// 0. Upload Route
 app.use('/api/upload', uploadRoutes);
 
 app.use('/api/auth', authRoutes);
@@ -389,7 +342,7 @@ if (process.argv[1] === __filename) {
     mongoose.connect(MONGO_URI)
         .then(async () => {
             console.log('✅ MongoDB bağlantısı başarılı');
-            await initMinio(); // Initialize MinIO Bucket
+
             await seedDatabase();
             app.listen(PORT, () => console.log(`🚀 Server çalışıyor: http://localhost:${PORT}`));
         })

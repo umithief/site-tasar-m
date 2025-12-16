@@ -29,19 +29,37 @@ router.post('/', async (req, res) => {
 // PUT /api/categories/:id
 router.put('/:id', async (req, res) => {
     try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ message: 'Geçersiz ID formatı' });
+        }
+
         const Category = mongoose.model('Category');
         const updatedCategory = await Category.findByIdAndUpdate(req.params.id, req.body, { new: true });
+
+        if (!updatedCategory) {
+            return res.status(404).json({ message: 'Kategori bulunamadı' });
+        }
+
         res.json(updatedCategory);
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        res.status(500).json({ message: error.message });
     }
 });
 
 // DELETE /api/categories/:id
 router.delete('/:id', async (req, res) => {
     try {
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(400).json({ message: 'Geçersiz ID formatı' });
+        }
+
         const Category = mongoose.model('Category');
-        await Category.findByIdAndDelete(req.params.id);
+        const result = await Category.findByIdAndDelete(req.params.id);
+
+        if (!result) {
+            return res.status(404).json({ message: 'Kategori bulunamadı' });
+        }
+
         res.json({ message: 'Kategori silindi' });
     } catch (error) {
         res.status(500).json({ message: error.message });

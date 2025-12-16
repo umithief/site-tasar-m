@@ -5,98 +5,44 @@ import { MeetupEvent, User, ViewState, MeetupMessage } from '../types';
 import { Button } from './ui/Button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserAvatar } from './ui/UserAvatar';
+import { eventService } from '../services/eventService';
 
 declare const L: any;
 
 interface MotoMeetupProps {
-  user: User | null;
-  onOpenAuth: () => void;
-  onNavigate: (view: ViewState) => void;
+    user: User | null;
+    onOpenAuth: () => void;
+    onNavigate: (view: ViewState) => void;
 }
 
-const MOCK_EVENTS: MeetupEvent[] = [
-    {
-        id: 'evt-1',
-        title: 'Cuma Gecesi Sürüşü',
-        type: 'night-ride',
-        date: '15 Mayıs 2024',
-        time: '22:00',
-        location: 'Bağdat Caddesi, İstanbul',
-        coordinates: { lat: 40.9600, lng: 29.0700 },
-        organizer: 'MotoVibe Community',
-        attendees: 45,
-        attendeeList: [
-            { id: 'u1', name: 'Ahmet Yılmaz' },
-            { id: 'u2', name: 'Zeynep Kaya' },
-            { id: 'u3', name: 'Mehmet Demir' },
-            { id: 'u4', name: 'Ayşe Çelik' },
-            { id: 'u5', name: 'Canberk Hız' }
-        ],
-        messages: [
-            { id: 'm1', userId: 'u1', userName: 'Ahmet Yılmaz', text: 'Hava durumu nasıl olacak?', time: '20:30' },
-            { id: 'm2', userId: 'u2', userName: 'Zeynep Kaya', text: 'Parçalı bulutlu, yağmur yok görünüyor.', time: '20:35' },
-            { id: 'm3', userId: 'organizer', userName: 'MotoVibe Community', text: 'Rota Caddebostan\'dan başlayıp sahil yolundan devam edecek arkadaşlar.', time: '21:00' }
-        ],
-        image: 'https://images.unsplash.com/photo-1615172282427-9a5752d6486d?q=80&w=800&auto=format&fit=crop',
-        description: 'Haftanın stresini atmak için gece sürüşü. Caddebostan Sahil\'de bitiş ve çay/kahve keyfi.'
-    },
-    {
-        id: 'evt-2',
-        title: 'Pazar Kahve Buluşması',
-        type: 'coffee',
-        date: '17 Mayıs 2024',
-        time: '10:00',
-        location: 'Kordon, İzmir',
-        coordinates: { lat: 38.4237, lng: 27.1428 },
-        organizer: 'Ege Riders',
-        attendees: 28,
-        attendeeList: [
-            { id: 'u6', name: 'Burak Serdar' },
-            { id: 'u7', name: 'Elif Nur' },
-            { id: 'u8', name: 'Ozan Güven' }
-        ],
-        messages: [
-            { id: 'm1', userId: 'u6', userName: 'Burak Serdar', text: 'Konum tam olarak neresi?', time: '09:00' },
-            { id: 'm2', userId: 'organizer', userName: 'Ege Riders', text: 'Gündoğdu meydanına yakın, Starbucks önü.', time: '09:15' }
-        ],
-        image: 'https://images.unsplash.com/photo-1524350876685-274059332603?q=80&w=800&auto=format&fit=crop',
-        description: 'Klasik pazar kahvaltısı ve motor sohbeti. Tüm marka ve modeller davetlidir.'
-    },
-    {
-        id: 'evt-3',
-        title: 'Kemerburgaz Offroad',
-        type: 'offroad',
-        date: '20 Mayıs 2024',
-        time: '09:00',
-        location: 'Kemerburgaz Ormanı',
-        coordinates: { lat: 41.1600, lng: 28.9000 },
-        organizer: 'Enduro Pro',
-        attendees: 12,
-        attendeeList: [
-            { id: 'u9', name: 'Cem Dağlı' },
-            { id: 'u10', name: 'Sinan Toprak' }
-        ],
-        messages: [],
-        image: 'https://images.unsplash.com/photo-1532347922424-9654d01a7378?q=80&w=800&auto=format&fit=crop',
-        description: 'Çamur, toz ve adrenalin. Adventure ve Cross motorlar için orta zorlukta parkur.'
-    }
-];
-
 export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavigate }) => {
-    const [events, setEvents] = useState<MeetupEvent[]>(MOCK_EVENTS);
+    const [events, setEvents] = useState<MeetupEvent[]>([]);
     const [selectedEvent, setSelectedEvent] = useState<MeetupEvent | null>(null);
     const [filter, setFilter] = useState<string>('all');
     const [userJoined, setUserJoined] = useState<string[]>([]);
-    
+
     // UI states
     const [isCardOpen, setIsCardOpen] = useState(false);
     const [activeTab, setActiveTab] = useState<'attendees' | 'chat'>('attendees');
     const [chatInput, setChatInput] = useState('');
-    
+
     const mapContainerRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<any>(null);
     const markersRef = useRef<any[]>([]);
     const chatEndRef = useRef<HTMLDivElement>(null);
+
+    // Fetch Events
+    useEffect(() => {
+        const loadEvents = async () => {
+            try {
+                const data = await eventService.getEvents();
+                setEvents(data);
+            } catch (error) {
+                console.error("Failed to load events:", error);
+            }
+        };
+        loadEvents();
+    }, []);
 
     // Initial Map Setup
     useEffect(() => {
@@ -124,10 +70,10 @@ export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavi
         L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
             attribution: 'Tiles &copy; Esri'
         }).addTo(map);
-        
+
         // Dark overlay
         L.rectangle(
-            [[ -90, -180 ], [ 90, 180 ]],
+            [[-90, -180], [90, 180]],
             { color: '#000', fillOpacity: 0.4, stroke: false, weight: 0 }
         ).addTo(map);
 
@@ -190,7 +136,7 @@ export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavi
                     setSelectedEvent(event);
                     mapRef.current.flyTo([event.coordinates.lat, event.coordinates.lng], 14, { duration: 1.2 });
                 });
-            
+
             markersRef.current.push(marker);
         });
 
@@ -218,7 +164,7 @@ export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavi
             onOpenAuth();
             return;
         }
-        
+
         const isJoined = userJoined.includes(eventId);
 
         if (isJoined) {
@@ -243,7 +189,7 @@ export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavi
         } else {
             setUserJoined(prev => [...prev, eventId]);
             const newUser = { id: user.id, name: user.name };
-            
+
             setEvents(prev => prev.map(ev => {
                 if (ev.id === eventId) {
                     return {
@@ -287,7 +233,7 @@ export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavi
 
     return (
         <div className="fixed inset-0 z-50 bg-[#050505] overflow-hidden flex flex-col">
-            
+
             {/* Map Background */}
             <div className="absolute inset-0 z-0">
                 <div ref={mapContainerRef} className="w-full h-full" />
@@ -296,7 +242,7 @@ export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavi
 
             {/* UI Overlay Container - Pointer events only on children */}
             <div className="absolute inset-0 z-10 flex flex-col pointer-events-none">
-                
+
                 {/* Header & Controls */}
                 <div className="pt-safe-top px-4 md:px-8 py-6 pointer-events-auto flex flex-col gap-4">
                     <div className="flex justify-between items-start">
@@ -307,9 +253,9 @@ export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavi
                             </div>
                             <h1 className="text-3xl md:text-5xl font-display font-black text-white tracking-tight drop-shadow-lg">MOTO<span className="text-moto-accent">MEETUP</span></h1>
                         </div>
-                        
-                        <button 
-                            onClick={() => onNavigate('home')} 
+
+                        <button
+                            onClick={() => onNavigate('home')}
                             className="w-10 h-10 bg-black/60 backdrop-blur-md text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors border border-white/10 shadow-xl"
                         >
                             <X className="w-5 h-5" />
@@ -325,14 +271,13 @@ export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavi
                             { id: 'track-day', label: 'Pist', icon: Flag },
                             { id: 'offroad', label: 'Offroad', icon: Mountain },
                         ].map((cat) => (
-                            <button 
+                            <button
                                 key={cat.id}
                                 onClick={() => setFilter(cat.id)}
-                                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all whitespace-nowrap border shadow-lg ${
-                                    filter === cat.id 
-                                    ? 'bg-moto-accent border-moto-accent text-black' 
-                                    : 'bg-black/60 border-white/10 text-gray-300 hover:bg-black/80 hover:text-white backdrop-blur-md'
-                                }`}
+                                className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all whitespace-nowrap border shadow-lg ${filter === cat.id
+                                        ? 'bg-moto-accent border-moto-accent text-black'
+                                        : 'bg-black/60 border-white/10 text-gray-300 hover:bg-black/80 hover:text-white backdrop-blur-md'
+                                    }`}
                             >
                                 <cat.icon className="w-3 h-3" /> {cat.label}
                             </button>
@@ -347,7 +292,7 @@ export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavi
                 <div className="pointer-events-auto pb-safe-bottom">
                     <AnimatePresence mode="wait">
                         {selectedEvent ? (
-                            <motion.div 
+                            <motion.div
                                 key="detail"
                                 initial={{ y: '100%' }}
                                 animate={{ y: 0 }}
@@ -359,7 +304,7 @@ export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavi
                                 <div className="h-48 relative flex-shrink-0">
                                     <img src={selectedEvent.image} className="w-full h-full object-cover" alt={selectedEvent.title} />
                                     <div className="absolute inset-0 bg-gradient-to-t from-[#0f0f0f] to-transparent"></div>
-                                    <button 
+                                    <button
                                         onClick={() => setSelectedEvent(null)}
                                         className="absolute top-4 right-4 bg-black/60 hover:bg-black p-2 rounded-full text-white transition-colors border border-white/10"
                                     >
@@ -371,11 +316,11 @@ export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavi
                                         </span>
                                     </div>
                                 </div>
-                                
+
                                 {/* Event Info */}
                                 <div className="p-6 pt-2 overflow-y-auto custom-scrollbar">
                                     <h2 className="text-2xl font-display font-bold text-white mb-4">{selectedEvent.title}</h2>
-                                    
+
                                     <div className="grid grid-cols-2 gap-4 mb-6">
                                         <div className="flex items-center gap-2 text-gray-300 text-xs">
                                             <Calendar className="w-4 h-4 text-moto-accent" /> {selectedEvent.date}
@@ -387,14 +332,14 @@ export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavi
                                             <MapPin className="w-4 h-4 text-moto-accent" /> {selectedEvent.location}
                                         </div>
                                     </div>
-                                    
+
                                     <p className="text-gray-400 text-sm leading-relaxed mb-6 border-l-2 border-white/10 pl-4">
                                         {selectedEvent.description}
                                     </p>
 
                                     {/* Attendees & Chat Section */}
                                     <div className="mb-6 border border-white/10 rounded-xl overflow-hidden bg-white/5">
-                                        <button 
+                                        <button
                                             onClick={() => setIsCardOpen(!isCardOpen)}
                                             className="w-full flex items-center justify-between p-4 text-sm font-bold text-white hover:bg-white/5 transition-colors"
                                         >
@@ -404,7 +349,7 @@ export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavi
                                             </span>
                                             {isCardOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                                         </button>
-                                        
+
                                         <AnimatePresence>
                                             {isCardOpen && (
                                                 <motion.div
@@ -442,8 +387,8 @@ export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavi
                                                                     <div ref={chatEndRef}></div>
                                                                 </div>
                                                                 <div className="flex gap-2">
-                                                                    <input 
-                                                                        type="text" 
+                                                                    <input
+                                                                        type="text"
                                                                         placeholder={user ? "Mesaj yaz..." : "Giriş yapmalısın"}
                                                                         disabled={!user}
                                                                         value={chatInput}
@@ -465,8 +410,8 @@ export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavi
 
                                     {/* Action Buttons */}
                                     <div className="flex gap-3 mt-4 pb-4">
-                                        <Button 
-                                            variant="primary" 
+                                        <Button
+                                            variant="primary"
                                             className={`flex-1 ${userJoined.includes(selectedEvent.id) ? 'bg-green-600 hover:bg-green-700 text-white shadow-green-900/30' : ''}`}
                                             onClick={(e) => handleJoin(e, selectedEvent.id)}
                                         >
@@ -479,7 +424,7 @@ export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavi
                                 </div>
                             </motion.div>
                         ) : (
-                            <motion.div 
+                            <motion.div
                                 key="list"
                                 initial={{ opacity: 0, y: 20 }}
                                 animate={{ opacity: 1, y: 0 }}
@@ -488,7 +433,7 @@ export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavi
                             >
                                 <div className="flex overflow-x-auto gap-4 pb-4 no-scrollbar snap-x snap-mandatory">
                                     {events.filter(e => filter === 'all' || e.type === filter).map(event => (
-                                        <div 
+                                        <div
                                             key={event.id}
                                             onClick={() => {
                                                 setSelectedEvent(event);

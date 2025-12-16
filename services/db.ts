@@ -19,6 +19,7 @@ const DB_KEYS = {
   RECORDINGS: 'mv_session_recordings',
   NEGOTIATIONS: 'mv_negotiations',
   FEEDBACK: 'mv_user_feedbacks',
+  EVENTS: 'mv_events',
   STOLEN_ITEMS: 'mv_stolen_items'
 };
 
@@ -41,43 +42,43 @@ export function setStorage<T>(key: string, value: T): void {
   } catch (e: any) {
     // Handle Storage Quota Exceeded
     if (e.name === 'QuotaExceededError' || e.name === 'NS_ERROR_DOM_QUOTA_REACHED' || e.code === 22) {
-        console.warn(`Storage quota exceeded while saving ${key}. Initiating cleanup protocol...`);
-        
-        // Waterfall cleanup strategy
-        const cleanupTargets = [
-            DB_KEYS.RECORDINGS,
-            DB_KEYS.ANALYTICS,
-            DB_KEYS.LOGS,
-            DB_KEYS.VISITOR_STATS,
-            DB_KEYS.NEGOTIATIONS
-        ];
+      console.warn(`Storage quota exceeded while saving ${key}. Initiating cleanup protocol...`);
 
-        let recovered = false;
+      // Waterfall cleanup strategy
+      const cleanupTargets = [
+        DB_KEYS.RECORDINGS,
+        DB_KEYS.ANALYTICS,
+        DB_KEYS.LOGS,
+        DB_KEYS.VISITOR_STATS,
+        DB_KEYS.NEGOTIATIONS
+      ];
 
-        for (const target of cleanupTargets) {
-            if (key === target) continue;
+      let recovered = false;
 
-            if (localStorage.getItem(target)) {
-                console.log(`Attempting to recover space by deleting: ${target}`);
-                localStorage.removeItem(target);
-                
-                try {
-                    const serializedRetry = JSON.stringify(value);
-                    localStorage.setItem(key, serializedRetry);
-                    console.log(`✅ Storage recovered. Saved ${key} successfully.`);
-                    recovered = true;
-                    break;
-                } catch (retryErr) {
-                    console.warn(`⚠️ Clearing ${target} was not enough. Moving to next target...`);
-                }
-            }
+      for (const target of cleanupTargets) {
+        if (key === target) continue;
+
+        if (localStorage.getItem(target)) {
+          console.log(`Attempting to recover space by deleting: ${target}`);
+          localStorage.removeItem(target);
+
+          try {
+            const serializedRetry = JSON.stringify(value);
+            localStorage.setItem(key, serializedRetry);
+            console.log(`✅ Storage recovered. Saved ${key} successfully.`);
+            recovered = true;
+            break;
+          } catch (retryErr) {
+            console.warn(`⚠️ Clearing ${target} was not enough. Moving to next target...`);
+          }
         }
-        
-        if (!recovered) {
-            console.error(`CRITICAL: Storage is full. Data lost for key: ${key}`);
-        }
+      }
+
+      if (!recovered) {
+        console.error(`CRITICAL: Storage is full. Data lost for key: ${key}`);
+      }
     } else {
-        console.error('Storage write error', e);
+      console.error('Storage write error', e);
     }
   }
 }

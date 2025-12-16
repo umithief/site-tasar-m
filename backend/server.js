@@ -159,6 +159,15 @@ const routeSchema = new mongoose.Schema({
     bestSeason: String,
     tags: [String]
 });
+
+routeSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+    }
+});
 const Route = mongoose.models.Route || mongoose.model('Route', routeSchema);
 
 const forumCommentSchema = new mongoose.Schema({

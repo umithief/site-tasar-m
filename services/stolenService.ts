@@ -50,7 +50,7 @@ export const stolenService = {
             return newItem;
         } else {
             // REAL BACKEND
-            const response = await fetch(`${CONFIG.API_URL}/stolen`, {
+            const response = await fetch(`${CONFIG.API_URL}/stolen-items`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newItem)
@@ -61,9 +61,9 @@ export const stolenService = {
 
     async checkSerial(serialNumber: string): Promise<StolenItem[]> {
         if (!serialNumber) return [];
-        
+
         await delay(500); // Simulate search delay
-        
+
         let items: StolenItem[] = [];
         if (CONFIG.USE_MOCK_API) {
             const stored = getStorage<StolenItem[]>(DB.STOLEN_ITEMS, []);
@@ -91,7 +91,7 @@ export const stolenService = {
             return [...stored, ...MOCK_STOLEN].slice(0, 10); // Return last 10
         } else {
             try {
-                const response = await fetch(`${CONFIG.API_URL}/stolen`);
+                const response = await fetch(`${CONFIG.API_URL}/stolen-items`);
                 if (response.ok) return await response.json();
                 return MOCK_STOLEN;
             } catch {

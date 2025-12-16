@@ -12,6 +12,14 @@ import routeRoutes from './routes/routeRoutes.js';
 import slideRoutes from './routes/slideRoutes.js';
 import vlogRoutes from './routes/vlogRoutes.js';
 import eventRoutes from './routes/eventRoutes.js';
+import productRoutes from './routes/productRoutes.js';
+import orderRoutes from './routes/orderRoutes.js';
+import forumRoutes from './routes/forumRoutes.js';
+import musicRoutes from './routes/musicRoutes.js';
+import modelRoutes from './routes/modelRoutes.js';
+import stolenRoutes from './routes/stolenRoutes.js';
+import negotiationRoutes from './routes/negotiationRoutes.js';
+import feedbackRoutes from './routes/feedbackRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -55,6 +63,15 @@ const userSchema = new mongoose.Schema({
     points: { type: Number, default: 0 },
     rank: { type: String, default: 'Scooter Çırağı' }
 });
+userSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+        delete ret.password; // Security best practice
+    }
+});
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
 const productSchema = new mongoose.Schema({
@@ -92,6 +109,14 @@ const orderSchema = new mongoose.Schema({
         quantity: Number,
         image: String
     }]
+});
+orderSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+    }
 });
 const Order = mongoose.models.Order || mongoose.model('Order', orderSchema);
 
@@ -204,6 +229,14 @@ const forumTopicSchema = new mongoose.Schema({
     comments: [forumCommentSchema],
     tags: [String]
 });
+forumTopicSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+    }
+});
 const ForumTopic = mongoose.models.ForumTopic || mongoose.model('ForumTopic', forumTopicSchema);
 
 const musicSchema = new mongoose.Schema({
@@ -212,6 +245,14 @@ const musicSchema = new mongoose.Schema({
     artist: String,
     url: String,
     addedAt: String
+});
+musicSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+    }
 });
 const Music = mongoose.models.Music || mongoose.model('Music', musicSchema);
 
@@ -225,6 +266,14 @@ const negotiationSchema = new mongoose.Schema({
     userName: String,
     status: { type: String, default: 'pending' },
     date: { type: String, default: () => new Date().toLocaleDateString('tr-TR') }
+});
+negotiationSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+    }
 });
 const Negotiation = mongoose.models.Negotiation || mongoose.model('Negotiation', negotiationSchema);
 
@@ -240,6 +289,14 @@ const stolenItemSchema = new mongoose.Schema({
     status: { type: String, default: 'stolen' },
     dateReported: { type: String, default: () => new Date().toLocaleDateString('tr-TR') },
     image: String
+});
+stolenItemSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+    }
 });
 const StolenItem = mongoose.models.StolenItem || mongoose.model('StolenItem', stolenItemSchema);
 
@@ -287,7 +344,35 @@ const model3dSchema = new mongoose.Schema({
     poster: { type: String, required: true },
     category: String
 });
+model3dSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+    }
+});
 const Model3D = mongoose.models.Model3D || mongoose.model('Model3D', model3dSchema);
+
+const feedbackSchema = new mongoose.Schema({
+    id: String,
+    userId: String,
+    userName: String,
+    type: String,
+    rating: Number,
+    message: String,
+    date: String,
+    status: { type: String, default: 'new' }
+});
+feedbackSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+    }
+});
+const Feedback = mongoose.models.Feedback || mongoose.model('Feedback', feedbackSchema);
 
 const meetupEventSchema = new mongoose.Schema({
     title: { type: String, required: true },
@@ -392,28 +477,17 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/routes', routeRoutes);
 app.use('/api/slides', slideRoutes);
 app.use('/api/vlogs', vlogRoutes);
+app.use('/api/vlogs', vlogRoutes);
 app.use('/api/events', eventRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/orders', orderRoutes);
+app.use('/api/forum', forumRoutes);
 
-// 16. 3D Model Routes (ADDED)
-app.get('/api/models', async (req, res) => {
-    try {
-        const m = await Model3D.find().sort({ _id: -1 });
-        res.json(m);
-    } catch (e) { res.status(500).json({ message: e.message }); }
-});
-app.post('/api/models', async (req, res) => {
-    try {
-        const m = new Model3D(req.body);
-        await m.save();
-        res.status(201).json(m);
-    } catch (e) { res.status(500).json({ message: e.message }); }
-});
-app.delete('/api/models/:id', async (req, res) => {
-    try {
-        await Model3D.findByIdAndDelete(req.params.id);
-        res.json({ message: 'Deleted' });
-    } catch (e) { res.status(500).json({ message: e.message }); }
-});
+app.use('/api/music', musicRoutes);
+app.use('/api/models', modelRoutes);
+app.use('/api/stolen-items', stolenRoutes);
+app.use('/api/negotiations', negotiationRoutes);
+app.use('/api/feedback', feedbackRoutes);
 
 // --- START SERVER ---
 if (process.argv[1] === __filename) {

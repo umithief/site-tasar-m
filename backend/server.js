@@ -66,6 +66,15 @@ const productSchema = new mongoose.Schema({
     stock: { type: Number, default: 10 },
     isNegotiable: { type: Boolean, default: false }
 });
+
+productSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+    }
+});
 const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
 
 const orderSchema = new mongoose.Schema({
@@ -127,6 +136,15 @@ const categorySchema = new mongoose.Schema({
     desc: String,
     count: String,
     className: String
+});
+
+categorySchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+    }
 });
 const Category = mongoose.models.Category || mongoose.model('Category', categorySchema);
 

@@ -5,6 +5,7 @@ import dotenv from 'dotenv';
 import multer from 'multer';
 import * as Minio from 'minio';
 import { fileURLToPath } from 'url';
+import uploadRoutes from './routes/uploadRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -357,34 +358,7 @@ const seedDatabase = async () => {
 // --- ROUTES ---
 
 // 0. Upload Route (MinIO + Mock Fallback)
-app.post('/api/upload', upload.single('file'), async (req, res) => {
-    // 1. MinIO Client Check
-    if (!minioClient) {
-        console.warn('⚠️ MinIO client not initialized. Using Mock Upload Mode.');
-        // Fallback: Return a fake URL so the UI doesn't break during testing
-        const fakeUrl = `https://images.unsplash.com/photo-1558981408-db0ecd8a1ee4?auto=format&fit=crop&w=500&q=60`;
-        return res.json({ url: fakeUrl, mock: true, message: 'Mock Upload: Storage not configured.' });
-    }
-
-    if (!req.file) return res.status(400).json({ message: 'Dosya bulunamadı.' });
-
-    try {
-        const fileName = `${Date.now()}-${req.file.originalname}`;
-        const metaData = { 'Content-Type': req.file.mimetype };
-
-        await minioClient.putObject(BUCKET_NAME, fileName, req.file.buffer, req.file.size, metaData);
-
-        // URL oluştur (Eğer MinIO SSL kullanmıyorsa http, kullanıyorsa https)
-        const protocol = MINIO_USE_SSL ? 'https' : 'http';
-        const fileUrl = `${protocol}://${MINIO_ENDPOINT}:${MINIO_PORT}/${BUCKET_NAME}/${fileName}`;
-
-        res.json({ url: fileUrl });
-    } catch (error) {
-        console.error('MinIO Upload Error Full:', error);
-        // Fallback on error too, to keep UI working
-        res.status(500).json({ message: 'Dosya yüklenirken kritik hata: ' + error.message });
-    }
-});
+app.use('/api/upload', uploadRoutes);
 
 // 1. Auth Routes
 // ...

@@ -7,6 +7,7 @@ import multer from 'multer';
 import { fileURLToPath } from 'url';
 import uploadRoutes from './routes/uploadRoutes.js';
 import authRoutes from './routes/authRoutes.js';
+import categoryRoutes from './routes/categoryRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -315,6 +316,7 @@ const seedDatabase = async () => {
 app.use('/api/upload', uploadRoutes);
 
 app.use('/api/auth', authRoutes);
+app.use('/api/categories', categoryRoutes);
 
 // 16. 3D Model Routes (ADDED)
 app.get('/api/models', async (req, res) => {

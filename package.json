@@ -13,6 +13,7 @@
     "@google/genai": "^1.30.0",
     "@supabase/supabase-js": "^2.87.3",
     "boring-avatars": "1.10.2",
+    "build": "^0.1.4",
     "cloudinary": "^1.41.3",
     "clsx": "^2.1.1",
     "cors": "^2.8.5",

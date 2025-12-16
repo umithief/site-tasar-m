@@ -6,6 +6,7 @@ import multer from 'multer';
 import * as Minio from 'minio';
 import { fileURLToPath } from 'url';
 import uploadRoutes from './routes/uploadRoutes.js';
+import authRoutes from './routes/authRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -360,8 +361,7 @@ const seedDatabase = async () => {
 // 0. Upload Route (MinIO + Mock Fallback)
 app.use('/api/upload', uploadRoutes);
 
-// 1. Auth Routes
-// ...
+app.use('/api/auth', authRoutes);
 
 // 16. 3D Model Routes (ADDED)
 app.get('/api/models', async (req, res) => {

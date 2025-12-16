@@ -70,78 +70,91 @@ const DEFAULT_CATEGORIES: CategoryItem[] = [
 export const categoryService = {
   async getCategories(): Promise<CategoryItem[]> {
     if (CONFIG.USE_MOCK_API) {
-        await delay(300);
-        const stored = getStorage<CategoryItem[]>(DB.CATEGORIES, []);
-        // Reset to default if empty or using old loremflickr links (update check)
-        if (stored.length === 0 || stored[0].image.includes('loremflickr.com')) {
-            setStorage(DB.CATEGORIES, DEFAULT_CATEGORIES);
-            return DEFAULT_CATEGORIES;
-        }
-        return stored;
+      await delay(300);
+      const stored = getStorage<CategoryItem[]>(DB.CATEGORIES, []);
+      // Reset to default if empty or using old loremflickr links (update check)
+      if (stored.length === 0 || stored[0].image.includes('loremflickr.com')) {
+        setStorage(DB.CATEGORIES, DEFAULT_CATEGORIES);
+        return DEFAULT_CATEGORIES;
+      }
+      return stored;
     } else {
-        // REAL BACKEND
-        try {
-            const response = await fetch(`${CONFIG.API_URL}/categories`);
-            if (!response.ok) return DEFAULT_CATEGORIES;
-            return await response.json();
-        } catch {
-            return DEFAULT_CATEGORIES;
-        }
+      // REAL BACKEND
+      try {
+        const response = await fetch(`${CONFIG.API_URL}/categories`);
+        if (!response.ok) return DEFAULT_CATEGORIES;
+        return await response.json();
+      } catch {
+        return DEFAULT_CATEGORIES;
+      }
     }
   },
 
   async addCategory(category: Omit<CategoryItem, 'id'>): Promise<CategoryItem> {
     if (CONFIG.USE_MOCK_API) {
-        await delay(500);
-        const categories = getStorage<CategoryItem[]>(DB.CATEGORIES, []);
-        const newCat: CategoryItem = {
-            ...category,
-            id: `cat-${Date.now()}`,
-        };
-        categories.push(newCat);
-        setStorage(DB.CATEGORIES, categories);
-        return newCat;
+      await delay(500);
+      const categories = getStorage<CategoryItem[]>(DB.CATEGORIES, []);
+      const newCat: CategoryItem = {
+        ...category,
+        id: `cat-${Date.now()}`,
+      };
+      categories.push(newCat);
+      setStorage(DB.CATEGORIES, categories);
+      return newCat;
     } else {
-        // REAL BACKEND
-        const response = await fetch(`${CONFIG.API_URL}/categories`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(category)
-        });
-        return await response.json();
+      // REAL BACKEND
+      const response = await fetch(`${CONFIG.API_URL}/categories`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(category)
+      });
+      return await response.json();
     }
   },
 
   async updateCategory(category: CategoryItem): Promise<void> {
+    // @ts-ignore
+    const targetId = category.id || category._id;
+
+    if (!targetId) {
+      console.error("Update failed: Missing category ID", category);
+      throw new Error('Kategori ID bulunamadı');
+    }
+
     if (CONFIG.USE_MOCK_API) {
-        await delay(300);
-        const categories = getStorage<CategoryItem[]>(DB.CATEGORIES, []);
-        const index = categories.findIndex(c => c.id === category.id);
-        if (index !== -1) {
-            categories[index] = category;
-            setStorage(DB.CATEGORIES, categories);
-        }
+      await delay(300);
+      const categories = getStorage<CategoryItem[]>(DB.CATEGORIES, []);
+      const index = categories.findIndex(c => c.id === targetId);
+      if (index !== -1) {
+        categories[index] = { ...category, id: targetId };
+        setStorage(DB.CATEGORIES, categories);
+      }
     } else {
-        // REAL BACKEND
-        await fetch(`${CONFIG.API_URL}/categories/${category.id}`, {
-            method: 'PUT',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(category)
-        });
+      // REAL BACKEND
+      await fetch(`${CONFIG.API_URL}/categories/${targetId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(category)
+      });
     }
   },
 
   async deleteCategory(id: string): Promise<void> {
+    if (!id) {
+      console.error("Delete failed: Missing ID");
+      return;
+    }
+
     if (CONFIG.USE_MOCK_API) {
-        await delay(300);
-        const categories = getStorage<CategoryItem[]>(DB.CATEGORIES, []);
-        const filtered = categories.filter(c => c.id !== id);
-        setStorage(DB.CATEGORIES, filtered);
+      await delay(300);
+      const categories = getStorage<CategoryItem[]>(DB.CATEGORIES, []);
+      const filtered = categories.filter(c => c.id !== id);
+      setStorage(DB.CATEGORIES, filtered);
     } else {
-        // REAL BACKEND
-        await fetch(`${CONFIG.API_URL}/categories/${id}`, {
-            method: 'DELETE'
-        });
+      // REAL BACKEND
+      await fetch(`${CONFIG.API_URL}/categories/${id}`, {
+        method: 'DELETE'
+      });
     }
   }
 };

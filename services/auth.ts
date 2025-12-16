@@ -44,7 +44,11 @@ export const authService = {
                     const error = await response.json();
                     throw new Error(error.message || 'Kayıt başarısız');
                 }
-                const user = await response.json();
+                const responseData = await response.json();
+                const user = responseData.user;
+                if (responseData.token) {
+                    localStorage.setItem('mv_token', responseData.token);
+                }
                 this.setSession(user, true);
 
                 // Backend kendi logunu tutabilir ama frontend tarafında da güncelleyelim
@@ -113,7 +117,11 @@ export const authService = {
                     const error = await response.json();
                     throw new Error(error.message || 'Giriş başarısız');
                 }
-                const user = await response.json();
+                const responseData = await response.json();
+                const user = responseData.user;
+                if (responseData.token) {
+                    localStorage.setItem('mv_token', responseData.token);
+                }
                 this.setSession(user, rememberMe);
                 return user;
             } catch (error: any) {

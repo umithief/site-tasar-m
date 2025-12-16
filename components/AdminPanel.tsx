@@ -94,26 +94,41 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
     }, []);
 
     const loadAllData = async () => {
-        const [p, s, c, r, st, n, o, u, m] = await Promise.all([
-            productService.getProducts(),
-            sliderService.getSlides(),
-            categoryService.getCategories(),
-            routeService.getRoutes(),
-            storyService.getStories(),
-            negotiationService.getOffers(),
-            orderService.getAllOrders(),
-            authService.getAllUsers(),
-            modelService.getModels()
-        ]);
-        setProducts(p);
-        setSlides(s);
-        setCategories(c);
-        setRoutes(r);
-        setStories(st);
-        setNegotiations(n);
-        setOrders(o);
-        setUsers(u);
-        setModels(m);
+        try {
+            const results = await Promise.allSettled([
+                productService.getProducts(),
+                sliderService.getSlides(),
+                categoryService.getCategories(),
+                routeService.getRoutes(),
+                storyService.getStories(),
+                negotiationService.getOffers(),
+                orderService.getAllOrders(),
+                authService.getAllUsers(),
+                modelService.getModels()
+            ]);
+
+            // Helper to safely get value or default
+            const getValue = (result: PromiseSettledResult<any>, defaultVal: any) =>
+                result.status === 'fulfilled' ? result.value : defaultVal;
+
+            setProducts(getValue(results[0], []));
+            setSlides(getValue(results[1], []));
+            setCategories(getValue(results[2], []));
+            setRoutes(getValue(results[3], []));
+            setStories(getValue(results[4], []));
+            setNegotiations(getValue(results[5], []));
+            setOrders(getValue(results[6], []));
+            setUsers(getValue(results[7], []));
+            setModels(getValue(results[8], []));
+
+            // Log any failures
+            results.forEach((r, i) => {
+                if (r.status === 'rejected') console.error(`Data load failed for index ${i}:`, r.reason);
+            });
+        } catch (error) {
+            console.error('Critical data load error:', error);
+            onShowToast('error', 'Veriler yüklenirken hata oluştu.');
+        }
     };
 
     const handleEdit = (item: any) => {

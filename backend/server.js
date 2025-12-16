@@ -9,6 +9,7 @@ import uploadRoutes from './routes/uploadRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
 import routeRoutes from './routes/routeRoutes.js';
+import slideRoutes from './routes/slideRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -100,6 +101,15 @@ const slideSchema = new mongoose.Schema({
     action: { type: String, default: 'shop' },
     type: { type: String, default: 'image' },
     videoUrl: String
+});
+
+slideSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+    }
 });
 const Slide = mongoose.models.Slide || mongoose.model('Slide', slideSchema);
 
@@ -346,6 +356,7 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/routes', routeRoutes);
+app.use('/api/slides', slideRoutes);
 
 // 16. 3D Model Routes (ADDED)
 app.get('/api/models', async (req, res) => {

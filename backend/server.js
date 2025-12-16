@@ -10,6 +10,7 @@ import authRoutes from './routes/authRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
 import routeRoutes from './routes/routeRoutes.js';
 import slideRoutes from './routes/slideRoutes.js';
+import vlogRoutes from './routes/vlogRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -251,6 +252,15 @@ const vlogSchema = new mongoose.Schema({
     views: { type: String, default: '0' },
     productsUsed: [Number]
 });
+
+vlogSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+    }
+});
 const MotoVlog = mongoose.models.MotoVlog || mongoose.model('MotoVlog', vlogSchema);
 
 const servicePointSchema = new mongoose.Schema({
@@ -357,6 +367,7 @@ app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/routes', routeRoutes);
 app.use('/api/slides', slideRoutes);
+app.use('/api/vlogs', vlogRoutes);
 
 // 16. 3D Model Routes (ADDED)
 app.get('/api/models', async (req, res) => {

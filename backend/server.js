@@ -11,6 +11,7 @@ import categoryRoutes from './routes/categoryRoutes.js';
 import routeRoutes from './routes/routeRoutes.js';
 import slideRoutes from './routes/slideRoutes.js';
 import vlogRoutes from './routes/vlogRoutes.js';
+import eventRoutes from './routes/eventRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -288,6 +289,29 @@ const model3dSchema = new mongoose.Schema({
 });
 const Model3D = mongoose.models.Model3D || mongoose.model('Model3D', model3dSchema);
 
+const meetupEventSchema = new mongoose.Schema({
+    title: { type: String, required: true },
+    type: String, // 'night-ride' | 'coffee' | 'track-day' | 'offroad'
+    date: String,
+    time: String,
+    location: String,
+    coordinates: { lat: Number, lng: Number },
+    organizer: String,
+    attendees: { type: Number, default: 0 },
+    image: String,
+    description: String
+});
+
+meetupEventSchema.set('toJSON', {
+    virtuals: true,
+    versionKey: false,
+    transform: function (doc, ret) {
+        ret.id = ret._id;
+        delete ret._id;
+    }
+});
+const MeetupEvent = mongoose.models.MeetupEvent || mongoose.model('MeetupEvent', meetupEventSchema);
+
 
 // --- DATA SEEDING ---
 const seedDatabase = async () => {
@@ -368,6 +392,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/routes', routeRoutes);
 app.use('/api/slides', slideRoutes);
 app.use('/api/vlogs', vlogRoutes);
+app.use('/api/events', eventRoutes);
 
 // 16. 3D Model Routes (ADDED)
 app.get('/api/models', async (req, res) => {

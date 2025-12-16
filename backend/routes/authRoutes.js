@@ -4,12 +4,13 @@ import jwt from 'jsonwebtoken';
 import mongoose from 'mongoose';
 
 const router = express.Router();
-const User = mongoose.models.User; // User modelini server.js'den veya mongoose'dan al
+
 
 // LOGIN
 router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
+        const User = mongoose.model('User');
 
         // 1. Kullanıcıyı bul
         const user = await User.findOne({ email });
@@ -66,6 +67,7 @@ router.post('/login', async (req, res) => {
 router.post('/register', async (req, res) => {
     try {
         const { name, email, password } = req.body;
+        const User = mongoose.model('User');
 
         // Kullanıcı var mı?
         const existingUser = await User.findOne({ email });

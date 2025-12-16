@@ -6,7 +6,7 @@ import { CONFIG } from './config';
 // Varsayılan Kategoriler (Unsplash Kaynaklı - Premium/Dark Tema)
 const DEFAULT_CATEGORIES: CategoryItem[] = [
   {
-    id: 'cat-1',
+    id: 'cat_1',
     name: 'KASKLAR',
     type: ProductCategory.HELMET,
     // Koyu tonlu, vizör detaylı kask görseli
@@ -16,7 +16,7 @@ const DEFAULT_CATEGORIES: CategoryItem[] = [
     className: 'col-span-2 row-span-2'
   },
   {
-    id: 'cat-2',
+    id: 'cat_2',
     name: 'MONTLAR',
     type: ProductCategory.JACKET,
     // Deri ceket dokusu ve sürücü duruşu
@@ -26,7 +26,7 @@ const DEFAULT_CATEGORIES: CategoryItem[] = [
     className: 'col-span-2 row-span-1'
   },
   {
-    id: 'cat-3',
+    id: 'cat_3',
     name: 'ELDİVENLER',
     type: ProductCategory.GLOVES,
     // Gidon tutan eldivenli el detayı
@@ -36,7 +36,7 @@ const DEFAULT_CATEGORIES: CategoryItem[] = [
     className: 'col-span-1 row-span-1'
   },
   {
-    id: 'cat-4',
+    id: 'cat_4',
     name: 'BOTLAR',
     type: ProductCategory.BOOTS,
     // Motosiklet botu ve vites pedalı detayı
@@ -46,7 +46,7 @@ const DEFAULT_CATEGORIES: CategoryItem[] = [
     className: 'col-span-1 row-span-1'
   },
   {
-    id: 'cat-5',
+    id: 'cat_5',
     name: 'EKİPMAN',
     type: ProductCategory.PROTECTION,
     // Yarış tulumu ve koruma ekipmanı detayı
@@ -56,7 +56,7 @@ const DEFAULT_CATEGORIES: CategoryItem[] = [
     className: 'col-span-1 md:col-span-2 row-span-1'
   },
   {
-    id: 'cat-6',
+    id: 'cat_6',
     name: 'İNTERKOM',
     type: ProductCategory.INTERCOM,
     // Kask üzeri teknoloji/iletişim temalı
@@ -96,7 +96,7 @@ export const categoryService = {
       const categories = getStorage<CategoryItem[]>(DB.CATEGORIES, []);
       const newCat: CategoryItem = {
         ...category,
-        id: `cat-${Date.now()}`,
+        id: `cat_${Date.now()}`,
       };
       categories.push(newCat);
       setStorage(DB.CATEGORIES, categories);

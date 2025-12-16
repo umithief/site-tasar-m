@@ -8,7 +8,7 @@ import { gamificationService, POINTS } from './gamificationService';
 // Mock data fallback for Topics
 const MOCK_TOPICS: ForumTopic[] = [
     {
-        id: 'TOPIC-001',
+        id: 'TOPIC_001',
         authorId: 'system',
         authorName: 'MotoVibe Admin',
         title: 'MotoVibe Topluluğuna Hoş Geldiniz!',
@@ -25,7 +25,7 @@ const MOCK_TOPICS: ForumTopic[] = [
 // Mock data for Social Feed
 const MOCK_FEED: SocialPost[] = [
     {
-        id: 'post-1',
+        id: 'post_1',
         userId: 'u101',
         userName: 'Canberk Hız',
         content: 'Bugün Riva yolları efsaneydi! 🔥 Herkese iyi pazarlar.',
@@ -36,7 +36,7 @@ const MOCK_FEED: SocialPost[] = [
         isLiked: false
     },
     {
-        id: 'post-2',
+        id: 'post_2',
         userId: 'u102',
         userName: 'Zeynep Yılmaz',
         content: 'Yeni kaskım geldi! AeroSpeed Carbon Pro gerçekten çok hafif. Tavsiye ederim.',
@@ -47,7 +47,7 @@ const MOCK_FEED: SocialPost[] = [
         isLiked: true
     },
     {
-        id: 'post-3',
+        id: 'post_3',
         userId: 'u103',
         userName: 'Mehmet Demir',
         content: 'Zincir bakımı ihmale gelmez. Temizlik günü! 🧼',
@@ -83,7 +83,7 @@ export const forumService = {
 
     async createTopic(user: User, title: string, content: string, category: ForumTopic['category'], tags: string[]): Promise<ForumTopic> {
         const newTopic: ForumTopic = {
-            id: `TOPIC-${Date.now()}`,
+            id: `TOPIC_${Date.now()}`,
             authorId: user.id,
             authorName: user.name,
             title,
@@ -118,7 +118,7 @@ export const forumService = {
 
     async addComment(topicId: string, user: User, content: string): Promise<ForumComment> {
         const newComment: ForumComment = {
-            id: `CMT-${Date.now()}`,
+            id: `CMT_${Date.now()}`,
             authorId: user.id,
             authorName: user.name,
             content,
@@ -177,7 +177,7 @@ export const forumService = {
 
     async createSocialPost(user: User, content: string, image?: string): Promise<SocialPost> {
         const newPost: SocialPost = {
-            id: `post-${Date.now()}`,
+            id: `post_${Date.now()}`,
             userId: user.id,
             userName: user.name,
             content,

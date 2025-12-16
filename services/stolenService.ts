@@ -6,7 +6,7 @@ import { CONFIG } from './config';
 // Mock Data
 const MOCK_STOLEN: StolenItem[] = [
     {
-        id: 'st-1',
+        id: 'st_1',
         serialNumber: 'AGV-K6-88291',
         brand: 'AGV',
         model: 'K6 S Black',
@@ -19,7 +19,7 @@ const MOCK_STOLEN: StolenItem[] = [
         dateReported: new Date().toLocaleDateString('tr-TR')
     },
     {
-        id: 'st-2',
+        id: 'st_2',
         serialNumber: 'SENA-50S-9912',
         brand: 'Sena',
         model: '50S Harman Kardon',
@@ -37,7 +37,7 @@ export const stolenService = {
     async reportStolen(item: Omit<StolenItem, 'id' | 'dateReported' | 'status'>): Promise<StolenItem> {
         const newItem: StolenItem = {
             ...item,
-            id: `stol-${Date.now()}`,
+            id: `stol_${Date.now()}`,
             status: 'stolen',
             dateReported: new Date().toLocaleDateString('tr-TR')
         };

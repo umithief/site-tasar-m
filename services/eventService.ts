@@ -5,7 +5,7 @@ import { CONFIG } from './config';
 // Mock Events Data
 const MOCK_EVENTS: MeetupEvent[] = [
     {
-        id: 'evt-1',
+        id: 'evt_1',
         title: 'Gece Sürüşü: İstanbul Işıkları',
         type: 'night-ride',
         date: '2025-06-15',
@@ -18,7 +18,7 @@ const MOCK_EVENTS: MeetupEvent[] = [
         description: 'İstanbul\'un eşsiz gece manzarasında yaklaşık 2 saatlik keyifli bir sürüş.'
     },
     {
-        id: 'evt-2',
+        id: 'evt_2',
         title: 'Pazar Kahvesi & Sohbet',
         type: 'coffee',
         date: '2025-06-18',
@@ -62,7 +62,7 @@ export const eventService = {
             const events = getStorage<MeetupEvent[]>(DB.EVENTS, []);
             const newEvent: MeetupEvent = {
                 ...event,
-                id: `evt-${Date.now()}`
+                id: `evt_${Date.now()}`
             };
             events.push(newEvent);
             setStorage(DB.EVENTS, events);

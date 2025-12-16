@@ -24,7 +24,7 @@ export const negotiationService = {
     // Kullanıcı teklif gönderir
     async submitOffer(product: Product, offerPrice: number, user: User): Promise<NegotiationOffer> {
         const newOffer: NegotiationOffer = {
-            id: `neg-${Date.now()}`,
+            id: `neg_${Date.now()}`,
             productId: product.id,
             productName: product.name,
             productImage: product.image,
@@ -40,12 +40,12 @@ export const negotiationService = {
             await delay(1000);
             let offers = getStorage<NegotiationOffer[]>(DB.NEGOTIATIONS, []);
             offers.unshift(newOffer);
-            
+
             // Limit to last 20 offers to prevent storage overflow, especially if images are involved
             if (offers.length > 20) {
                 offers = offers.slice(0, 20);
             }
-            
+
             setStorage(DB.NEGOTIATIONS, offers);
             return newOffer;
         } else {

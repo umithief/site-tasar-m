@@ -5,19 +5,19 @@ import { CONFIG } from './config';
 
 const MOCK_VLOGS: MotoVlog[] = [
     {
-        id: 'vlog-1',
+        id: 'vlog_1',
         title: 'Beyşehir Yolu Gazlama - MT09',
         author: 'Tek Teker Arif',
         locationName: 'Konya - Beyşehir Yolu',
         coordinates: { lat: 37.8500, lng: 32.2000 },
         // YouTube Example (Legacy Support)
-        videoUrl: 'https://www.youtube.com/watch?v=3sL0omwZH0A', 
+        videoUrl: 'https://www.youtube.com/watch?v=3sL0omwZH0A',
         thumbnail: 'https://images.unsplash.com/photo-1558981806-ec527fa84c3d?q=80&w=800&auto=format&fit=crop',
         views: '125B',
-        productsUsed: [1, 3] 
+        productsUsed: [1, 3]
     },
     {
-        id: 'vlog-2',
+        id: 'vlog_2',
         title: 'Antalya Sahil Virajları',
         author: 'MotoVibe Official',
         locationName: 'Kaş - Kalkan',
@@ -26,10 +26,10 @@ const MOCK_VLOGS: MotoVlog[] = [
         videoUrl: 'https://www.youtube.com/watch?v=XIhA8d7767o',
         thumbnail: 'https://images.unsplash.com/photo-1580910543236-0c95332f7a9d?q=80&w=800&auto=format&fit=crop',
         views: '45B',
-        productsUsed: [2, 6] 
+        productsUsed: [2, 6]
     },
     {
-        id: 'vlog-3',
+        id: 'vlog_3',
         title: 'Orman İçi Sakin Sürüş',
         author: 'Nature Rider',
         locationName: 'Belgrad Ormanı',
@@ -38,10 +38,10 @@ const MOCK_VLOGS: MotoVlog[] = [
         videoUrl: 'https://videos.pexels.com/video-files/3004273/3004273-uhd_2560_1440_30fps.mp4',
         thumbnail: 'https://images.pexels.com/videos/3004273/pictures/preview-0.jpg',
         views: '12B',
-        productsUsed: [4, 5] 
+        productsUsed: [4, 5]
     },
     {
-        id: 'vlog-4',
+        id: 'vlog_4',
         title: 'İstanbul Park Pist Günü',
         author: 'Racing Spirit',
         locationName: 'Intercity İstanbul Park',
@@ -49,10 +49,10 @@ const MOCK_VLOGS: MotoVlog[] = [
         videoUrl: 'https://www.youtube.com/watch?v=5_St7_f99mc',
         thumbnail: 'https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=800&auto=format&fit=crop',
         views: '210B',
-        productsUsed: [8, 1, 3] 
+        productsUsed: [8, 1, 3]
     },
     {
-        id: 'vlog-5',
+        id: 'vlog_5',
         title: 'Gece Sürüşü - POV',
         author: 'Night Owl',
         locationName: 'İstanbul - Levent',
@@ -86,7 +86,7 @@ export const vlogService = {
     async addVlog(vlog: Omit<MotoVlog, 'id' | 'views'>): Promise<MotoVlog> {
         const newVlog: MotoVlog = {
             ...vlog,
-            id: `vlog-${Date.now()}`,
+            id: `vlog_${Date.now()}`,
             views: '0',
         };
 

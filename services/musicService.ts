@@ -5,29 +5,29 @@ import { CONFIG } from './config';
 
 // Varsayılan YouTube Sürüş Listesi
 const DEFAULT_YOUTUBE_PLAYLIST: MusicTrack[] = [
-    { 
-        id: 'yt-1', 
-        title: 'Kerosene (Slowed)', 
-        artist: 'Crystal Castles', 
-        url: 'https://www.youtube.com/watch?v=H33Xo5qR3gY', 
-        addedAt: new Date().toLocaleDateString() 
-    },
-    { 
-        id: 'yt-2', 
-        title: 'Murder In My Mind', 
-        artist: 'Kordhell', 
-        url: 'https://www.youtube.com/watch?v=w-sQRS-Lc9k', 
-        addedAt: new Date().toLocaleDateString() 
+    {
+        id: 'yt_1',
+        title: 'Kerosene (Slowed)',
+        artist: 'Crystal Castles',
+        url: 'https://www.youtube.com/watch?v=H33Xo5qR3gY',
+        addedAt: new Date().toLocaleDateString()
     },
     {
-        id: 'yt-3',
+        id: 'yt_2',
+        title: 'Murder In My Mind',
+        artist: 'Kordhell',
+        url: 'https://www.youtube.com/watch?v=w-sQRS-Lc9k',
+        addedAt: new Date().toLocaleDateString()
+    },
+    {
+        id: 'yt_3',
         title: 'Metamorphosis',
         artist: 'Interworld',
         url: 'https://www.youtube.com/watch?v=HlM9X38Z3YQ',
         addedAt: new Date().toLocaleDateString()
     },
     {
-        id: 'yt-4',
+        id: 'yt_4',
         title: 'Nightcall',
         artist: 'Kavinsky',
         url: 'https://www.youtube.com/watch?v=MV_3Dpw-BRY',
@@ -70,14 +70,14 @@ export const musicService = {
         const videoId = this.getYouTubeID(url);
 
         if (!videoId) {
-             throw new Error('Lütfen geçerli bir YouTube linki girin (youtube.com veya youtu.be)');
+            throw new Error('Lütfen geçerli bir YouTube linki girin (youtube.com veya youtu.be)');
         }
 
         // Temizlenmiş URL'i kaydet (Embed veya Watch formatı fark etmez, player ID kullanacak)
         const cleanUrl = `https://www.youtube.com/watch?v=${videoId}`;
 
         const newTrack: MusicTrack = {
-            id: `track-${Date.now()}`,
+            id: `track_${Date.now()}`,
             title,
             artist,
             url: cleanUrl,
@@ -97,7 +97,7 @@ export const musicService = {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newTrack)
             });
-            if(!response.ok) {
+            if (!response.ok) {
                 const err = await response.json();
                 throw new Error(err.message || 'Hata');
             }
@@ -145,13 +145,13 @@ export const musicService = {
     },
 
     async resetToDefaults(): Promise<MusicTrack[]> {
-         if (CONFIG.USE_MOCK_API) {
+        if (CONFIG.USE_MOCK_API) {
             await delay(500);
             setStorage(DB.MUSIC, DEFAULT_YOUTUBE_PLAYLIST);
             return DEFAULT_YOUTUBE_PLAYLIST;
-         } else {
-             return DEFAULT_YOUTUBE_PLAYLIST;
-         }
+        } else {
+            return DEFAULT_YOUTUBE_PLAYLIST;
+        }
     },
 
     async importSoundCloudTrending(): Promise<MusicTrack[]> {

@@ -7,7 +7,7 @@ import { gamificationService, POINTS } from './gamificationService';
 export const feedbackService = {
     async submitFeedback(user: User | null, type: Feedback['type'], rating: number, message: string): Promise<void> {
         const newFeedback: Feedback = {
-            id: `fb-${Date.now()}`,
+            id: `fb_${Date.now()}`,
             userId: user?.id || 'anonymous',
             userName: user?.name || 'Misafir',
             type,
@@ -34,7 +34,7 @@ export const feedbackService = {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newFeedback)
             });
-            
+
             if (user) {
                 await gamificationService.addPoints(user.id, 25, 'Geri Bildirim Ödülü');
             }

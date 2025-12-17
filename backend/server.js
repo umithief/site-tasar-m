@@ -358,7 +358,7 @@ const seedDatabase = async () => {
             console.log('📦 Forum konuları veritabanına ekleniyor...');
             await ForumTopic.insertMany([
                 {
-                    id: 'TOPIC-INIT-1',
+                    // Remove 'id' field, rely on _id default
                     authorId: 'admin-001',
                     authorName: 'MotoVibe Admin',
                     title: 'MotoVibe Topluluğuna Hoş Geldiniz!',
@@ -369,6 +369,42 @@ const seedDatabase = async () => {
                     views: 1250,
                     comments: [],
                     tags: ['Duyuru', 'Kurallar']
+                }
+            ]);
+        }
+
+        const socialCount = await SocialPost.countDocuments();
+        if (socialCount === 0) {
+            console.log('📦 Sosyal medya paylaşımları (Paddock) veritabanına ekleniyor...');
+            await SocialPost.insertMany([
+                {
+                    userId: 'u101',
+                    userName: 'Canberk Hız',
+                    content: 'Bugün Riva yolları efsaneydi! 🔥 Herkese iyi pazarlar.',
+                    image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1200&auto=format&fit=crop',
+                    likes: 124,
+                    comments: 12,
+                    timestamp: '2 saat önce',
+                    isLiked: false
+                },
+                {
+                    userId: 'u102',
+                    userName: 'Zeynep Yılmaz',
+                    content: 'Yeni kaskım geldi! AeroSpeed Carbon Pro gerçekten çok hafif. Tavsiye ederim.',
+                    image: 'https://images.unsplash.com/photo-1592758215894-3298a49339d6?q=80&w=800&auto=format&fit=crop',
+                    likes: 89,
+                    comments: 5,
+                    timestamp: '5 saat önce',
+                    isLiked: true
+                },
+                {
+                    userId: 'u103',
+                    userName: 'Mehmet Demir',
+                    content: 'Zincir bakımı ihmale gelmez. Temizlik günü! 🧼',
+                    likes: 45,
+                    comments: 2,
+                    timestamp: '1 gün önce',
+                    isLiked: false
                 }
             ]);
         }

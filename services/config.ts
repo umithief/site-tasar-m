@@ -5,7 +5,7 @@ export const API_URL = 'https://motovibe-api.onrender.com/api';
 
 // Config nesnesi
 export const CONFIG = {
-    USE_MOCK_API: false, // LIVE MODE ZORUNLU
+    USE_MOCK_API: false,
     API_URL: API_URL,
 
     // Modu değiştir ve sayfayı yenile

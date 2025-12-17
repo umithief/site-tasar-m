@@ -133,7 +133,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
             setModels(getValue(results[8], []));
             setEvents(getValue(results[9], []));
             setTopics(getValue(results[10], []));
-            setPaddockPosts(getValue(results[11], []));
+            setTopics(getValue(results[10], []));
+            const paddockData = getValue(results[11], []);
+            console.log('🔌 AdminPanel Paddock Data:', paddockData);
+            setPaddockPosts(paddockData);
 
             // Log any failures
             results.forEach((r, i) => {

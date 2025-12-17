@@ -34,12 +34,10 @@ router.get('/search', async (req, res) => {
 // GET single topic
 router.get('/:id', async (req, res) => {
     try {
-        // Search by ID or custom ID string (e.g. TOPIC-1)
         const ForumTopic = mongoose.model('ForumTopic');
-        let topic = await ForumTopic.findOne({ id: req.params.id });
+        let topic;
 
-        // If not found by custom ID, try ObjectId
-        if (!topic && mongoose.Types.ObjectId.isValid(req.params.id)) {
+        if (mongoose.Types.ObjectId.isValid(req.params.id)) {
             topic = await ForumTopic.findById(req.params.id);
         }
 
@@ -60,10 +58,6 @@ router.post('/', async (req, res) => {
     try {
         const ForumTopic = mongoose.model('ForumTopic');
         const newTopic = new ForumTopic(req.body);
-        // Ensure custom ID if not provided (simple strategy)
-        if (!newTopic.id) {
-            newTopic.id = `TOPIC-${Date.now()}`;
-        }
         await newTopic.save();
         res.status(201).json(newTopic);
     } catch (error) {
@@ -77,11 +71,15 @@ router.post('/:id/comments', async (req, res) => {
         const ForumTopic = mongoose.model('ForumTopic');
         const { content, authorId, authorName } = req.body;
 
-        const topic = await ForumTopic.findOne({ id: req.params.id }) || await ForumTopic.findById(req.params.id);
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(404).json({ message: 'Geçersiz ID' });
+        }
+
+        const topic = await ForumTopic.findById(req.params.id);
         if (!topic) return res.status(404).json({ message: 'Konu bulunamadı' });
 
         const newComment = {
-            id: `cmt-${Date.now()}`,
+            _id: new mongoose.Types.ObjectId(), // Let Mongoose generate ID, or manually if schema strict
             content,
             authorId,
             authorName,
@@ -101,7 +99,11 @@ router.post('/:id/comments', async (req, res) => {
 router.put('/:id/like', async (req, res) => {
     try {
         const ForumTopic = mongoose.model('ForumTopic');
-        const topic = await ForumTopic.findOne({ id: req.params.id }) || await ForumTopic.findById(req.params.id);
+        if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+            return res.status(404).json({ message: 'Geçersiz ID' });
+        }
+
+        const topic = await ForumTopic.findById(req.params.id);
         if (!topic) return res.status(404).json({ message: 'Konu bulunamadı' });
 
         topic.likes += 1;

@@ -8,11 +8,9 @@ const router = express.Router();
 router.get('/', async (req, res) => {
     try {
         const SocialPost = mongoose.model('SocialPost');
-        const posts = await SocialPost.find().sort({ timestamp: -1 }); // Newest first (if timestamp works alphabetically or numeric)
-        // If sorting strictly by date is needed, timestamp should ideally be a date object or ISO string.
-        // Assuming current mock data uses "2 saat önce" which doesn't sort well, but new posts use "Şimdi".
-        // For production, maybe rely on _id (natural creation order)
-        res.json(posts.reverse()); // Reverse to show newest created first if implicit order
+        // Sort by _id descending (newest first)
+        const posts = await SocialPost.find().sort({ _id: -1 });
+        res.json(posts);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

@@ -82,21 +82,21 @@ export const forumService = {
     },
 
     async createTopic(user: User, title: string, content: string, category: ForumTopic['category'], tags: string[]): Promise<ForumTopic> {
-        const newTopic: ForumTopic = {
-            _id: `TOPIC_${Date.now()}`,
-            authorId: user._id,
-            authorName: user.name,
-            title,
-            content,
-            category,
-            date: new Date().toLocaleDateString('tr-TR'),
-            likes: 0,
-            views: 0,
-            comments: [],
-            tags
-        };
-
         if (CONFIG.USE_MOCK_API) {
+            const newTopic: ForumTopic = {
+                _id: `TOPIC_${Date.now()}`,
+                authorId: user._id,
+                authorName: user.name,
+                title,
+                content,
+                category,
+                date: new Date().toLocaleDateString('tr-TR'),
+                likes: 0,
+                views: 0,
+                comments: [],
+                tags
+            };
+
             await delay(800);
             const topics = getStorage<ForumTopic[]>(DB.FORUM_TOPICS, []);
             topics.unshift(newTopic);
@@ -106,6 +106,16 @@ export const forumService = {
 
             return newTopic;
         } else {
+            const newTopic = {
+                authorId: user._id,
+                authorName: user.name,
+                title,
+                content,
+                category,
+                date: new Date().toLocaleDateString('tr-TR'),
+                tags
+            };
+
             const response = await fetch(`${CONFIG.API_URL}/forum`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -117,16 +127,16 @@ export const forumService = {
     },
 
     async addComment(topicId: string, user: User, content: string): Promise<ForumComment> {
-        const newComment: ForumComment = {
-            _id: `CMT_${Date.now()}`,
-            authorId: user._id,
-            authorName: user.name,
-            content,
-            date: new Date().toLocaleDateString('tr-TR'),
-            likes: 0
-        };
-
         if (CONFIG.USE_MOCK_API) {
+            const newComment: ForumComment = {
+                _id: `CMT_${Date.now()}`,
+                authorId: user._id,
+                authorName: user.name,
+                content,
+                date: new Date().toLocaleDateString('tr-TR'),
+                likes: 0
+            };
+
             await delay(500);
             const topics = getStorage<ForumTopic[]>(DB.FORUM_TOPICS, []);
             const topicIndex = topics.findIndex(t => t._id === topicId);
@@ -138,13 +148,25 @@ export const forumService = {
 
             return newComment;
         } else {
+            const newComment = {
+                authorId: user._id,
+                authorName: user.name,
+                content
+            };
+
             const response = await fetch(`${CONFIG.API_URL}/forum/${topicId}/comments`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newComment)
             });
             await gamificationService.addPoints(user._id, POINTS.ADD_COMMENT, 'Yorum');
-            return await response.json();
+            // The backend returns the updated TOPIC, but the frontend might expect the new COMMENT.
+            // Let's assume frontend refreshes or we need to extract comment.
+            // For now, returning full response might be issue if it's Topic.
+            // Let's assume backend returns the topic with new comment at the end.
+            const updatedTopic: ForumTopic = await response.json();
+            // Return the last comment
+            return updatedTopic.comments[updatedTopic.comments.length - 1];
         }
     },
 

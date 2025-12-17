@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, User, ArrowRight, Github, Twitter, Chrome } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Github, Twitter, Chrome, Smartphone } from 'lucide-react';
 import { authService } from '../services/auth';
 import { useAppSounds } from '../hooks/useAppSounds';
+import { notify } from '../services/notificationService';
 
 export const AuthPage = ({ onLoginSuccess, onNavigate }: { onLoginSuccess?: () => void, onNavigate?: (view: any) => void }) => {
-    const { playSuccess } = useAppSounds();
-    // State: true = Login View (Overlay on Right), false = Signup View (Overlay on Left)
-    const [isLoginView, setIsLoginView] = useState(true);
+    const { playSuccess, playClick } = useAppSounds();
+    const [isLogin, setIsLogin] = useState(true); // true = Login Form Visible (Cover on Right)
 
-    // Form States
     const [loginEmail, setLoginEmail] = useState('');
     const [loginPass, setLoginPass] = useState('');
 
@@ -26,8 +25,11 @@ export const AuthPage = ({ onLoginSuccess, onNavigate }: { onLoginSuccess?: () =
             await authService.login(loginEmail, loginPass);
             playSuccess();
             if (onLoginSuccess) onLoginSuccess();
-        } catch (error) {
+            notify.success('Giriş başarılı!');
+        } catch (error: any) {
             console.error(error);
+            notify.error(error.message || 'Giriş başarısız.');
+            playClick();
         } finally {
             setLoading(false);
         }
@@ -40,147 +42,132 @@ export const AuthPage = ({ onLoginSuccess, onNavigate }: { onLoginSuccess?: () =
             await authService.register({ name: regName, email: regEmail, password: regPass });
             playSuccess();
             if (onLoginSuccess) onLoginSuccess();
-        } catch (error) {
+            notify.success('Hesap oluşturuldu!');
+        } catch (error: any) {
             console.error(error);
+            notify.error(error.message || 'Kayıt başarısız.');
         } finally {
             setLoading(false);
         }
     };
 
-    // --- ANIMATION VARIANTS ---
-    const overlayVariants = {
-        login: { x: "100%" }, // Move to Right
-        signup: { x: "0%" }   // Move to Left
+    const toggleView = () => {
+        playClick();
+        setIsLogin(!isLogin);
     };
 
     return (
-        <div className="min-h-screen w-full bg-black flex items-center justify-center p-4 relative overflow-hidden">
-            {/* Ambient Background */}
-            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1625043484555-47841a752840?q=80&w=1920&auto=format&fit=crop')] bg-cover bg-center opacity-20 blur-sm pointer-events-none" />
-            <div className="absolute inset-0 bg-gradient-to-tr from-black via-black/90 to-transparent pointer-events-none" />
+        <div className="min-h-screen w-full bg-[#050505] flex items-center justify-center p-4 overflow-hidden relative">
+            {/* Ambient Background Glow */}
+            <div className="absolute top-[-20%] left-[-10%] w-[600px] h-[600px] bg-[#F2A619]/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen" />
+            <div className="absolute bottom-[-20%] right-[-10%] w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen" />
 
-            {/* --- MAIN CONTAINER --- */}
-            <div className="relative w-[1000px] h-[650px] bg-black/40 backdrop-blur-2xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden flex">
+            {/* MAIN CONTAINER */}
+            <div className="relative w-[1000px] h-[650px] bg-black/40 backdrop-blur-xl border border-white/10 rounded-2xl overflow-hidden shadow-2xl flex">
 
-                {/* --- FORMS LAYER (UNDERLAYER) --- */}
-                {/* 
-                   Left Side: Signup Form (Visible when overlay is on Right... wait. 
-                   Standard approach: Login on Left, Signup on Right.
-                   If Login View (Overlay on Right): We see Login Form on Left.
-                   If Signup View (Overlay on Left): We see Signup Form on Right.
-                */}
+                {/* --- BACKGROUND LAYER: FORMS --- */}
 
-                {/* LEFT SIDE: LOGIN FORM */}
-                <div className="w-1/2 h-full p-12 flex flex-col justify-center relative z-10">
-                    <div className={`transition-opacity duration-500 ${isLoginView ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-                        <h2 className="text-4xl font-black text-white mb-2">Welcome Back.</h2>
-                        <p className="text-gray-400 mb-8">Sign in to continue your journey.</p>
-
-                        <form onSubmit={handleLogin} className="space-y-6">
-                            <FloatingInput icon={<Mail />} label="Email Address" type="email" value={loginEmail} onChange={setLoginEmail} />
-                            <FloatingInput icon={<Lock />} label="Password" type="password" value={loginPass} onChange={setLoginPass} />
-
-                            <div className="flex justify-end text-xs font-bold text-[#F2A619] cursor-pointer hover:underline">
-                                Forgot Password?
-                            </div>
-
-                            <button type="submit" disabled={loading} className="w-full bg-[#F2A619] text-black h-12 rounded-xl font-bold uppercase tracking-widest flex items-center justify-center gap-2 group hover:bg-white transition-colors">
-                                {loading ? 'Processing...' : 'Sign In'}
-                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                            </button>
-                        </form>
-
-                        <div className="mt-8 flex flex-col items-center gap-4">
-                            <div className="text-xs font-bold text-gray-600 uppercase tracking-widest">Or continue with</div>
-                            <div className="flex gap-4">
-                                <SocialButton icon={<Chrome />} />
-                                <SocialButton icon={<Github />} />
-                                <SocialButton icon={<Twitter />} />
-                            </div>
-                        </div>
+                {/* LEFT SIDE: SIGN IN FORM */}
+                <div className={`absolute top-0 left-0 w-1/2 h-full flex flex-col justify-center px-12 transition-all duration-700 ${isLogin ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}>
+                    <div className="mb-8">
+                        <h2 className="text-3xl font-black text-white mb-2 tracking-tighter">HOŞ GELDİN PİLOT.</h2>
+                        <p className="text-gray-400 text-sm">Garajına dön ve maceraya devam et.</p>
                     </div>
+
+                    <form onSubmit={handleLogin} className="space-y-6">
+                        <UnderlineInput icon={<Mail />} label="E-posta Adresi" value={loginEmail} onChange={setLoginEmail} type="email" />
+                        <UnderlineInput icon={<Lock />} label="Şifre" value={loginPass} onChange={setLoginPass} type="password" />
+
+                        <div className="flex justify-end">
+                            <button type="button" className="text-xs font-bold text-[#F2A619] hover:text-white transition-colors">
+                                ŞİFREMİ UNUTTUM?
+                            </button>
+                        </div>
+
+                        <NeonButton text="GİRİŞ YAP" loading={loading} />
+                    </form>
+
+                    <SocialDivider text="veya şununla devam et" />
+                    <SocialRow />
                 </div>
 
-                {/* RIGHT SIDE: SIGNUP FORM */}
-                <div className="w-1/2 h-full p-12 flex flex-col justify-center relative z-10">
-                    <div className={`transition-opacity duration-500 ${!isLoginView ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'}`}>
-                        <h2 className="text-4xl font-black text-white mb-2">Join the Club.</h2>
-                        <p className="text-gray-400 mb-8">Create an account to access premium gear.</p>
-
-                        <form onSubmit={handleRegister} className="space-y-6">
-                            <FloatingInput icon={<User />} label="Full Name" type="text" value={regName} onChange={setRegName} />
-                            <FloatingInput icon={<Mail />} label="Email Address" type="email" value={regEmail} onChange={setRegEmail} />
-                            <FloatingInput icon={<Lock />} label="Password" type="password" value={regPass} onChange={setRegPass} />
-
-                            <button type="submit" disabled={loading} className="w-full bg-white text-black h-12 rounded-xl font-bold uppercase tracking-widest flex items-center justify-center gap-2 group hover:bg-[#F2A619] transition-colors">
-                                {loading ? 'Creating...' : 'Create Account'}
-                                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                            </button>
-                        </form>
-
-                        <div className="mt-8 flex flex-col items-center gap-4">
-                            <div className="text-xs font-bold text-gray-600 uppercase tracking-widest">Or join with</div>
-                            <div className="flex gap-4">
-                                <SocialButton icon={<Chrome />} />
-                                <SocialButton icon={<Github />} />
-                            </div>
-                        </div>
+                {/* RIGHT SIDE: SIGN UP FORM */}
+                <div className={`absolute top-0 right-0 w-1/2 h-full flex flex-col justify-center px-12 transition-all duration-700 ${!isLogin ? 'opacity-100 z-10' : 'opacity-0 z-0 pointer-events-none'}`}>
+                    <div className="mb-8 text-right">
+                        <h2 className="text-3xl font-black text-white mb-2 tracking-tighter">YENİ ÜYELİK.</h2>
+                        <p className="text-gray-400 text-sm">Premium ekipman dünyasına adım at.</p>
                     </div>
+
+                    <form onSubmit={handleRegister} className="space-y-6">
+                        <UnderlineInput icon={<User />} label="Tam İsim" value={regName} onChange={setRegName} type="text" rightAlign />
+                        <UnderlineInput icon={<Mail />} label="E-posta Adresi" value={regEmail} onChange={setRegEmail} type="email" rightAlign />
+                        <UnderlineInput icon={<Lock />} label="Güçlü Şifre" value={regPass} onChange={setRegPass} type="password" rightAlign />
+
+                        <div className="flex justify-start">
+                            {/* Space filler or terms checkbox could go here */}
+                        </div>
+
+                        <NeonButton text="HESAP OLUŞTUR" loading={loading} />
+                    </form>
+
+                    <SocialDivider text="veya şununla kayıt ol" />
+                    <SocialRow center={false} /> {/* Align right/center as per design? keeping center for now */}
                 </div>
 
 
-                {/* --- SLIDING OVERLAY (TOP LAYER) --- */}
+                {/* --- OVERLAY LAYER: SLIDING COVER --- */}
                 <motion.div
-                    className="absolute top-0 left-0 w-1/2 h-full z-20 overflow-hidden shadow-2xl"
                     initial={false}
-                    animate={isLoginView ? "login" : "signup"}
-                    variants={overlayVariants}
-                    transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                    animate={{ x: isLogin ? '100%' : '0%' }}
+                    transition={{ type: "spring", stiffness: 200, damping: 25, mass: 1 }}
+                    className="absolute top-0 left-0 w-1/2 h-full z-20 overflow-hidden bg-[#111]"
                 >
-                    {/* The Background Image of the Slidng Panel */}
-                    <div className="absolute inset-0 bg-[#0F0F0F]">
-                        <motion.div
-                            className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1558980394-a3099ed53abb?q=80&w=1000&auto=format&fit=crop')] bg-cover bg-center"
-                            animate={{ scale: isLoginView ? 1 : 1.1 }} // Subtle zoom effect on shift
-                            transition={{ duration: 0.8 }}
-                        >
-                            <div className="absolute inset-0 bg-[#F2A619]/10 mix-blend-overlay"></div>
-                            <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/40"></div>
-                        </motion.div>
-                    </div>
+                    {/* Background Image Container - Parallax Effect on Slide */}
+                    <motion.div
+                        animate={{ x: isLogin ? '-50%' : '0%' }}
+                        transition={{ type: "spring", stiffness: 200, damping: 25, mass: 1 }}
+                        className="absolute inset-0 w-[200%] h-full flex"
+                    >
+                        {/* Left Side Image (Visible when Cover is on Left -> SignUp Mode -> Shows "Already Member") */}
+                        <div className="w-1/2 h-full relative">
+                            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1558981420-87aa38d99c4a?q=80&w=1920')] bg-cover bg-center" />
+                            <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent" />
+                            <div className="absolute inset-0 bg-black/20" />
 
-                    {/* Overlay Content */}
-                    <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-12 text-white">
-
-                        {/* CONTENT FOR WHEN OVERLAY IS ON RIGHT (Showing Login Form -> "New Here?") */}
-                        <div className={`absolute transition-all duration-500 transform ${isLoginView ? 'opacity-100 translate-y-0 delay-150' : 'opacity-0 translate-y-10'}`}>
-                            <h2 className="text-4xl font-black mb-4">New here?</h2>
-                            <p className="text-gray-200 mb-8 max-w-xs mx-auto">
-                                Sign up and discover a great amount of new opportunities!
-                            </p>
-                            <button
-                                onClick={() => setIsLoginView(false)}
-                                className="px-8 py-3 rounded-full border-2 border-white font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all"
-                            >
-                                Sign Up
-                            </button>
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-12">
+                                <h2 className="text-4xl font-black text-white mb-4 italic tracking-tighter">ZATEN ÜYE MİSİN?</h2>
+                                <p className="text-gray-300 mb-8 max-w-xs font-light">
+                                    Garaj kapıların açık. Ekipmanların seni bekliyor.
+                                </p>
+                                <button
+                                    onClick={toggleView}
+                                    className="px-8 py-3 rounded-full border border-white/30 text-white font-bold tracking-widest hover:bg-white hover:text-black transition-all duration-300 backdrop-blur-sm"
+                                >
+                                    GİRİŞ YAP
+                                </button>
+                            </div>
                         </div>
 
-                        {/* CONTENT FOR WHEN OVERLAY IS ON LEFT (Showing Signup Form -> "Welcome Back") */}
-                        <div className={`absolute transition-all duration-500 transform ${!isLoginView ? 'opacity-100 translate-y-0 delay-150' : 'opacity-0 translate-y-10'}`}>
-                            <h2 className="text-4xl font-black mb-4">One of us?</h2>
-                            <p className="text-gray-200 mb-8 max-w-xs mx-auto">
-                                If you already have an account, just sign in. We've missed you!
-                            </p>
-                            <button
-                                onClick={() => setIsLoginView(true)}
-                                className="px-8 py-3 rounded-full border-2 border-white font-bold uppercase tracking-widest hover:bg-white hover:text-black transition-all"
-                            >
-                                Sign In
-                            </button>
-                        </div>
+                        {/* Right Side Image (Visible when Cover is on Right -> Login Mode -> Shows "Join Us") */}
+                        <div className="w-1/2 h-full relative">
+                            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1625043484555-47841a752840?q=80&w=1920')] bg-cover bg-center" />
+                            <div className="absolute inset-0 bg-gradient-to-l from-black/80 via-black/40 to-transparent" />
+                            <div className="absolute inset-0 bg-black/20" />
 
-                    </div>
+                            <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-12">
+                                <h2 className="text-4xl font-black text-white mb-4 italic tracking-tighter">YENİ MİSİN?</h2>
+                                <p className="text-gray-300 mb-8 max-w-xs font-light">
+                                    En özel motosiklet aksesuarlarına erişmek için aramıza katıl.
+                                </p>
+                                <button
+                                    onClick={toggleView}
+                                    className="px-8 py-3 rounded-full border border-white/30 text-white font-bold tracking-widest hover:bg-white hover:text-black transition-all duration-300 backdrop-blur-sm"
+                                >
+                                    KAYIT OL
+                                </button>
+                            </div>
+                        </div>
+                    </motion.div>
                 </motion.div>
 
             </div>
@@ -190,12 +177,12 @@ export const AuthPage = ({ onLoginSuccess, onNavigate }: { onLoginSuccess?: () =
 
 // --- SUB COMPONENTS ---
 
-const FloatingInput = ({ icon, label, type, value, onChange }: any) => {
+const UnderlineInput = ({ icon, label, value, onChange, type, rightAlign = false }: any) => {
     const [focused, setFocused] = useState(false);
 
     return (
-        <div className="relative">
-            <div className={`absolute left-0 top-3 transition-colors ${focused ? 'text-[#F2A619]' : 'text-gray-500'}`}>
+        <div className="relative pt-6">
+            <div className={`absolute top-9 left-0 text-gray-500 transition-colors duration-300 ${focused ? 'text-[#F2A619]' : ''}`}>
                 {React.cloneElement(icon, { size: 20 })}
             </div>
             <input
@@ -204,19 +191,56 @@ const FloatingInput = ({ icon, label, type, value, onChange }: any) => {
                 onChange={(e) => onChange(e.target.value)}
                 onFocus={() => setFocused(true)}
                 onBlur={() => setFocused(false)}
-                className={`w-full bg-transparent border-b-2 py-2 pl-8 text-white font-bold focus:outline-none transition-colors ${focused ? 'border-[#F2A619]' : 'border-gray-700'
-                    }`}
+                className={`w-full bg-transparent border-b border-white/20 py-3 pl-8 text-white focus:outline-none focus:border-[#F2A619] transition-all duration-300 ${rightAlign ? 'text-right pr-8 pl-0' : ''}`}
+                placeholder=" "
             />
-            <label className={`absolute left-8 transition-all pointer-events-none font-medium ${focused || value ? '-top-5 text-xs text-[#F2A619]' : 'top-2 text-sm text-gray-500'
+            {/* If right align, icon should theoretically be on right, but keeping left for consistency unless strict req. 
+                Wait, user asked for icon inside, didn't specify side. "Underline style". Floating Label. */}
+            <label className={`absolute left-8 transition-all duration-300 pointer-events-none ${focused || value
+                    ? '-top-0 text-xs text-[#F2A619]'
+                    : 'top-3 text-gray-500'
                 }`}>
                 {label}
             </label>
         </div>
-    );
+    )
 }
 
-const SocialButton = ({ icon }: { icon: any }) => (
-    <button className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-white hover:bg-white hover:text-black hover:scale-110 transition-all shadow-lg">
+const NeonButton = ({ text, loading }: { text: string, loading: boolean }) => (
+    <button
+        type="submit"
+        disabled={loading}
+        className="group relative w-full h-12 bg-white/5 border border-white/10 rounded overflow-hidden transition-all duration-300 hover:border-[#F2A619] hover:bg-[#F2A619]/10"
+    >
+        <div className="absolute inset-0 flex items-center justify-center gap-2">
+            <span className={`font-black tracking-[0.2em] transition-all duration-300 ${loading ? 'opacity-50' : 'group-hover:text-[#F2A619] text-white'}`}>
+                {loading ? 'YÜKLENİYOR...' : text}
+            </span>
+            {!loading && <ArrowRight className="w-4 h-4 text-[#F2A619] transform -translate-x-2 opacity-0 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300" />}
+        </div>
+        {/* Bottom Neon Line */}
+        <div className="absolute bottom-0 left-0 w-full h-[2px] bg-[#F2A619] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left"></div>
+    </button>
+)
+
+const SocialDivider = ({ text }: { text: string }) => (
+    <div className="flex items-center gap-4 my-8 opacity-50">
+        <div className="h-px bg-white/20 flex-1"></div>
+        <span className="text-xs font-bold text-gray-500 uppercase tracking-widest whitespace-nowrap">{text}</span>
+        <div className="h-px bg-white/20 flex-1"></div>
+    </div>
+)
+
+const SocialRow = ({ center = true }: { center?: boolean }) => (
+    <div className={`flex gap-4 ${center ? 'justify-center' : 'justify-center'}`}>
+        <SocialIcon icon={<Chrome />} />
+        <SocialIcon icon={<Github />} />
+        <SocialIcon icon={<Twitter />} />
+    </div>
+)
+
+const SocialIcon = ({ icon }: { icon: any }) => (
+    <button type="button" className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-white/10 hover:border-[#F2A619] hover:text-[#F2A619] transition-all duration-300">
         {React.cloneElement(icon, { size: 18 })}
     </button>
-);
+)

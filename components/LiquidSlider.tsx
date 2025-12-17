@@ -1,37 +1,41 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
 
-// --- MOCK DATA ---
-const SLIDES = [
+import { sliderService } from '../services/sliderService';
+
+// --- FALLBACK DATA ---
+const FALLBACK_SLIDES = [
     {
         id: 1,
         title: "NITRO ASPHALT",
         subtitle: "The heat is rising.",
         image: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?q=80&w=1920&auto=format&fit=crop"
-    },
-    {
-        id: 2,
-        title: "MIDNIGHT RUN",
-        subtitle: "Own the darkness.",
-        image: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1920&auto=format&fit=crop"
-    },
-    {
-        id: 3,
-        title: "URBAN LEGEND",
-        subtitle: "Make your mark.",
-        image: "https://images.unsplash.com/photo-1609630875171-b1321377ee65?q=80&w=1920&auto=format&fit=crop"
-    },
-    {
-        id: 4,
-        title: "CARBON SOUL",
-        subtitle: "Lighter. Faster. Stronger.",
-        image: "https://images.unsplash.com/photo-1558981420-87aa9dad1c89?q=80&w=1920&auto=format&fit=crop"
     }
 ];
 
 export default function LiquidSlider() {
     const [index, setIndex] = useState(0);
     const [isAnimating, setIsAnimating] = useState(false);
+    const [slides, setSlides] = useState<any[]>(FALLBACK_SLIDES);
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    useEffect(() => {
+        const loadSlides = async () => {
+            try {
+                const data = await sliderService.getSlides();
+                if (data && data.length > 0) {
+                    setSlides(data);
+                }
+            } catch (error) {
+                console.error("Slider fetch error:", error);
+            } finally {
+                setIsLoaded(true);
+            }
+        };
+        loadSlides();
+    }, []);
+
+    const activeSlide = slides[index] || slides[0];
 
     // Motion Values for the Filter
     const distortion = useMotionValue(0);
@@ -56,8 +60,9 @@ export default function LiquidSlider() {
         // 1. MELT (Animate distortion up)
         await animate(distortion, 1, { duration: 0.6, ease: "easeInOut" }).finished;
 
-        // 2. SWAP content while distorted
-        setIndex((prev) => (prev + 1) % SLIDES.length);
+        if (slides.length > 0) {
+            setIndex((prev) => (prev + 1) % slides.length);
+        }
 
         // 3. SOLIDIFY (Animate distortion down)
         // Ensure the image loads/swaps before solidifying? 
@@ -69,6 +74,8 @@ export default function LiquidSlider() {
 
     // Auto-Play Logic
     useEffect(() => {
+        if (slides.length <= 1) return; // Don't auto-play if single slide
+
         const timer = setInterval(() => {
             if (!isAnimating) {
                 handleNext();
@@ -76,10 +83,9 @@ export default function LiquidSlider() {
         }, 5000);
 
         return () => clearInterval(timer);
-    }, [index, isAnimating]);
+    }, [index, isAnimating, slides.length]);
 
-    // Auto-advance optional, but user asked for 'Transition slider' implies interaction usually.
-    // Let's keep it manual swipe/click for "Drag to Explore" feel.
+    if (!isLoaded && slides.length === 0) return null; // Or loader
 
     return (
         <div className="relative w-full h-[80vh] min-h-[600px] overflow-hidden bg-black font-sans selection:bg-[#F2A619] selection:text-black">
@@ -112,7 +118,7 @@ export default function LiquidSlider() {
             <motion.div
                 className="absolute inset-0 w-full h-full bg-cover bg-center"
                 style={{
-                    backgroundImage: `url(${SLIDES[index].image})`,
+                    backgroundImage: `url(${activeSlide.image})`,
                     // We apply the filter here. 
                     // Important: Tailwind backdrop-filter utils won't work for SVG filters easily.
                     // We use inline style.
@@ -142,7 +148,7 @@ export default function LiquidSlider() {
                             filter: "blur(0px)"
                         }}
                     >
-                        {SLIDES[index].title}
+                        {activeSlide.title}
                     </motion.h1>
                 </div>
 
@@ -151,10 +157,10 @@ export default function LiquidSlider() {
                     className="mt-4 text-white/80 text-lg md:text-xl font-light tracking-[0.5em] uppercase mix-blend-difference"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    key={SLIDES[index].id} // Retrigger animation
+                    key={activeSlide.id || activeSlide._id || index} // Retrigger animation
                     transition={{ delay: 0.5, duration: 1 }}
                 >
-                    {SLIDES[index].subtitle}
+                    {activeSlide.subtitle}
                 </motion.p>
             </div>
 
@@ -165,7 +171,7 @@ export default function LiquidSlider() {
                     <motion.div
                         className="absolute top-0 left-0 h-full bg-[#F2A619] shadow-[0_0_10px_#F2A619]"
                         initial={{ width: "0%" }}
-                        animate={{ width: `${((index + 1) / SLIDES.length) * 100}%` }}
+                        animate={{ width: `${((index + 1) / slides.length) * 100}%` }}
                         transition={{ duration: 0.8, ease: "circOut" }}
                     />
                 </div>

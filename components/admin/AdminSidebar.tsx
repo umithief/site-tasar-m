@@ -1,8 +1,8 @@
 import React from 'react';
-import { LayoutDashboard, Package, ShoppingCart, Users, Grid, Map, Circle, MessageSquare, Image as ImageIcon, Box, Zap, Globe, LogOut } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users, Grid, Map, Circle, MessageSquare, Image as ImageIcon, Box, Zap, Globe, LogOut, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'slider' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models';
+type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'slider' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community';
 
 interface AdminSidebarProps {
     activeTab: AdminTab;
@@ -57,6 +57,8 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, setActive
                 <NavItem id="routes" label="Rotalar" icon={Map} active={activeTab === 'routes'} onClick={setActiveTab} />
                 <NavItem id="stories" label="Hikayeler" icon={Circle} active={activeTab === 'stories'} onClick={setActiveTab} />
                 <NavItem id="categories" label="Kategoriler" icon={Grid} active={activeTab === 'categories'} onClick={setActiveTab} />
+                <NavItem id="events" label="Etkinlikler" icon={Calendar} active={activeTab === 'events'} onClick={setActiveTab} />
+                <NavItem id="community" label="Topluluk" icon={MessageSquare} active={activeTab === 'community'} onClick={setActiveTab} />
                 <NavItem id="slider" label="Slider" icon={ImageIcon} active={activeTab === 'slider'} onClick={setActiveTab} />
                 <NavItem id="models" label="3D Modeller" icon={Box} active={activeTab === 'models'} onClick={setActiveTab} />
             </div>

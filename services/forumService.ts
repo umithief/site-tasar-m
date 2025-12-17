@@ -158,7 +158,19 @@ export const forumService = {
             }
         } else {
             await fetch(`${CONFIG.API_URL}/forum/${topicId}/like`, {
-                method: 'POST'
+                method: 'PUT'
+            });
+        }
+    },
+
+    async deleteTopic(id: string): Promise<void> {
+        if (CONFIG.USE_MOCK_API) {
+            const topics = getStorage<ForumTopic[]>(DB.FORUM_TOPICS, []);
+            const filtered = topics.filter(t => t._id !== id);
+            setStorage(DB.FORUM_TOPICS, filtered);
+        } else {
+            await fetch(`${CONFIG.API_URL}/forum/${id}`, {
+                method: 'DELETE'
             });
         }
     },

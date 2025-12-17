@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Search, Bell, RotateCcw, Plus, Edit2, X, MoreVertical, Zap, Check, Loader2, Image as ImageIcon } from 'lucide-react';
-import { Order, Product, ProductCategory, User, Slide, CategoryItem, Route, Story, NegotiationOffer, Model3DItem } from '../types';
+import { Order, Product, ProductCategory, User, Slide, CategoryItem, Route, Story, NegotiationOffer, Model3DItem, MeetupEvent, ForumTopic } from '../types';
 import { Button } from './ui/Button';
 import { AdminSidebar } from './admin/AdminSidebar';
 import { AdminDashboard } from './admin/AdminDashboard';
@@ -14,6 +14,8 @@ import { AdminOrders } from './admin/AdminOrders';
 import { AdminUsers } from './admin/AdminUsers';
 import { AdminNegotiations } from './admin/AdminNegotiations';
 import { AdminModels } from './admin/AdminModels';
+import { AdminEvents } from './admin/AdminEvents';
+import { AdminCommunity } from './admin/AdminCommunity';
 import { productService } from '../services/productService';
 import { sliderService } from '../services/sliderService';
 import { categoryService } from '../services/categoryService';
@@ -23,6 +25,8 @@ import { negotiationService } from '../services/negotiationService';
 import { orderService } from '../services/orderService';
 import { authService } from '../services/auth';
 import { modelService } from '../services/modelService';
+import { eventService } from '../services/eventService';
+import { forumService } from '../services/forumService';
 import { ToastType } from './Toast';
 import { CONFIG } from '../services/config';
 import { useLanguage } from '../contexts/LanguageProvider';
@@ -57,7 +61,7 @@ interface AdminPanelProps {
     onNavigate: (view: any) => void;
 }
 
-type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'slider' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models';
+type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'slider' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community';
 
 
 
@@ -75,6 +79,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
     const [stories, setStories] = useState<Story[]>([]);
     const [negotiations, setNegotiations] = useState<NegotiationOffer[]>([]);
     const [models, setModels] = useState<Model3DItem[]>([]);
+    const [events, setEvents] = useState<MeetupEvent[]>([]);
+    const [topics, setTopics] = useState<ForumTopic[]>([]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<any>(null);
@@ -104,7 +110,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
                 negotiationService.getOffers(),
                 orderService.getAllOrders(),
                 authService.getAllUsers(),
-                modelService.getModels()
+                modelService.getModels(),
+                eventService.getEvents(),
+                forumService.getTopics()
             ]);
 
             // Helper to safely get value or default
@@ -120,6 +128,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
             setOrders(getValue(results[6], []));
             setUsers(getValue(results[7], []));
             setModels(getValue(results[8], []));
+            setEvents(getValue(results[9], []));
+            setTopics(getValue(results[10], []));
 
             // Log any failures
             results.forEach((r, i) => {
@@ -162,6 +172,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
         else if (activeTab === 'slider') setFormData({ title: '', subtitle: '', image: '', cta: 'İNCELE', action: 'shop', type: 'image', videoUrl: '' });
         else if (activeTab === 'routes') setFormData({ title: '', location: '', difficulty: 'Orta', distance: '', duration: '', image: '', tags: [] });
         else if (activeTab === 'models') setFormData({ name: '', url: '', poster: '', category: 'Genel' });
+        else if (activeTab === 'events') setFormData({ title: '', type: 'night-ride', date: '', time: '', location: '', coordinates: { lat: 41, lng: 29 }, organizer: 'MotoVibe', attendees: 0, image: '', description: '' });
 
         setIsModalOpen(true);
     };
@@ -177,6 +188,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
             else if (activeTab === 'routes') { await routeService.deleteRoute(id); setRoutes(routes.filter(r => r._id !== id)); }
             else if (activeTab === 'users') { await authService.deleteUser(id); setUsers(users.filter(u => u._id !== id)); }
             else if (activeTab === 'models') { await modelService.deleteModel(id); setModels(models.filter(m => m._id !== id)); }
+            else if (activeTab === 'events') { await eventService.deleteEvent(id); setEvents(events.filter(e => e._id !== id)); }
+            else if (activeTab === 'community') { await forumService.deleteTopic(id); setTopics(topics.filter(t => t._id !== id)); }
 
             onShowToast('success', 'Kayıt silindi.');
         } catch (e) {
@@ -216,6 +229,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
             } else if (activeTab === 'models') {
                 if (editingItem) await modelService.updateModel(finalData);
                 else await modelService.addModel(finalData);
+            } else if (activeTab === 'events') {
+                if (editingItem) await eventService.updateEvent(finalData);
+                else await eventService.addEvent(finalData);
             }
 
             await loadAllData();
@@ -421,10 +437,27 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
                             />
                         )}
 
+
                         {activeTab === 'models' && (
                             <AdminModels
                                 models={models}
                                 handleAddNew={handleAddNew}
+                                handleDelete={handleDelete}
+                            />
+                        )}
+
+                        {activeTab === 'events' && (
+                            <AdminEvents
+                                events={events}
+                                handleAddNew={handleAddNew}
+                                handleEdit={handleEdit}
+                                handleDelete={handleDelete}
+                            />
+                        )}
+
+                        {activeTab === 'community' && (
+                            <AdminCommunity
+                                topics={topics}
                                 handleDelete={handleDelete}
                             />
                         )}
@@ -462,10 +495,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
                                 {/* DYNAMIC FORM BASED ON TAB */}
                                 {Object.keys(formData).map(key => {
                                     // Exclude complex objects or handled fields
-                                    if (['id', 'images', 'image', 'tempUrlInput', 'tempModelUrlInput', 'features', 'model3d', 'path', 'coordinates', 'tips', 'tags', 'attendeeList', 'messages'].includes(key)) return null;
+                                    if (['id', '_id', 'images', 'image', 'tempUrlInput', 'tempModelUrlInput', 'features', 'model3d', 'path', 'coordinates', 'tips', 'tags', 'attendeeList', 'messages', 'comments', 'views', 'likes', 'authorId', 'authorName', 'date'].includes(key)) return null;
 
                                     // Special inputs
-                                    if (key === 'description' || key === 'desc') return (
+                                    if (key === 'description' || key === 'desc' || key === 'content') return (
                                         <div key={key}>
                                             <label className="text-xs font-bold text-gray-500 uppercase mb-2 block">{key}</label>
                                             <textarea className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white focus:border-[#F2A619] outline-none h-32 resize-none" value={formData[key]} onChange={e => setFormData({ ...formData, [key]: e.target.value })} />
@@ -502,7 +535,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
                                 })}
 
                                 {/* Image Uploader Section */}
-                                {(activeTab === 'products' || activeTab === 'slider' || activeTab === 'stories' || activeTab === 'categories' || activeTab === 'routes') && (
+                                {(activeTab === 'products' || activeTab === 'slider' || activeTab === 'stories' || activeTab === 'categories' || activeTab === 'routes' || activeTab === 'events') && (
                                     <div className="bg-white/5 rounded-2xl p-5 border border-white/5 mt-4">
                                         <div className="flex justify-between items-center mb-4">
                                             <label className="text-xs font-bold text-gray-400 uppercase flex items-center gap-2"><ImageIcon className="w-4 h-4" /> Medya Yönetimi</label>
@@ -575,5 +608,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
                 )}
             </AnimatePresence>
         </div>
+    );
+};        </div >
     );
 };

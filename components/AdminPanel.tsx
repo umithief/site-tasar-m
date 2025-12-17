@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Search, Bell, RotateCcw, Plus, Edit2, X, MoreVertical, Zap, Check, Loader2, Image as ImageIcon } from 'lucide-react';
-import { Order, Product, ProductCategory, User, Slide, CategoryItem, Route, Story, NegotiationOffer, Model3DItem, MeetupEvent, ForumTopic } from '../types';
+import { Order, Product, ProductCategory, User, Slide, CategoryItem, Route, Story, NegotiationOffer, Model3DItem, MeetupEvent, ForumTopic, SocialPost } from '../types';
 import { Button } from './ui/Button';
 import { AdminSidebar } from './admin/AdminSidebar';
 import { AdminDashboard } from './admin/AdminDashboard';
@@ -16,6 +16,7 @@ import { AdminNegotiations } from './admin/AdminNegotiations';
 import { AdminModels } from './admin/AdminModels';
 import { AdminEvents } from './admin/AdminEvents';
 import { AdminCommunity } from './admin/AdminCommunity';
+import { AdminPaddock } from './admin/AdminPaddock';
 import { productService } from '../services/productService';
 import { sliderService } from '../services/sliderService';
 import { categoryService } from '../services/categoryService';
@@ -61,7 +62,7 @@ interface AdminPanelProps {
     onNavigate: (view: any) => void;
 }
 
-type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'slider' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community';
+type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'slider' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community' | 'paddock';
 
 
 
@@ -81,6 +82,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
     const [models, setModels] = useState<Model3DItem[]>([]);
     const [events, setEvents] = useState<MeetupEvent[]>([]);
     const [topics, setTopics] = useState<ForumTopic[]>([]);
+    const [paddockPosts, setPaddockPosts] = useState<SocialPost[]>([]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<any>(null);
@@ -112,7 +114,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
                 authService.getAllUsers(),
                 modelService.getModels(),
                 eventService.getEvents(),
-                forumService.getTopics()
+                forumService.getTopics(),
+                forumService.getFeed()
             ]);
 
             // Helper to safely get value or default
@@ -130,6 +133,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
             setModels(getValue(results[8], []));
             setEvents(getValue(results[9], []));
             setTopics(getValue(results[10], []));
+            setPaddockPosts(getValue(results[11], []));
 
             // Log any failures
             results.forEach((r, i) => {
@@ -190,6 +194,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
             else if (activeTab === 'models') { await modelService.deleteModel(id); setModels(models.filter(m => m._id !== id)); }
             else if (activeTab === 'events') { await eventService.deleteEvent(id); setEvents(events.filter(e => e._id !== id)); }
             else if (activeTab === 'community') { await forumService.deleteTopic(id); setTopics(topics.filter(t => t._id !== id)); }
+            else if (activeTab === 'paddock') { await forumService.deleteSocialPost(id); setPaddockPosts(paddockPosts.filter(p => p._id !== id)); }
 
             onShowToast('success', 'Kayıt silindi.');
         } catch (e) {

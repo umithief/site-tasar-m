@@ -20,6 +20,7 @@ import modelRoutes from './routes/modelRoutes.js';
 import stolenRoutes from './routes/stolenRoutes.js';
 import negotiationRoutes from './routes/negotiationRoutes.js';
 import feedbackRoutes from './routes/feedbackRoutes.js';
+import socialRoutes from './routes/socialRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -187,6 +188,20 @@ const forumTopicSchema = new mongoose.Schema({
 }, { versionKey: false });
 
 const ForumTopic = mongoose.models.ForumTopic || mongoose.model('ForumTopic', forumTopicSchema);
+
+const socialPostSchema = new mongoose.Schema({
+    userId: String,
+    userName: String,
+    userAvatar: String,
+    content: String,
+    image: String,
+    likes: { type: Number, default: 0 },
+    comments: { type: Number, default: 0 },
+    timestamp: { type: String, default: 'Şimdi' },
+    isLiked: { type: Boolean, default: false }
+}, { versionKey: false });
+
+const SocialPost = mongoose.models.SocialPost || mongoose.model('SocialPost', socialPostSchema);
 
 const musicSchema = new mongoose.Schema({
     title: String,
@@ -378,6 +393,7 @@ app.use('/api/events', eventRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/forum', forumRoutes);
+app.use('/api/social', socialRoutes);
 
 app.use('/api/music', musicRoutes);
 app.use('/api/models', modelRoutes);

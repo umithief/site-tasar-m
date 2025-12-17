@@ -178,43 +178,80 @@ export const forumService = {
     // --- SOCIAL FEED METHODS (New) ---
 
     async getFeed(): Promise<SocialPost[]> {
-        // In a real app, this would fetch from backend. Here we return mock + local storage
         if (CONFIG.USE_MOCK_API) {
             await delay(400);
             const localPosts = getStorage<SocialPost[]>('mv_social_feed', []);
             return [...localPosts, ...MOCK_FEED]; // Merge new local posts with mock
+        } else {
+            // REAL BACKEND
+            try {
+                const response = await fetch(`${CONFIG.API_URL}/social`);
+                if (!response.ok) return MOCK_FEED;
+                return await response.json();
+            } catch {
+                return MOCK_FEED;
+            }
         }
-        return MOCK_FEED;
     },
 
     async createSocialPost(user: User, content: string, image?: string): Promise<SocialPost> {
-        const newPost: SocialPost = {
-            _id: `post_${Date.now()}`,
-            userId: user._id,
-            userName: user.name,
-            content,
-            image,
-            likes: 0,
-            comments: 0,
-            timestamp: 'Şimdi',
-            isLiked: false
-        };
-
         if (CONFIG.USE_MOCK_API) {
             await delay(600);
+            const newPost: SocialPost = {
+                _id: `post_${Date.now()}`,
+                userId: user._id,
+                userName: user.name,
+                content,
+                image,
+                likes: 0,
+                comments: 0,
+                timestamp: 'Şimdi',
+                isLiked: false
+            };
             const localPosts = getStorage<SocialPost[]>('mv_social_feed', []);
             localPosts.unshift(newPost);
             setStorage('mv_social_feed', localPosts);
 
             await gamificationService.addPoints(user._id, 15, 'Sosyal Paylaşım');
             return newPost;
+        } else {
+            // REAL BACKEND
+            const newPost = {
+                userId: user._id,
+                userName: user.name,
+                content,
+                image
+            };
+
+            const response = await fetch(`${CONFIG.API_URL}/social`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newPost)
+            });
+            await gamificationService.addPoints(user._id, 15, 'Sosyal Paylaşım');
+            return await response.json();
         }
-        // Placeholder for real backend
-        return newPost;
     },
 
     async likeSocialPost(postId: string): Promise<void> {
-        // Simple mock logic
-        return;
+        if (CONFIG.USE_MOCK_API) {
+            return;
+        } else {
+            await fetch(`${CONFIG.API_URL}/social/${postId}/like`, {
+                method: 'PUT'
+            });
+        }
+    },
+
+    async deleteSocialPost(postId: string): Promise<void> {
+        if (CONFIG.USE_MOCK_API) {
+            const localPosts = getStorage<SocialPost[]>('mv_social_feed', []);
+            const filtered = localPosts.filter(p => p._id !== postId);
+            setStorage('mv_social_feed', filtered);
+        } else {
+            await fetch(`${CONFIG.API_URL}/social/${postId}`, {
+                method: 'DELETE'
+            });
+        }
     }
 };

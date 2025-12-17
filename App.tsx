@@ -48,6 +48,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useLivingTime } from './hooks/useLivingTime';
 
 // Import Components
+import { Home } from './components/Home';
 import { AuthPage } from './components/AuthPage';
 import { Shop } from './components/Shop';
 import { Favorites } from './components/Favorites';
@@ -64,7 +65,7 @@ export const App: React.FC = () => {
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
     const [initialShopCategory, setInitialShopCategory] = useState<ProductCategory | 'ALL'>('ALL');
 
-    const [favoriteIds, setFavoriteIds] = useState<number[]>([]);
+    const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
     const [compareList, setCompareList] = useState<Product[]>([]);
     const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
 
@@ -188,7 +189,7 @@ export const App: React.FC = () => {
 
         const trackSession = () => {
             const duration = Math.round((Date.now() - sessionStartTime.current) / 1000);
-            if (duration > 0) statsService.trackEvent('session_duration', { duration, userId: userRef.current?.id });
+            if (duration > 0) statsService.trackEvent('session_duration', { duration, userId: userRef.current?._id });
             recordingService.stop();
         };
         const handleScroll = () => setShowScrollTop(window.scrollY > 400);
@@ -246,20 +247,20 @@ export const App: React.FC = () => {
         }
 
         setCartItems(prev => {
-            const existing = prev.find(item => item.id === product.id);
+            const existing = prev.find(item => item._id === product._id);
             if (existing) {
-                return prev.map(item => item.id === product.id ? { ...item, quantity: item.quantity + 1 } : item);
+                return prev.map(item => item._id === product._id ? { ...item, quantity: item.quantity + 1 } : item);
             }
             return [...prev, { ...product, quantity: 1 }];
         });
 
-        statsService.trackEvent('add_to_cart', { productId: product.id, productName: product.name, userId: user?.id });
+        statsService.trackEvent('add_to_cart', { productId: product._id, productName: product.name, userId: user?._id });
         addToast('success', 'Ürün sepete eklendi');
     };
 
-    const updateQuantity = (id: number, delta: number) => {
+    const updateQuantity = (id: string, delta: number) => {
         setCartItems(prev => prev.map(item => {
-            if (item.id === id) {
+            if (item._id === id) {
                 const newQuantity = Math.max(0, item.quantity + delta);
                 return { ...item, quantity: newQuantity };
             }
@@ -269,18 +270,18 @@ export const App: React.FC = () => {
 
     const toggleFavorite = (product: Product) => {
         setFavoriteIds(prev => {
-            const newIds = prev.includes(product.id) ? prev.filter(id => id !== product.id) : [...prev, product.id];
+            const newIds = prev.includes(product._id) ? prev.filter(id => id !== product._id) : [...prev, product._id];
             localStorage.setItem('mv_favorites', JSON.stringify(newIds));
             return newIds;
         });
-        addToast('info', favoriteIds.includes(product.id) ? 'Favorilerden çıkarıldı' : 'Favorilere eklendi');
+        addToast('info', favoriteIds.includes(product._id) ? 'Favorilerden çıkarıldı' : 'Favorilere eklendi');
     };
 
     const toggleCompare = (product: Product) => {
         setCompareList(prev => {
-            const exists = prev.find(p => p.id === product.id);
+            const exists = prev.find(p => p._id === product._id);
             if (exists) {
-                return prev.filter(p => p.id !== product.id);
+                return prev.filter(p => p._id !== product._id);
             } else {
                 if (prev.length >= 3) {
                     addToast('info', 'En fazla 3 ürün karşılaştırabilirsiniz.');
@@ -300,7 +301,7 @@ export const App: React.FC = () => {
         }
         setIsCartOpen(false);
         setIsPaymentOpen(true);
-        statsService.trackEvent('checkout_start', { userId: user.id });
+        statsService.trackEvent('checkout_start', { userId: user._id });
     };
 
     const handlePaymentComplete = async () => {
@@ -323,7 +324,7 @@ export const App: React.FC = () => {
     };
 
     const handleViewProfile = async (userId: string) => {
-        if (user && user.id === userId) {
+        if (user && user._id === userId) {
             navigateTo('profile');
             return;
         }
@@ -349,7 +350,7 @@ export const App: React.FC = () => {
                     navigateTo('home');
                 }
             }} />;
-            case 'product-detail': return <ProductDetail product={selectedProduct} allProducts={products} onAddToCart={addToCart} onNavigate={navigateTo} onProductClick={(p) => navigateTo('product-detail', p)} onCompare={toggleCompare} isCompared={compareList.some(p => p.id === selectedProduct?.id)} />;
+            case 'product-detail': return <ProductDetail product={selectedProduct} allProducts={products} onAddToCart={addToCart} onNavigate={navigateTo} onProductClick={(p) => navigateTo('product-detail', p)} onCompare={toggleCompare} isCompared={compareList.some(p => p._id === selectedProduct?._id)} />;
             case 'favorites': return <Favorites products={products} favoriteIds={favoriteIds} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onNavigate={navigateTo} />;
             case 'routes': return <RouteExplorer user={user} onOpenAuth={() => setIsAuthOpen(true)} onStartRide={handleStartRide} />;
             case 'meetup': return <MotoMeetup user={user} onOpenAuth={() => setIsAuthOpen(true)} onNavigate={navigateTo} />;
@@ -361,7 +362,7 @@ export const App: React.FC = () => {
             case 'vlog-map': return <MotoVlogMap onNavigate={navigateTo} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} />;
             case 'lifesaver': return <LifeSaver onClose={() => navigateTo('home')} />;
             case 'profile': return user ? <UserProfile user={user} onLogout={() => { authService.logout(); setUser(null); navigateTo('home'); }} onUpdateUser={setUser} onNavigate={navigateTo} colorTheme={colorTheme} onColorChange={setColorTheme} /> : <div className="pt-32 text-center text-gray-500">Lütfen giriş yapın.</div>;
-            case 'public-profile': return viewingUser ? <PublicProfile user={viewingUser} onBack={() => navigateTo('riders')} currentUserId={user?.id} /> : <div className="pt-32 text-center text-gray-500">Kullanıcı yüklenemedi.</div>;
+            case 'public-profile': return viewingUser ? <PublicProfile user={viewingUser} onBack={() => navigateTo('riders')} currentUserId={user?._id} /> : <div className="pt-32 text-center text-gray-500">Kullanıcı yüklenemedi.</div>;
             case 'admin': return user?.isAdmin ? <AdminPanel onLogout={() => { authService.logout(); setUser(null); navigateTo('home'); }} onShowToast={addToast} onNavigate={navigateTo} /> : <div className="pt-32 text-center text-gray-500">Yetkisiz erişim.</div>;
             case 'blog': return <Blog onNavigate={navigateTo} />;
             case 'about': return <About onNavigate={navigateTo} />;
@@ -416,7 +417,7 @@ export const App: React.FC = () => {
                 onClose={() => setIsCartOpen(false)}
                 items={cartItems}
                 onUpdateQuantity={updateQuantity}
-                onRemoveItem={(id) => setCartItems(prev => prev.filter(item => item.id !== id))}
+                onRemoveItem={(id) => setCartItems(prev => prev.filter(item => item._id !== id))}
                 onCheckout={handleCheckout}
                 user={user}
             />
@@ -489,7 +490,7 @@ export const App: React.FC = () => {
                 {compareList.length > 0 && (
                     <CompareBar
                         items={compareList}
-                        onRemove={(id) => setCompareList(prev => prev.filter(p => p.id !== id))}
+                        onRemove={(id) => setCompareList(prev => prev.filter(p => p._id !== id))}
                         onCompare={() => setIsCompareModalOpen(true)}
                         onClear={() => setCompareList([])}
                     />

@@ -67,6 +67,17 @@ export default function LiquidSlider() {
         setIsAnimating(false);
     };
 
+    // Auto-Play Logic
+    useEffect(() => {
+        const timer = setInterval(() => {
+            if (!isAnimating) {
+                handleNext();
+            }
+        }, 5000);
+
+        return () => clearInterval(timer);
+    }, [index, isAnimating]);
+
     // Auto-advance optional, but user asked for 'Transition slider' implies interaction usually.
     // Let's keep it manual swipe/click for "Drag to Explore" feel.
 

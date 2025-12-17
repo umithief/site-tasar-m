@@ -1,26 +1,12 @@
-
 // Bu dosya uygulamanın nerede çalıştığını (Local vs Canlı) otomatik algılar.
 
-const getEnv = () => {
-    try {
-        // @ts-ignore
-        return (import.meta && import.meta.env) ? import.meta.env : {};
-    } catch {
-        return {};
-    }
-};
+// Canlı API URL'i
+export const API_URL = 'https://motovibe-api.onrender.com/api';
 
-const env = getEnv();
-
-// LocalStorage'dan ayarı oku, yoksa varsayılan olarak TRUE (Mock) yap.
-const getMockSetting = () => {
-    const stored = localStorage.getItem('mv_use_mock_api');
-    return stored !== null ? JSON.parse(stored) : false;
-};
-
+// Config nesnesi
 export const CONFIG = {
-    USE_MOCK_API: false, // getMockSetting(), // FORCED LIVE MODE
-    API_URL: env.VITE_API_URL || 'https://motovibe-api.onrender.com/api',
+    USE_MOCK_API: false, // LIVE MODE ZORUNLU
+    API_URL: API_URL,
 
     // Modu değiştir ve sayfayı yenile
     toggleApiMode: (useMock: boolean) => {
@@ -28,3 +14,8 @@ export const CONFIG = {
         window.location.reload();
     }
 };
+
+console.log('🔌 [Config] Initialized:', {
+    mode: CONFIG.USE_MOCK_API ? 'MOCK' : 'LIVE',
+    url: CONFIG.API_URL
+});

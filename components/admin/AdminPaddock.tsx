@@ -14,7 +14,7 @@ export const AdminPaddock: React.FC<AdminPaddockProps> = ({ posts, handleDelete 
             <div className="flex justify-between items-center mb-6">
                 <div>
                     <h2 className="text-2xl font-bold text-white">Yarış Paddock (Sosyal Akış)</h2>
-                    <p className="text-gray-400 text-sm">Üye paylaşımlarını yönet</p>
+                    <p className="text-gray-400 text-sm">Üye paylaşımlarını yönet (Toplam: {posts.length})</p>
                 </div>
             </div>
 

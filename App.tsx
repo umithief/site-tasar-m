@@ -295,8 +295,7 @@ export const App: React.FC = () => {
     const handleCheckout = async () => {
         if (!user) {
             setIsCartOpen(false);
-            setAuthMode('login');
-            setIsAuthOpen(true);
+            navigateTo('auth');
             return;
         }
         setIsCartOpen(false);
@@ -352,8 +351,8 @@ export const App: React.FC = () => {
             }} />;
             case 'product-detail': return <ProductDetail product={selectedProduct} allProducts={products} onAddToCart={addToCart} onNavigate={navigateTo} onProductClick={(p) => navigateTo('product-detail', p)} onCompare={toggleCompare} isCompared={compareList.some(p => p._id === selectedProduct?._id)} />;
             case 'favorites': return <Favorites products={products} favoriteIds={favoriteIds} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onNavigate={navigateTo} />;
-            case 'routes': return <RouteExplorer user={user} onOpenAuth={() => setIsAuthOpen(true)} onStartRide={handleStartRide} />;
-            case 'meetup': return <MotoMeetup user={user} onOpenAuth={() => setIsAuthOpen(true)} onNavigate={navigateTo} />;
+            case 'routes': return <RouteExplorer user={user} onOpenAuth={() => navigateTo('auth')} onStartRide={handleStartRide} />;
+            case 'meetup': return <MotoMeetup user={user} onOpenAuth={() => navigateTo('auth')} onNavigate={navigateTo} />;
             case 'service-finder': return <ServiceFinder onNavigate={navigateTo} />;
             case 'ride-mode': return <RideMode route={activeRoute} onNavigate={navigateTo} />;
             case 'mototool': return <MotoTool onNavigate={navigateTo} />;
@@ -367,7 +366,7 @@ export const App: React.FC = () => {
             case 'blog': return <Blog onNavigate={navigateTo} />;
             case 'about': return <About onNavigate={navigateTo} />;
             case 'ai-assistant': return <AIAssistantPage />;
-            case 'forum': return <Forum user={user} onOpenAuth={() => setIsAuthOpen(true)} onViewProfile={handleViewProfile} onOpenPro={() => setIsProModalOpen(true)} />;
+            case 'forum': return <Forum user={user} onOpenAuth={() => navigateTo('auth')} onViewProfile={handleViewProfile} onOpenPro={() => setIsProModalOpen(true)} />;
             case 'riders': return <RidersDirectory onViewProfile={handleViewProfile} onNavigate={navigateTo} />;
             default: return <Home products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
         }
@@ -447,7 +446,7 @@ export const App: React.FC = () => {
                         onFavoritesClick={() => navigateTo('favorites')}
                         onSearch={() => navigateTo('shop')}
                         user={user}
-                        onOpenAuth={() => setIsAuthOpen(true)}
+                        onOpenAuth={() => navigateTo('auth')}
                         onLogout={() => { authService.logout(); setUser(null); }}
                         onNavigate={navigateTo}
                         currentView={view}
@@ -462,7 +461,7 @@ export const App: React.FC = () => {
                         isOpen={isMobileMenuOpen}
                         onClose={() => setIsMobileMenuOpen(false)}
                         user={user}
-                        onOpenAuth={() => setIsAuthOpen(true)}
+                        onOpenAuth={() => navigateTo('auth')}
                         onOpenFeedback={() => setIsFeedbackOpen(true)}
                         onToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                         onOpenThemeModal={() => setIsThemeModalOpen(true)}

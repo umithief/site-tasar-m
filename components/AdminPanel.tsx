@@ -609,6 +609,4 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
             </AnimatePresence>
         </div>
     );
-};        </div >
-    );
 };

@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Mail, Lock, User, ArrowRight, Github, Twitter, Chrome } from 'lucide-react';
 import { authService } from '../services/auth';
-import { playSuccess } from '../utils/sound';
+import { useAppSounds } from '../hooks/useAppSounds';
 
 export const AuthPage = ({ onLoginSuccess, onNavigate }: { onLoginSuccess?: () => void, onNavigate?: (view: any) => void }) => {
+    const { playSuccess } = useAppSounds();
     // State: true = Login View (Overlay on Right), false = Signup View (Overlay on Left)
     const [isLoginView, setIsLoginView] = useState(true);
 

@@ -30,29 +30,29 @@ export const gamificationService = {
         // Mock Implementation for Local Storage
         if (CONFIG.USE_MOCK_API) {
             const users = getStorage<User[]>(DB.USERS, []);
-            const userIndex = users.findIndex(u => u.id === userId);
-            
+            const userIndex = users.findIndex(u => u._id === userId);
+
             if (userIndex !== -1) {
                 const user = users[userIndex];
                 const oldRank = user.rank || 'Scooter Çırağı';
-                
+
                 user.points = (user.points || 0) + amount;
                 user.rank = this.calculateRank(user.points);
-                
+
                 users[userIndex] = user;
                 setStorage(DB.USERS, users);
-                
+
                 // Update Session if it's the current user
                 const sessionUser = sessionStorage.getItem(DB.SESSION);
                 const localSessionUser = localStorage.getItem(DB.SESSION);
-                
+
                 if (sessionUser) {
                     const sUser = JSON.parse(sessionUser);
-                    if (sUser.id === userId) sessionStorage.setItem(DB.SESSION, JSON.stringify(user));
+                    if (sUser._id === userId) sessionStorage.setItem(DB.SESSION, JSON.stringify(user));
                 }
                 if (localSessionUser) {
                     const lUser = JSON.parse(localSessionUser);
-                    if (lUser.id === userId) localStorage.setItem(DB.SESSION, JSON.stringify(user));
+                    if (lUser._id === userId) localStorage.setItem(DB.SESSION, JSON.stringify(user));
                 }
 
                 // Notify User
@@ -74,18 +74,26 @@ export const gamificationService = {
                 window.dispatchEvent(new Event('user-points-updated'));
             }
         } else {
-            // REAL BACKEND implementation placeholder
-            // await fetch(`${CONFIG.API_URL}/users/${userId}/points`, { method: 'POST', body: JSON.stringify({ amount, reason }) });
+            // REAL BACKEND implementation
+            try {
+                await fetch(`${CONFIG.API_URL}/users/${userId}/points`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ amount, reason })
+                });
+            } catch (e) {
+                console.error("Points update failed", e);
+            }
         }
     },
 
     checkDailyLogin: async (user: User) => {
         const today = new Date().toLocaleDateString('tr-TR');
-        const lastLoginKey = `mv_last_login_${user.id}`;
+        const lastLoginKey = `mv_last_login_${user._id}`;
         const lastLogin = localStorage.getItem(lastLoginKey);
 
         if (lastLogin !== today) {
-            await gamificationService.addPoints(user.id, POINTS.DAILY_LOGIN, 'Günlük Giriş Bonusu');
+            await gamificationService.addPoints(user._id, POINTS.DAILY_LOGIN, 'Günlük Giriş Bonusu');
             localStorage.setItem(lastLoginKey, today);
         }
     }

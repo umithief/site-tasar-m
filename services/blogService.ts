@@ -1,6 +1,7 @@
 
 import { BlogPost } from '../types';
 import { delay } from './db';
+import { CONFIG } from './config';
 
 const BLOG_POSTS: BlogPost[] = [
     {
@@ -103,12 +104,22 @@ const BLOG_POSTS: BlogPost[] = [
 
 export const blogService = {
     async getPosts(category: string = 'all'): Promise<BlogPost[]> {
-        await delay(600); // Gerçekçilik için gecikme
+        if (CONFIG.USE_MOCK_API) {
+            await delay(600);
+            if (category === 'all') return BLOG_POSTS;
+            return BLOG_POSTS.filter(post => post.category === category);
+        } else {
+            // REAL BACKEND
+            try {
+                const response = await fetch(`${CONFIG.API_URL}/posts`);
+                if (!response.ok) return BLOG_POSTS;
+                const posts: BlogPost[] = await response.json();
 
-        if (category === 'all') {
-            return BLOG_POSTS;
+                if (category === 'all') return posts;
+                return posts.filter(post => post.category === category);
+            } catch {
+                return BLOG_POSTS;
+            }
         }
-
-        return BLOG_POSTS.filter(post => post.category === category);
     }
 };

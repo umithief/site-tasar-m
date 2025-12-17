@@ -24,13 +24,13 @@ export const negotiationService = {
     // Kullanıcı teklif gönderir
     async submitOffer(product: Product, offerPrice: number, user: User): Promise<NegotiationOffer> {
         const newOffer: NegotiationOffer = {
-            id: `neg_${Date.now()}`,
-            productId: product.id,
+            _id: `neg_${Date.now()}`,
+            productId: Number(product._id) || 0, // Fallback if conversion fails
             productName: product.name,
             productImage: product.image,
             originalPrice: product.price,
             offerPrice: offerPrice,
-            userId: user.id,
+            userId: user._id,
             userName: user.name,
             status: 'pending',
             date: new Date().toLocaleDateString('tr-TR')
@@ -64,7 +64,7 @@ export const negotiationService = {
         if (CONFIG.USE_MOCK_API) {
             await delay(500);
             const offers = getStorage<NegotiationOffer[]>(DB.NEGOTIATIONS, []);
-            const index = offers.findIndex(o => o.id === id);
+            const index = offers.findIndex(o => o._id === id);
             if (index !== -1) {
                 offers[index].status = status;
                 setStorage(DB.NEGOTIATIONS, offers);

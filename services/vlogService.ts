@@ -78,27 +78,39 @@ export const vlogService = {
             }
             return storedVlogs;
         } else {
-            // Placeholder for Real Backend
-            return MOCK_VLOGS;
+            // REAL BACKEND
+            try {
+                const response = await fetch(`${CONFIG.API_URL}/vlogs`);
+                if (!response.ok) return MOCK_VLOGS;
+                return await response.json();
+            } catch (error) {
+                console.error('Error fetching vlogs:', error);
+                return MOCK_VLOGS;
+            }
         }
     },
 
     async addVlog(vlog: Omit<MotoVlog, '_id' | 'views'>): Promise<MotoVlog> {
-        const newVlog: MotoVlog = {
-            ...vlog,
-            _id: `vlog_${Date.now()}`,
-            views: '0',
-        };
-
         if (CONFIG.USE_MOCK_API) {
             await delay(1000);
+            const newVlog: MotoVlog = {
+                ...vlog,
+                _id: `vlog_${Date.now()}`,
+                views: '0',
+            };
             const vlogs = getStorage<MotoVlog[]>(DB_KEY_VLOGS, []);
             vlogs.unshift(newVlog);
             setStorage(DB_KEY_VLOGS, vlogs);
             return newVlog;
         } else {
-            // Placeholder for Real Backend
-            return newVlog; // In real implementation this would post to API
+            // REAL BACKEND
+            const response = await fetch(`${CONFIG.API_URL}/vlogs`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(vlog)
+            });
+            if (!response.ok) throw new Error('Vlog eklenemedi');
+            return await response.json();
         }
     }
 };

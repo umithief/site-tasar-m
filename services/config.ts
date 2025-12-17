@@ -19,7 +19,7 @@ const getMockSetting = () => {
 };
 
 export const CONFIG = {
-    USE_MOCK_API: getMockSetting(),
+    USE_MOCK_API: false, // getMockSetting(), // FORCED LIVE MODE
     API_URL: env.VITE_API_URL || 'https://motovibe-api.onrender.com/api',
 
     // Modu değiştir ve sayfayı yenile

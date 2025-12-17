@@ -7,8 +7,8 @@ import { gamificationService, POINTS } from './gamificationService';
 export const feedbackService = {
     async submitFeedback(user: User | null, type: Feedback['type'], rating: number, message: string): Promise<void> {
         const newFeedback: Feedback = {
-            id: `fb_${Date.now()}`,
-            userId: user?.id || 'anonymous',
+            _id: `fb_${Date.now()}`,
+            userId: user?._id || 'anonymous',
             userName: user?.name || 'Misafir',
             type,
             rating,
@@ -25,7 +25,7 @@ export const feedbackService = {
 
             // Reward registered users
             if (user) {
-                await gamificationService.addPoints(user.id, 25, 'Geri Bildirim Ödülü');
+                await gamificationService.addPoints(user._id, 25, 'Geri Bildirim Ödülü');
             }
         } else {
             // REAL BACKEND
@@ -36,7 +36,7 @@ export const feedbackService = {
             });
 
             if (user) {
-                await gamificationService.addPoints(user.id, 25, 'Geri Bildirim Ödülü');
+                await gamificationService.addPoints(user._id, 25, 'Geri Bildirim Ödülü');
             }
         }
     },

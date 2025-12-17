@@ -199,7 +199,7 @@ const socialPostSchema = new mongoose.Schema({
     comments: { type: Number, default: 0 },
     timestamp: { type: String, default: 'Şimdi' },
     isLiked: { type: Boolean, default: false }
-}, { versionKey: false });
+}, { versionKey: false, collection: 'socialposts' });
 
 const SocialPost = mongoose.models.SocialPost || mongoose.model('SocialPost', socialPostSchema);
 

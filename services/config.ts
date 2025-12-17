@@ -1,7 +1,9 @@
 // Bu dosya uygulamanın nerede çalıştığını (Local vs Canlı) otomatik algılar.
 
-// Canlı API URL'i
-export const API_URL = 'https://motovibe-api.onrender.com/api';
+// Canlı API URL'i (Otomatik algılama: Localhost ise 5000, değilse Render)
+export const API_URL = (typeof window !== 'undefined' && window.location.hostname === 'localhost')
+    ? 'http://localhost:5000/api'
+    : 'https://motovibe-api.onrender.com/api';
 
 // Config nesnesi
 export const CONFIG = {

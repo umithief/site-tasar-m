@@ -48,7 +48,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { useLivingTime } from './hooks/useLivingTime';
 
 // Import Components
-import { Home } from './components/Home';
+import { AuthPage } from './components/AuthPage';
 import { Shop } from './components/Shop';
 import { Favorites } from './components/Favorites';
 import { AIAssistantPage } from './components/AIAssistantPage';
@@ -341,6 +341,14 @@ export const App: React.FC = () => {
         switch (view) {
             case 'home': return <Home products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
             case 'shop': return <Shop products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} initialCategory={initialShopCategory} />;
+            case 'auth': return <AuthPage onNavigate={navigateTo} onLoginSuccess={async () => {
+                const u = await authService.getCurrentUser();
+                if (u) {
+                    setUser(u);
+                    addToast('success', `Hoş geldin, ${u.name}`);
+                    navigateTo('home');
+                }
+            }} />;
             case 'product-detail': return <ProductDetail product={selectedProduct} allProducts={products} onAddToCart={addToCart} onNavigate={navigateTo} onProductClick={(p) => navigateTo('product-detail', p)} onCompare={toggleCompare} isCompared={compareList.some(p => p.id === selectedProduct?.id)} />;
             case 'favorites': return <Favorites products={products} favoriteIds={favoriteIds} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onNavigate={navigateTo} />;
             case 'routes': return <RouteExplorer user={user} onOpenAuth={() => setIsAuthOpen(true)} onStartRide={handleStartRide} />;

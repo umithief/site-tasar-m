@@ -170,13 +170,13 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
         if (!confirm('Bu kaydı silmek istediğine emin misin?')) return;
 
         try {
-            if (activeTab === 'products') { await productService.deleteProduct(id); setProducts(products.filter(p => p.id !== id)); }
-            else if (activeTab === 'stories') { await storyService.deleteStory(id); setStories(stories.filter(s => s.id !== id)); }
-            else if (activeTab === 'categories') { await categoryService.deleteCategory(id); setCategories(categories.filter(c => c.id !== id)); }
-            else if (activeTab === 'slider') { await sliderService.deleteSlide(id); setSlides(slides.filter(s => s.id !== id)); }
-            else if (activeTab === 'routes') { await routeService.deleteRoute(id); setRoutes(routes.filter(r => r.id !== id)); }
-            else if (activeTab === 'users') { await authService.deleteUser(id); setUsers(users.filter(u => u.id !== id)); }
-            else if (activeTab === 'models') { await modelService.deleteModel(id); setModels(models.filter(m => m.id !== id)); }
+            if (activeTab === 'products') { await productService.deleteProduct(id); setProducts(products.filter(p => p._id !== id)); }
+            else if (activeTab === 'stories') { await storyService.deleteStory(id); setStories(stories.filter(s => s._id !== id)); }
+            else if (activeTab === 'categories') { await categoryService.deleteCategory(id); setCategories(categories.filter(c => c._id !== id)); }
+            else if (activeTab === 'slider') { await sliderService.deleteSlide(id); setSlides(slides.filter(s => s._id !== id)); }
+            else if (activeTab === 'routes') { await routeService.deleteRoute(id); setRoutes(routes.filter(r => r._id !== id)); }
+            else if (activeTab === 'users') { await authService.deleteUser(id); setUsers(users.filter(u => u._id !== id)); }
+            else if (activeTab === 'models') { await modelService.deleteModel(id); setModels(models.filter(m => m._id !== id)); }
 
             onShowToast('success', 'Kayıt silindi.');
         } catch (e) {
@@ -260,7 +260,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
         try {
             const updatedProduct = { ...product, [field]: !product[field] };
             await productService.updateProduct(updatedProduct);
-            setProducts(products.map(p => p.id === product.id ? updatedProduct : p));
+            setProducts(products.map(p => p._id === product._id ? updatedProduct : p));
             onShowToast('success', 'Durum güncellendi.');
         } catch (e) { onShowToast('error', 'Hata oluştu.'); }
     };
@@ -268,7 +268,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
     const handleOrderStatusChange = async (orderId: string, newStatus: string) => {
         try {
             await orderService.updateOrderStatus(orderId, newStatus);
-            setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: newStatus as any } : o));
+            setOrders(prev => prev.map(o => o._id === orderId ? { ...o, status: newStatus as any } : o));
             onShowToast('success', 'Sipariş durumu güncellendi');
         } catch (e) { onShowToast('error', 'Hata oluştu'); }
     };
@@ -276,7 +276,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
     const handleNegotiationAction = async (id: string, status: 'accepted' | 'rejected') => {
         try {
             await negotiationService.updateOfferStatus(id, status);
-            setNegotiations(prev => prev.map(n => n.id === id ? { ...n, status } : n));
+            setNegotiations(prev => prev.map(n => n._id === id ? { ...n, status } : n));
             onShowToast('success', `Teklif ${status === 'accepted' ? 'onaylandı' : 'reddedildi'}`);
         } catch (e) { onShowToast('error', 'Hata oluştu'); }
     };

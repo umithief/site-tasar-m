@@ -5,7 +5,8 @@ import { logService } from './logService';
 import { v4 as uuidv4 } from 'uuid';
 
 export const authService = {
-    async register(data: Omit<User, 'id' | 'joinDate' | 'points' | 'rank'>): Promise<User> {
+
+    async register(data: Omit<User, '_id' | 'joinDate' | 'points' | 'rank'>): Promise<User> {
         if (CONFIG.USE_MOCK_API) {
             await delay(800);
             const users = getStorage<User[]>(DB.USERS, []);
@@ -16,7 +17,7 @@ export const authService = {
 
             const newUser: User = {
                 ...data,
-                id: uuidv4(),
+                _id: uuidv4(),
                 joinDate: new Date().toLocaleDateString('tr-TR'),
                 isAdmin: false,
                 points: 0,
@@ -73,7 +74,7 @@ export const authService = {
             // Admin Backdoor (Demo)
             if (email === '111@111' && password === '111') {
                 const adminUser: User = {
-                    id: 'admin-001',
+                    _id: 'admin-001',
                     name: 'MotoVibe Admin',
                     email: '111@111',
                     joinDate: '01.01.2024',
@@ -143,7 +144,7 @@ export const authService = {
         if (CONFIG.USE_MOCK_API) {
             await delay(600);
             const users = getStorage<User[]>(DB.USERS, []);
-            const index = users.findIndex(u => u.id === currentUser.id);
+            const index = users.findIndex(u => u._id === currentUser._id);
 
             if (index !== -1) {
                 users[index] = { ...users[index], ...updatedData };
@@ -159,6 +160,7 @@ export const authService = {
             // REAL BACKEND
             try {
                 // Not: Backend endpoint'i varsayımsaldır, gerçekte uygun endpoint olmalı.
+                // Assuming simple update for now, ideally shouldn't send raw _id to update route if handled inside
                 const response = await fetch(`${CONFIG.API_URL}/auth/profile`, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
@@ -196,13 +198,13 @@ export const authService = {
         if (CONFIG.USE_MOCK_API) {
             await delay(300);
             const users = getStorage<User[]>(DB.USERS, []);
-            const user = users.find(u => u.id === userId);
+            const user = users.find(u => u._id === userId);
             if (user) return user;
 
             // Mock data for unknown users (e.g. initial forum data authors)
             if (userId === 'admin-001' || userId === 'system') {
                 return {
-                    id: userId,
+                    _id: userId,
                     name: 'MotoVibe Admin',
                     email: 'admin@motovibe.tr',
                     joinDate: '01.01.2024',
@@ -211,14 +213,14 @@ export const authService = {
                     rank: 'Yol Kaptanı',
                     bio: 'Sistemin kurucusu ve baş yöneticisi.',
                     garage: [
-                        { id: 999, brand: 'Ducati', model: 'Panigale V4R', year: '2024', km: '1.200', color: 'Kırmızı', image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?q=80&w=800&auto=format&fit=crop' }
+                        { _id: '999', brand: 'Ducati', model: 'Panigale V4R', year: '2024', km: '1.200', color: 'Kırmızı', image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?q=80&w=800&auto=format&fit=crop' }
                     ]
                 };
             }
 
             // Default mock for unknown IDs to prevent crash
             return {
-                id: userId,
+                _id: userId,
                 name: 'Kullanıcı',
                 email: 'hidden',
                 joinDate: '2024',
@@ -241,7 +243,7 @@ export const authService = {
         if (CONFIG.USE_MOCK_API) {
             await delay(300);
             const users = getStorage<User[]>(DB.USERS, []);
-            const filtered = users.filter(u => u.id !== userId);
+            const filtered = users.filter(u => u._id !== userId);
             setStorage(DB.USERS, filtered);
         } else {
             // REAL BACKEND

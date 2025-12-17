@@ -5,7 +5,7 @@ import { CONFIG } from './config';
 // Mock Events Data
 const MOCK_EVENTS: MeetupEvent[] = [
     {
-        id: 'evt_1',
+        _id: 'evt_1',
         title: 'Gece Sürüşü: İstanbul Işıkları',
         type: 'night-ride',
         date: '2025-06-15',
@@ -18,7 +18,7 @@ const MOCK_EVENTS: MeetupEvent[] = [
         description: 'İstanbul\'un eşsiz gece manzarasında yaklaşık 2 saatlik keyifli bir sürüş.'
     },
     {
-        id: 'evt_2',
+        _id: 'evt_2',
         title: 'Pazar Kahvesi & Sohbet',
         type: 'coffee',
         date: '2025-06-18',
@@ -56,13 +56,13 @@ export const eventService = {
         }
     },
 
-    async addEvent(event: Omit<MeetupEvent, 'id'>): Promise<MeetupEvent> {
+    async addEvent(event: Omit<MeetupEvent, '_id'>): Promise<MeetupEvent> {
         if (CONFIG.USE_MOCK_API) {
             await delay(800);
             const events = getStorage<MeetupEvent[]>(DB.EVENTS, []);
             const newEvent: MeetupEvent = {
                 ...event,
-                id: `evt_${Date.now()}`
+                _id: `evt_${Date.now()}`
             };
             events.push(newEvent);
             setStorage(DB.EVENTS, events);
@@ -83,7 +83,7 @@ export const eventService = {
         if (CONFIG.USE_MOCK_API) {
             await delay(500);
             const events = getStorage<MeetupEvent[]>(DB.EVENTS, []);
-            const index = events.findIndex(e => e.id === event.id);
+            const index = events.findIndex(e => e._id === event._id);
             if (index !== -1) {
                 events[index] = event;
                 setStorage(DB.EVENTS, events);
@@ -92,7 +92,7 @@ export const eventService = {
             throw new Error('Etkinlik bulunamadı');
         } else {
             // REAL BACKEND
-            const response = await fetch(`${CONFIG.API_URL}/events/${event.id}`, {
+            const response = await fetch(`${CONFIG.API_URL}/events/${event._id}`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(event)
@@ -106,7 +106,7 @@ export const eventService = {
         if (CONFIG.USE_MOCK_API) {
             await delay(500);
             const events = getStorage<MeetupEvent[]>(DB.EVENTS, []);
-            const filtered = events.filter(e => e.id !== id);
+            const filtered = events.filter(e => e._id !== id);
             setStorage(DB.EVENTS, filtered);
         } else {
             // REAL BACKEND

@@ -4,7 +4,7 @@ import { delay } from './db';
 
 const BLOG_POSTS: BlogPost[] = [
     {
-        id: 1,
+        _id: "1",
         title: "2024 Ducati Panigale V4 R: Pistlerin Yeni Hakimi",
         excerpt: "Ducati'nin son şaheseri Panigale V4 R, aerodinamik kanatçıkları ve 240 beygirlik Desmosedici Stradale R motoruyla sınırları zorluyor. İşte detaylı incelememiz.",
         image: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?q=80&w=1200&auto=format&fit=crop",
@@ -20,7 +20,7 @@ const BLOG_POSTS: BlogPost[] = [
         comments: 85
     },
     {
-        id: 2,
+        _id: "2",
         title: "Zincir Bakımı: Motorunuzun Ömrünü Uzatın",
         excerpt: "Motosiklet zinciri temizliği ve yağlaması ne sıklıkla yapılmalı? O-Ring ve X-Ring zincirler için en iyi bakım yöntemleri ve ürün önerileri.",
         image: "https://images.unsplash.com/photo-1596706900226-0e318df62293?q=80&w=1200&auto=format&fit=crop",
@@ -36,7 +36,7 @@ const BLOG_POSTS: BlogPost[] = [
         comments: 42
     },
     {
-        id: 3,
+        _id: "3",
         title: "Transfăgărășan: Dünyanın En İyi Sürüş Yolu",
         excerpt: "Top Gear ekibinin 'Dünyanın en iyi yolu' olarak tanımladığı Romanya'daki Transfăgărășan geçidine yaptığımız destansı yolculuğun hikayesi.",
         image: "https://images.unsplash.com/photo-1519506458709-fa64ba3987dc?q=80&w=1200&auto=format&fit=crop",
@@ -52,7 +52,7 @@ const BLOG_POSTS: BlogPost[] = [
         comments: 156
     },
     {
-        id: 4,
+        _id: "4",
         title: "Kış Sürüşü İçin Hayati Ekipman Rehberi",
         excerpt: "Soğuk havalarda sürüş keyfinizi bozmayın. Gore-Tex montlardan, ısıtmalı elciklere ve termal içliklere kadar kışın ihtiyacınız olan her şey.",
         image: "https://images.unsplash.com/photo-1609385602058-a1ddb6329c2a?q=80&w=1200&auto=format&fit=crop",
@@ -68,7 +68,7 @@ const BLOG_POSTS: BlogPost[] = [
         comments: 67
     },
     {
-        id: 5,
+        _id: "5",
         title: "Yamaha MT-07 vs Honda CB650R: Orta Sınıfın Kralları",
         excerpt: "İki silindirli tork canavarı mı, yoksa dört silindirin çığlığı mı? Orta sınıf naked segmentinin en popüler iki modelini karşılaştırdık.",
         image: "https://images.unsplash.com/photo-1558981285-6f0c94958bb6?q=80&w=1200&auto=format&fit=crop",
@@ -84,7 +84,7 @@ const BLOG_POSTS: BlogPost[] = [
         comments: 230
     },
     {
-        id: 6,
+        _id: "6",
         title: "Grup Sürüşü Adabı ve İşaret Dili",
         excerpt: "Grup sürüşlerinde güvenliği sağlamak için bilinmesi gereken temel kurallar, fermuar düzeni ve el işaretleri.",
         image: "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1200&auto=format&fit=crop",
@@ -104,11 +104,11 @@ const BLOG_POSTS: BlogPost[] = [
 export const blogService = {
     async getPosts(category: string = 'all'): Promise<BlogPost[]> {
         await delay(600); // Gerçekçilik için gecikme
-        
+
         if (category === 'all') {
             return BLOG_POSTS;
         }
-        
+
         return BLOG_POSTS.filter(post => post.category === category);
     }
 };

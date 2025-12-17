@@ -8,7 +8,7 @@ import { gamificationService, POINTS } from './gamificationService';
 // Mock data fallback for Topics
 const MOCK_TOPICS: ForumTopic[] = [
     {
-        id: 'TOPIC_001',
+        _id: 'TOPIC_001',
         authorId: 'system',
         authorName: 'MotoVibe Admin',
         title: 'MotoVibe Topluluğuna Hoş Geldiniz!',
@@ -25,7 +25,7 @@ const MOCK_TOPICS: ForumTopic[] = [
 // Mock data for Social Feed
 const MOCK_FEED: SocialPost[] = [
     {
-        id: 'post_1',
+        _id: 'post_1',
         userId: 'u101',
         userName: 'Canberk Hız',
         content: 'Bugün Riva yolları efsaneydi! 🔥 Herkese iyi pazarlar.',
@@ -36,7 +36,7 @@ const MOCK_FEED: SocialPost[] = [
         isLiked: false
     },
     {
-        id: 'post_2',
+        _id: 'post_2',
         userId: 'u102',
         userName: 'Zeynep Yılmaz',
         content: 'Yeni kaskım geldi! AeroSpeed Carbon Pro gerçekten çok hafif. Tavsiye ederim.',
@@ -47,7 +47,7 @@ const MOCK_FEED: SocialPost[] = [
         isLiked: true
     },
     {
-        id: 'post_3',
+        _id: 'post_3',
         userId: 'u103',
         userName: 'Mehmet Demir',
         content: 'Zincir bakımı ihmale gelmez. Temizlik günü! 🧼',
@@ -83,8 +83,8 @@ export const forumService = {
 
     async createTopic(user: User, title: string, content: string, category: ForumTopic['category'], tags: string[]): Promise<ForumTopic> {
         const newTopic: ForumTopic = {
-            id: `TOPIC_${Date.now()}`,
-            authorId: user.id,
+            _id: `TOPIC_${Date.now()}`,
+            authorId: user._id,
             authorName: user.name,
             title,
             content,
@@ -102,7 +102,7 @@ export const forumService = {
             topics.unshift(newTopic);
             setStorage(DB.FORUM_TOPICS, topics);
 
-            await gamificationService.addPoints(user.id, POINTS.CREATE_TOPIC, 'Forum Konusu');
+            await gamificationService.addPoints(user._id, POINTS.CREATE_TOPIC, 'Forum Konusu');
 
             return newTopic;
         } else {
@@ -111,15 +111,15 @@ export const forumService = {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newTopic)
             });
-            await gamificationService.addPoints(user.id, POINTS.CREATE_TOPIC, 'Forum Konusu');
+            await gamificationService.addPoints(user._id, POINTS.CREATE_TOPIC, 'Forum Konusu');
             return await response.json();
         }
     },
 
     async addComment(topicId: string, user: User, content: string): Promise<ForumComment> {
         const newComment: ForumComment = {
-            id: `CMT_${Date.now()}`,
-            authorId: user.id,
+            _id: `CMT_${Date.now()}`,
+            authorId: user._id,
             authorName: user.name,
             content,
             date: new Date().toLocaleDateString('tr-TR'),
@@ -129,12 +129,12 @@ export const forumService = {
         if (CONFIG.USE_MOCK_API) {
             await delay(500);
             const topics = getStorage<ForumTopic[]>(DB.FORUM_TOPICS, []);
-            const topicIndex = topics.findIndex(t => t.id === topicId);
+            const topicIndex = topics.findIndex(t => t._id === topicId);
             if (topicIndex === -1) throw new Error('Konu bulunamadı');
             topics[topicIndex].comments.push(newComment);
             setStorage(DB.FORUM_TOPICS, topics);
 
-            await gamificationService.addPoints(user.id, POINTS.ADD_COMMENT, 'Yorum');
+            await gamificationService.addPoints(user._id, POINTS.ADD_COMMENT, 'Yorum');
 
             return newComment;
         } else {
@@ -143,7 +143,7 @@ export const forumService = {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newComment)
             });
-            await gamificationService.addPoints(user.id, POINTS.ADD_COMMENT, 'Yorum');
+            await gamificationService.addPoints(user._id, POINTS.ADD_COMMENT, 'Yorum');
             return await response.json();
         }
     },
@@ -151,7 +151,7 @@ export const forumService = {
     async toggleLike(topicId: string): Promise<void> {
         if (CONFIG.USE_MOCK_API) {
             const topics = getStorage<ForumTopic[]>(DB.FORUM_TOPICS, []);
-            const topic = topics.find(t => t.id === topicId);
+            const topic = topics.find(t => t._id === topicId);
             if (topic) {
                 topic.likes += 1;
                 setStorage(DB.FORUM_TOPICS, topics);
@@ -177,8 +177,8 @@ export const forumService = {
 
     async createSocialPost(user: User, content: string, image?: string): Promise<SocialPost> {
         const newPost: SocialPost = {
-            id: `post_${Date.now()}`,
-            userId: user.id,
+            _id: `post_${Date.now()}`,
+            userId: user._id,
             userName: user.name,
             content,
             image,
@@ -194,7 +194,7 @@ export const forumService = {
             localPosts.unshift(newPost);
             setStorage('mv_social_feed', localPosts);
 
-            await gamificationService.addPoints(user.id, 15, 'Sosyal Paylaşım');
+            await gamificationService.addPoints(user._id, 15, 'Sosyal Paylaşım');
             return newPost;
         }
         // Placeholder for real backend

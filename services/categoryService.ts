@@ -6,7 +6,7 @@ import { CONFIG } from './config';
 // Varsayılan Kategoriler (Unsplash Kaynaklı - Premium/Dark Tema)
 const DEFAULT_CATEGORIES: CategoryItem[] = [
   {
-    id: 'cat_1',
+    _id: 'cat_1',
     name: 'KASKLAR',
     type: ProductCategory.HELMET,
     // Koyu tonlu, vizör detaylı kask görseli
@@ -16,7 +16,7 @@ const DEFAULT_CATEGORIES: CategoryItem[] = [
     className: 'col-span-2 row-span-2'
   },
   {
-    id: 'cat_2',
+    _id: 'cat_2',
     name: 'MONTLAR',
     type: ProductCategory.JACKET,
     // Deri ceket dokusu ve sürücü duruşu
@@ -26,7 +26,7 @@ const DEFAULT_CATEGORIES: CategoryItem[] = [
     className: 'col-span-2 row-span-1'
   },
   {
-    id: 'cat_3',
+    _id: 'cat_3',
     name: 'ELDİVENLER',
     type: ProductCategory.GLOVES,
     // Gidon tutan eldivenli el detayı
@@ -36,7 +36,7 @@ const DEFAULT_CATEGORIES: CategoryItem[] = [
     className: 'col-span-1 row-span-1'
   },
   {
-    id: 'cat_4',
+    _id: 'cat_4',
     name: 'BOTLAR',
     type: ProductCategory.BOOTS,
     // Motosiklet botu ve vites pedalı detayı
@@ -46,7 +46,7 @@ const DEFAULT_CATEGORIES: CategoryItem[] = [
     className: 'col-span-1 row-span-1'
   },
   {
-    id: 'cat_5',
+    _id: 'cat_5',
     name: 'EKİPMAN',
     type: ProductCategory.PROTECTION,
     // Yarış tulumu ve koruma ekipmanı detayı
@@ -56,7 +56,7 @@ const DEFAULT_CATEGORIES: CategoryItem[] = [
     className: 'col-span-1 md:col-span-2 row-span-1'
   },
   {
-    id: 'cat_6',
+    _id: 'cat_6',
     name: 'İNTERKOM',
     type: ProductCategory.INTERCOM,
     // Kask üzeri teknoloji/iletişim temalı
@@ -90,13 +90,13 @@ export const categoryService = {
     }
   },
 
-  async addCategory(category: Omit<CategoryItem, 'id'>): Promise<CategoryItem> {
+  async addCategory(category: Omit<CategoryItem, '_id'>): Promise<CategoryItem> {
     if (CONFIG.USE_MOCK_API) {
       await delay(500);
       const categories = getStorage<CategoryItem[]>(DB.CATEGORIES, []);
       const newCat: CategoryItem = {
         ...category,
-        id: `cat_${Date.now()}`,
+        _id: `cat_${Date.now()}`,
       };
       categories.push(newCat);
       setStorage(DB.CATEGORIES, categories);
@@ -113,8 +113,7 @@ export const categoryService = {
   },
 
   async updateCategory(category: CategoryItem): Promise<void> {
-    // @ts-ignore
-    const targetId = category.id || category._id;
+    const targetId = category._id;
 
     if (!targetId) {
       console.error("Update failed: Missing category ID", category);
@@ -124,9 +123,9 @@ export const categoryService = {
     if (CONFIG.USE_MOCK_API) {
       await delay(300);
       const categories = getStorage<CategoryItem[]>(DB.CATEGORIES, []);
-      const index = categories.findIndex(c => c.id === targetId);
+      const index = categories.findIndex(c => c._id === targetId);
       if (index !== -1) {
-        categories[index] = { ...category, id: targetId };
+        categories[index] = { ...category, _id: targetId };
         setStorage(DB.CATEGORIES, categories);
       }
     } else {
@@ -148,7 +147,7 @@ export const categoryService = {
     if (CONFIG.USE_MOCK_API) {
       await delay(300);
       const categories = getStorage<CategoryItem[]>(DB.CATEGORIES, []);
-      const filtered = categories.filter(c => c.id !== id);
+      const filtered = categories.filter(c => c._id !== id);
       setStorage(DB.CATEGORIES, filtered);
     } else {
       // REAL BACKEND

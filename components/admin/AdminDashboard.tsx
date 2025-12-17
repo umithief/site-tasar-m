@@ -32,13 +32,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ products, orders
                     </div>
                     <div className="space-y-3">
                         {orders.slice(0, 5).map(order => (
-                            <div key={order.id} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-colors group">
+                            <div key={order._id} className="flex items-center justify-between p-4 bg-white/5 rounded-2xl hover:bg-white/10 transition-colors group">
                                 <div className="flex items-center gap-4">
                                     <div className="w-10 h-10 rounded-xl bg-black flex items-center justify-center text-gray-500 font-bold group-hover:text-white transition-colors border border-white/10">
                                         <ShoppingBag className="w-5 h-5" />
                                     </div>
                                     <div>
-                                        <div className="text-sm font-bold text-white">{order.id}</div>
+                                        <div className="text-sm font-bold text-white">{order._id}</div>
                                         <div className="text-xs text-gray-500">{order.date} • {order.items.length} Ürün</div>
                                     </div>
                                 </div>

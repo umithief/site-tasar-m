@@ -62,16 +62,7 @@ const userSchema = new mongoose.Schema({
     address: String,
     points: { type: Number, default: 0 },
     rank: { type: String, default: 'Scooter Çırağı' }
-});
-userSchema.set('toJSON', {
-    virtuals: true,
-    versionKey: false,
-    transform: function (doc, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-        delete ret.password; // Security best practice
-    }
-});
+}, { versionKey: false });
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
 const productSchema = new mongoose.Schema({
@@ -85,16 +76,8 @@ const productSchema = new mongoose.Schema({
     features: [String],
     stock: { type: Number, default: 10 },
     isNegotiable: { type: Boolean, default: false }
-});
+}, { versionKey: false });
 
-productSchema.set('toJSON', {
-    virtuals: true,
-    versionKey: false,
-    transform: function (doc, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-    }
-});
 const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
 
 const orderSchema = new mongoose.Schema({
@@ -109,15 +92,8 @@ const orderSchema = new mongoose.Schema({
         quantity: Number,
         image: String
     }]
-});
-orderSchema.set('toJSON', {
-    virtuals: true,
-    versionKey: false,
-    transform: function (doc, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-    }
-});
+}, { versionKey: false });
+
 const Order = mongoose.models.Order || mongoose.model('Order', orderSchema);
 
 const slideSchema = new mongoose.Schema({
@@ -128,16 +104,8 @@ const slideSchema = new mongoose.Schema({
     action: { type: String, default: 'shop' },
     type: { type: String, default: 'image' },
     videoUrl: String
-});
+}, { versionKey: false });
 
-slideSchema.set('toJSON', {
-    virtuals: true,
-    versionKey: false,
-    transform: function (doc, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-    }
-});
 const Slide = mongoose.models.Slide || mongoose.model('Slide', slideSchema);
 
 const storySchema = new mongoose.Schema({
@@ -145,13 +113,13 @@ const storySchema = new mongoose.Schema({
     image: { type: String, required: true },
     color: { type: String, default: 'border-gray-500' },
     link: String
-});
+}, { versionKey: false });
 const Story = mongoose.models.Story || mongoose.model('Story', storySchema);
 
 const visitorSchema = new mongoose.Schema({
     date: { type: String, required: true },
     count: { type: Number, default: 0 }
-});
+}, { versionKey: false });
 const Visitor = mongoose.models.Visitor || mongoose.model('Visitor', visitorSchema);
 
 const analyticsSchema = new mongoose.Schema({
@@ -163,7 +131,7 @@ const analyticsSchema = new mongoose.Schema({
     duration: Number,
     timestamp: { type: Number, default: Date.now },
     date: { type: String, default: () => new Date().toLocaleDateString('tr-TR') }
-});
+}, { versionKey: false });
 const Analytics = mongoose.models.Analytics || mongoose.model('Analytics', analyticsSchema);
 
 const categorySchema = new mongoose.Schema({
@@ -173,16 +141,8 @@ const categorySchema = new mongoose.Schema({
     desc: String,
     count: String,
     className: String
-});
+}, { versionKey: false });
 
-categorySchema.set('toJSON', {
-    virtuals: true,
-    versionKey: false,
-    transform: function (doc, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-    }
-});
 const Category = mongoose.models.Category || mongoose.model('Category', categorySchema);
 
 const routeSchema = new mongoose.Schema({
@@ -195,29 +155,25 @@ const routeSchema = new mongoose.Schema({
     location: String,
     bestSeason: String,
     tags: [String]
-});
+}, { versionKey: false });
 
-routeSchema.set('toJSON', {
-    virtuals: true,
-    versionKey: false,
-    transform: function (doc, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-    }
-});
 const Route = mongoose.models.Route || mongoose.model('Route', routeSchema);
 
 const forumCommentSchema = new mongoose.Schema({
-    id: String,
+    _id: String, // Ensure we can store custom IDs if needed, or let Mongo generate
     authorId: String,
     authorName: String,
     content: String,
     date: String,
     likes: { type: Number, default: 0 }
-});
+}, { versionKey: false });
 
 const forumTopicSchema = new mongoose.Schema({
-    id: { type: String, required: true, unique: true },
+    _id: { type: String, default: () => new mongoose.Types.ObjectId().toString() }, // Support custom IDs or let mongo handle it. But wait, user wants Standard Mongo ID or Custom? User prompt said: "_id ... example". The example was a Mongo Object ID.
+    // Actually, looking at the user prompt: "69402f05219be8dbf37b8b0b", this is a standard ObjectID.
+    // So I should just let Mongoose handle _id automatically.
+    // But lines 220 in original file had: id: { type: String, required: true, unique: true }
+    // I should remove that custom ID field and rely on _id.
     authorId: String,
     authorName: String,
     title: String,
@@ -228,32 +184,17 @@ const forumTopicSchema = new mongoose.Schema({
     views: { type: Number, default: 0 },
     comments: [forumCommentSchema],
     tags: [String]
-});
-forumTopicSchema.set('toJSON', {
-    virtuals: true,
-    versionKey: false,
-    transform: function (doc, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-    }
-});
+}, { versionKey: false });
+
 const ForumTopic = mongoose.models.ForumTopic || mongoose.model('ForumTopic', forumTopicSchema);
 
 const musicSchema = new mongoose.Schema({
-    id: String,
     title: String,
     artist: String,
     url: String,
     addedAt: String
-});
-musicSchema.set('toJSON', {
-    virtuals: true,
-    versionKey: false,
-    transform: function (doc, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-    }
-});
+}, { versionKey: false });
+
 const Music = mongoose.models.Music || mongoose.model('Music', musicSchema);
 
 const negotiationSchema = new mongoose.Schema({
@@ -266,15 +207,8 @@ const negotiationSchema = new mongoose.Schema({
     userName: String,
     status: { type: String, default: 'pending' },
     date: { type: String, default: () => new Date().toLocaleDateString('tr-TR') }
-});
-negotiationSchema.set('toJSON', {
-    virtuals: true,
-    versionKey: false,
-    transform: function (doc, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-    }
-});
+}, { versionKey: false });
+
 const Negotiation = mongoose.models.Negotiation || mongoose.model('Negotiation', negotiationSchema);
 
 const stolenItemSchema = new mongoose.Schema({
@@ -289,15 +223,8 @@ const stolenItemSchema = new mongoose.Schema({
     status: { type: String, default: 'stolen' },
     dateReported: { type: String, default: () => new Date().toLocaleDateString('tr-TR') },
     image: String
-});
-stolenItemSchema.set('toJSON', {
-    virtuals: true,
-    versionKey: false,
-    transform: function (doc, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-    }
-});
+}, { versionKey: false });
+
 const StolenItem = mongoose.models.StolenItem || mongoose.model('StolenItem', stolenItemSchema);
 
 const vlogSchema = new mongoose.Schema({
@@ -309,16 +236,8 @@ const vlogSchema = new mongoose.Schema({
     thumbnail: String,
     views: { type: String, default: '0' },
     productsUsed: [Number]
-});
+}, { versionKey: false });
 
-vlogSchema.set('toJSON', {
-    virtuals: true,
-    versionKey: false,
-    transform: function (doc, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-    }
-});
 const MotoVlog = mongoose.models.MotoVlog || mongoose.model('MotoVlog', vlogSchema);
 
 const servicePointSchema = new mongoose.Schema({
@@ -335,7 +254,7 @@ const servicePointSchema = new mongoose.Schema({
     image: String,
     coordinates: { lat: Number, lng: Number },
     brands: [String]
-});
+}, { versionKey: false });
 const ServicePoint = mongoose.models.ServicePoint || mongoose.model('ServicePoint', servicePointSchema);
 
 const model3dSchema = new mongoose.Schema({
@@ -343,19 +262,11 @@ const model3dSchema = new mongoose.Schema({
     url: { type: String, required: true },
     poster: { type: String, required: true },
     category: String
-});
-model3dSchema.set('toJSON', {
-    virtuals: true,
-    versionKey: false,
-    transform: function (doc, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-    }
-});
+}, { versionKey: false });
+
 const Model3D = mongoose.models.Model3D || mongoose.model('Model3D', model3dSchema);
 
 const feedbackSchema = new mongoose.Schema({
-    id: String,
     userId: String,
     userName: String,
     type: String,
@@ -363,15 +274,8 @@ const feedbackSchema = new mongoose.Schema({
     message: String,
     date: String,
     status: { type: String, default: 'new' }
-});
-feedbackSchema.set('toJSON', {
-    virtuals: true,
-    versionKey: false,
-    transform: function (doc, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-    }
-});
+}, { versionKey: false });
+
 const Feedback = mongoose.models.Feedback || mongoose.model('Feedback', feedbackSchema);
 
 const meetupEventSchema = new mongoose.Schema({
@@ -385,16 +289,8 @@ const meetupEventSchema = new mongoose.Schema({
     attendees: { type: Number, default: 0 },
     image: String,
     description: String
-});
+}, { versionKey: false });
 
-meetupEventSchema.set('toJSON', {
-    virtuals: true,
-    versionKey: false,
-    transform: function (doc, ret) {
-        ret.id = ret._id;
-        delete ret._id;
-    }
-});
 const MeetupEvent = mongoose.models.MeetupEvent || mongoose.model('MeetupEvent', meetupEventSchema);
 
 

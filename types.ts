@@ -11,45 +11,46 @@ export enum ProductCategory {
 }
 
 declare global {
-    interface Window {
-        GLightbox: any;
-        YT: any;
-        onYouTubeIframeAPIReady: any;
-    }
+  interface Window {
+    GLightbox: any;
+    YT: any;
+    onYouTubeIframeAPIReady: any;
+  }
 }
 
 export type Language = 'tr' | 'en';
 
 export type ViewState = 'home' | 'shop' | 'routes' | 'blog' | 'forum' | 'riders' | 'favorites' | 'profile' | 'public-profile' | 'cart' | 'checkout' | 'auth' | 'admin' | 'product-detail' | 'ride-mode' | 'mototool' | 'about' | 'ai-assistant' | 'meetup' | 'service-finder' | 'valuation' | 'qr-generator' | 'vlog-map' | 'lifesaver';
 
+
 export interface CategoryItem {
-    id: string;
-    name: string;
-    type: ProductCategory; // Enum ile eşleşmeli
-    image: string;
-    desc: string;
-    count: string;
-    className?: string; // Grid yerleşimi için (col-span-2 vb.)
+  _id: string;
+  name: string;
+  type: ProductCategory; // Enum ile eşleşmeli
+  image: string;
+  desc: string;
+  count: string;
+  className?: string; // Grid yerleşimi için (col-span-2 vb.)
 }
 
 export interface Story {
-    id: string;
-    label: string;
-    image: string;
-    color: string; // border color class or hex
-    link?: string;
+  _id: string;
+  label: string;
+  image: string;
+  color: string; // border color class or hex
+  link?: string;
 }
 
 export interface Model3DItem {
-    id: string;
-    name: string;
-    url: string; // .glb file url
-    poster: string; // preview image
-    category?: string;
+  _id: string;
+  name: string;
+  url: string; // .glb file url
+  poster: string; // preview image
+  category?: string;
 }
 
 export interface Product {
-  id: number;
+  _id: string;
   name: string;
   description: string;
   price: number;
@@ -58,7 +59,7 @@ export interface Product {
   images: string[];
   rating: number;
   features: string[];
-  stock: number; 
+  stock: number;
   isNegotiable?: boolean;
   model3d?: string; // 3D Model URL (.glb)
   isEditorsChoice?: boolean; // Yeni: Editörün Seçimi
@@ -66,15 +67,15 @@ export interface Product {
 }
 
 export interface MotoVlog {
-    id: string;
-    title: string;
-    author: string;
-    locationName: string;
-    coordinates: { lat: number; lng: number };
-    videoUrl: string; // YouTube URL
-    thumbnail: string;
-    productsUsed: number[]; // IDs of products used in the video
-    views: string;
+  _id: string;
+  title: string;
+  author: string;
+  locationName: string;
+  coordinates: { lat: number; lng: number };
+  videoUrl: string; // YouTube URL
+  thumbnail: string;
+  productsUsed: number[]; // IDs of products used in the video
+  views: string;
 }
 
 export interface CartItem extends Product {
@@ -82,31 +83,31 @@ export interface CartItem extends Product {
 }
 
 export interface ChatMessage {
-  id: string;
+  id: string; // Client-side temp ID/Message ID, usually not Mongo
   role: 'user' | 'model';
   text: string;
   isError?: boolean;
 }
 
 export interface MaintenanceLog {
-    id: string;
-    date: string;
-    type: string; // 'Periyodik', 'Lastik', 'Arıza', 'Aksesuar'
-    km: string;
-    cost?: string;
-    notes?: string;
+  _id: string;
+  date: string;
+  type: string; // 'Periyodik', 'Lastik', 'Arıza', 'Aksesuar'
+  km: string;
+  cost?: string;
+  notes?: string;
 }
 
 export interface BikeModification {
-    id: string;
-    type: string; // 'Egzoz', 'Koruma', 'Konfor', 'Performans'
-    brand: string;
-    name: string;
-    notes?: string;
+  _id: string;
+  type: string; // 'Egzoz', 'Koruma', 'Konfor', 'Performans'
+  brand: string;
+  name: string;
+  notes?: string;
 }
 
 export interface UserBike {
-  id: number;
+  _id: string;
   brand: string;
   model: string;
   year: string;
@@ -120,7 +121,7 @@ export interface UserBike {
 }
 
 export interface User {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   password?: string;
@@ -137,7 +138,7 @@ export interface User {
 }
 
 export interface OrderItem {
-  productId: number;
+  productId: string; // Changed from number to string to match Product._id
   name: string;
   price: number;
   quantity: number;
@@ -145,7 +146,7 @@ export interface OrderItem {
 }
 
 export interface Order {
-  id: string;
+  _id: string;
   userId: string;
   date: string;
   status: 'Hazırlanıyor' | 'Kargoda' | 'Teslim Edildi' | 'İptal';
@@ -154,7 +155,7 @@ export interface Order {
 }
 
 export interface ForumComment {
-  id: string;
+  _id: string;
   authorId: string;
   authorName: string;
   content: string;
@@ -163,7 +164,7 @@ export interface ForumComment {
 }
 
 export interface ForumTopic {
-  id: string;
+  _id: string;
   authorId: string;
   authorName: string;
   title: string;
@@ -178,20 +179,20 @@ export interface ForumTopic {
 
 // NEW: Social Feed Types
 export interface SocialPost {
-    id: string;
-    userId: string;
-    userName: string;
-    userAvatar?: string; // Optional avatar URL
-    content: string;
-    image?: string; // Optional post image
-    likes: number;
-    comments: number;
-    timestamp: string; // "2 saat önce" etc.
-    isLiked?: boolean;
+  _id: string;
+  userId: string;
+  userName: string;
+  userAvatar?: string; // Optional avatar URL
+  content: string;
+  image?: string; // Optional post image
+  likes: number;
+  comments: number;
+  timestamp: string; // "2 saat önce" etc.
+  isLiked?: boolean;
 }
 
 export interface Slide {
-  id: number;
+  _id: string;
   image: string;
   videoUrl?: string; // Optional video URL
   type?: 'image' | 'video'; // Type of slide
@@ -202,7 +203,7 @@ export interface Slide {
 }
 
 export interface ActivityLog {
-  id: string;
+  _id: string;
   type: 'success' | 'warning' | 'info' | 'error';
   event: string;
   details: string;
@@ -216,7 +217,7 @@ export interface VisitorStats {
 }
 
 export interface AnalyticsEvent {
-  id: string;
+  _id: string;
   type: 'view_product' | 'add_to_cart' | 'checkout_start' | 'session_duration';
   userId?: string; // 'guest' or user id
   userName?: string;
@@ -228,14 +229,14 @@ export interface AnalyticsEvent {
 }
 
 export interface SessionRecording {
-    id: string;
-    userId: string; // 'guest' or User ID
-    userName: string;
-    startTime: number;
-    endTime?: number;
-    duration: string;
-    events: any[]; // rrweb events
-    device: string;
+  _id: string;
+  userId: string; // 'guest' or User ID
+  userName: string;
+  startTime: number;
+  endTime?: number;
+  duration: string;
+  events: any[]; // rrweb events
+  device: string;
 }
 
 export type TimeRange = '24h' | '7d' | '30d';
@@ -248,11 +249,11 @@ export interface AnalyticsDashboardData {
   topViewedProducts: { name: string; count: number }[];
   topAddedProducts: { name: string; count: number }[];
   // Timeline data for charts
-  activityTimeline: { label: string; value: number }[]; 
+  activityTimeline: { label: string; value: number }[];
 }
 
 export interface Route {
-  id: string;
+  _id: string;
   title: string;
   description: string;
   image: string;
@@ -271,7 +272,7 @@ export interface Route {
 }
 
 export interface MusicTrack {
-  id: string;
+  _id: string;
   title: string;
   artist: string;
   url: string; // Direct Audio URL
@@ -279,7 +280,7 @@ export interface MusicTrack {
 }
 
 export interface BlogPost {
-  id: number;
+  _id: string;
   title: string;
   excerpt: string;
   content?: string;
@@ -297,7 +298,7 @@ export interface BlogPost {
 }
 
 export interface MeetupMessage {
-  id: string;
+  id: string; // Probably local
   userId: string;
   userName: string;
   text: string;
@@ -305,7 +306,7 @@ export interface MeetupMessage {
 }
 
 export interface MeetupEvent {
-  id: string;
+  _id: string;
   title: string;
   type: 'night-ride' | 'coffee' | 'track-day' | 'offroad';
   date: string;
@@ -324,20 +325,20 @@ export interface MeetupEvent {
 export type ServiceType = 'official' | 'private' | 'tire' | 'custom' | 'parts';
 
 export interface ServicePoint {
-    id: string;
-    name: string;
-    type: ServiceType;
-    categoryLabel: string;
-    description: string;
-    address: string;
-    city: string;
-    phone: string;
-    rating: number;
-    reviewCount: number;
-    isVerified: boolean;
-    image: string;
-    coordinates: { lat: number; lng: number };
-    brands: string[]; // "Yamaha", "Honda" etc.
+  _id: string;
+  name: string;
+  type: ServiceType;
+  categoryLabel: string;
+  description: string;
+  address: string;
+  city: string;
+  phone: string;
+  rating: number;
+  reviewCount: number;
+  isVerified: boolean;
+  image: string;
+  coordinates: { lat: number; lng: number };
+  brands: string[]; // "Yamaha", "Honda" etc.
 }
 
 export type AuthMode = 'login' | 'register';
@@ -345,22 +346,22 @@ export type AuthMode = 'login' | 'register';
 export type NegotiationStatus = 'pending' | 'accepted' | 'rejected';
 
 export interface NegotiationResult {
-    status: NegotiationStatus;
-    price?: number;
-    message: string;
+  status: NegotiationStatus;
+  price?: number;
+  message: string;
 }
 
 export interface NegotiationOffer {
-    id: string;
-    productId: number;
-    productName: string;
-    productImage: string;
-    originalPrice: number;
-    offerPrice: number;
-    userId: string;
-    userName: string;
-    status: NegotiationStatus;
-    date: string;
+  _id: string;
+  productId: number;
+  productName: string;
+  productImage: string;
+  originalPrice: number;
+  offerPrice: number;
+  userId: string;
+  userName: string;
+  status: NegotiationStatus;
+  date: string;
 }
 
 export type ColorTheme = 'orange' | 'red' | 'blue' | 'green' | 'purple' | 'cyan' | 'yellow';
@@ -368,27 +369,27 @@ export type ColorTheme = 'orange' | 'red' | 'blue' | 'green' | 'purple' | 'cyan'
 export type FeedbackType = 'bug' | 'feature' | 'general' | 'other';
 
 export interface Feedback {
-    id: string;
-    userId?: string;
-    userName?: string;
-    type: FeedbackType;
-    rating: number;
-    message: string;
-    date: string;
-    status: 'new' | 'reviewed';
+  _id: string;
+  userId?: string;
+  userName?: string;
+  type: FeedbackType;
+  rating: number;
+  message: string;
+  date: string;
+  status: 'new' | 'reviewed';
 }
 
 export interface StolenItem {
-    id: string;
-    serialNumber: string;
-    brand: string;
-    model: string;
-    category: string;
-    dateStolen: string;
-    city: string;
-    contactInfo: string;
-    description: string;
-    status: 'stolen' | 'recovered';
-    reporterId?: string;
-    dateReported: string;
+  _id: string;
+  serialNumber: string;
+  brand: string;
+  model: string;
+  category: string;
+  dateStolen: string;
+  city: string;
+  contactInfo: string;
+  description: string;
+  status: 'stolen' | 'recovered';
+  reporterId?: string;
+  dateReported: string;
 }

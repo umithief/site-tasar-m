@@ -20,7 +20,7 @@ export const AdminSlider: React.FC<AdminSliderProps> = ({ slides, handleAddNew, 
             </div>
             <div className="space-y-4">
                 {slides.map(slide => (
-                    <div key={slide.id} className="bg-[#1A1A17] border border-white/5 rounded-2xl overflow-hidden flex flex-col md:flex-row group">
+                    <div key={slide._id} className="bg-[#1A1A17] border border-white/5 rounded-2xl overflow-hidden flex flex-col md:flex-row group">
                         <div className="w-full md:w-64 h-40 relative flex-shrink-0 bg-black">
                             {slide.type === 'video' ? (
                                 <div className="w-full h-full flex items-center justify-center bg-gray-900">
@@ -36,7 +36,7 @@ export const AdminSlider: React.FC<AdminSliderProps> = ({ slides, handleAddNew, 
                                 <h3 className="text-xl font-bold text-white">{slide.title}</h3>
                                 <div className="flex gap-2">
                                     <button onClick={() => handleEdit(slide)} className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-blue-500 transition-colors"><Edit2 className="w-4 h-4" /></button>
-                                    <button onClick={() => handleDelete(slide.id)} className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-red-500 transition-colors"><Trash2 className="w-4 h-4" /></button>
+                                    <button onClick={() => handleDelete(slide._id)} className="p-2 hover:bg-white/10 rounded-lg text-gray-400 hover:text-red-500 transition-colors"><Trash2 className="w-4 h-4" /></button>
                                 </div>
                             </div>
                             <p className="text-sm text-gray-400 mb-4">{slide.subtitle}</p>

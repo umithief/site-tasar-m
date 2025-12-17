@@ -31,7 +31,7 @@ export const AdminRoutes: React.FC<AdminRoutesProps> = ({ routes, handleAddNew, 
                     </thead>
                     <tbody className="divide-y divide-white/5 text-sm">
                         {routes.map(route => (
-                            <tr key={route.id} className="hover:bg-white/5 transition-colors">
+                            <tr key={route._id} className="hover:bg-white/5 transition-colors">
                                 <td className="p-5 pl-8">
                                     <div className="flex items-center gap-4">
                                         <div className="w-16 h-12 rounded-lg overflow-hidden">
@@ -53,7 +53,7 @@ export const AdminRoutes: React.FC<AdminRoutesProps> = ({ routes, handleAddNew, 
                                 <td className="p-5 pr-8 text-right">
                                     <div className="flex items-center justify-end gap-2">
                                         <button onClick={() => handleEdit(route)} className="p-2 rounded-lg hover:bg-blue-500/20 text-gray-400 hover:text-blue-500 transition-colors"><Edit2 className="w-4 h-4" /></button>
-                                        <button onClick={() => handleDelete(route.id)} className="p-2 rounded-lg hover:bg-red-500/20 text-gray-400 hover:text-red-500 transition-colors"><Trash2 className="w-4 h-4" /></button>
+                                        <button onClick={() => handleDelete(route._id)} className="p-2 rounded-lg hover:bg-red-500/20 text-gray-400 hover:text-red-500 transition-colors"><Trash2 className="w-4 h-4" /></button>
                                     </div>
                                 </td>
                             </tr>

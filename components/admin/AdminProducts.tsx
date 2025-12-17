@@ -35,7 +35,7 @@ export const AdminProducts: React.FC<AdminProductsProps> = ({ products, searchTe
                     </thead>
                     <tbody className="divide-y divide-white/5 text-sm">
                         {products.filter(p => p.name.toLowerCase().includes(searchTerm.toLowerCase())).map(product => (
-                            <tr key={product.id} className="hover:bg-white/5 transition-colors group">
+                            <tr key={product._id} className="hover:bg-white/5 transition-colors group">
                                 <td className="p-5 pl-8">
                                     <div className="flex items-center gap-4">
                                         <div className="w-12 h-12 rounded-xl bg-white p-1 overflow-hidden">
@@ -62,7 +62,7 @@ export const AdminProducts: React.FC<AdminProductsProps> = ({ products, searchTe
                                         <button onClick={() => handleToggleProductStatus(product, 'isEditorsChoice')} title="Editörün Seçimi" className={`p-2 rounded-lg hover:bg-white/10 ${product.isEditorsChoice ? 'text-purple-500' : 'text-gray-600'}`}><Award className="w-4 h-4" /></button>
                                         <button onClick={() => handleToggleProductStatus(product, 'isDealOfTheDay')} title="Fırsat Ürünü" className={`p-2 rounded-lg hover:bg-white/10 ${product.isDealOfTheDay ? 'text-red-500' : 'text-gray-600'}`}><Zap className="w-4 h-4" /></button>
                                         <button onClick={() => handleEdit(product)} className="p-2 rounded-lg hover:bg-blue-500/20 text-gray-400 hover:text-blue-500 transition-colors"><Edit2 className="w-4 h-4" /></button>
-                                        <button onClick={() => handleDelete(product.id)} className="p-2 rounded-lg hover:bg-red-500/20 text-gray-400 hover:text-red-500 transition-colors"><Trash2 className="w-4 h-4" /></button>
+                                        <button onClick={() => handleDelete(product._id)} className="p-2 rounded-lg hover:bg-red-500/20 text-gray-400 hover:text-red-500 transition-colors"><Trash2 className="w-4 h-4" /></button>
                                     </div>
                                 </td>
                             </tr>

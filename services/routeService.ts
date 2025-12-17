@@ -5,7 +5,7 @@ import { CONFIG } from './config';
 
 const DEFAULT_ROUTES: Route[] = [
   {
-    id: 'route_1',
+    _id: 'route_1',
     title: 'Trans Toros Geçişi',
     description: 'Akdeniz\'in zirvelerinde virajlı ve manzaralı bir sürüş. Sert virajlar ve yükseklik değişimi ile teknik bir rota. Antalya\'dan başlayıp Toros Dağları\'nı aşarak Isparta\'ya ulaşan bu rota, hem sürüş tekniğinizi test eder hem de eşsiz manzaralar sunar.',
     image: 'https://images.unsplash.com/photo-1605152276897-4f618f831968?q=80&w=1200&auto=format&fit=crop',
@@ -39,7 +39,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_2',
+    _id: 'route_2',
     title: 'Ege Sahil Yolu',
     description: 'Deniz kokusu eşliğinde, zeytin ağaçları arasından geçen sakin ve keyifli bir rota. Gün batımı sürüşleri için ideal.',
     image: 'https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?q=80&w=1200&auto=format&fit=crop',
@@ -61,7 +61,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_3',
+    _id: 'route_3',
     title: 'Karadeniz Yayla Yolu',
     description: 'Bulutların üzerinde, sisli ve yeşil bir macera. Yer yer bozuk zemin ve yağmur ihtimali ile adventure motorlar için birebir.',
     image: 'https://images.unsplash.com/photo-1504218290665-37a5f94688b0?q=80&w=1200&auto=format&fit=crop',
@@ -83,7 +83,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_4',
+    _id: 'route_4',
     title: 'Kapadokya Peri Rotaları',
     description: 'Tarihi dokunun içinde, balonların altında mistik bir sürüş deneyimi. Fotoğraf tutkunları için eşsiz duraklar.',
     image: 'https://images.unsplash.com/photo-1641128324972-af3212f0f6bd?q=80&w=1200&auto=format&fit=crop',
@@ -103,7 +103,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_5',
+    _id: 'route_5',
     title: 'Uçmakdere Virajları',
     description: 'Marmara\'nın en keyifli virajlarına sahip, deniz ve dağ manzarasının birleştiği efsanevi rota. Yamaç paraşütü alanında mola verilebilir.',
     image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=1200&auto=format&fit=crop',
@@ -123,7 +123,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_6',
+    _id: 'route_6',
     title: 'Karanlık Kanyon & Taş Yolu',
     description: 'Dünyanın en tehlikeli yollarından biri olarak bilinen, el emeği tüneller ve uçurum kenarı sürüşü içeren saf adrenalin rotası.',
     image: 'https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=1200&auto=format&fit=crop',
@@ -143,7 +143,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_7',
+    _id: 'route_7',
     title: 'Datça Knidos Yolu',
     description: 'Badem ağaçları arasından geçerek antik kente ulaşan, Ege ve Akdeniz\'in birleştiği noktada huzurlu ve virajlı bir yolculuk.',
     image: 'https://images.unsplash.com/photo-1533105079780-92b9be482077?q=80&w=1200&auto=format&fit=crop',
@@ -162,7 +162,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_8',
+    _id: 'route_8',
     title: 'Bolu Yedigöller Orman Yolu',
     description: 'Sonbaharda renk cümbüşü sunan, sık orman içi yolları ve göl manzaraları ile tam bir terapi rotası. Zemin yer yer kaygan olabilir.',
     image: 'https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=1200&auto=format&fit=crop',
@@ -181,7 +181,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_9',
+    _id: 'route_9',
     title: 'Tuz Gölü Sonsuzluk Sürüşü',
     description: 'Ufuk çizgisinin kaybolduğu, gün batımında eşsiz yansımalar sunan düz ama büyüleyici bir rota. Drone çekimi için ideal.',
     image: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?q=80&w=1200&auto=format&fit=crop',
@@ -199,7 +199,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_10',
+    _id: 'route_10',
     title: 'Mardin Tarihi İpek Yolu',
     description: 'Mezopotamya ovasını seyrederek, taş evlerin arasından geçen büyüleyici bir tarih yolculuğu. Güneşin doğuşu burada bir başka.',
     image: 'https://images.unsplash.com/photo-1590059397664-f6ef733d3c82?q=80&w=1200&auto=format&fit=crop',
@@ -219,7 +219,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_11',
+    _id: 'route_11',
     title: 'Kaş - Kalkan Sahil Sürüşü',
     description: 'Türkiye\'nin en güzel manzaralı yollarından biri. Virajlı kaputaş plajı geçişi ve turkuaz sular eşliğinde sürüş.',
     image: 'https://images.unsplash.com/photo-1580910543236-0c95332f7a9d?q=80&w=1200&auto=format&fit=crop',
@@ -237,7 +237,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_12',
+    _id: 'route_12',
     title: 'Uludağ Zirve Tırmanışı',
     description: 'Bursa merkezden başlayıp bulutların üzerine çıkan bol virajlı ve serin bir dağ yolu. Zirvede sucuk ekmek molası şart.',
     image: 'https://images.unsplash.com/photo-1517999813206-44759604df0f?q=80&w=1200&auto=format&fit=crop',
@@ -257,7 +257,7 @@ const DEFAULT_ROUTES: Route[] = [
   },
   // --- YENİ EKLENEN ROTALAR ---
   {
-    id: 'route_13',
+    _id: 'route_13',
     title: 'Karaburun Yarımadası Turu',
     description: 'İzmir\'in en bakir ve en virajlı rotalarından biri. Mordoğan\'dan başlayıp Karaburun\'a uzanan, denizle iç içe yüzlerce viraj.',
     image: 'https://images.unsplash.com/photo-1566322300732-243501a47321?q=80&w=1200&auto=format&fit=crop',
@@ -276,7 +276,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_14',
+    _id: 'route_14',
     title: 'Domaniç Geçidi',
     description: 'Türkiye\'nin Nürburgring\'i olarak anılan, motosikletçilerin favori oyun alanı. Mükemmel asfalt ve ardı ardına gelen virajlar.',
     image: 'https://images.unsplash.com/photo-1621255394237-772922633016?q=80&w=1200&auto=format&fit=crop',
@@ -294,7 +294,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_15',
+    _id: 'route_15',
     title: 'Şavşat - Karagöl Rüyası',
     description: 'Türkiye\'nin Alpleri Artvin\'de, yeşilin her tonunu görebileceğiniz, masalsı bir doğa sürüşü.',
     image: 'https://images.unsplash.com/photo-1589553093026-8c4c782b536c?q=80&w=1200&auto=format&fit=crop',
@@ -313,7 +313,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_16',
+    _id: 'route_16',
     title: 'Sakar Geçidi & Akyaka',
     description: 'Muğla\'dan Gökova körfezine inerken nefes kesen manzara eşliğinde yapılan ikonik bir iniş sürüşü.',
     image: 'https://images.unsplash.com/photo-1548674558-da397022c069?q=80&w=1200&auto=format&fit=crop',
@@ -331,7 +331,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_17',
+    _id: 'route_17',
     title: 'Nemrut Dağı Gün Doğumu',
     description: 'Adıyaman\'dan başlayıp tanrı heykellerine uzanan, taşlı yolları ve dik rampalarıyla mistik bir tırmanış.',
     image: 'https://images.unsplash.com/photo-1595843469275-042168925203?q=80&w=1200&auto=format&fit=crop',
@@ -350,7 +350,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_18',
+    _id: 'route_18',
     title: 'Bafa Gölü & Herakleia',
     description: 'Antik Latmos dağlarının eteğinde, zeytinlikler ve devasa kayalar arasından geçen tarihi bir Ege rotası.',
     image: 'https://images.unsplash.com/photo-1627918370771-337c76899476?q=80&w=1200&auto=format&fit=crop',
@@ -368,7 +368,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_19',
+    _id: 'route_19',
     title: 'Salda Gölü Turu',
     description: 'Türkiye\'nin Maldivleri olarak bilinen Salda Gölü\'nün etrafında turkuaz sulara karşı keyifli bir sürüş.',
     image: 'https://images.unsplash.com/photo-1625904835711-09529202720b?q=80&w=1200&auto=format&fit=crop',
@@ -387,7 +387,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_20',
+    _id: 'route_20',
     title: 'Kaz Dağları Zirve',
     description: 'Oksijen deposu ormanların içinden, mitolojik İda dağına doğru serin ve virajlı bir kaçış.',
     image: 'https://images.unsplash.com/photo-1470770841072-f978cf4d019e?q=80&w=1200&auto=format&fit=crop',
@@ -405,7 +405,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_21',
+    _id: 'route_21',
     title: 'Nallıhan Kuş Cenneti',
     description: 'Renkli tepelerin oluşturduğu görsel şölen eşliğinde Ankara\'dan kaçış rotası. Fotoğrafçılar için mükemmel.',
     image: 'https://images.unsplash.com/photo-1548588627-f978862b85e1?q=80&w=1200&auto=format&fit=crop',
@@ -423,7 +423,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_22',
+    _id: 'route_22',
     title: 'Gökçeada Rüzgarı',
     description: 'Türkiye\'nin en batısında, rüzgar gülleri ve terk edilmiş Rum köyleri arasında sakin ada sürüşü.',
     image: 'https://images.unsplash.com/photo-1502088559253-7800204d96fa?q=80&w=1200&auto=format&fit=crop',
@@ -441,7 +441,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_23',
+    _id: 'route_23',
     title: 'İshak Paşa Sarayı',
     description: 'Doğu\'nun en görkemli yapısına doğru, Ağrı Dağı manzaralı, düz ama etkileyici bir bozkır sürüşü.',
     image: 'https://images.unsplash.com/photo-1574356637654-2e94770337c7?q=80&w=1200&auto=format&fit=crop',
@@ -460,7 +460,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_24',
+    _id: 'route_24',
     title: 'Zigana Geçidi (Eski Yol)',
     description: 'Yeni tüneli kullanmak yerine, efsanevi eski Zigana yolunun sisli virajlarında kaybolmak isteyenler için.',
     image: 'https://images.unsplash.com/photo-1486870591958-9b9d0d1dda99?q=80&w=1200&auto=format&fit=crop',
@@ -479,7 +479,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_25',
+    _id: 'route_25',
     title: 'Erciyes Dağı Turu',
     description: 'Kayseri\'nin sembolü Erciyes\'in eteklerinde, yüksek irtifada serin ve geniş yollarda sürüş keyfi.',
     image: 'https://images.unsplash.com/photo-1614777977395-926df9447477?q=80&w=1200&auto=format&fit=crop',
@@ -498,7 +498,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_26',
+    _id: 'route_26',
     title: 'İğneada Longoz Ormanları',
     description: 'Avrupa\'nın en büyük longoz ormanlarına giden, virajlı ve doğa ile iç içe, Trakya\'nın saklı cennet rotası.',
     image: 'https://images.unsplash.com/photo-1542253738-9274296dc4a3?q=80&w=1200&auto=format&fit=crop',
@@ -516,7 +516,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_27',
+    _id: 'route_27',
     title: 'Köprülü Kanyon',
     description: 'Antalya\'nın sıcağından kaçıp serin sulara ve kanyon manzarasına sığınmak için mükemmel bir rota.',
     image: 'https://images.unsplash.com/photo-1526493775878-c0b06b729606?q=80&w=1200&auto=format&fit=crop',
@@ -534,7 +534,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_28',
+    _id: 'route_28',
     title: 'Anamur - Gazipaşa Sahil',
     description: 'Viraj sevenler için bitmeyen bir rüya. Akdeniz sahil şeridinin en bakir ve en teknik kısımlarından biri.',
     image: 'https://images.unsplash.com/photo-1596394516093-501ba68a0ba6?q=80&w=1200&auto=format&fit=crop',
@@ -553,7 +553,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_29',
+    _id: 'route_29',
     title: 'Sümela Manastırı Yolu',
     description: 'Altındere vadisi boyunca, yeşillikler ve şelaleler arasından geçerek sarp kayalıklara asılı manastıra çıkış.',
     image: 'https://images.unsplash.com/photo-1623169720639-66324903332c?q=80&w=1200&auto=format&fit=crop',
@@ -571,7 +571,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_30',
+    _id: 'route_30',
     title: 'Assos - Behramkale',
     description: 'Zeytinlikler arasından antik limana inen, tarih kokan taş yollar. Ege\'nin en huzurlu köşelerinden biri.',
     image: 'https://images.unsplash.com/photo-1533633370976-432d69c27948?q=80&w=1200&auto=format&fit=crop',
@@ -589,7 +589,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_31',
+    _id: 'route_31',
     title: 'Cunda Adası & Şeytan Sofrası',
     description: 'Ayvalık\'ın dar sokaklarından Cunda\'ya, oradan da gün batımını izlemek için Şeytan Sofrası\'na uzanan keyif rotası.',
     image: 'https://images.unsplash.com/photo-1542314831-068cd1dbd02b?q=80&w=1200&auto=format&fit=crop',
@@ -607,7 +607,7 @@ const DEFAULT_ROUTES: Route[] = [
     ]
   },
   {
-    id: 'route_32',
+    _id: 'route_32',
     title: 'Gelidonya Feneri Yolu',
     description: 'Adrasan üzerinden toprak ve virajlı yollarla ulaşılan, Akdeniz\'in en uç ve en güzel manzaralı noktalarından biri.',
     image: 'https://images.unsplash.com/photo-1520699918507-3c3e05c46b90?q=80&w=1200&auto=format&fit=crop',
@@ -628,6 +628,7 @@ const DEFAULT_ROUTES: Route[] = [
 
 export const routeService = {
   // ... existing methods (getRoutes, addRoute, updateRoute, deleteRoute)
+
   async getRoutes(): Promise<Route[]> {
     if (CONFIG.USE_MOCK_API) {
       await delay(300);
@@ -638,7 +639,7 @@ export const routeService = {
       }
       // Merge defaults if stored has less (for demo purposes to show new items)
       if (stored.length < DEFAULT_ROUTES.length) {
-        const merged = [...stored, ...DEFAULT_ROUTES.filter(d => !stored.some(s => s.id === d.id))];
+        const merged = [...stored, ...DEFAULT_ROUTES.filter(d => !stored.some(s => s._id === d._id))];
         // Update storage with new merged list
         setStorage(DB.ROUTES, merged);
         return merged;
@@ -656,13 +657,13 @@ export const routeService = {
     }
   },
 
-  async addRoute(route: Omit<Route, 'id'>): Promise<Route> {
+  async addRoute(route: Omit<Route, '_id'>): Promise<Route> {
     if (CONFIG.USE_MOCK_API) {
       await delay(500);
       const routes = getStorage<Route[]>(DB.ROUTES, []);
       const newRoute: Route = {
         ...route,
-        id: `route_${Date.now()}`,
+        _id: `route_${Date.now()}`,
       };
       routes.unshift(newRoute);
       setStorage(DB.ROUTES, routes);
@@ -682,14 +683,14 @@ export const routeService = {
     if (CONFIG.USE_MOCK_API) {
       await delay(300);
       const routes = getStorage<Route[]>(DB.ROUTES, []);
-      const index = routes.findIndex(r => r.id === route.id);
+      const index = routes.findIndex(r => r._id === route._id);
       if (index !== -1) {
         routes[index] = route;
         setStorage(DB.ROUTES, routes);
       }
     } else {
       // REAL BACKEND
-      await fetch(`${CONFIG.API_URL}/routes/${route.id}`, {
+      await fetch(`${CONFIG.API_URL}/routes/${route._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(route)
@@ -701,7 +702,7 @@ export const routeService = {
     if (CONFIG.USE_MOCK_API) {
       await delay(300);
       const routes = getStorage<Route[]>(DB.ROUTES, []);
-      const filtered = routes.filter(r => r.id !== id);
+      const filtered = routes.filter(r => r._id !== id);
       setStorage(DB.ROUTES, filtered);
     } else {
       // REAL BACKEND

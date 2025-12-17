@@ -5,7 +5,7 @@ import { CONFIG } from './config';
 
 const MOCK_VLOGS: MotoVlog[] = [
     {
-        id: 'vlog_1',
+        _id: 'vlog_1',
         title: 'Beyşehir Yolu Gazlama - MT09',
         author: 'Tek Teker Arif',
         locationName: 'Konya - Beyşehir Yolu',
@@ -17,7 +17,7 @@ const MOCK_VLOGS: MotoVlog[] = [
         productsUsed: [1, 3]
     },
     {
-        id: 'vlog_2',
+        _id: 'vlog_2',
         title: 'Antalya Sahil Virajları',
         author: 'MotoVibe Official',
         locationName: 'Kaş - Kalkan',
@@ -29,7 +29,7 @@ const MOCK_VLOGS: MotoVlog[] = [
         productsUsed: [2, 6]
     },
     {
-        id: 'vlog_3',
+        _id: 'vlog_3',
         title: 'Orman İçi Sakin Sürüş',
         author: 'Nature Rider',
         locationName: 'Belgrad Ormanı',
@@ -41,7 +41,7 @@ const MOCK_VLOGS: MotoVlog[] = [
         productsUsed: [4, 5]
     },
     {
-        id: 'vlog_4',
+        _id: 'vlog_4',
         title: 'İstanbul Park Pist Günü',
         author: 'Racing Spirit',
         locationName: 'Intercity İstanbul Park',
@@ -52,7 +52,7 @@ const MOCK_VLOGS: MotoVlog[] = [
         productsUsed: [8, 1, 3]
     },
     {
-        id: 'vlog_5',
+        _id: 'vlog_5',
         title: 'Gece Sürüşü - POV',
         author: 'Night Owl',
         locationName: 'İstanbul - Levent',
@@ -83,10 +83,10 @@ export const vlogService = {
         }
     },
 
-    async addVlog(vlog: Omit<MotoVlog, 'id' | 'views'>): Promise<MotoVlog> {
+    async addVlog(vlog: Omit<MotoVlog, '_id' | 'views'>): Promise<MotoVlog> {
         const newVlog: MotoVlog = {
             ...vlog,
-            id: `vlog_${Date.now()}`,
+            _id: `vlog_${Date.now()}`,
             views: '0',
         };
 

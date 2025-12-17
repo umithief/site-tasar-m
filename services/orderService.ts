@@ -14,13 +14,13 @@ export const orderService = {
             await delay(1000);
             const orders = getStorage<Order[]>(DB.ORDERS, []);
             const newOrder: Order = {
-                id: `MV_${new Date().getFullYear()}_${Math.floor(1000 + Math.random() * 9000)}`,
-                userId: user.id,
+                _id: `MV_${new Date().getFullYear()}_${Math.floor(1000 + Math.random() * 9000)}`,
+                userId: user._id,
                 date: new Date().toLocaleDateString('tr-TR'),
                 status: 'Hazırlanıyor',
                 total: total,
                 items: items.map(item => ({
-                    productId: item.id,
+                    productId: item._id,
                     name: item.name,
                     price: item.price,
                     quantity: item.quantity,
@@ -31,21 +31,21 @@ export const orderService = {
             setStorage(DB.ORDERS, orders);
 
             // LOG: Yeni Sipariş
-            await logService.addLog('success', 'Yeni Sipariş', `Sipariş No: ${newOrder.id} - Tutar: ₺${total}`);
+            await logService.addLog('success', 'Yeni Sipariş', `Sipariş No: ${newOrder._id} - Tutar: ₺${total}`);
 
             // Gamification: Add Points
             if (pointsEarned > 0) {
-                await gamificationService.addPoints(user.id, pointsEarned, 'Alışveriş Puanı');
+                await gamificationService.addPoints(user._id, pointsEarned, 'Alışveriş Puanı');
             }
 
             return newOrder;
         } else {
             // REAL BACKEND
             const orderData = {
-                userId: user.id,
+                userId: user._id,
                 total: total,
                 items: items.map(item => ({
-                    productId: item.id,
+                    productId: item._id,
                     name: item.name,
                     price: item.price,
                     quantity: item.quantity,
@@ -67,7 +67,7 @@ export const orderService = {
 
             // Backend should handle points ideally, but for now we call service
             if (pointsEarned > 0) {
-                await gamificationService.addPoints(user.id, pointsEarned, 'Alışveriş Puanı');
+                await gamificationService.addPoints(user._id, pointsEarned, 'Alışveriş Puanı');
             }
 
             return result;
@@ -103,7 +103,7 @@ export const orderService = {
         if (CONFIG.USE_MOCK_API) {
             await delay(300);
             const orders = getStorage<Order[]>(DB.ORDERS, []);
-            const index = orders.findIndex(o => o.id === orderId);
+            const index = orders.findIndex(o => o._id === orderId);
             if (index !== -1) {
                 orders[index].status = status as any;
                 setStorage(DB.ORDERS, orders);

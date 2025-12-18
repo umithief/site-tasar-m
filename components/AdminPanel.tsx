@@ -174,7 +174,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
         setModelSource('upload');
 
         if (activeTab === 'products') setFormData({ name: '', price: 0, category: 'Aksesuar', image: '', images: [], description: '', stock: 10, features: [], isNegotiable: false, model3d: '', isEditorsChoice: false, isDealOfTheDay: false });
-        else if (activeTab === 'stories') setFormData({ label: '', image: '', color: 'border-orange-500' });
+        else if (activeTab === 'stories') setFormData({ title: '', category: 'LIFESTYLE', coverImg: '', videoUrl: '', duration: '0:30', images: [] });
         else if (activeTab === 'categories') setFormData({ name: '', type: 'Aksesuar', image: '', desc: '', count: '0 Model', className: 'col-span-1 row-span-1' });
         else if (activeTab === 'slider') setFormData({ title: '', subtitle: '', image: '', cta: 'İNCELE', action: 'shop', type: 'image', videoUrl: '' });
         else if (activeTab === 'routes') setFormData({ title: '', location: '', difficulty: 'Orta', distance: '', duration: '', image: '', tags: [] });
@@ -217,6 +217,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
                 if (finalData.images && finalData.images.length > 0) {
                     finalData.image = finalData.images[0];
                 }
+            } else if (activeTab === 'stories') {
+                const uploadedFiles = finalData.images || [];
+                const video = uploadedFiles.find((u: string) => u.includes('.mp4') || u.includes('.webm'));
+                const img = uploadedFiles.find((u: string) => !u.includes('.mp4') && !u.includes('.webm'));
+
+                if (video && !finalData.videoUrl) finalData.videoUrl = video;
+                if (img && !finalData.coverImg) finalData.coverImg = img;
+
+                // Legacy mapping
+                if (finalData.coverImg) finalData.image = finalData.coverImg;
+                if (finalData.title) finalData.label = finalData.title;
             }
 
             if (activeTab === 'products') {
@@ -519,11 +530,14 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
                                         </div>
                                     );
 
-                                    if (key === 'category' && activeTab === 'products') return (
+                                    if (key === 'category' && (activeTab === 'products' || activeTab === 'stories')) return (
                                         <div key={key}>
                                             <label className="text-xs font-bold text-gray-500 uppercase mb-2 block">Kategori</label>
                                             <select className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white focus:border-[#F2A619] outline-none appearance-none" value={formData[key]} onChange={e => setFormData({ ...formData, [key]: e.target.value })}>
-                                                {Object.values(ProductCategory).map(c => <option key={c} value={c}>{c}</option>)}
+                                                {activeTab === 'products'
+                                                    ? Object.values(ProductCategory).map(c => <option key={c} value={c}>{c}</option>)
+                                                    : ['LIFESTYLE', 'EVENT', 'GEAR', 'REVIEWS', 'COMMUNITY'].map(c => <option key={c} value={c}>{c}</option>)
+                                                }
                                             </select>
                                         </div>
                                     );

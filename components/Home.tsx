@@ -5,6 +5,8 @@ import { CategoryGrid } from './CategoryGrid';
 import { ProductCard } from './ProductCard';
 import { PopularProducts } from './PopularProducts';
 import { Stories } from './Stories';
+import StoryBlobs from './StoryBlobs';
+import StorySection from './StorySection';
 import { FeaturesSection } from './FeaturesSection';
 import { DealOfTheDay } from './DealOfTheDay';
 import { Product, ProductCategory, ViewState, User } from '../types';
@@ -162,7 +164,8 @@ export const Home: React.FC<HomeProps> = ({
                 </div>
             </div>
 
-            <Stories onNavigate={onNavigate} />
+            {/* <Stories onNavigate={onNavigate} /> */}
+            <StorySection />
 
             {dealOfTheDayProduct && (
                 <DealOfTheDay

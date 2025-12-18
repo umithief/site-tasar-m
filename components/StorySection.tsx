@@ -13,60 +13,7 @@ interface Story {
     duration: string;
 }
 
-// --- Mock Data ---
-const STORIES: Story[] = [
-    {
-        id: '1',
-        title: 'TRACK DAY 2024',
-        category: 'EVENT',
-        coverImg: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&q=80&w=800',
-        videoUrl: 'https://cdn.coverr.co/videos/coverr-riding-a-motorcycle-on-a-curvy-road-4563/1080p.mp4',
-        duration: '0:45',
-    },
-    {
-        id: '2',
-        title: 'NEW ARRIVALS',
-        category: 'GEAR',
-        coverImg: 'https://images.unsplash.com/photo-1622185135505-2d795043997a?auto=format&fit=crop&q=80&w=800',
-        videoUrl: 'https://cdn.coverr.co/videos/coverr-motorcycle-helmet-closeup-5388/1080p.mp4',
-        duration: '0:30',
-    },
-    {
-        id: '3',
-        title: 'NIGHT RIDE',
-        category: 'LIFESTYLE',
-        coverImg: 'https://images.unsplash.com/photo-1625043484555-47841a723e74?auto=format&fit=crop&q=80&w=800',
-        videoUrl: 'https://cdn.coverr.co/videos/coverr-person-riding-a-motorcycle-at-night-4261/1080p.mp4',
-        duration: '1:15',
-    },
-    {
-        id: '4',
-        title: 'MT-09 REVIEW',
-        category: 'REVIEWS',
-        coverImg: 'https://images.unsplash.com/photo-1596706173770-3d7793b8e894?auto=format&fit=crop&q=80&w=800',
-        videoUrl: 'https://cdn.coverr.co/videos/coverr-motorcycle-exhaust-smoke-4569/1080p.mp4',
-        duration: '5:20',
-    },
-    {
-        id: '5',
-        title: 'SUMMER VIBES',
-        category: 'COMMUNITY',
-        coverImg: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=800',
-        videoUrl: 'https://cdn.coverr.co/videos/coverr-friends-riding-motorcycles-together-4682/1080p.mp4',
-        duration: '0:55',
-    }
-];
 
-// Mock story service for demonstration
-const storyService = {
-    getStories: (): Promise<Story[]> => {
-        return new Promise((resolve) => {
-            setTimeout(() => {
-                resolve(STORIES);
-            }, 500); // Simulate network delay
-        });
-    }
-};
 
 const StorySection: React.FC = () => {
     const [selectedId, setSelectedId] = useState<string | null>(null);

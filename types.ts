@@ -35,10 +35,14 @@ export interface CategoryItem {
 
 export interface Story {
   _id: string;
+  title: string;
   label: string;
-  image: string;
+  category: string;
+  image: string; // Keep for backward compatibility or map coverImg to it
+  coverImg: string;
+  videoUrl: string;
+  duration: string;
   color: string; // border color class or hex
-  link?: string;
 }
 
 export interface Model3DItem {

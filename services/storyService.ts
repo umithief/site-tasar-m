@@ -3,16 +3,19 @@ import { Story } from '../types';
 import { DB, getStorage, setStorage, delay } from './db';
 import { CONFIG } from './config';
 
-// Varsayılan Storyler
+// Varsayılan Storyler (Updated with new fields)
 const DEFAULT_STORIES: Story[] = [
-    { _id: 'st-1', label: 'Sana Özel', image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=200&auto=format&fit=crop', color: 'border-orange-500' },
-    { _id: 'st-2', label: 'Çok Satanlar', image: 'https://images.unsplash.com/photo-1558981806-ec527fa84c3d?q=80&w=200&auto=format&fit=crop', color: 'border-green-500' },
-    { _id: 'st-3', label: 'Kuponlar', image: 'https://images.unsplash.com/photo-1622185135505-2d795043ec63?q=80&w=200&auto=format&fit=crop', color: 'border-purple-500' },
-    { _id: 'st-4', label: 'Yeni Sezon', image: 'https://images.unsplash.com/photo-1593055363567-c6b77c427329?q=80&w=200&auto=format&fit=crop', color: 'border-blue-500' },
-    { _id: 'st-5', label: 'Flaş Ürünler', image: 'https://images.unsplash.com/photo-1589408432328-9b5947a5079a?q=80&w=200&auto=format&fit=crop', color: 'border-red-500' },
-    { _id: 'st-6', label: 'Aksesuarlar', image: 'https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?q=80&w=200&auto=format&fit=crop', color: 'border-yellow-500' },
-    { _id: 'st-7', label: 'Kasklar', image: 'https://images.unsplash.com/photo-1558981408-db0ecd8a1ee4?q=80&w=200&auto=format&fit=crop', color: 'border-gray-500' },
-    { _id: 'st-8', label: 'Outlet', image: 'https://images.unsplash.com/photo-1615172282427-9a5752d6486d?q=80&w=200&auto=format&fit=crop', color: 'border-pink-500' },
+    {
+        _id: 'st-1',
+        title: 'Sana Özel',
+        label: 'Sana Özel',
+        category: 'ÖNERİLEN',
+        image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=200&auto=format&fit=crop',
+        coverImg: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=200&auto=format&fit=crop',
+        videoUrl: '',
+        duration: '0:30',
+        color: 'border-orange-500'
+    }
 ];
 
 const DB_KEY_STORIES = 'mv_stories';
@@ -32,7 +35,16 @@ export const storyService = {
             try {
                 const response = await fetch(`${CONFIG.API_URL}/stories`);
                 if (!response.ok) return DEFAULT_STORIES;
-                return await response.json();
+                const data = await response.json();
+
+                // Map backend fields to frontend interface if needed
+                // But we unified them in types.ts so it should be fine.
+                // Just map legacy data if any.
+                return data.map((item: any) => ({
+                    ...item,
+                    label: item.title, // Map title to label if label is missing
+                    image: item.coverImg || item.image // Map coverImg to image
+                }));
             } catch {
                 return DEFAULT_STORIES;
             }

@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, X, ChevronRight, Share2, Heart } from 'lucide-react';
+import { storyService } from '../services/storyService';
 
 // --- Types ---
 interface Story {
@@ -56,8 +57,24 @@ const STORIES: Story[] = [
     }
 ];
 
+// Mock story service for demonstration
+const storyService = {
+    getStories: (): Promise<Story[]> => {
+        return new Promise((resolve) => {
+            setTimeout(() => {
+                resolve(STORIES);
+            }, 500); // Simulate network delay
+        });
+    }
+};
+
 const StorySection: React.FC = () => {
     const [selectedId, setSelectedId] = useState<string | null>(null);
+    const [stories, setStories] = useState<Story[]>([]);
+
+    useEffect(() => {
+        storyService.getStories().then(setStories);
+    }, []);
 
     // Lock body scroll when modal is open
     useEffect(() => {
@@ -67,6 +84,8 @@ const StorySection: React.FC = () => {
             document.body.style.overflow = 'unset';
         }
     }, [selectedId]);
+
+    if (!stories.length) return null; // Or loading state
 
     return (
         <div className="py-12 bg-[#0a0a0a] overflow-hidden select-none">
@@ -90,11 +109,11 @@ const StorySection: React.FC = () => {
 
             {/* Reel Container */}
             <div className="overflow-x-auto no-scrollbar pb-12 pt-4 pl-4 md:pl-8 flex gap-6 snap-x snap-mandatory">
-                {STORIES.map((story) => (
+                {stories.map((story) => (
                     <StoryCard
-                        key={story.id}
+                        key={story.id || story._id}
                         story={story}
-                        onClick={() => setSelectedId(story.id)}
+                        onClick={() => setSelectedId(story.id || story._id)}
                     />
                 ))}
             </div>
@@ -103,7 +122,7 @@ const StorySection: React.FC = () => {
             <AnimatePresence>
                 {selectedId && (
                     <FullScreenStory
-                        story={STORIES.find(s => s.id === selectedId)!}
+                        story={stories.find(s => (s.id || s._id) === selectedId)!}
                         onClose={() => setSelectedId(null)}
                     />
                 )}

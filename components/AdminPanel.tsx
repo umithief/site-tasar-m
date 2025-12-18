@@ -417,9 +417,15 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
                         {activeTab === 'stories' && (
                             <AdminStories
                                 stories={stories}
-                                handleAddNew={handleAddNew}
-                                handleEdit={handleEdit}
+                                handleAddNew={handleAddNew} // Kept for compatibility if needed, but ignored by component
+                                handleEdit={handleEdit}    // Ignored
                                 handleDelete={handleDelete}
+                                handleSave={async (story) => {
+                                    if (story._id) await storyService.updateStory(story);
+                                    else await storyService.addStory(story);
+                                    await loadAllData();
+                                    onShowToast('success', 'Hikaye kaydedildi');
+                                }}
                             />
                         )}
 

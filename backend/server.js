@@ -420,6 +420,7 @@ const seedDatabase = async () => {
 // 0. Upload Route
 app.use('/api/upload', uploadRoutes);
 
+
 app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/routes', routeRoutes);

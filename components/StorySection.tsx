@@ -144,9 +144,14 @@ const StoryCard: React.FC<{ story: Story; onClick: () => void }> = ({ story, onC
 };
 
 const FullScreenStory: React.FC<{ story: Story; onClose: () => void }> = ({ story, onClose }) => {
+    console.log('Opening Story:', story); // Debugging
+    if (!story) return null;
+
+    const mediaSrc = story.coverImg || story.image || 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=600';
+
     return (
         <motion.div
-            className="fixed inset-0 z-50 flex items-center justify-center"
+            className="fixed inset-0 z-[9999] flex items-center justify-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -154,7 +159,7 @@ const FullScreenStory: React.FC<{ story: Story; onClose: () => void }> = ({ stor
             {/* Backdrop (Blurred) */}
             <div className="absolute inset-0 bg-black/95 backdrop-blur-3xl">
                 <img
-                    src={story.coverImg || story.image}
+                    src={mediaSrc}
                     className="w-full h-full object-cover opacity-20 blur-3xl scale-110"
                     alt="blur-bg"
                 />
@@ -177,16 +182,23 @@ const FullScreenStory: React.FC<{ story: Story; onClose: () => void }> = ({ stor
                 <div className="relative w-full h-[60vh] md:h-full md:w-3/4 bg-black">
                     <motion.img
                         layoutId={`media-${story._id}`}
-                        src={story.coverImg || story.image}
+                        src={mediaSrc}
                         className="absolute inset-0 w-full h-full object-cover opacity-0" // Hidden immediately, showing video
                     />
-                    <video
-                        src={story.videoUrl}
-                        autoPlay
-                        loop
-                        controls
-                        className="w-full h-full object-cover"
-                    />
+                    {story.videoUrl ? (
+                        <video
+                            src={story.videoUrl}
+                            autoPlay
+                            loop
+                            controls
+                            className="w-full h-full object-cover"
+                        />
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-900 text-gray-500">
+                            Video Yok
+                        </div>
+                    )}
+
                     <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent md:hidden" />
                 </div>
 
@@ -209,10 +221,10 @@ const FullScreenStory: React.FC<{ story: Story; onClose: () => void }> = ({ stor
 
                     <div className="flex-1">
                         <span className="text-orange-500 font-bold text-xs tracking-widest uppercase mb-2 block">
-                            {story.category}
+                            {story.category || 'GENEL'}
                         </span>
                         <h2 className="text-3xl md:text-3xl font-display font-black text-white leading-none uppercase mb-4">
-                            {story.title || story.label}
+                            {story.title || story.label || 'Başlıksız'}
                         </h2>
                         <p className="text-gray-400 text-sm leading-relaxed mb-6">
                             Sürüşün heyecanını deneyimle. Bu özel içerik seni aksiyona hiç olmadığı kadar yakınlaştırıyor.
@@ -228,7 +240,7 @@ const FullScreenStory: React.FC<{ story: Story; onClose: () => void }> = ({ stor
                                 <span className="text-xs text-gray-500">Yorum</span>
                             </div>
                             <div className="flex flex-col">
-                                <span className="text-lg font-bold text-white">{story.duration}</span>
+                                <span className="text-lg font-bold text-white">{story.duration || '0:15'}</span>
                                 <span className="text-xs text-gray-500">Süre</span>
                             </div>
                         </div>

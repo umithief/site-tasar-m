@@ -39,10 +39,10 @@ const StorySection: React.FC = () => {
             <div className="container mx-auto px-4 md:px-8 mb-6 flex items-end justify-between">
                 <div>
                     <h2 className="text-3xl font-display font-black text-white leading-none tracking-tight">
-                        THE VELOCITY <span className="text-orange-600">REEL</span>
+                        VELOCITY <span className="text-orange-600">REEL</span>
                     </h2>
                     <p className="text-gray-400 text-sm mt-2 font-medium tracking-wide">
-                        CATCH THE VIBE
+                        RİTMİ YAKALA
                     </p>
                 </div>
 
@@ -226,21 +226,21 @@ const FullScreenStory: React.FC<{ story: Story; onClose: () => void }> = ({ stor
                             {story.title}
                         </h2>
                         <p className="text-gray-400 text-sm leading-relaxed mb-6">
-                            Experience the thrill of the ride. This exclusive coverage brings you closer to the action than ever before.
+                            Sürüşün heyecanını deneyimle. Bu özel içerik seni aksiyona hiç olmadığı kadar yakınlaştırıyor.
                         </p>
 
                         <div className="flex gap-4 mb-8">
                             <div className="flex flex-col">
                                 <span className="text-lg font-bold text-white">2.4k</span>
-                                <span className="text-xs text-gray-500">Likes</span>
+                                <span className="text-xs text-gray-500">Beğeni</span>
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-lg font-bold text-white">108</span>
-                                <span className="text-xs text-gray-500">Comments</span>
+                                <span className="text-xs text-gray-500">Yorum</span>
                             </div>
                             <div className="flex flex-col">
                                 <span className="text-lg font-bold text-white">{story.duration}</span>
-                                <span className="text-xs text-gray-500">Duration</span>
+                                <span className="text-xs text-gray-500">Süre</span>
                             </div>
                         </div>
                     </div>

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Mail, Lock, User, ArrowRight, Github, Twitter, Chrome, Smartphone } from 'lucide-react';
+import { Mail, Lock, User, ArrowRight, Github, Twitter, Chrome, Smartphone, Check } from 'lucide-react';
 import { authService } from '../services/auth';
 import { useAppSounds } from '../hooks/useAppSounds';
 import { notify } from '../services/notificationService';
@@ -11,6 +11,7 @@ export const AuthPage = ({ onLoginSuccess, onNavigate }: { onLoginSuccess?: () =
 
     const [loginEmail, setLoginEmail] = useState('');
     const [loginPass, setLoginPass] = useState('');
+    const [rememberMe, setRememberMe] = useState(false);
 
     const [regName, setRegName] = useState('');
     const [regEmail, setRegEmail] = useState('');
@@ -78,7 +79,21 @@ export const AuthPage = ({ onLoginSuccess, onNavigate }: { onLoginSuccess?: () =
                         <UnderlineInput icon={<Mail />} label="E-posta Adresi" value={loginEmail} onChange={setLoginEmail} type="email" />
                         <UnderlineInput icon={<Lock />} label="Şifre" value={loginPass} onChange={setLoginPass} type="password" />
 
-                        <div className="flex justify-end">
+                        <div className="flex justify-between items-center">
+                            <label className="flex items-center gap-2 cursor-pointer group">
+                                <div className="relative">
+                                    <input
+                                        type="checkbox"
+                                        className="peer sr-only"
+                                        checked={rememberMe}
+                                        onChange={(e) => setRememberMe(e.target.checked)}
+                                    />
+                                    <div className="w-4 h-4 border border-white/30 rounded bg-white/5 peer-checked:bg-[#F2A619] peer-checked:border-[#F2A619] transition-all"></div>
+                                    <Check className="w-3 h-3 text-black absolute top-0.5 left-0.5 opacity-0 peer-checked:opacity-100 transition-opacity" />
+                                </div>
+                                <span className="text-xs text-gray-400 group-hover:text-white transition-colors">Beni Hatırla</span>
+                            </label>
+
                             <button type="button" className="text-xs font-bold text-[#F2A619] hover:text-white transition-colors">
                                 ŞİFREMİ UNUTTUM?
                             </button>
@@ -197,8 +212,8 @@ const UnderlineInput = ({ icon, label, value, onChange, type, rightAlign = false
             {/* If right align, icon should theoretically be on right, but keeping left for consistency unless strict req. 
                 Wait, user asked for icon inside, didn't specify side. "Underline style". Floating Label. */}
             <label className={`absolute left-8 transition-all duration-300 pointer-events-none ${focused || value
-                    ? '-top-0 text-xs text-[#F2A619]'
-                    : 'top-3 text-gray-500'
+                ? '-top-0 text-xs text-[#F2A619]'
+                : 'top-3 text-gray-500'
                 }`}>
                 {label}
             </label>

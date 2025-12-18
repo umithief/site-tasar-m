@@ -1,55 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Play, ChevronRight, Heart, Share2 } from 'lucide-react';
-
-// --- Types ---
-interface Story {
-    id: string;
-    title: string;
-    image: string;
-    video?: string; // Optional video URL
-    duration: number; // in seconds
-    color: string; // Accent color for the blob border
-}
-
-// --- Mock Data ---
-const STORIES: Story[] = [
-    {
-        id: '1',
-        title: 'Yeni Kasklar',
-        image: 'https://images.unsplash.com/photo-1622185135505-2d795043997a?auto=format&fit=crop&q=80&w=600',
-        duration: 5,
-        color: '#F2994A', // Orange
-    },
-    {
-        id: '2',
-        title: 'Gece Sürüşü',
-        image: 'https://images.unsplash.com/photo-1625043484555-47841a723e74?auto=format&fit=crop&q=80&w=600',
-        duration: 8,
-        color: '#00F260', // Neon Green
-    },
-    {
-        id: '3',
-        title: 'Pist Günü',
-        image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&q=80&w=600',
-        duration: 10,
-        color: '#0575E6', // Blue
-    },
-    {
-        id: '4',
-        title: 'Kampanya',
-        image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=600',
-        duration: 6,
-        color: '#8E2DE2', // Purple
-    },
-    {
-        id: '5',
-        title: 'Atölye',
-        image: 'https://images.unsplash.com/photo-1596706173770-3d7793b8e894?auto=format&fit=crop&q=80&w=600',
-        duration: 7,
-        color: '#FF416C', // Red
-    },
-];
+import { storyService } from '../services/storyService';
+import { Story } from '../types';
 
 // --- Organic Shape Variants ---
 // These border-radius values create the "liquid" morphing effect
@@ -77,6 +30,13 @@ const blobVariants = {
 
 const StoryBlobs: React.FC = () => {
     const [selectedId, setSelectedId] = useState<string | null>(null);
+    const [stories, setStories] = useState<Story[]>([]);
+
+    useEffect(() => {
+        storyService.getStories().then(setStories);
+    }, []);
+
+    if (!stories.length) return null;
 
     return (
         <section className="py-12 bg-gray-50 overflow-hidden min-h-[300px] flex items-center">
@@ -90,11 +50,11 @@ const StoryBlobs: React.FC = () => {
 
                 {/* Blobs Container */}
                 <div className="flex gap-8 overflow-x-auto pb-12 pt-4 px-4 no-scrollbar items-center">
-                    {STORIES.map((story) => (
+                    {stories.map((story) => (
                         <StoryBlob
-                            key={story.id}
+                            key={story._id}
                             story={story}
-                            onClick={() => setSelectedId(story.id)}
+                            onClick={() => setSelectedId(story._id)}
                         />
                     ))}
                 </div>
@@ -104,7 +64,7 @@ const StoryBlobs: React.FC = () => {
             <AnimatePresence>
                 {selectedId && (
                     <FullScreenStory
-                        story={STORIES.find(s => s.id === selectedId)!}
+                        story={stories.find(s => s._id === selectedId)!}
                         onClose={() => setSelectedId(null)}
                     />
                 )}
@@ -116,10 +76,11 @@ const StoryBlobs: React.FC = () => {
 // --- Sub-Components ---
 
 const StoryBlob: React.FC<{ story: Story; onClick: () => void }> = ({ story, onClick }) => {
+    const mediaSrc = story.coverImg || story.image || 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=200';
+
     return (
         <div className="relative group cursor-pointer flex-shrink-0 flex flex-col items-center gap-3">
             <motion.div
-                layoutId={`container-${story.id}`}
                 className="relative w-24 h-24 md:w-28 md:h-28"
                 onClick={onClick}
                 whileHover="hover"
@@ -131,8 +92,8 @@ const StoryBlob: React.FC<{ story: Story; onClick: () => void }> = ({ story, onC
                     variants={blobVariants}
                     className="absolute inset-0 border-[3px] border-transparent"
                     style={{
-                        borderColor: story.color,
-                        boxShadow: `0 0 15px ${story.color}60`
+                        borderColor: story.color || '#F2994A',
+                        boxShadow: `0 0 15px ${story.color || '#F2994A'}60`
                     }}
                 />
 
@@ -142,8 +103,7 @@ const StoryBlob: React.FC<{ story: Story; onClick: () => void }> = ({ story, onC
                     className="absolute inset-[4px] overflow-hidden bg-gray-900"
                 >
                     <motion.img
-                        layoutId={`image-${story.id}`}
-                        src={story.image}
+                        src={mediaSrc}
                         alt={story.title}
                         className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-opacity"
                     />
@@ -160,7 +120,7 @@ const StoryBlob: React.FC<{ story: Story; onClick: () => void }> = ({ story, onC
                 whileHover={{ opacity: 1, y: -2 }}
                 className="text-sm font-semibold text-gray-700 max-w-[100px] text-center truncate"
             >
-                {story.title}
+                {story.title || story.label}
             </motion.span>
         </div>
     );
@@ -168,6 +128,8 @@ const StoryBlob: React.FC<{ story: Story; onClick: () => void }> = ({ story, onC
 
 const FullScreenStory: React.FC<{ story: Story; onClose: () => void }> = ({ story, onClose }) => {
     const [progress, setProgress] = useState(0);
+    const mediaSrc = story.coverImg || story.image || 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80';
+    const duration = story.duration ? parseInt(story.duration.split(':')[0]) * 60 + parseInt(story.duration.split(':')[1]) : 10;
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -177,19 +139,18 @@ const FullScreenStory: React.FC<{ story: Story; onClose: () => void }> = ({ stor
                     onClose();
                     return 100;
                 }
-                return old + (100 / (story.duration * 10)); // Update every 100ms
+                return old + (100 / (duration * 10)); // Update every 100ms
             });
         }, 100);
 
         return () => clearInterval(timer);
-    }, [story.duration, onClose]);
+    }, [duration, onClose]);
 
     return (
         <motion.div
-            layoutId={`container-${story.id}`}
-            className="fixed inset-0 z-50 bg-black flex flex-col items-center justify-center"
-            initial={{ borderRadius: 0 }}
-            animate={{ borderRadius: 0 }}
+            className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
         >
             {/* Background Blur */}
@@ -230,12 +191,27 @@ const FullScreenStory: React.FC<{ story: Story; onClose: () => void }> = ({ stor
                 </div>
 
                 {/* Main Content (Image/Video) */}
-                <motion.img
-                    layoutId={`image-${story.id}`}
-                    src={story.image}
-                    className="w-full h-full object-cover"
-                    alt={story.title}
-                />
+                <div className="w-full h-full bg-black flex items-center justify-center relative">
+                    <motion.img
+                        src={mediaSrc}
+                        className="absolute inset-0 w-full h-full object-cover opacity-50"
+                        alt={story.title}
+                    />
+                    {story.videoUrl ? (
+                        <video
+                            src={story.videoUrl}
+                            className="relative w-full h-full object-contain"
+                            autoPlay
+                            playsInline
+                        />
+                    ) : (
+                        <img
+                            src={mediaSrc}
+                            className="relative w-full h-full object-contain"
+                            alt={story.title}
+                        />
+                    )}
+                </div>
 
                 {/* Gradient Overlay at Bottom */}
                 <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-black/80 to-transparent z-20" />

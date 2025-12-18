@@ -2,18 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, X, ChevronRight, Share2, Heart } from 'lucide-react';
 import { storyService } from '../services/storyService';
-
-// --- Types ---
-interface Story {
-    id: string;
-    title: string;
-    category: string;
-    coverImg: string;
-    videoUrl: string;
-    duration: string;
-}
-
-
+import { Story } from '../types';
 
 const StorySection: React.FC = () => {
     const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -58,9 +47,9 @@ const StorySection: React.FC = () => {
             <div className="overflow-x-auto no-scrollbar pb-12 pt-4 pl-4 md:pl-8 flex gap-6 snap-x snap-mandatory">
                 {stories.map((story) => (
                     <StoryCard
-                        key={story.id || story._id}
+                        key={story._id}
                         story={story}
-                        onClick={() => setSelectedId(story.id || story._id)}
+                        onClick={() => setSelectedId(story._id)}
                     />
                 ))}
             </div>
@@ -69,7 +58,7 @@ const StorySection: React.FC = () => {
             <AnimatePresence>
                 {selectedId && (
                     <FullScreenStory
-                        story={stories.find(s => (s.id || s._id) === selectedId)!}
+                        story={stories.find(s => s._id === selectedId)!}
                         onClose={() => setSelectedId(null)}
                     />
                 )}
@@ -95,7 +84,7 @@ const StoryCard: React.FC<{ story: Story; onClick: () => void }> = ({ story, onC
 
     return (
         <motion.div
-            layoutId={`card-container-${story.id}`}
+            layoutId={`card-container-${story._id}`}
             onClick={onClick}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
@@ -105,8 +94,8 @@ const StoryCard: React.FC<{ story: Story; onClick: () => void }> = ({ story, onC
             {/* Background Media */}
             <div className="absolute inset-0 bg-gray-900">
                 <motion.img
-                    layoutId={`media-${story.id}`}
-                    src={story.coverImg}
+                    layoutId={`media-${story._id}`}
+                    src={story.coverImg || story.image}
                     alt={story.title}
                     className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${isHovered ? 'opacity-0' : 'opacity-100'}`}
                 />
@@ -142,7 +131,7 @@ const StoryCard: React.FC<{ story: Story; onClick: () => void }> = ({ story, onC
 
                 <div>
                     <h3 className="text-white font-bold text-lg leading-tight uppercase font-display tracking-wide group-hover:text-orange-500 transition-colors">
-                        {story.title}
+                        {story.title || story.label}
                     </h3>
                     <div className="flex items-center gap-2 mt-2">
                         <Play size={12} className="text-orange-500 fill-orange-500" />
@@ -165,7 +154,7 @@ const FullScreenStory: React.FC<{ story: Story; onClose: () => void }> = ({ stor
             {/* Backdrop (Blurred) */}
             <div className="absolute inset-0 bg-black/95 backdrop-blur-3xl">
                 <img
-                    src={story.coverImg}
+                    src={story.coverImg || story.image}
                     className="w-full h-full object-cover opacity-20 blur-3xl scale-110"
                     alt="blur-bg"
                 />
@@ -173,7 +162,7 @@ const FullScreenStory: React.FC<{ story: Story; onClose: () => void }> = ({ stor
 
             {/* Main Card Expansion */}
             <motion.div
-                layoutId={`card-container-${story.id}`}
+                layoutId={`card-container-${story._id}`}
                 className="relative w-full h-full md:w-[95vw] md:h-[90vh] md:max-w-6xl md:rounded-3xl overflow-hidden bg-black shadow-2xl flex flex-col md:flex-row"
             >
                 {/* Close Button Mobile */}
@@ -187,8 +176,8 @@ const FullScreenStory: React.FC<{ story: Story; onClose: () => void }> = ({ stor
                 {/* Video Section (Left / Top) */}
                 <div className="relative w-full h-[60vh] md:h-full md:w-3/4 bg-black">
                     <motion.img
-                        layoutId={`media-${story.id}`}
-                        src={story.coverImg}
+                        layoutId={`media-${story._id}`}
+                        src={story.coverImg || story.image}
                         className="absolute inset-0 w-full h-full object-cover opacity-0" // Hidden immediately, showing video
                     />
                     <video
@@ -223,7 +212,7 @@ const FullScreenStory: React.FC<{ story: Story; onClose: () => void }> = ({ stor
                             {story.category}
                         </span>
                         <h2 className="text-3xl md:text-3xl font-display font-black text-white leading-none uppercase mb-4">
-                            {story.title}
+                            {story.title || story.label}
                         </h2>
                         <p className="text-gray-400 text-sm leading-relaxed mb-6">
                             Sürüşün heyecanını deneyimle. Bu özel içerik seni aksiyona hiç olmadığı kadar yakınlaştırıyor.

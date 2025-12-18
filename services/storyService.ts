@@ -42,6 +42,7 @@ export const storyService = {
                 // Just map legacy data if any.
                 return data.map((item: any) => ({
                     ...item,
+                    _id: item._id || item.id, // Ensure _id is present
                     label: item.title, // Map title to label if label is missing
                     image: item.coverImg || item.image // Map coverImg to image
                 }));

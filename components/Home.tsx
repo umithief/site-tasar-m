@@ -18,6 +18,8 @@ import { useLivingTime } from '../hooks/useLivingTime';
 import { WeatherWidget } from './WeatherWidget';
 import { BrandTicker } from './BrandTicker';
 import { useLanguage } from '../contexts/LanguageProvider';
+import SpotlightShowcase from './SpotlightShowcase';
+import ProductCatalog from './ProductCatalog';
 
 interface HomeProps {
     products: Product[];
@@ -166,6 +168,9 @@ export const Home: React.FC<HomeProps> = ({
 
             {/* <Stories onNavigate={onNavigate} /> */}
             <StorySection />
+            <StoryBlobs />
+
+            <SpotlightShowcase />
 
             {dealOfTheDayProduct && (
                 <DealOfTheDay
@@ -176,6 +181,8 @@ export const Home: React.FC<HomeProps> = ({
             )}
 
             <CategoryGrid onCategorySelect={handleCategorySelect} />
+
+            <ProductCatalog />
 
             <PopularProducts
                 products={smartProducts}

@@ -45,13 +45,26 @@ const MOCK_PRODUCTS: Product[] = [
 
 export const CinemaShowcase: React.FC = () => {
     const [activeIndex, setActiveIndex] = useState<number | null>(1); // Default to middle one for best look
+    const [isPaused, setIsPaused] = useState(false);
+
+    // Auto-rotation
+    React.useEffect(() => {
+        if (isPaused) return;
+        const interval = setInterval(() => {
+            setActiveIndex((prev) => {
+                if (prev === null) return 0;
+                return (prev + 1) % MOCK_PRODUCTS.length;
+            });
+        }, 4000);
+        return () => clearInterval(interval);
+    }, [isPaused]);
 
     const handleAddToCart = (product: Product) => {
         console.log('Added to cart:', product.name);
     };
 
     return (
-        <section className="relative py-32 bg-[#050505] overflow-hidden">
+        <section className="relative py-24 md:py-32 bg-[#050505] overflow-hidden">
             {/* Cinematic Background Elements */}
             <div className="absolute inset-0 z-0">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(var(--moto-accent-rgb),0.05)_0%,transparent_70%)]" />
@@ -77,8 +90,8 @@ export const CinemaShowcase: React.FC = () => {
                 ))}
             </div>
 
-            <div className="relative z-10 max-w-[1600px] mx-auto px-10">
-                <div className="flex flex-col mb-20">
+            <div className="relative z-10 max-w-[1600px] mx-auto px-6 md:px-10">
+                <div className="flex flex-col mb-12 md:mb-20">
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         whileInView={{ opacity: 1, x: 0 }}
@@ -93,13 +106,19 @@ export const CinemaShowcase: React.FC = () => {
                     <motion.h2
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
-                        className="text-6xl md:text-8xl font-black text-white tracking-tighter"
+                        className="text-5xl md:text-8xl font-black text-white tracking-tighter"
                     >
                         FOCUS & <span className="text-white/10 italic">EXPANSION</span>
                     </motion.h2>
                 </div>
 
-                <div className="flex gap-6 min-h-[650px] items-stretch perspective-2000">
+                {/* Container: Stack on mobile, Row on desktop */}
+                <div
+                    className="flex flex-col md:flex-row gap-6 min-h-[650px] items-stretch"
+                    style={{ perspective: "2000px" }}
+                    onMouseEnter={() => setIsPaused(true)}
+                    onMouseLeave={() => setIsPaused(false)}
+                >
                     {MOCK_PRODUCTS.map((product, index) => (
                         <CinemaCard
                             key={product._id}
@@ -120,7 +139,7 @@ export const CinemaShowcase: React.FC = () => {
                 >
                     <div className="flex flex-col gap-1">
                         <span className="text-white/20 text-[10px] font-black uppercase tracking-widest leading-none">Curation Metadata</span>
-                        <span className="text-white/40 text-xs font-bold uppercase tracking-widest">(3) Masterpieces Loaded</span>
+                        <span className="text-white/40 text-xs font-bold uppercase tracking-widest">Auto-Cycle: {isPaused ? "PAUSED" : "ACTIVE"}</span>
                     </div>
 
                     <div className="flex gap-4">
@@ -130,7 +149,7 @@ export const CinemaShowcase: React.FC = () => {
                                 onClick={() => setActiveIndex(i)}
                                 className="group flex flex-col gap-3 py-2"
                             >
-                                <div className={`w-20 h-1 transition-all duration-700 rounded-full ${activeIndex === i ? 'bg-moto-accent shadow-[0_0_15px_rgba(var(--moto-accent-rgb),0.8)]' : 'bg-white/10 group-hover:bg-white/20'}`} />
+                                <div className={`w-12 md:w-20 h-1 transition-all duration-700 rounded-full ${activeIndex === i ? 'bg-moto-accent shadow-[0_0_15px_rgba(var(--moto-accent-rgb),0.8)]' : 'bg-white/10 group-hover:bg-white/20'}`} />
                                 <span className={`text-[9px] font-black transition-all duration-500 uppercase tracking-widest ${activeIndex === i ? 'text-white opacity-100' : 'text-white/20 opacity-0 group-hover:opacity-100'}`}>0{i + 1}</span>
                             </button>
                         ))}

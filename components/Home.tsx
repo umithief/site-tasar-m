@@ -20,6 +20,7 @@ import { BrandTicker } from './BrandTicker';
 import { useLanguage } from '../contexts/LanguageProvider';
 import SpotlightShowcase from './SpotlightShowcase';
 import ProductCatalog from './ProductCatalog';
+import { CinemaShowcase } from './CinemaShowcase';
 
 interface HomeProps {
     products: Product[];
@@ -171,6 +172,8 @@ export const Home: React.FC<HomeProps> = ({
             <StoryBlobs />
 
             <SpotlightShowcase />
+            <CinemaShowcase />
+
 
             {dealOfTheDayProduct && (
                 <DealOfTheDay

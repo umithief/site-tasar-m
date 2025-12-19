@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { motion } from 'framer-motion';
 import { CinemaCard } from './CinemaCard';
 import { Product, ProductCategory } from '../types';
@@ -175,8 +176,9 @@ export const CinemaShowcase: React.FC = () => {
             </div>
 
             {/* PREVIEW MODAL */}
-            {previewProduct && (
-                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            {/* PREVIEW MODAL */}
+            {previewProduct && createPortal(
+                <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -247,7 +249,8 @@ export const CinemaShowcase: React.FC = () => {
                             </div>
                         </div>
                     </motion.div>
-                </div>
+                </div>,
+                document.body
             )}
         </section>
     );

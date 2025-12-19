@@ -199,14 +199,15 @@ export const CinemaShowcase: React.FC = () => {
                             ✕
                         </button>
 
-                        {/* Image Side */}
-                        <div className="w-full md:w-1/2 h-[300px] md:h-auto relative bg-black">
+                        {/* Image Side - Fixed Height & Gradient */}
+                        <div className="w-full md:w-1/2 h-[400px] md:h-auto min-h-[400px] relative bg-black">
                             <img
                                 src={previewProduct.image}
                                 alt={previewProduct.name}
-                                className="w-full h-full object-cover opacity-80"
+                                className="w-full h-full object-cover"
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent md:bg-gradient-to-r" />
+                            {/* Gradient fading into the text side (Right) */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent md:bg-gradient-to-l md:from-[#111] md:to-transparent" />
                         </div>
 
                         {/* Content Side */}

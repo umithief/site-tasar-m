@@ -175,9 +175,9 @@ export const Home: React.FC<HomeProps> = ({
                 <SpotlightShowcase />
             </ErrorBoundary>
 
-            {/* <ErrorBoundary name="CinemaShowcase">
+            <ErrorBoundary name="CinemaShowcase">
                 <CinemaShowcase />
-            </ErrorBoundary> */}
+            </ErrorBoundary>
 
 
             {dealOfTheDayProduct && (

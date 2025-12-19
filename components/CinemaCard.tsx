@@ -150,8 +150,8 @@ export const CinemaCard: React.FC<CinemaCardProps> = ({
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             style={{
-                rotateX: isActive ? rotateX : 0,
-                rotateY: isActive ? rotateY : 0,
+                rotateX: 0, // Temporarily disabled for stability check
+                rotateY: 0,
                 transformStyle: "preserve-3d",
                 perspective: 1000
             }}
@@ -354,21 +354,7 @@ export const CinemaCard: React.FC<CinemaCardProps> = ({
                 <div className="absolute inset-x-0 top-0 h-1/3 bg-gradient-to-b from-black/60 to-transparent z-[5] pointer-events-none" />
             </div>
 
-            {/* Card Border Highlight (Spotlight following - moved OUTSIDE rounded container to be on the border/edge) */}
-            {isActive && (
-                <motion.div
-                    className="absolute inset-0 z-[25] pointer-events-none rounded-[3rem] border-2 border-transparent"
-                    style={{
-                        background: useTransform(
-                            [springX, springY],
-                            ([x, y]) => `radial-gradient(circle at calc(50% + ${x}px) calc(50% + ${y}px), rgba(var(--moto-accent-rgb), 0.5) 0%, transparent 60%) border-box`
-                        ),
-                        mask: "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)"
-                    }}
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                />
-            )}
+            {/* Removed Border Highlight to fix crash */}
         </motion.div>
     );
 };

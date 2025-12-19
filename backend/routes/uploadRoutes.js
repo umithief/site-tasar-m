@@ -2,13 +2,16 @@ import express from 'express';
 import multer from 'multer';
 import { createClient } from '@supabase/supabase-js';
 
+import dotenv from 'dotenv';
+dotenv.config();
+
 const router = express.Router();
 
-// 1. Supabase Ayarları (Environment variables'dan çekeceğiz)
+// 1. Supabase Ayarları
 const supabaseUrl = process.env.SUPABASE_URL;
 const supabaseKey = process.env.SUPABASE_KEY;
 
-// Supabase client'ı sadece keyler varsa oluştur, yoksa null
+// Supabase client'ı oluştur
 const supabase = (supabaseUrl && supabaseKey)
     ? createClient(supabaseUrl, supabaseKey)
     : null;

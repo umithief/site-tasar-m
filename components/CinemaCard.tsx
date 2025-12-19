@@ -363,8 +363,7 @@ export const CinemaCard: React.FC<CinemaCardProps> = ({
                             [springX, springY],
                             ([x, y]) => `radial-gradient(circle at calc(50% + ${x}px) calc(50% + ${y}px), rgba(var(--moto-accent-rgb), 0.5) 0%, transparent 60%) border-box`
                         ),
-                        mask: "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)",
-                        maskComposite: "exclude"
+                        mask: "linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)"
                     }}
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}

@@ -171,13 +171,13 @@ export const Home: React.FC<HomeProps> = ({
             {/* <Stories onNavigate={onNavigate} /> */}
             <StorySection />
             <StoryBlobs />
-            <ErrorBoundary name="SpotlightShowcase">
+            {/* <ErrorBoundary name="SpotlightShowcase">
                 <SpotlightShowcase />
             </ErrorBoundary>
 
             <ErrorBoundary name="CinemaShowcase">
                 <CinemaShowcase />
-            </ErrorBoundary>
+            </ErrorBoundary> */}
 
 
             {dealOfTheDayProduct && (

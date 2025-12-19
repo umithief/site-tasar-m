@@ -438,35 +438,35 @@ const seedDatabase = async () => {
             await ShowcaseProduct.insertMany([
                 {
                     name: 'CARBON X-1',
-                    description: 'Aerodynamic excellence meets pure carbon fiber construction. Designed for the track, refined for the street.',
+                    description: 'Saf karbon fiber yapı ile aerodinamik mükemmellik. Pistler için tasarlandı, sokaklar için geliştirildi.',
                     price: 12500,
                     category: 'Kask',
                     image: 'https://images.unsplash.com/photo-1599819811279-d5ad9cccf838?auto=format&fit=crop&q=80&w=800',
                     images: [],
                     rating: 5,
-                    features: ['Ultra-Light Carbon Shell', 'Emergency Release System', 'MaxVision Pinlock', 'Wind Tunnel Tested'],
+                    features: ['Ultra Hafif Karbon Kabuk', 'Acil Durum Çıkarma Sistemi', 'MaxVision Pinlock', 'Rüzgar Tüneli Testli'],
                     stock: 3
                 },
                 {
                     name: 'VENOM 400',
-                    description: 'Unmatched protection with a tactical edge. The Venom 100 jacket brings military-grade materials to your daily ride.',
+                    description: 'Taktiksel üstünlükle benzersiz koruma. Venom 400 mont, askeri sınıf malzemeleri günlük sürüşünüze getiriyor.',
                     price: 8900,
                     category: 'Mont',
                     image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=800',
                     images: [],
                     rating: 4.8,
-                    features: ['Cordura® Construction', 'CE Level 2 Armor', 'Waterproof Membrane', 'Hydration Pack Ready'],
+                    features: ['Cordura® Yapı', 'CE Seviye 2 Koruma', 'Su Geçirmez Membran', 'Sıvı Takviyesi Hazır'],
                     stock: 12
                 },
                 {
                     name: 'TITAN BOOTS',
-                    description: 'Stability that feels like gravity. Titan boots provide the ultimate grip and ankle support for extreme conditions.',
+                    description: 'Yerçekimi kadar sağlam bir denge. Titan botları, ekstrem koşullar için nihai tutuş ve bilek desteği sağlar.',
                     price: 6750,
                     category: 'Bot',
                     image: 'https://images.unsplash.com/photo-1609630875171-b132137746be?auto=format&fit=crop&q=80&w=800',
                     images: [],
                     rating: 4.9,
-                    features: ['Gore-Tex Extreme', 'Vibram Outsole', 'Composite Toe Box', 'Adjustable Buckle System'],
+                    features: ['Gore-Tex Ekstrem', 'Vibram Taban', 'Kompozit Burun', 'Ayarlanabilir Toka Sistemi'],
                     stock: 8
                 }
             ]);

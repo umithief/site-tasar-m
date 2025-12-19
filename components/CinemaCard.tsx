@@ -150,8 +150,8 @@ export const CinemaCard: React.FC<CinemaCardProps> = ({
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             style={{
-                rotateX: 0, // Temporarily disabled for stability check
-                rotateY: 0,
+                rotateX: isActive ? rotateX : 0,
+                rotateY: isActive ? rotateY : 0,
                 transformStyle: "preserve-3d",
                 perspective: 1000
             }}
@@ -335,9 +335,7 @@ export const CinemaCard: React.FC<CinemaCardProps> = ({
                                                 className="flex flex-col gap-1 border-b border-white/5 pb-4 last:border-0 last:pb-0"
                                             >
                                                 <span className="text-moto-accent text-[9px] font-black uppercase tracking-tighter">
-                                                    {/* Temporarily removed DecodingText to debug crash */}
-                                                    SPEC_0{idx + 1}
-                                                    {/* <DecodingText text={`SPEC_0${idx + 1}`} delay={0.3 + (idx * 0.1)} /> */}
+                                                    <DecodingText text={`SPEC_0${idx + 1}`} delay={0.3 + (idx * 0.1)} />
                                                 </span>
                                                 <span className="text-white/90 text-[13px] font-bold tracking-tight">{feat}</span>
                                             </motion.div>

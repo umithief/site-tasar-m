@@ -5,6 +5,8 @@ import { Product, ProductCategory } from '../types';
 import { showcaseService } from '../services/showcaseService';
 import { notify } from '../services/notificationService';
 import { useAppSounds } from '../hooks/useAppSounds';
+import { orderService } from '../services/orderService';
+import { authService } from '../services/auth';
 
 export const CinemaShowcase: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -45,10 +47,28 @@ export const CinemaShowcase: React.FC = () => {
 
     const { playSuccess } = useAppSounds();
 
-    const handleAddToCart = (product: Product) => {
-        playSuccess();
-        notify.success(`${product.name} sipariş listesine eklendi!`);
-        // TODO: Add to actual context/storage if cart implementation exists
+    const handleAddToCart = async (product: Product) => {
+        try {
+            playSuccess();
+
+            // Get current user or use a guest placeholder
+            const currentUser = authService.getCurrentUser() || {
+                _id: 'guest_' + Date.now(),
+                name: 'Misafir Kullanıcı',
+                email: 'misafir@motovibe.tr'
+            } as any;
+
+            // Create a single item order
+            await orderService.createOrder(currentUser, [{
+                ...product,
+                quantity: 1
+            }], product.price);
+
+            notify.success(`${product.name} için ön sipariş talebiniz alındı!`);
+        } catch (error) {
+            console.error("Order creation failed", error);
+            notify.error("Sipariş oluşturulurken bir hata oluştu.");
+        }
     };
 
     return (

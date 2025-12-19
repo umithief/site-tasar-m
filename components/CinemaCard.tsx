@@ -71,26 +71,30 @@ const DecodingText: React.FC<{ text: string; delay?: number }> = ({ text, delay 
     const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&";
 
     useEffect(() => {
+        let interval: NodeJS.Timeout;
         let iteration = 0;
-        const interval = setInterval(() => {
-            setDisplay(text.split("").map((char, index) => {
-                if (index < iteration) return char;
-                return chars[Math.floor(Math.random() * chars.length)];
-            }).join(""));
 
-            if (iteration >= text.length) clearInterval(interval);
-            iteration += 1 / 3;
-        }, 30);
+        const startDecryption = () => {
+            interval = setInterval(() => {
+                setDisplay(text.split("").map((char, index) => {
+                    if (index < iteration) return char;
+                    return chars[Math.floor(Math.random() * chars.length)];
+                }).join(""));
 
-        // Start with delay
-        const timeout = setTimeout(() => { }, delay * 1000);
+                if (iteration >= text.length) clearInterval(interval);
+                iteration += 1 / 3;
+            }, 30);
+        };
+
+        const timeout = setTimeout(startDecryption, delay * 1000);
+
         return () => {
-            clearInterval(interval);
+            if (interval) clearInterval(interval);
             clearTimeout(timeout);
         };
     }, [text, delay]);
 
-    return <span className="font-mono">{display || text}</span>;
+    return <span className="font-mono">{display || (delay > 0 ? "" : text)}</span>;
 };
 
 export const CinemaCard: React.FC<CinemaCardProps> = ({
@@ -141,7 +145,7 @@ export const CinemaCard: React.FC<CinemaCardProps> = ({
     return (
         <motion.div
             ref={cardRef}
-            layout
+            // layout prop removed to prevent potential calculation crashes
             onMouseEnter={onHover}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
@@ -177,7 +181,6 @@ export const CinemaCard: React.FC<CinemaCardProps> = ({
 
                 {/* Background Image / Placeholder */}
                 <motion.div
-                    layout="position"
                     className="absolute inset-0 z-0 scale-105"
                     style={{ transform: "translateZ(0px)" }}
                 >
@@ -207,7 +210,6 @@ export const CinemaCard: React.FC<CinemaCardProps> = ({
                     {/* Top Section */}
                     <div className="flex justify-between items-start">
                         <motion.div
-                            layout="position"
                             className="flex items-center gap-3 px-5 py-2 rounded-full bg-white/5 backdrop-blur-xl border border-white/10 shadow-2xl"
                             style={{ transform: "translateZ(30px)" }}
                         >
@@ -244,7 +246,6 @@ export const CinemaCard: React.FC<CinemaCardProps> = ({
                                 aria-label={product.name}
                             >
                                 <motion.h3
-                                    layout="position"
                                     style={{ x: titleX, y: titleY, transform: "translateZ(60px)" }}
                                     className={`flex flex-wrap font-black text-white leading-[0.85] transition-all duration-700 tracking-tighter
                       ${isActive ? 'text-7xl md:text-8xl' : 'text-xl'}

@@ -4,9 +4,6 @@ import LiquidSlider from './LiquidSlider';
 import { CategoryGrid } from './CategoryGrid';
 import { ProductCard } from './ProductCard';
 import { PopularProducts } from './PopularProducts';
-import { Stories } from './Stories';
-import StoryBlobs from './StoryBlobs';
-import StorySection from './StorySection';
 import { FeaturesSection } from './FeaturesSection';
 import { DealOfTheDay } from './DealOfTheDay';
 import { Product, ProductCategory, ViewState, User } from '../types';
@@ -18,7 +15,6 @@ import { useLivingTime } from '../hooks/useLivingTime';
 import { WeatherWidget } from './WeatherWidget';
 import { BrandTicker } from './BrandTicker';
 import { useLanguage } from '../contexts/LanguageProvider';
-import SpotlightShowcase from './SpotlightShowcase';
 import ProductCatalog from './ProductCatalog';
 import { CinemaShowcase } from './CinemaShowcase';
 import { ErrorBoundary } from './ErrorBoundary';
@@ -169,12 +165,6 @@ export const Home: React.FC<HomeProps> = ({
             </div>
 
             {/* <Stories onNavigate={onNavigate} /> */}
-            <StorySection />
-            <StoryBlobs />
-            <ErrorBoundary name="SpotlightShowcase">
-                <SpotlightShowcase />
-            </ErrorBoundary>
-
             <ErrorBoundary name="CinemaShowcase">
                 <CinemaShowcase />
             </ErrorBoundary>

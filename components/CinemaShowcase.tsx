@@ -3,6 +3,8 @@ import { motion } from 'framer-motion';
 import { CinemaCard } from './CinemaCard';
 import { Product, ProductCategory } from '../types';
 import { showcaseService } from '../services/showcaseService';
+import { notify } from '../services/notificationService';
+import { useAppSounds } from '../hooks/useAppSounds';
 
 export const CinemaShowcase: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -41,8 +43,12 @@ export const CinemaShowcase: React.FC = () => {
         return () => clearInterval(interval);
     }, [isPaused, products]);
 
+    const { playSuccess } = useAppSounds();
+
     const handleAddToCart = (product: Product) => {
-        console.log('Added to cart:', product.name);
+        playSuccess();
+        notify.success(`${product.name} sipariş listesine eklendi!`);
+        // TODO: Add to actual context/storage if cart implementation exists
     };
 
     return (

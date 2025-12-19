@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import multer from 'multer';
+import path from 'path';
 
 import { fileURLToPath } from 'url';
 import uploadRoutes from './routes/uploadRoutes.js';
@@ -50,8 +51,9 @@ app.use(express.json({ limit: '200mb' }));
 app.use(express.urlencoded({ limit: '200mb', extended: true }));
 
 // Uploads klasörünü dışarıya aç (Resimlere erişim için)
-import path from 'path';
-app.use('/uploads', express.static(path.join(fileURLToPath(new URL('.', import.meta.url)), 'uploads')));
+// Uploads klasörünü dışarıya aç (Resimlere erişim için)
+const __dirname = path.dirname(__filename);
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get('/', (req, res) => {
     res.send('🚀 MotoVibe Backend Çalışıyor! API adresleri /api ile başlar.');

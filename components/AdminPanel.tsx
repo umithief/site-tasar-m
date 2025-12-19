@@ -17,6 +17,7 @@ import { AdminModels } from './admin/AdminModels';
 import { AdminEvents } from './admin/AdminEvents';
 import { AdminCommunity } from './admin/AdminCommunity';
 import { AdminPaddock } from './admin/AdminPaddock';
+import { AdminShowcase } from './admin/AdminShowcase';
 import { productService } from '../services/productService';
 import { sliderService } from '../services/sliderService';
 import { categoryService } from '../services/categoryService';
@@ -62,7 +63,7 @@ interface AdminPanelProps {
     onNavigate: (view: any) => void;
 }
 
-type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'slider' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community' | 'paddock';
+type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'slider' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community' | 'paddock' | 'showcase';
 
 
 
@@ -485,6 +486,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
                                 topics={topics}
                                 handleDelete={handleDelete}
                             />
+                        )}
+
+                        {activeTab === 'showcase' && (
+                            <AdminShowcase />
                         )}
 
                     </div>

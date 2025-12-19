@@ -22,6 +22,7 @@ import stolenRoutes from './routes/stolenRoutes.js';
 import negotiationRoutes from './routes/negotiationRoutes.js';
 import feedbackRoutes from './routes/feedbackRoutes.js';
 import socialRoutes from './routes/socialRoutes.js';
+import showcaseRoutes from './routes/showcaseRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -309,6 +310,21 @@ const meetupEventSchema = new mongoose.Schema({
 
 const MeetupEvent = mongoose.models.MeetupEvent || mongoose.model('MeetupEvent', meetupEventSchema);
 
+const showcaseProductSchema = new mongoose.Schema({
+    name: { type: String, required: true },
+    description: String,
+    price: { type: Number, required: true },
+    category: String,
+    image: String,
+    images: [String],
+    rating: { type: Number, default: 0 },
+    features: [String],
+    stock: { type: Number, default: 0 },
+    isNegotiable: { type: Boolean, default: false }
+}, { versionKey: false });
+
+const ShowcaseProduct = mongoose.models.ShowcaseProduct || mongoose.model('ShowcaseProduct', showcaseProductSchema);
+
 
 // --- DATA SEEDING ---
 const seedDatabase = async () => {
@@ -410,6 +426,46 @@ const seedDatabase = async () => {
             ]);
         }
 
+        const showcaseCount = await ShowcaseProduct.countDocuments();
+        if (showcaseCount === 0) {
+            console.log('📦 Vitrin ürünleri veritabanına ekleniyor...');
+            await ShowcaseProduct.insertMany([
+                {
+                    name: 'CARBON X-1',
+                    description: 'Aerodynamic excellence meets pure carbon fiber construction. Designed for the track, refined for the street.',
+                    price: 12500,
+                    category: 'Kask',
+                    image: 'https://images.unsplash.com/photo-1599819811279-d5ad9cccf838?auto=format&fit=crop&q=80&w=800',
+                    images: [],
+                    rating: 5,
+                    features: ['Ultra-Light Carbon Shell', 'Emergency Release System', 'MaxVision Pinlock', 'Wind Tunnel Tested'],
+                    stock: 3
+                },
+                {
+                    name: 'VENOM 400',
+                    description: 'Unmatched protection with a tactical edge. The Venom 100 jacket brings military-grade materials to your daily ride.',
+                    price: 8900,
+                    category: 'Mont',
+                    image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=800',
+                    images: [],
+                    rating: 4.8,
+                    features: ['Cordura® Construction', 'CE Level 2 Armor', 'Waterproof Membrane', 'Hydration Pack Ready'],
+                    stock: 12
+                },
+                {
+                    name: 'TITAN BOOTS',
+                    description: 'Stability that feels like gravity. Titan boots provide the ultimate grip and ankle support for extreme conditions.',
+                    price: 6750,
+                    category: 'Bot',
+                    image: 'https://images.unsplash.com/photo-1609630875171-b132137746be?auto=format&fit=crop&q=80&w=800',
+                    images: [],
+                    rating: 4.9,
+                    features: ['Gore-Tex Extreme', 'Vibram Outsole', 'Composite Toe Box', 'Adjustable Buckle System'],
+                    stock: 8
+                }
+            ]);
+        }
+
     } catch (error) {
         console.error('Veri tohumlama hatası:', error);
     }
@@ -433,6 +489,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/forum', forumRoutes);
 app.use('/api/social', socialRoutes);
+app.use('/api/showcase', showcaseRoutes);
 
 app.use('/api/music', musicRoutes);
 app.use('/api/models', modelRoutes);

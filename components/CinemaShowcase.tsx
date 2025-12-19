@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { CinemaCard } from './CinemaCard';
 import { Product, ProductCategory } from '../types';
+import { showcaseService } from '../services/showcaseService';
 
 // Mock products for demonstration
 const MOCK_PRODUCTS: Product[] = [
@@ -43,21 +44,44 @@ const MOCK_PRODUCTS: Product[] = [
     }
 ];
 
+
 export const CinemaShowcase: React.FC = () => {
+    const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
     const [activeIndex, setActiveIndex] = useState<number | null>(1); // Default to middle one for best look
     const [isPaused, setIsPaused] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const data = await showcaseService.getAll();
+                if (data && data.length > 0) {
+                    setProducts(data);
+                    // Set active to middle item
+                    setActiveIndex(Math.floor(data.length / 2));
+                }
+            } catch (error) {
+                console.error("Failed to fetch showcase products", error);
+                // Fallback to MOCK_PRODUCTS is automatic since it's initial state
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchProducts();
+    }, []);
 
     // Auto-rotation
     React.useEffect(() => {
-        if (isPaused) return;
+        if (isPaused || products.length === 0) return;
         const interval = setInterval(() => {
             setActiveIndex((prev) => {
                 if (prev === null) return 0;
-                return (prev + 1) % MOCK_PRODUCTS.length;
+                return (prev + 1) % products.length;
             });
         }, 4000);
         return () => clearInterval(interval);
-    }, [isPaused]);
+    }, [isPaused, products]);
 
     const handleAddToCart = (product: Product) => {
         console.log('Added to cart:', product.name);
@@ -119,7 +143,7 @@ export const CinemaShowcase: React.FC = () => {
                     onMouseEnter={() => setIsPaused(true)}
                     onMouseLeave={() => setIsPaused(false)}
                 >
-                    {MOCK_PRODUCTS.map((product, index) => (
+                    {products.map((product, index) => (
                         <CinemaCard
                             key={product._id}
                             product={product}
@@ -143,7 +167,7 @@ export const CinemaShowcase: React.FC = () => {
                     </div>
 
                     <div className="flex gap-4">
-                        {MOCK_PRODUCTS.map((_, i) => (
+                        {products.map((_, i) => (
                             <button
                                 key={i}
                                 onClick={() => setActiveIndex(i)}

@@ -71,9 +71,11 @@ export const CinemaShowcase: React.FC = () => {
         }
     };
 
+    const [previewProduct, setPreviewProduct] = useState<Product | null>(null);
+
     return (
         <section className="relative py-24 md:py-32 bg-[#050505] overflow-hidden">
-            {/* Cinematic Background Elements */}
+            {/* ... (Existing Background Elements) ... */}
             <div className="absolute inset-0 z-0">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(var(--moto-accent-rgb),0.05)_0%,transparent_70%)]" />
                 <div className="absolute inset-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay" />
@@ -135,6 +137,7 @@ export const CinemaShowcase: React.FC = () => {
                             onHover={() => setActiveIndex(index)}
                             onLeave={() => { }}
                             onAddToCart={handleAddToCart}
+                            onPreview={setPreviewProduct}
                         />
                     ))}
                 </div>
@@ -170,6 +173,81 @@ export const CinemaShowcase: React.FC = () => {
                     </div>
                 </motion.div>
             </div>
+
+            {/* PREVIEW MODAL */}
+            {previewProduct && (
+                <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute inset-0 bg-black/90 backdrop-blur-md"
+                        onClick={() => setPreviewProduct(null)}
+                    />
+
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9, y: 50 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        className="relative z-10 w-full max-w-5xl bg-[#111] border border-white/10 rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row max-h-[90vh]"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        {/* Close Button */}
+                        <button
+                            onClick={() => setPreviewProduct(null)}
+                            className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-black/50 hover:bg-white/10 flex items-center justify-center text-white transition-colors border border-white/10"
+                        >
+                            ✕
+                        </button>
+
+                        {/* Image Side */}
+                        <div className="w-full md:w-1/2 h-[300px] md:h-auto relative bg-black">
+                            <img
+                                src={previewProduct.image}
+                                alt={previewProduct.name}
+                                className="w-full h-full object-cover opacity-80"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent md:bg-gradient-to-r" />
+                        </div>
+
+                        {/* Content Side */}
+                        <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col overflow-y-auto">
+                            <span className="text-moto-accent text-xs font-black tracking-widest uppercase mb-2">
+                                {previewProduct.category}
+                            </span>
+                            <h2 className="text-4xl md:text-5xl font-black text-white leading-[0.9] tracking-tighter mb-6">
+                                {previewProduct.name}
+                            </h2>
+
+                            <div className="flex items-baseline gap-2 mb-8">
+                                <span className="text-3xl font-mono font-bold text-white">₺{previewProduct.price.toLocaleString('tr-TR')}</span>
+                                <span className="text-white/40 text-sm font-bold line-through">₺{(previewProduct.price * 1.2).toLocaleString('tr-TR')}</span>
+                            </div>
+
+                            <p className="text-white/70 text-lg leading-relaxed mb-8 border-l-2 border-white/10 pl-6">
+                                {previewProduct.description}
+                            </p>
+
+                            <div className="grid grid-cols-2 gap-4 mb-8">
+                                {previewProduct.features.map((feat, i) => (
+                                    <div key={i} className="flex items-start gap-2">
+                                        <div className="w-1.5 h-1.5 mt-1.5 rounded-full bg-moto-accent" />
+                                        <span className="text-sm text-white/80 font-medium">{feat}</span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            <div className="mt-auto pt-8 border-t border-white/10">
+                                <button
+                                    onClick={() => handleAddToCart(previewProduct)}
+                                    className="w-full py-4 bg-moto-accent hover:bg-white text-black font-bold uppercase tracking-widest text-sm transition-colors rounded-xl flex items-center justify-center gap-2"
+                                >
+                                    <span>Pre-Order Now</span>
+                                </button>
+                            </div>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
         </section>
     );
 };

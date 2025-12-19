@@ -9,6 +9,7 @@ interface CinemaCardProps {
     onHover: () => void;
     onLeave: () => void;
     onAddToCart: (product: Product) => void;
+    onPreview: (product: Product) => void;
 }
 
 const MagneticButton: React.FC<{ children: React.ReactNode; onClick: () => void; className?: string }> = ({
@@ -102,7 +103,8 @@ export const CinemaCard: React.FC<CinemaCardProps> = ({
     isActive,
     onHover,
     onLeave,
-    onAddToCart
+    onAddToCart,
+    onPreview
 }) => {
     const cardRef = useRef<HTMLDivElement>(null);
     const mouseX = useMotionValue(0);
@@ -145,6 +147,7 @@ export const CinemaCard: React.FC<CinemaCardProps> = ({
     return (
         <motion.div
             ref={cardRef}
+            onClick={() => isActive && onPreview(product)}
             // layout prop removed to prevent potential calculation crashes
             onMouseEnter={onHover}
             onMouseMove={handleMouseMove}

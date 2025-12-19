@@ -4,49 +4,8 @@ import { CinemaCard } from './CinemaCard';
 import { Product, ProductCategory } from '../types';
 import { showcaseService } from '../services/showcaseService';
 
-// Mock products for demonstration
-const MOCK_PRODUCTS: Product[] = [
-    {
-        _id: 'p1',
-        name: 'CARBON X-1',
-        description: 'Aerodynamic excellence meets pure carbon fiber construction. Designed for the track, refined for the street.',
-        price: 12500,
-        category: ProductCategory.HELMET,
-        image: 'https://images.unsplash.com/photo-1599819811279-d5ad9cccf838?auto=format&fit=crop&q=80&w=800',
-        images: [],
-        rating: 5,
-        features: ['Ultra-Light Carbon Shell', 'Emergency Release System', 'MaxVision Pinlock', 'Wind Tunnel Tested'],
-        stock: 3
-    },
-    {
-        _id: 'p2',
-        name: 'VENOM 400',
-        description: 'Unmatched protection with a tactical edge. The Venom 100 jacket brings military-grade materials to your daily ride.',
-        price: 8900,
-        category: ProductCategory.JACKET,
-        image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=800',
-        images: [],
-        rating: 4.8,
-        features: ['Cordura® Construction', 'CE Level 2 Armor', 'Waterproof Membrane', 'Hydration Pack Ready'],
-        stock: 12
-    },
-    {
-        _id: 'p3',
-        name: 'TITAN BOOTS',
-        description: 'Stability that feels like gravity. Titan boots provide the ultimate grip and ankle support for extreme conditions.',
-        price: 6750,
-        category: ProductCategory.BOOTS,
-        image: 'https://images.unsplash.com/photo-1609630875171-b132137746be?auto=format&fit=crop&q=80&w=800',
-        images: [],
-        rating: 4.9,
-        features: ['Gore-Tex Extreme', 'Vibram Outsole', 'Composite Toe Box', 'Adjustable Buckle System'],
-        stock: 8
-    }
-];
-
-
 export const CinemaShowcase: React.FC = () => {
-    const [products, setProducts] = useState<Product[]>(MOCK_PRODUCTS);
+    const [products, setProducts] = useState<Product[]>([]);
     const [activeIndex, setActiveIndex] = useState<number | null>(1); // Default to middle one for best look
     const [isPaused, setIsPaused] = useState(false);
     const [loading, setLoading] = useState(true);
@@ -62,7 +21,6 @@ export const CinemaShowcase: React.FC = () => {
                 }
             } catch (error) {
                 console.error("Failed to fetch showcase products", error);
-                // Fallback to MOCK_PRODUCTS is automatic since it's initial state
             } finally {
                 setLoading(false);
             }

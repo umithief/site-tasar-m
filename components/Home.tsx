@@ -21,6 +21,7 @@ import { useLanguage } from '../contexts/LanguageProvider';
 import SpotlightShowcase from './SpotlightShowcase';
 import ProductCatalog from './ProductCatalog';
 import { CinemaShowcase } from './CinemaShowcase';
+import { ErrorBoundary } from './ErrorBoundary';
 
 interface HomeProps {
     products: Product[];
@@ -170,9 +171,13 @@ export const Home: React.FC<HomeProps> = ({
             {/* <Stories onNavigate={onNavigate} /> */}
             <StorySection />
             <StoryBlobs />
+            <ErrorBoundary name="SpotlightShowcase">
+                <SpotlightShowcase />
+            </ErrorBoundary>
 
-            <SpotlightShowcase />
-            <CinemaShowcase />
+            <ErrorBoundary name="CinemaShowcase">
+                <CinemaShowcase />
+            </ErrorBoundary>
 
 
             {dealOfTheDayProduct && (

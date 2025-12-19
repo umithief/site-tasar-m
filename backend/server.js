@@ -49,6 +49,10 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
+// Uploads klasörünü dışarıya aç (Resimlere erişim için)
+import path from 'path';
+app.use('/uploads', express.static(path.join(fileURLToPath(new URL('.', import.meta.url)), 'uploads')));
+
 app.get('/', (req, res) => {
     res.send('🚀 MotoVibe Backend Çalışıyor! API adresleri /api ile başlar.');
 });

@@ -1,60 +1,61 @@
 import express from 'express';
 import multer from 'multer';
-import { createClient } from '@supabase/supabase-js';
-
-import dotenv from 'dotenv';
-dotenv.config();
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
 
 const router = express.Router();
 
-// 1. Supabase Ayarları
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_KEY;
+// --- YEREL DİSK DEPOLAMA AYARLARI ---
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const uploadDir = path.join(__dirname, '../uploads');
 
-// Supabase client'ı oluştur
-const supabase = (supabaseUrl && supabaseKey)
-    ? createClient(supabaseUrl, supabaseKey)
-    : null;
+// Klasör yoksa oluştur
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
 
-// 2. Multer (Dosyayı geçici olarak RAM'e alır)
-const storage = multer.memoryStorage();
+// Multer Disk Storage Config
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, uploadDir);
+    },
+    filename: (req, file, cb) => {
+        // Benzersiz dosya ismi: timestamp + orijinal isim (türkçe karakter temizlenmiş)
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const ext = path.extname(file.originalname);
+        const name = file.originalname.replace(/[^a-zA-Z0-9]/g, '').substring(0, 10);
+        cb(null, name + '-' + uniqueSuffix + ext);
+    }
+});
+
 const upload = multer({ storage: storage });
 
-// 3. Yükleme Rotası
-router.post('/', upload.single('file'), async (req, res) => {
+// POST /api/upload
+router.post('/', upload.single('file'), (req, res) => {
     try {
-        if (!supabase) {
-            return res.status(500).json({ message: 'Supabase credentials not configured.' });
+        if (!req.file) {
+            return res.status(400).json({ message: 'Lütfen bir dosya yükleyin.' });
         }
 
-        const file = req.file;
-        if (!file) return res.status(400).json({ message: 'Dosya yok!' });
+        // Sunucunun tam adresi (Localhost veya Canlı URL)
+        // Request host'unu kullanarak dinamik URL oluşturuyoruz
+        const protocol = req.protocol;
+        const host = req.get('host');
 
-        // Dosya ismini benzersiz yap (Türkçe karakter ve boşlukları temizle)
-        const fileName = `${Date.now()}-${file.originalname.replace(/[^a-zA-Z0-9.]/g, '')}`;
+        // Dosyanın erişilebilir URL'i
+        const fileUrl = `${protocol}://${host}/uploads/${req.file.filename}`;
 
-        // Supabase'e Yükle
-        const { data, error } = await supabase
-            .storage
-            .from('images') // BUCKET adı 'images'
-            .upload(fileName, file.buffer, {
-                contentType: file.mimetype,
-            });
+        res.json({
+            success: true,
+            url: fileUrl,
+            message: 'Dosya sunucuya başarıyla yüklendi.'
+        });
 
-        if (error) throw error;
-
-        // Yüklenen dosyanın Herkese Açık Linkini Al
-        const { data: publicUrlData } = supabase
-            .storage
-            .from('images')
-            .getPublicUrl(fileName);
-
-        // Linki Frontend'e gönder
-        res.json({ url: publicUrlData.publicUrl });
-
-    } catch (err) {
-        console.error('Supabase Hatası:', err);
-        res.status(500).json({ message: 'Yükleme başarısız', error: err.message });
+    } catch (error) {
+        console.error('Upload Hatası:', error);
+        res.status(500).json({ message: 'Dosya yüklenirken sunucu hatası oluştu.' });
     }
 });
 

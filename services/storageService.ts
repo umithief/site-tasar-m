@@ -70,7 +70,7 @@ export const storageService = {
             // if an error occurs to ensure the demo keeps working, 
             // OR strictly use Base64 if you prefer not to rely on external storage services for now.
 
-            // OPTION 1: Try Upload, Fallback to Base64
+            // OPTION 1: Direct Upload
             const formData = new FormData();
             formData.append('file', file);
 
@@ -84,24 +84,13 @@ export const storageService = {
                     const data = await response.json();
                     return data.url;
                 } else {
-                    console.warn("Backend upload failed, falling back to Base64.");
-                    // FALLBACK TO BASE64
-                    return new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.readAsDataURL(file);
-                        reader.onload = () => resolve(reader.result as string);
-                        reader.onerror = error => reject(error);
-                    });
+                    const errorText = await response.text();
+                    console.error("Backend upload failed:", errorText);
+                    throw new Error(`Upload failed: ${response.status} ${response.statusText}`);
                 }
             } catch (error) {
-                console.error("Storage Upload Error (Backend unavailble?), falling back to Base64:", error);
-                // FALLBACK TO BASE64
-                return new Promise((resolve, reject) => {
-                    const reader = new FileReader();
-                    reader.readAsDataURL(file);
-                    reader.onload = () => resolve(reader.result as string);
-                    reader.onerror = error => reject(error);
-                });
+                console.error("Storage Upload Error:", error);
+                throw error;
             }
         }
     }

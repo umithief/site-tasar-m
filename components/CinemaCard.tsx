@@ -232,7 +232,7 @@ export const CinemaCard: React.FC<CinemaCardProps> = ({
                                     className="flex flex-col items-end"
                                     style={{ transform: "translateZ(30px)" }}
                                 >
-                                    <span className="text-white/40 text-[10px] font-black tracking-widest uppercase mb-1">Authentic Gear</span>
+                                    <span className="text-white/40 text-[10px] font-black tracking-widest uppercase mb-1">Orijinal Ekipman</span>
                                     <div className="h-[1px] w-12 bg-moto-accent/50 mb-2" />
                                     <span className="text-moto-accent text-3xl font-black font-mono tracking-tighter italic">#{product._id.slice(-4).toUpperCase()}</span>
                                 </motion.div>
@@ -290,7 +290,7 @@ export const CinemaCard: React.FC<CinemaCardProps> = ({
 
                                         <div className="flex items-center gap-10">
                                             <div className="flex flex-col">
-                                                <span className="text-white/30 text-[11px] font-black uppercase tracking-[0.2em] mb-1">Standard Price</span>
+                                                <span className="text-white/30 text-[11px] font-black uppercase tracking-[0.2em] mb-1">Liste Fiyatı</span>
                                                 <div className="flex items-baseline gap-1">
                                                     <span className="text-white text-4xl font-black font-mono">₺{product.price.toLocaleString('tr-TR')}</span>
                                                     <span className="text-moto-accent text-sm font-bold">*</span>
@@ -298,7 +298,7 @@ export const CinemaCard: React.FC<CinemaCardProps> = ({
                                             </div>
                                             <MagneticButton onClick={() => onAddToCart(product)}>
                                                 <ShoppingBag size={22} strokeWidth={2.5} />
-                                                <span className="tracking-widest uppercase text-sm">Pre-Order Now</span>
+                                                <span className="tracking-widest uppercase text-sm">Ön Sipariş Ver</span>
                                             </MagneticButton>
                                         </div>
                                     </motion.div>
@@ -323,7 +323,7 @@ export const CinemaCard: React.FC<CinemaCardProps> = ({
                                             <div className="w-8 h-8 rounded-full bg-moto-accent/20 flex items-center justify-center text-moto-accent">
                                                 <Zap size={16} fill="currentColor" />
                                             </div>
-                                            <span className="text-xs font-black text-white uppercase tracking-[0.3em]">Performance</span>
+                                            <span className="text-xs font-black text-white uppercase tracking-[0.3em]">Performans</span>
                                         </div>
                                         <Info size={14} className="text-white/20" />
                                     </div>

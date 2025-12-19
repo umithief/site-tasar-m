@@ -110,7 +110,7 @@ export const CinemaShowcase: React.FC = () => {
                     >
                         <div className="w-12 h-[1px] bg-moto-accent" />
                         <span className="text-moto-accent font-black tracking-[0.5em] text-[10px] uppercase">
-                            The Winter '24 Selection
+                            Kış '24 Özel Seçkisi
                         </span>
                     </motion.div>
 
@@ -119,7 +119,7 @@ export const CinemaShowcase: React.FC = () => {
                         whileInView={{ opacity: 1, y: 0 }}
                         className="text-5xl md:text-8xl font-black text-white tracking-tighter"
                     >
-                        FOCUS & <span className="text-white/10 italic">EXPANSION</span>
+                        GÜÇ & <span className="text-white/10 italic">ESTETİK</span>
                     </motion.h2>
                 </div>
 
@@ -150,8 +150,8 @@ export const CinemaShowcase: React.FC = () => {
                     className="mt-20 flex flex-col md:flex-row justify-between items-center gap-8 border-t border-white/5 pt-12"
                 >
                     <div className="flex flex-col gap-1">
-                        <span className="text-white/20 text-[10px] font-black uppercase tracking-widest leading-none">Curation Metadata</span>
-                        <span className="text-white/40 text-xs font-bold uppercase tracking-widest">Auto-Cycle: {isPaused ? "PAUSED" : "ACTIVE"}</span>
+                        <span className="text-white/20 text-[10px] font-black uppercase tracking-widest leading-none">Vitrin Detayları</span>
+                        <span className="text-white/40 text-xs font-bold uppercase tracking-widest">Otomatik Akış: {isPaused ? "DURAKLATILDI" : "AKTİF"}</span>
                     </div>
 
                     <div className="flex gap-4">
@@ -168,9 +168,9 @@ export const CinemaShowcase: React.FC = () => {
                     </div>
 
                     <div className="flex items-center gap-4 text-white/20 text-[10px] font-black uppercase tracking-widest">
-                        <span>Scroll</span>
+                        <span>Kaydır</span>
                         <div className="w-8 h-[1px] bg-white/10" />
-                        <span>Discover</span>
+                        <span>Keşfet</span>
                     </div>
                 </motion.div>
             </div>
@@ -244,7 +244,7 @@ export const CinemaShowcase: React.FC = () => {
                                     onClick={() => handleAddToCart(previewProduct)}
                                     className="w-full py-4 bg-moto-accent hover:bg-white text-black font-bold uppercase tracking-widest text-sm transition-colors rounded-xl flex items-center justify-center gap-2"
                                 >
-                                    <span>Pre-Order Now</span>
+                                    <span>Hemen Ön Sipariş Ver</span>
                                 </button>
                             </div>
                         </div>

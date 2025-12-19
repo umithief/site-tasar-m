@@ -222,6 +222,7 @@ export const CinemaCard: React.FC<CinemaCardProps> = ({
                         <AnimatePresence>
                             {isActive && (
                                 <motion.div
+                                    key="auth-gear"
                                     initial={{ opacity: 0, x: 20, filter: 'blur(10px)' }}
                                     animate={{ opacity: 1, x: 0, filter: 'blur(0px)' }}
                                     exit={{ opacity: 0, x: 20, filter: 'blur(10px)' }}
@@ -272,6 +273,7 @@ export const CinemaCard: React.FC<CinemaCardProps> = ({
                             <AnimatePresence>
                                 {isActive && (
                                     <motion.div
+                                        key="content-desc"
                                         initial={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
                                         animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
                                         exit={{ opacity: 0, y: 30, filter: 'blur(10px)' }}
@@ -305,6 +307,7 @@ export const CinemaCard: React.FC<CinemaCardProps> = ({
                         <AnimatePresence>
                             {isActive && (
                                 <motion.div
+                                    key="tech-specs-box"
                                     initial={{ opacity: 0, scale: 0.9, x: 40, rotateY: 20 }}
                                     animate={{ opacity: 1, scale: 1, x: 0, rotateY: 0 }}
                                     exit={{ opacity: 0, scale: 0.9, x: 40, rotateY: 20 }}
@@ -332,7 +335,9 @@ export const CinemaCard: React.FC<CinemaCardProps> = ({
                                                 className="flex flex-col gap-1 border-b border-white/5 pb-4 last:border-0 last:pb-0"
                                             >
                                                 <span className="text-moto-accent text-[9px] font-black uppercase tracking-tighter">
-                                                    <DecodingText text={`SPEC_0${idx + 1}`} delay={0.3 + (idx * 0.1)} />
+                                                    {/* Temporarily removed DecodingText to debug crash */}
+                                                    SPEC_0{idx + 1}
+                                                    {/* <DecodingText text={`SPEC_0${idx + 1}`} delay={0.3 + (idx * 0.1)} /> */}
                                                 </span>
                                                 <span className="text-white/90 text-[13px] font-bold tracking-tight">{feat}</span>
                                             </motion.div>

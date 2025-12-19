@@ -23,7 +23,7 @@ export const AuthPage = ({ onLoginSuccess, onNavigate }: { onLoginSuccess?: () =
         e.preventDefault();
         setLoading(true);
         try {
-            await authService.login(loginEmail, loginPass);
+            await authService.login(loginEmail, loginPass, rememberMe);
             playSuccess();
             if (onLoginSuccess) onLoginSuccess();
             notify.success('Giriş başarılı!');

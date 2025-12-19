@@ -3,11 +3,22 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Plus, Edit2, Trash2, Save, X, Image as ImageIcon, ShoppingBag, List, Check } from 'lucide-react';
 import { showcaseService } from '../../services/showcaseService';
 import { Product, ProductCategory } from '../../types';
+// @ts-ignore
+import { FilePond, registerPlugin } from 'react-filepond';
+import 'filepond/dist/filepond.min.css';
+import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
+// @ts-ignore
+import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+import { storageService } from '../../services/storageService';
+
+registerPlugin(FilePondPluginImagePreview);
 
 export const AdminShowcase = () => {
     const [items, setItems] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
+    const [files, setFiles] = useState<any[]>([]);
+    const [imageSource, setImageSource] = useState<'upload' | 'url'>('upload');
     const [currentItem, setCurrentItem] = useState<Partial<Product>>({
         name: '',
         description: '',
@@ -84,6 +95,8 @@ export const AdminShowcase = () => {
                             features: [],
                             stock: 1
                         });
+                        setFiles([]);
+                        setImageSource('upload');
                         setIsEditing(true);
                     }}
                     className="flex items-center gap-2 px-4 py-2 bg-blue-600 rounded-lg hover:bg-blue-700 transition-colors"
@@ -135,6 +148,8 @@ export const AdminShowcase = () => {
                             <button
                                 onClick={() => {
                                     setCurrentItem(item);
+                                    setFiles([]);
+                                    setImageSource('url');
                                     setIsEditing(true);
                                 }}
                                 className="p-2 hover:bg-white/10 rounded-lg transition-colors text-blue-400"
@@ -225,22 +240,54 @@ export const AdminShowcase = () => {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <label className="text-sm text-gray-400">Görsel URL</label>
-                                    <div className="flex gap-2">
-                                        <input
-                                            type="url"
-                                            value={currentItem.image}
-                                            onChange={e => setCurrentItem({ ...currentItem, image: e.target.value })}
-                                            className="flex-1 bg-white/5 border border-white/10 rounded-lg p-3 focus:outline-none focus:border-moto-accent"
-                                            placeholder="https://..."
-                                            required
-                                        />
-                                        {currentItem.image && (
-                                            <div className="w-12 h-12 rounded bg-black/50 overflow-hidden border border-white/10">
-                                                <img src={currentItem.image} className="w-full h-full object-cover" />
-                                            </div>
-                                        )}
+                                    <div className="flex justify-between items-center mb-1">
+                                        <label className="text-sm text-gray-400">Görsel / Video</label>
+                                        <div className="flex gap-2 bg-black/40 p-1 rounded-lg">
+                                            <button type="button" onClick={() => setImageSource('upload')} className={`px-3 py-1 rounded text-[10px] font-bold transition-all ${imageSource === 'upload' ? 'bg-[#F2A619] text-black' : 'text-gray-400 hover:text-white'}`}>YÜKLE</button>
+                                            <button type="button" onClick={() => setImageSource('url')} className={`px-3 py-1 rounded text-[10px] font-bold transition-all ${imageSource === 'url' ? 'bg-[#F2A619] text-black' : 'text-gray-400 hover:text-white'}`}>URL</button>
+                                        </div>
                                     </div>
+
+                                    {imageSource === 'upload' ? (
+                                        <div className="bg-white/5 rounded-lg p-2 border border-white/10">
+                                            <FilePond
+                                                files={files}
+                                                onupdatefiles={setFiles}
+                                                allowMultiple={false}
+                                                server={{
+                                                    process: async (fieldName: any, file: any, metadata: any, load: any, error: any, progress: any, abort: any) => {
+                                                        try {
+                                                            const url = await storageService.uploadFile(file);
+                                                            setCurrentItem(prev => ({ ...prev, image: url }));
+                                                            load(url);
+                                                        } catch (err) { error('Upload failed'); }
+                                                    }
+                                                }}
+                                                labelIdle='Sürükle bırak veya <span class="filepond--label-action">Gözat</span>'
+                                                credits={false}
+                                                className="filepond-dark"
+                                            />
+                                            {currentItem.image && !files.length && (
+                                                <div className="mt-2 text-xs text-green-400">Mevcut görsel korunuyor</div>
+                                            )}
+                                        </div>
+                                    ) : (
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="url"
+                                                value={currentItem.image}
+                                                onChange={e => setCurrentItem({ ...currentItem, image: e.target.value })}
+                                                className="flex-1 bg-white/5 border border-white/10 rounded-lg p-3 focus:outline-none focus:border-moto-accent"
+                                                placeholder="https://..."
+                                                required
+                                            />
+                                            {currentItem.image && (
+                                                <div className="w-12 h-12 rounded bg-black/50 overflow-hidden border border-white/10">
+                                                    <img src={currentItem.image} className="w-full h-full object-cover" />
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
                                 </div>
 
                                 <div className="space-y-2">

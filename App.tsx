@@ -323,7 +323,10 @@ export const App: React.FC = () => {
     };
 
     const handleViewProfile = async (userId: string) => {
-        if (user && user._id === userId) {
+        if (!userId) return;
+
+        // Ensure robust comparison (handle number vs string if overlapping)
+        if (user && String(user._id) === String(userId)) {
             navigateTo('profile');
             return;
         }
@@ -333,7 +336,7 @@ export const App: React.FC = () => {
             setViewingUser(targetUser);
             navigateTo('public-profile');
         } else {
-            notify.error('Kullanıcı bulunamadı.');
+            notify.error('Kullanıcı profili yüklenemedi.');
         }
     };
 

@@ -4,6 +4,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import multer from 'multer';
 import path from 'path';
+import bcrypt from 'bcryptjs';
 
 import { fileURLToPath } from 'url';
 import uploadRoutes from './routes/uploadRoutes.js';
@@ -416,6 +417,29 @@ const seedDatabase = async () => {
                 }
             ]);
         }
+
+        // Seed Admin User (Always Ensure Correct Credentials)
+        console.log('🛡️ Admin kullanıcısı (111@111) doğrulanıyor...');
+        const User = mongoose.model('User');
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash('111', salt);
+
+        await User.findOneAndUpdate(
+            { email: '111@111' },
+            {
+                name: 'MotoVibe Admin',
+                email: '111@111',
+                password: hashedPassword,
+                joinDate: '01.01.2024',
+                isAdmin: true,
+                points: 9999,
+                rank: 'Yol Kaptanı',
+                username: 'admin',
+                bio: 'Sistemin kurucusu ve baş yöneticisi.'
+            },
+            { upsert: true, new: true, setDefaultsOnInsert: true }
+        );
+        console.log('✅ Admin hazır: 111@111 / 111');
 
     } catch (error) {
         console.error('Veri tohumlama hatası:', error);

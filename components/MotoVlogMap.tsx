@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MotoVlog, Product, ViewState } from '../types';
 import { vlogService } from '../services/vlogService';
 import { productService } from '../services/productService';
-import { MapPin, Play, X, Search, Upload, Film, Share2, Eye, User, ShoppingBag, ArrowRight, Navigation } from 'lucide-react';
+import { MapPin, Play, X, Search, Upload, Film, Share2, Eye, User, ShoppingBag, ArrowRight, Navigation, Plus } from 'lucide-react';
 import { Button } from './ui/Button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { storageService } from '../services/storageService';
@@ -22,19 +22,22 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
     const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
 
-    // Upload State
+    // Upload & Selection State
     const [isUploadOpen, setIsUploadOpen] = useState(false);
+    const [selectedLocation, setSelectedLocation] = useState<{ lat: number, lng: number } | null>(null);
     const [uploadForm, setUploadForm] = useState({
         title: '',
         locationName: '',
         videoFile: null as File | null,
-        thumbnailFile: null as File | null
+        thumbnailFile: null as File | null,
+        coordinates: null as { lat: number, lng: number } | null
     });
     const [isUploading, setIsUploading] = useState(false);
 
     const mapContainerRef = useRef<HTMLDivElement>(null);
     const mapRef = useRef<any>(null);
     const markersRef = useRef<any[]>([]);
+    const tempMarkerRef = useRef<any>(null);
 
     useEffect(() => {
         loadVlogs();
@@ -71,6 +74,33 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                 maxZoom: 20
             }).addTo(map);
 
+            // Map Click Handler for Selection
+            map.on('click', (e: any) => {
+                const { lat, lng } = e.latlng;
+
+                // Remove existing temp marker
+                if (tempMarkerRef.current) {
+                    tempMarkerRef.current.remove();
+                }
+
+                // Add nice pulse marker
+                const pulsingIcon = L.divIcon({
+                    className: 'selection-marker',
+                    html: `<div class="w-6 h-6 bg-moto-accent rounded-full border-2 border-white animate-bounce shadow-[0_0_20px_#FFA500]"></div>`,
+                    iconSize: [24, 24],
+                    iconAnchor: [12, 12]
+                });
+
+                const newMarker = L.marker([lat, lng], { icon: pulsingIcon }).addTo(map);
+                tempMarkerRef.current = newMarker;
+
+                setSelectedLocation({ lat, lng });
+                setUploadForm(prev => ({ ...prev, coordinates: { lat, lng } }));
+
+                // Deselect vlog if any
+                setSelectedVlog(null);
+            });
+
             mapRef.current = map;
         }
     }, []);
@@ -78,7 +108,7 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
     // --- MARKERS UPDATE ---
     useEffect(() => {
         if (mapRef.current) {
-            // Clear existing
+            // Clear existing vlog markers
             markersRef.current.forEach(m => m.remove());
             markersRef.current = [];
 
@@ -122,6 +152,11 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                     .addTo(mapRef.current)
                     .on('click', () => {
                         setSelectedVlog(vlog);
+                        // If selecting a vlog, clear coordinate selection
+                        setSelectedLocation(null);
+                        if (tempMarkerRef.current) tempMarkerRef.current.remove();
+                        tempMarkerRef.current = null;
+
                         mapRef.current.flyTo([vlog.coordinates.lat, vlog.coordinates.lng], 13, { duration: 1.5, easeLinearity: 0.25 });
                     });
 
@@ -130,9 +165,16 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
         }
     }, [vlogs, searchQuery]);
 
-    // Upload Logic (Keep existing logic, refine styles below)
+    // Handle Upload
     const handleUpload = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        // Use selected location or random valid coords if manual upload
+        const finalCoords = uploadForm.coordinates || {
+            lat: 39.0 + (Math.random() * 2 - 1),
+            lng: 35.0 + (Math.random() * 4 - 2)
+        };
+
         if (!uploadForm.videoFile || !uploadForm.title) return;
 
         setIsUploading(true);
@@ -143,24 +185,27 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                 thumbUrl = await storageService.uploadFile(uploadForm.thumbnailFile);
             }
 
-            const mockCoords = {
-                lat: 39.0 + (Math.random() * 2 - 1),
-                lng: 35.0 + (Math.random() * 4 - 2)
-            };
-
             await vlogService.addVlog({
                 title: uploadForm.title,
                 author: 'Benim Vlogum',
                 locationName: uploadForm.locationName || 'Bilinmeyen Konum',
-                coordinates: mockCoords,
+                coordinates: finalCoords,
                 videoUrl: videoUrl,
                 thumbnail: thumbUrl,
                 productsUsed: []
             });
 
             await loadVlogs();
+
+            // cleanup
             setIsUploadOpen(false);
-            setUploadForm({ title: '', locationName: '', videoFile: null, thumbnailFile: null });
+            setUploadForm({ title: '', locationName: '', videoFile: null, thumbnailFile: null, coordinates: null });
+            setSelectedLocation(null);
+            if (tempMarkerRef.current) {
+                tempMarkerRef.current.remove();
+                tempMarkerRef.current = null;
+            }
+
         } catch (error) {
             console.error("Upload failed", error);
         } finally {
@@ -183,6 +228,7 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
 
                 {/* Header */}
                 <div className="p-8 pb-6 pt-safe-top">
+                    {/* ... (Keep existing header) ... */}
                     <div className="flex items-center justify-between mb-6">
                         <button onClick={() => onNavigate('home')} className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors group">
                             <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white/10 border border-white/5 transition-all">
@@ -246,7 +292,7 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                                     : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/10 hover:shadow-lg'
                                 }`}
                         >
-                            {/* Selected Indicator */}
+                            {/* ... (Existing Vlog Card Content) ... */}
                             {selectedVlog?.id === vlog.id && (
                                 <div className="absolute left-0 top-0 bottom-0 w-1 bg-moto-accent box-shadow-[0_0_10px_#FFC000]"></div>
                             )}
@@ -291,10 +337,6 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                 {/* Cinematic Vignette */}
                 <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.6)_100%)] z-10"></div>
 
-                {/* Gradient Overlay for Text Readability if needed */}
-                <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-black/80 to-transparent z-10 pointer-events-none md:hidden"></div>
-
-                {/* Video Player Overlay */}
                 <AnimatePresence>
                     {selectedVlog && (
                         <motion.div
@@ -304,7 +346,6 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                             transition={{ type: "spring", damping: 25, stiffness: 300 }}
                             className="absolute top-4 right-4 bottom-24 md:bottom-4 w-[95%] md:w-[500px] bg-[#111111]/90 backdrop-blur-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-30 rounded-[2rem] overflow-hidden flex flex-col mx-auto md:mx-0"
                         >
-                            {/* Video Area */}
                             <div className="aspect-video bg-black relative group shadow-2xl z-20">
                                 {getYouTubeID(selectedVlog.videoUrl) ? (
                                     <iframe
@@ -324,8 +365,6 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                                         Tarayıcınız bu videoyu desteklemiyor.
                                     </video>
                                 )}
-
-                                {/* Close Button (Floating) */}
                                 <button
                                     onClick={() => setSelectedVlog(null)}
                                     className="absolute top-4 right-4 p-2 bg-black/50 backdrop-blur-md text-white rounded-full hover:bg-moto-accent hover:text-black transition-all border border-white/10 group-hover:opacity-100 duration-300 shadow-lg"
@@ -333,10 +372,7 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                                     <X className="w-5 h-5" />
                                 </button>
                             </div>
-
-                            {/* Content Area */}
                             <div className="flex-1 overflow-y-auto custom-scrollbar bg-[#111111]/50">
-                                {/* Info */}
                                 <div className="p-6 border-b border-white/5 relative overflow-hidden">
                                     <div className="absolute top-0 right-0 p-3 opacity-10">
                                         <Navigation className="w-24 h-24 text-white" />
@@ -373,13 +409,11 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                                     </div>
                                 </div>
 
-                                {/* Products */}
                                 <div className="p-6">
                                     <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
                                         <ShoppingBag className="w-4 h-4 text-moto-accent" />
                                         Ekipmanlar
                                     </h4>
-
                                     {relatedProducts.length > 0 ? (
                                         <div className="space-y-3">
                                             {relatedProducts.map(product => (
@@ -417,6 +451,31 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                         </motion.div>
                     )}
                 </AnimatePresence>
+
+                {/* --- LOCATION SELECTION ACTION --- */}
+                <AnimatePresence>
+                    {selectedLocation && !isUploadOpen && !selectedVlog && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                            exit={{ opacity: 0, y: 20, scale: 0.9 }}
+                            className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30"
+                        >
+                            <button
+                                onClick={() => setIsUploadOpen(true)}
+                                className="group flex items-center gap-3 bg-moto-accent text-black px-8 py-4 rounded-full font-bold text-lg shadow-[0_10px_40px_rgba(255,200,0,0.4)] hover:scale-105 active:scale-95 transition-all"
+                            >
+                                <Plus className="w-6 h-6" />
+                                <span>Burada Vlog Paylaş</span>
+                            </button>
+                            <div className="mt-2 text-center">
+                                <span className="text-[10px] font-mono text-white/50 bg-black/50 px-2 py-1 rounded">
+                                    {selectedLocation.lat.toFixed(4)}, {selectedLocation.lng.toFixed(4)}
+                                </span>
+                            </div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
 
             {/* --- UPLOAD MODAL --- */}
@@ -428,7 +487,12 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                         </button>
 
                         <h3 className="text-3xl font-display font-bold text-white mb-2">Vlog Yükle</h3>
-                        <p className="text-gray-400 text-sm mb-8">Sürüş rotanı ve deneyimini toplulukla paylaş.</p>
+                        <p className="text-gray-400 text-sm mb-8">
+                            {selectedLocation
+                                ? 'Seçili konumda sürüş deneyimini paylaş.'
+                                : 'Sürüş rotanı ve deneyimini toplulukla paylaş.'
+                            }
+                        </p>
 
                         <form onSubmit={handleUpload} className="space-y-6">
                             <div>
@@ -442,8 +506,9 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                                     placeholder="Örn: Hafta Sonu Gazlaması"
                                 />
                             </div>
+
                             <div>
-                                <label className="text-xs font-bold text-moto-accent uppercase mb-2 block">Konum</label>
+                                <label className="text-xs font-bold text-moto-accent uppercase mb-2 block">Konum Adı</label>
                                 <div className="relative">
                                     <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
                                     <input
@@ -455,6 +520,12 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                                         placeholder="Örn: İstanbul, Şile Yolu"
                                     />
                                 </div>
+                                {selectedLocation && (
+                                    <div className="mt-2 flex items-center gap-2 text-[10px] text-green-500">
+                                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
+                                        Haritadan konum seçildi ({selectedLocation.lat.toFixed(4)}, {selectedLocation.lng.toFixed(4)})
+                                    </div>
+                                )}
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">

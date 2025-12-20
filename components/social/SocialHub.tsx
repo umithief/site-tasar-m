@@ -12,70 +12,13 @@ import { ViewState } from '../../types';
 interface SocialHubProps {
     user: any;
     onNavigate?: (view: ViewState) => void;
+    onLogout?: () => void;
+    onUpdateUser?: (user: any) => void;
 }
 
-// MOCK DATA
-const MOCK_POSTS: SocialPost[] = [
-    {
-        _id: '1',
-        userId: 'u1',
-        userName: 'Canberk Hız',
-        userAvatar: '',
-        userRank: 'Pro Rider',
-        bikeModel: 'Yamaha R1M Carbon',
-        content: 'Just installed the new Akrapovic full system. The sound is absolutely unreal! 🚀🔊 #Yamaha #R1M #Akrapovic',
-        images: ['https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?q=80&w=1200&auto=format&fit=crop'],
-        likes: 124,
-        comments: 18,
-        shares: 5,
-        timestamp: '2h ago',
-        isLiked: false,
-        commentList: [
-            { _id: 'c1', authorId: 'u2', authorName: 'Zeynep Yılmaz', content: 'Sesi duymak için sabırsızlanıyorum! 🔥', date: '1h', likes: 2 },
-            { _id: 'c2', authorId: 'u3', authorName: 'Ahmet K.', content: 'Carbon detaylar efsane duruyor.', date: '45m', likes: 1 }
-        ]
-    },
-    {
-        _id: '2',
-        userId: 'u2',
-        userName: 'Zeynep Yılmaz',
-        userAvatar: '',
-        userRank: 'Track Master',
-        bikeModel: 'Honda CBR1000RR-R',
-        content: 'Weekend track day at Intercity Istanbul Park. Improved my lap time by 2 seconds! 🏁⏱️',
-        images: ['https://images.unsplash.com/photo-1592758215894-3298a49339d6?q=80&w=1200&auto=format&fit=crop'],
-        likes: 312,
-        comments: 42,
-        shares: 12,
-        timestamp: '5h ago',
-        isLiked: true,
-        commentList: []
-    }
-];
+// MOCK DATA ... (unchanged)
 
-const SUGGESTED_RIDERS = [
-    { id: 's1', name: 'Mehmet Demir', bike: 'Ducati Panigale V4', mutual: 3 },
-    { id: 's2', name: 'Ayşe Kaya', bike: 'BMW S1000RR', mutual: 1 },
-    { id: 's3', name: 'Ali Veli', bike: 'Kawasaki H2', mutual: 5 },
-];
-
-const MOCK_PROFILE: SocialProfile = {
-    _id: 'u1',
-    name: 'Canberk Hız',
-    email: 'test@example.com',
-    joinDate: 'Jan 2024',
-    points: 12500,
-    rank: 'Yol Kaptanı',
-    coverImage: 'https://images.unsplash.com/photo-1558981408-db0ecd8a1ee4?q=80&w=2000',
-    followersCount: 1250,
-    followingCount: 340,
-    totalRides: 142,
-    garage: [
-        { _id: 'b1', brand: 'Yamaha', model: 'R1M', year: '2023', km: '4500', color: 'Carbon', image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?q=80&w=600' }
-    ]
-};
-
-export const SocialHub: React.FC<SocialHubProps> = ({ user, onNavigate }) => {
+export const SocialHub: React.FC<SocialHubProps> = ({ user, onNavigate, onLogout, onUpdateUser }) => {
     const [isDMOpen, setIsDMOpen] = useState(false);
     const [view, setView] = useState<'feed' | 'profile'>('feed');
 
@@ -99,15 +42,15 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user, onNavigate }) => {
                         </div>
                         <div className="grid grid-cols-3 gap-2 text-center text-xs">
                             <div className="bg-white/5 rounded-lg p-2">
-                                <span className="block font-bold text-white text-sm">1.2K</span>
+                                <span className="block font-bold text-white text-sm">{user?.followers || 0}</span>
                                 <span className="text-gray-500">Followers</span>
                             </div>
                             <div className="bg-white/5 rounded-lg p-2">
-                                <span className="block font-bold text-white text-sm">340</span>
+                                <span className="block font-bold text-white text-sm">{user?.following || 0}</span>
                                 <span className="text-gray-500">Following</span>
                             </div>
                             <div className="bg-white/5 rounded-lg p-2">
-                                <span className="block font-bold text-white text-sm">142</span>
+                                <span className="block font-bold text-white text-sm">{user?.garage?.length || 0}</span>
                                 <span className="text-gray-500">Rides</span>
                             </div>
                         </div>
@@ -141,7 +84,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user, onNavigate }) => {
                 {/* CENTER (Feed) */}
                 <div className="lg:col-span-6 h-full overflow-y-auto no-scrollbar py-6">
                     {view === 'profile' ? (
-                        <UserProfile profile={{ ...MOCK_PROFILE, name: user?.name || 'Guest' }} />
+                        <UserProfile user={user} onNavigate={onNavigate} onLogout={onLogout} onUpdateUser={onUpdateUser} />
                     ) : (
                         <>
                             {/* Create Post Widget */}

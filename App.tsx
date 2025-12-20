@@ -6,7 +6,7 @@ import { BottomNav } from './components/layout/BottomNav';
 import { CartDrawer } from './components/layout/CartDrawer';
 import { AuthModal } from './components/AuthModal';
 import { PaymentModal } from './components/PaymentModal';
-import { UserProfile } from './components/UserProfile';
+import { UserProfile } from './components/social/UserProfile';
 import { PublicProfile } from './components/PublicProfile';
 import { About } from './components/About';
 import { Forum } from './components/Forum';
@@ -371,7 +371,7 @@ export const App: React.FC = () => {
             case 'about': return <About onNavigate={navigateTo} />;
             case 'ai-assistant': return <AIAssistantPage />;
             case 'forum': return <Forum user={user} onOpenAuth={() => navigateTo('auth')} onViewProfile={handleViewProfile} onOpenPro={() => setIsProModalOpen(true)} />;
-            case 'social-hub': return <SocialHub user={user} onNavigate={navigateTo} />;
+            case 'social-hub': return <SocialHub user={user} onNavigate={navigateTo} onLogout={handleLogout} onUpdateUser={setUser} />;
             case 'riders': return <RidersDirectory onViewProfile={handleViewProfile} onNavigate={navigateTo} />;
             default: return <Home products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
         }

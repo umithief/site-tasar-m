@@ -16,7 +16,46 @@ interface SocialHubProps {
     onUpdateUser?: (user: any) => void;
 }
 
-// MOCK DATA ... (unchanged)
+const MOCK_POSTS: SocialPost[] = [
+    {
+        _id: '1',
+        userId: '101',
+        userName: 'Alex Rider',
+        userAvatar: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=100&h=100&q=80',
+        userRank: 'Pro',
+        bikeModel: 'Yamaha R1M',
+        content: 'Just installed the new Akrapovic exhaust. The sound is absolute music to my ears! 🏍️💨 #yamaha #r1m #akrapovic',
+        images: ['https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=800&q=80'],
+        likes: 124,
+        comments: 18,
+        shares: 5,
+        timestamp: '2h ago',
+        isLiked: false,
+        commentList: []
+    },
+    {
+        _id: '2',
+        userId: '102',
+        userName: 'Sarah Speed',
+        userAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&q=80',
+        userRank: 'Elite',
+        bikeModel: 'Ducati Panigale V4',
+        content: 'Sunday morning ride with the crew. The weather could not be more perfect.',
+        images: ['https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800&q=80'],
+        likes: 89,
+        comments: 12,
+        shares: 2,
+        timestamp: '4h ago',
+        isLiked: true,
+        commentList: []
+    }
+];
+
+const SUGGESTED_RIDERS = [
+    { id: 1, name: 'Marc M.', bike: 'Honda CBR1000RR' },
+    { id: 2, name: 'Valentina', bike: 'Kawasaki Ninja ZX-10R' },
+    { id: 3, name: 'Kenan S.', bike: 'Kawasaki H2R' },
+];
 
 export const SocialHub: React.FC<SocialHubProps> = ({ user, onNavigate, onLogout, onUpdateUser }) => {
     const [isDMOpen, setIsDMOpen] = useState(false);

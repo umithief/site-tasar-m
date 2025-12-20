@@ -22,7 +22,6 @@ import modelRoutes from './routes/modelRoutes.js';
 import stolenRoutes from './routes/stolenRoutes.js';
 import negotiationRoutes from './routes/negotiationRoutes.js';
 import feedbackRoutes from './routes/feedbackRoutes.js';
-import socialRoutes from './routes/socialRoutes.js';
 import showcaseRoutes from './routes/showcaseRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import userRoutes from './routes/userRoutes.js';
@@ -442,7 +441,7 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/forum', forumRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes); // Using postRoutes as requested
-// app.use('/api/social', socialRoutes); // Replaced by postRoutes for social logic
+app.use('/api/social', postRoutes); // Map legacy route to new logic
 app.use('/api/messages', messageRoutes);
 app.use('/api/showcase', showcaseRoutes);
 app.use('/api/analytics', analyticsRoutes);

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MotoVlog, Product, ViewState, User as UserType } from '../types';
 import { vlogService } from '../services/vlogService';
 import { productService } from '../services/productService';
-import { MapPin, Play, X, Search, Upload, Film, Share2, Eye, User, ShoppingBag, ArrowRight, Navigation, Plus, Map as MapIcon, LogIn } from 'lucide-react';
+import { MapPin, Play, X, Search, Upload, Film, Share2, Eye, User, ShoppingBag, ArrowRight, Navigation, Plus, Map as MapIcon, LogIn, Disc } from 'lucide-react';
 import { Button } from './ui/Button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { storageService } from '../services/storageService';
@@ -60,7 +60,6 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
             if (searchQuery.length > 2) {
                 setIsSearchingPlaces(true);
                 try {
-                    // Search strict in TR context? Or global? Global is fine, maybe map bounds bias later.
                     const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=5`);
                     const data = await response.json();
                     setPlaceResults(data);
@@ -73,7 +72,7 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
             } else {
                 setPlaceResults([]);
             }
-        }, 500); // 500ms debounce
+        }, 500);
 
         return () => clearTimeout(timer);
     }, [searchQuery]);
@@ -83,15 +82,18 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
         const lng = parseFloat(place.lon);
 
         if (mapRef.current) {
-            mapRef.current.flyTo([lat, lng], 13);
+            mapRef.current.setView([lat, lng], 14, { animate: true, duration: 2 });
 
             // Mark location
             if (tempMarkerRef.current) tempMarkerRef.current.remove();
 
-            // Add nice pulse marker
+            // Minimalist Selection Maker
             const pulsingIcon = L.divIcon({
                 className: 'selection-marker',
-                html: `<div class="w-6 h-6 bg-moto-accent rounded-full border-2 border-white animate-bounce shadow-[0_0_20px_#FFA500]"></div>`,
+                html: `<div class="relative w-full h-full">
+                            <div class="absolute inset-0 bg-moto-accent rounded-full animate-ping opacity-75"></div>
+                            <div class="absolute inset-0 m-auto w-3 h-3 bg-white rounded-full shadow-[0_0_10px_#FFA500]"></div>
+                       </div>`,
                 iconSize: [24, 24],
                 iconAnchor: [12, 12]
             });
@@ -121,30 +123,31 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                 zoomAnimation: true,
                 fadeAnimation: true,
                 markerZoomAnimation: true
-            }).setView([39.0, 35.0], 6); // Turkey center
+            }).setView([39.0, 35.0], 6);
 
-            // Premium Dark Map
+            // Premium Ultra-Dark Map Style
             L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; CARTO',
+                attribution: '',
                 subdomains: 'abcd',
                 maxZoom: 20
             }).addTo(map);
 
-            // Map Click Handler for Selection
+            // Map Click Handler
             map.on('click', (e: any) => {
                 const { lat, lng } = e.latlng;
 
-                // Remove existing temp marker
                 if (tempMarkerRef.current) {
                     tempMarkerRef.current.remove();
                 }
 
-                // Add nice pulse marker
                 const pulsingIcon = L.divIcon({
                     className: 'selection-marker',
-                    html: `<div class="w-6 h-6 bg-moto-accent rounded-full border-2 border-white animate-bounce shadow-[0_0_20px_#FFA500]"></div>`,
-                    iconSize: [24, 24],
-                    iconAnchor: [12, 12]
+                    html: `<div class="relative w-full h-full">
+                                <div class="absolute inset-0 bg-moto-accent rounded-full animate-ping opacity-75"></div>
+                                <div class="absolute inset-0 m-auto w-3 h-3 bg-white rounded-full shadow-[0_0_15px_#FFA500]"></div>
+                           </div>`,
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 16]
                 });
 
                 const newMarker = L.marker([lat, lng], { icon: pulsingIcon }).addTo(map);
@@ -152,8 +155,6 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
 
                 setSelectedLocation({ lat, lng });
                 setUploadForm(prev => ({ ...prev, coordinates: { lat, lng } }));
-
-                // Deselect vlog if any
                 setSelectedVlog(null);
             });
 
@@ -164,56 +165,44 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
     // --- MARKERS UPDATE ---
     useEffect(() => {
         if (mapRef.current) {
-            // Clear existing vlog markers
             markersRef.current.forEach(m => m.remove());
             markersRef.current = [];
 
             const filteredVlogs = vlogs.filter(v => v.title.toLowerCase().includes(searchQuery.toLowerCase()) || v.locationName.toLowerCase().includes(searchQuery.toLowerCase()));
 
             filteredVlogs.forEach(vlog => {
-                // Premium Animated Marker
+                // Minimalist Premium Marker
                 const iconHtml = `
-                <div class="relative group cursor-pointer transform hover:scale-110 transition-all duration-500">
-                    <!-- Glow Effect -->
-                    <div class="absolute inset-0 bg-moto-accent/40 blur-xl rounded-full scale-0 group-hover:scale-150 transition-transform duration-500"></div>
+                <div class="group relative cursor-pointer w-12 h-12 flex items-center justify-center transition-all duration-500 hover:scale-125">
+                    <!-- Ring -->
+                    <div class="absolute inset-0 rounded-full border border-moto-accent/60 bg-black/80 backdrop-blur-sm group-hover:border-moto-accent group-hover:shadow-[0_0_25px_rgba(255,200,0,0.4)] transition-all"></div>
                     
-                    <!-- Marker Body -->
-                    <div class="w-16 h-16 rounded-2xl border-[3px] border-moto-accent bg-gray-900 overflow-hidden shadow-[0_0_30px_rgba(255,200,0,0.3)] relative z-10 box-border">
-                        <img src="${vlog.thumbnail}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100 group-hover:scale-110 transition-all duration-700" />
-                        
-                        <!-- Play Overlay -->
-                        <div class="absolute inset-0 bg-black/40 flex items-center justify-center">
-                            <div class="w-6 h-6 bg-moto-accent text-black rounded-full flex items-center justify-center transform scale-0 group-hover:scale-100 transition-transform duration-300">
-                                <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
-                            </div>
-                        </div>
+                    <!-- Thumbnail (Masked) -->
+                    <div class="absolute inset-1 rounded-full overflow-hidden border border-white/10">
+                        <img src="${vlog.thumbnail}" class="w-full h-full object-cover opacity-90 group-hover:opacity-100" />
                     </div>
 
-                    <!-- Arrow Tip -->
-                    <div class="absolute -bottom-3 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[10px] border-l-transparent border-r-[10px] border-r-transparent border-t-[12px] border-t-moto-accent z-0"></div>
-                    
-                    <!-- Pulse Animation -->
-                    <div class="absolute -bottom-8 left-1/2 -translate-x-1/2 w-20 h-20 bg-moto-accent/20 rounded-full animate-ping opacity-0 group-hover:opacity-100"></div>
+                    <!-- Pulse -->
+                    <div class="absolute -inset-4 rounded-full border border-moto-accent/20 opacity-0 group-hover:opacity-100 group-hover:animate-ping pointer-events-none"></div>
                 </div>
               `;
 
                 const icon = L.divIcon({
-                    className: 'custom-vlog-marker-premium',
+                    className: 'custom-vlog-marker-minimal',
                     html: iconHtml,
-                    iconSize: [64, 80],
-                    iconAnchor: [32, 80]
+                    iconSize: [48, 48],
+                    iconAnchor: [24, 24]
                 });
 
                 const marker = L.marker([vlog.coordinates.lat, vlog.coordinates.lng], { icon })
                     .addTo(mapRef.current)
                     .on('click', () => {
                         setSelectedVlog(vlog);
-                        // If selecting a vlog, clear coordinate selection
                         setSelectedLocation(null);
                         if (tempMarkerRef.current) tempMarkerRef.current.remove();
                         tempMarkerRef.current = null;
 
-                        mapRef.current.flyTo([vlog.coordinates.lat, vlog.coordinates.lng], 13, { duration: 1.5, easeLinearity: 0.25 });
+                        mapRef.current.flyTo([vlog.coordinates.lat, vlog.coordinates.lng], 14, { duration: 2, easeLinearity: 0.1 });
                     });
 
                 markersRef.current.push(marker);
@@ -221,17 +210,14 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
         }
     }, [vlogs, searchQuery]);
 
-    // Handle Upload
     const handleUpload = async (e: React.FormEvent) => {
         e.preventDefault();
-
         if (!user) {
-            notify.error('Vlog yüklemek için giriş yapmalısınız.');
+            notify.error('Lütfen önce giriş yapın.');
             onNavigate('auth');
             return;
         }
 
-        // Use selected location or random valid coords if manual upload
         const finalCoords = uploadForm.coordinates || {
             lat: 39.0 + (Math.random() * 2 - 1),
             lng: 35.0 + (Math.random() * 4 - 2)
@@ -249,7 +235,7 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
 
             await vlogService.addVlog({
                 title: uploadForm.title,
-                author: user.name || 'Motovibe RIDER',
+                author: user.name || 'Rider',
                 locationName: uploadForm.locationName || 'Bilinmeyen Konum',
                 coordinates: finalCoords,
                 videoUrl: videoUrl,
@@ -258,8 +244,6 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
             });
 
             await loadVlogs();
-
-            // cleanup
             setIsUploadOpen(false);
             setUploadForm({ title: '', locationName: '', videoFile: null, thumbnailFile: null, coordinates: null });
             setSelectedLocation(null);
@@ -267,11 +251,9 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                 tempMarkerRef.current.remove();
                 tempMarkerRef.current = null;
             }
-            notify.success('Vlog başarıyla yüklendi!');
-
+            notify.success('Hikayen haritada paylaşıldı!');
         } catch (error) {
-            console.error("Upload failed", error);
-            notify.error('Yükleme sırasında bir hata oluştu.');
+            notify.error('Yükleme hatası.');
         } finally {
             setIsUploading(false);
         }
@@ -285,191 +267,154 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
     };
 
     return (
-        <div className="h-screen flex flex-col md:flex-row bg-[#0a0a0a] relative overflow-hidden font-sans">
+        <div className="relative w-full h-screen bg-black overflow-hidden font-sans select-none">
 
-            {/* --- LEFT SIDEBAR (List) --- */}
-            <div className="w-full md:w-[450px] bg-black/80 backdrop-blur-2xl border-r border-white/5 flex flex-col z-20 shadow-[20px_0_60px_rgba(0,0,0,0.5)] relative">
+            {/* FULL SCREEN MAP */}
+            <div ref={mapContainerRef} className="absolute inset-0 z-0 bg-[#050505]" />
 
-                {/* Header */}
-                <div className="p-8 pb-6 pt-safe-top">
-                    {/* ... (Keep existing header) ... */}
-                    <div className="flex items-center justify-between mb-6">
-                        <button onClick={() => onNavigate('home')} className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors group">
-                            <div className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center group-hover:bg-white/10 border border-white/5 transition-all">
-                                <ArrowRight className="w-5 h-5 rotate-180" />
-                            </div>
-                            <span className="text-xs font-bold uppercase tracking-widest">Geri Dön</span>
-                        </button>
+            {/* OVERLAYS */}
+            <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-t from-black/80 via-transparent to-black/40"></div>
 
-                        <div className="flex items-center gap-3">
-                            {!user ? (
-                                <button
-                                    onClick={() => onNavigate('auth')}
-                                    className="px-4 py-1.5 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white transition-colors"
-                                >
-                                    <LogIn className="w-3 h-3" /> Giriş Yap
-                                </button>
-                            ) : (
-                                <div className="flex items-center gap-3 px-4 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full">
-                                    <span className="relative flex h-2.5 w-2.5">
-                                        <span className="animate-pulse absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
-                                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
-                                    </span>
-                                    <span className="text-[10px] font-bold text-green-500 uppercase tracking-widest truncate max-w-[80px]">{user.name.split(' ')[0]}</span>
-                                </div>
-                            )}
+            {/* FLOATING HEADER / BACK */}
+            <div className="absolute top-6 left-6 z-50 flex items-center gap-4">
+                <button
+                    onClick={() => onNavigate('home')}
+                    className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all hover:scale-105 active:scale-95 group"
+                >
+                    <ArrowRight className="w-5 h-5 rotate-180" />
+                </button>
+                <h1 className="text-2xl font-display font-black text-white/90 tracking-widest pointer-events-auto select-none opacity-0 md:opacity-100 transition-opacity">
+                    MOTO<span className="text-moto-accent">MAP</span>
+                </h1>
+            </div>
 
-                            <div className="flex items-center gap-3 px-4 py-1.5 bg-red-500/10 border border-red-500/20 rounded-full">
-                                <span className="relative flex h-2.5 w-2.5">
-                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-                                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
-                                </span>
-                                <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">Live</span>
-                            </div>
+            {/* FLOATING SIDEBAR PANEL */}
+            <motion.div
+                initial={{ x: -400, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                className="absolute top-24 left-6 bottom-6 w-[360px] z-40 flex flex-col pointer-events-none"
+            >
+                <div className="flex-1 bg-black/60 backdrop-blur-2xl rounded-3xl border border-white/5 flex flex-col overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.5)] pointer-events-auto">
+
+                    {/* Search Area */}
+                    <div className="p-6 pb-2 border-b border-white/5">
+                        <div className="relative group mb-4">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-moto-accent transition-colors" />
+                            <input
+                                type="text"
+                                placeholder="Keşfet..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full bg-white/5 border border-white/5 rounded-xl pl-10 pr-4 py-3 text-sm text-white focus:border-moto-accent/30 focus:bg-white/10 outline-none transition-all placeholder-gray-600 font-medium"
+                            />
                         </div>
-                    </div>
 
-                    <h2 className="text-4xl md:text-5xl font-display font-black text-white mb-8 leading-none tracking-tight">
-                        MOTO<span className="text-transparent bg-clip-text bg-gradient-to-tr from-moto-accent via-yellow-400 to-orange-500">VLOG</span>
-                    </h2>
-
-                    <div className="relative group">
-                        <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-moto-accent transition-colors" />
-                        <input
-                            type="text"
-                            placeholder="Rota veya içerik ara..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-white/5 border border-white/10 rounded-2xl pl-14 pr-4 py-4 text-sm text-white focus:border-moto-accent/50 focus:bg-white/10 outline-none transition-all placeholder-gray-500 shadow-inner"
-                        />
-                        {isSearchingPlaces && (
-                            <div className="absolute right-4 top-1/2 -translate-y-1/2">
-                                <div className="w-4 h-4 border-2 border-moto-accent border-t-transparent rounded-full animate-spin"></div>
-                            </div>
-                        )}
-                    </div>
-                </div>
-
-                {/* List */}
-                <div className="flex-1 overflow-y-auto px-4 md:px-8 pb-24 space-y-4 custom-scrollbar">
-
-                    {/* --- PLACE RESULTS SECTION --- */}
-                    {placeResults.length > 0 && (
-                        <div className="mb-6">
-                            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2 px-1 mb-2">
-                                <MapIcon className="w-3 h-3 text-moto-accent" />
-                                Konum Sonuçları
-                            </span>
-                            <div className="space-y-2">
-                                {placeResults.map((place, index) => (
-                                    <button
-                                        key={index}
-                                        onClick={() => handlePlaceSelect(place)}
-                                        className="w-full text-left p-3.5 bg-white/5 border border-white/5 rounded-xl hover:bg-moto-accent/10 hover:border-moto-accent/30 hover:text-white group transition-all"
-                                    >
-                                        <div className="text-sm font-bold text-gray-200 group-hover:text-white truncate">
-                                            {place.display_name.split(',')[0]}
-                                        </div>
-                                        <div className="text-[10px] text-gray-500 truncate group-hover:text-gray-400">
-                                            {place.display_name}
-                                        </div>
+                        {/* Results List */}
+                        {isSearchingPlaces && <div className="text-[10px] text-gray-500 text-center py-2 animate-pulse">Konumlar aranıyor...</div>}
+                        {placeResults.length > 0 && (
+                            <div className="mb-2 bg-black/40 rounded-xl overflow-hidden border border-white/5">
+                                {placeResults.map((place, i) => (
+                                    <button key={i} onClick={() => handlePlaceSelect(place)} className="w-full text-left px-4 py-2 hover:bg-white/10 text-xs text-gray-300 hover:text-white truncate transition-colors border-b border-white/5 last:border-0">
+                                        {place.display_name.split(',')[0]}
                                     </button>
                                 ))}
                             </div>
-                        </div>
-                    )}
-
-                    <div className="flex items-center justify-between px-1 mb-4">
-                        <span className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
-                            <Film className="w-3 h-3" />
-                            Trend Videolar
-                        </span>
-                        <Button
-                            size="sm"
-                            variant="ghost"
-                            className="text-[10px] h-auto py-1.5 px-3 bg-moto-accent/10 hover:bg-moto-accent hover:text-black text-moto-accent border border-moto-accent/20 rounded-lg transition-all"
-                            onClick={() => {
-                                if (!user) {
-                                    notify.error('Vlog paylaşmak için giriş yapmalısınız.');
-                                    onNavigate('auth');
-                                    return;
-                                }
-                                setIsUploadOpen(true);
-                            }}
-                        >
-                            <Upload className="w-3 h-3 mr-1.5" /> YÜKLE
-                        </Button>
+                        )}
                     </div>
 
-                    {vlogs.filter(v => v.title.toLowerCase().includes(searchQuery.toLowerCase())).map(vlog => (
-                        <motion.div
-                            key={vlog.id}
-                            initial={{ opacity: 0, x: -10 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            onClick={() => {
-                                setSelectedVlog(vlog);
-                                if (mapRef.current) mapRef.current.flyTo([vlog.coordinates.lat, vlog.coordinates.lng], 13);
-                            }}
-                            className={`group relative flex gap-4 p-3 rounded-2xl border transition-all cursor-pointer overflow-hidden ${selectedVlog?.id === vlog.id
-                                    ? 'bg-moto-accent/10 border-moto-accent/30 shadow-[0_0_20px_rgba(255,200,0,0.1)]'
-                                    : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/10 hover:shadow-lg'
-                                }`}
-                        >
-                            {/* ... (Existing Vlog Card Content) ... */}
-                            {selectedVlog?.id === vlog.id && (
-                                <div className="absolute left-0 top-0 bottom-0 w-1 bg-moto-accent box-shadow-[0_0_10px_#FFC000]"></div>
-                            )}
+                    {/* Vlog List */}
+                    <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-2">
+                        {vlogs.filter(v => v.title.toLowerCase().includes(searchQuery.toLowerCase())).map((vlog, idx) => (
+                            <motion.div
+                                key={vlog.id}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: idx * 0.05 }}
+                                onClick={() => {
+                                    setSelectedVlog(vlog);
+                                    if (mapRef.current) mapRef.current.flyTo([vlog.coordinates.lat, vlog.coordinates.lng], 14, { duration: 2 });
+                                }}
+                                className={`group flex items-center gap-4 p-3 rounded-2xl cursor-pointer transition-all border ${selectedVlog?.id === vlog.id ? 'bg-moto-accent/10 border-moto-accent/30' : 'bg-transparent border-transparent hover:bg-white/5 hover:border-white/5'}`}
+                            >
+                                <div className="w-14 h-14 rounded-full overflow-hidden border border-white/10 flex-shrink-0 relative">
+                                    <img src={vlog.thumbnail} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                    {selectedVlog?.id === vlog.id && <div className="absolute inset-0 bg-moto-accent/20 animate-pulse"></div>}
+                                </div>
 
-                            <div className="w-32 h-24 rounded-xl overflow-hidden relative flex-shrink-0 bg-black/50 border border-white/10 group-hover:border-white/20 transition-all">
-                                <img src={vlog.thumbnail} className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700 opacity-80 group-hover:opacity-100" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
-                                <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                    <div className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md border border-white/30 ${selectedVlog?.id === vlog.id ? 'bg-moto-accent text-black' : 'bg-black/60 text-white'}`}>
-                                        <Play className="w-4 h-4 fill-current ml-0.5" />
+                                <div className="flex-1 min-w-0">
+                                    <h4 className={`text-sm font-bold truncate ${selectedVlog?.id === vlog.id ? 'text-white' : 'text-gray-400 group-hover:text-gray-200'}`}>{vlog.title}</h4>
+                                    <div className="flex items-center gap-2 mt-1">
+                                        <div className="flex items-center gap-1 text-[10px] text-gray-500">
+                                            <UserAvatar name={vlog.author} size={14} />
+                                            <span className="truncate max-w-[80px]">{vlog.author}</span>
+                                        </div>
+                                        <span className="w-0.5 h-0.5 bg-gray-600 rounded-full"></span>
+                                        <span className="text-[10px] text-gray-600">{vlog.views} izlenme</span>
                                     </div>
                                 </div>
-                            </div>
+                                <div className="w-8 h-8 rounded-full border border-white/5 flex items-center justify-center text-gray-600 group-hover:text-moto-accent group-hover:border-moto-accent/30 transition-all">
+                                    <Play className="w-3 h-3 fill-current" />
+                                </div>
+                            </motion.div>
+                        ))}
+                    </div>
 
-                            <div className="flex-1 min-w-0 flex flex-col justify-center py-1">
-                                <div className="flex items-center gap-2 mb-2">
-                                    <span className="text-[9px] font-black text-black bg-moto-accent px-1.5 py-0.5 rounded leading-none">
-                                        VLOG
-                                    </span>
-                                    <span className="text-[10px] text-gray-500 flex items-center gap-1">
-                                        <Eye className="w-3 h-3" /> {vlog.views}
-                                    </span>
+                    {/* Footer / Upload */}
+                    <div className="p-4 border-t border-white/5 bg-black/20">
+                        {user ? (
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2">
+                                    <div className="relative">
+                                        <UserAvatar name={user.name} size={32} />
+                                        <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-black rounded-full"></div>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-xs font-bold text-white leading-none">{user.name}</span>
+                                        <span className="text-[9px] text-green-500 font-bold uppercase tracking-wider">Online</span>
+                                    </div>
                                 </div>
-                                <h4 className={`font-bold text-sm leading-snug mb-2 line-clamp-2 ${selectedVlog?.id === vlog.id ? 'text-white' : 'text-gray-300 group-hover:text-white'}`}>
-                                    {vlog.title}
-                                </h4>
-                                <div className="flex items-center gap-1.5 text-xs text-gray-500">
-                                    <MapPin className="w-3 h-3 text-moto-accent" />
-                                    <span className="truncate group-hover:text-gray-400 transition-colors">{vlog.locationName}</span>
-                                </div>
+                                <button
+                                    onClick={() => setIsUploadOpen(true)}
+                                    className="p-3 rounded-full bg-white/5 hover:bg-moto-accent hover:text-black text-white transition-all border border-white/10 hover:shadow-[0_0_15px_rgba(255,200,0,0.5)]"
+                                >
+                                    <Plus className="w-5 h-5" />
+                                </button>
                             </div>
-                        </motion.div>
-                    ))}
+                        ) : (
+                            <button
+                                onClick={() => onNavigate('auth')}
+                                className="w-full py-3 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-xs font-bold uppercase tracking-widest text-gray-300 hover:text-white transition-all flex items-center justify-center gap-2"
+                            >
+                                <LogIn className="w-4 h-4" />
+                                Giriş Yap & Paylaş
+                            </button>
+                        )}
+                    </div>
                 </div>
-            </div>
+            </motion.div>
 
-            {/* --- MAIN AREA (Map + Player) --- */}
-            <div className="flex-1 relative bg-black">
-                {/* Map Container */}
-                <div ref={mapContainerRef} className="w-full h-full z-0 opacity-100" />
+            {/* VIDEO PLAYER & DETAIL PANEL (Floating Right) */}
+            <AnimatePresence>
+                {selectedVlog && (
+                    <motion.div
+                        initial={{ x: 400, opacity: 0 }}
+                        animate={{ x: 0, opacity: 1 }}
+                        exit={{ x: 400, opacity: 0 }}
+                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                        className="absolute top-6 right-6 bottom-6 w-[480px] z-50 flex flex-col pointer-events-none"
+                    >
+                        <div className="flex-1 bg-[#0a0a0a]/90 backdrop-blur-3xl rounded-[2.5rem] border border-white/10 shadow-[0_30px_80px_rgba(0,0,0,0.8)] overflow-hidden pointer-events-auto flex flex-col relative">
 
-                {/* Cinematic Vignette */}
-                <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.6)_100%)] z-10"></div>
+                            {/* Close Button */}
+                            <button
+                                onClick={() => setSelectedVlog(null)}
+                                className="absolute top-6 right-6 z-50 w-10 h-10 rounded-full bg-black/50 backdrop-blur-md border border-white/10 text-white flex items-center justify-center hover:bg-red-500 hover:rotate-90 transition-all duration-300"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
 
-                <AnimatePresence>
-                    {selectedVlog && (
-                        <motion.div
-                            initial={{ opacity: 0, x: 100, scale: 0.95 }}
-                            animate={{ opacity: 1, x: 0, scale: 1 }}
-                            exit={{ opacity: 0, x: 100, scale: 0.95 }}
-                            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                            className="absolute top-4 right-4 bottom-24 md:bottom-4 w-[95%] md:w-[500px] bg-[#111111]/90 backdrop-blur-3xl border border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)] z-30 rounded-[2rem] overflow-hidden flex flex-col mx-auto md:mx-0"
-                        >
-                            <div className="aspect-video bg-black relative group shadow-2xl z-20">
+                            {/* Video Container */}
+                            <div className="relative aspect-[9/16] md:aspect-video bg-black flex-shrink-0 border-b border-white/5">
                                 {getYouTubeID(selectedVlog.videoUrl) ? (
                                     <iframe
                                         src={`https://www.youtube.com/embed/${getYouTubeID(selectedVlog.videoUrl)}?autoplay=1&rel=0&modestbranding=1&theme=dark`}
@@ -478,214 +423,150 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                                         allowFullScreen
                                     ></iframe>
                                 ) : (
-                                    <video
-                                        src={selectedVlog.videoUrl}
-                                        controls
-                                        autoPlay
-                                        className="w-full h-full object-contain"
-                                        poster={selectedVlog.thumbnail}
-                                    >
-                                        Tarayıcınız bu videoyu desteklemiyor.
-                                    </video>
+                                    <video src={selectedVlog.videoUrl} controls autoPlay className="w-full h-full object-contain" poster={selectedVlog.thumbnail}></video>
                                 )}
-                                <button
-                                    onClick={() => setSelectedVlog(null)}
-                                    className="absolute top-4 right-4 p-2 bg-black/50 backdrop-blur-md text-white rounded-full hover:bg-moto-accent hover:text-black transition-all border border-white/10 group-hover:opacity-100 duration-300 shadow-lg"
-                                >
-                                    <X className="w-5 h-5" />
-                                </button>
                             </div>
-                            <div className="flex-1 overflow-y-auto custom-scrollbar bg-[#111111]/50">
-                                <div className="p-6 border-b border-white/5 relative overflow-hidden">
-                                    <div className="absolute top-0 right-0 p-3 opacity-10">
-                                        <Navigation className="w-24 h-24 text-white" />
-                                    </div>
 
-                                    <div className="relative z-10">
-                                        <div className="flex justify-between items-start mb-4">
-                                            <h3 className="text-2xl font-display font-bold text-white leading-tight w-3/4">{selectedVlog.title}</h3>
-                                            <button className="p-2.5 bg-white/5 hover:bg-moto-accent hover:text-black rounded-xl text-gray-400 transition-all border border-white/5">
-                                                <Share2 className="w-5 h-5" />
-                                            </button>
-                                        </div>
+                            {/* Content */}
+                            <div className="flex-1 overflow-y-auto custom-scrollbar bg-gradient-to-b from-black/0 to-black/50 p-6 md:p-8">
+                                <div className="flex items-start justify-between mb-6">
+                                    <h2 className="text-2xl font-display font-black text-white leading-tight w-4/5">{selectedVlog.title}</h2>
+                                    <button className="text-gray-500 hover:text-white transition-colors"><Share2 className="w-5 h-5" /></button>
+                                </div>
 
-                                        <div className="flex items-center justify-between">
-                                            <div className="flex items-center gap-3">
-                                                <UserAvatar name={selectedVlog.author} size={44} className="border-2 border-moto-accent" />
-                                                <div>
-                                                    <div className="text-sm font-bold text-white">{selectedVlog.author}</div>
-                                                    <div className="text-[10px] text-moto-accent uppercase tracking-widest font-bold">Content Creator</div>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div className="mt-4 flex flex-wrap gap-2">
-                                            <div className="flex items-center gap-1.5 text-xs font-medium text-gray-300 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5 hover:border-moto-accent/50 transition-colors cursor-default">
-                                                <MapPin className="w-3.5 h-3.5 text-moto-accent" />
-                                                {selectedVlog.locationName}
-                                            </div>
-                                            <div className="flex items-center gap-1.5 text-xs font-medium text-gray-300 bg-white/5 px-3 py-1.5 rounded-lg border border-white/5">
-                                                <Eye className="w-3.5 h-3.5 text-moto-accent" />
-                                                {vlogs.find(v => v.id === selectedVlog.id)?.views || 100} Görüntülenme
-                                            </div>
-                                        </div>
+                                <div className="flex items-center gap-4 mb-8">
+                                    <UserAvatar name={selectedVlog.author} size={48} className="ring-2 ring-moto-accent ring-offset-2 ring-offset-black" />
+                                    <div>
+                                        <div className="font-bold text-white text-lg">{selectedVlog.author}</div>
+                                        <div className="text-xs text-moto-accent font-bold uppercase tracking-wider">Pro Rider</div>
                                     </div>
                                 </div>
 
-                                <div className="p-6">
-                                    <h4 className="text-xs font-bold text-gray-400 uppercase tracking-widest mb-4 flex items-center gap-2">
-                                        <ShoppingBag className="w-4 h-4 text-moto-accent" />
-                                        Ekipmanlar
-                                    </h4>
-                                    {relatedProducts.length > 0 ? (
-                                        <div className="space-y-3">
-                                            {relatedProducts.map(product => (
-                                                <div
-                                                    key={product.id}
-                                                    onClick={() => onProductClick(product)}
-                                                    className="group flex gap-4 p-3 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 hover:border-moto-accent/30 hover:shadow-lg hover:shadow-moto-accent/5 transition-all cursor-pointer"
-                                                >
-                                                    <div className="w-16 h-16 rounded-xl bg-white overflow-hidden flex-shrink-0 border border-white/10 p-1">
-                                                        <img src={product.image} className="w-full h-full object-contain" />
-                                                    </div>
-                                                    <div className="flex-1 min-w-0 flex flex-col justify-center">
-                                                        <div className="text-[10px] text-moto-accent uppercase font-bold mb-1">{product.category}</div>
-                                                        <h5 className="font-bold text-sm text-gray-200 truncate group-hover:text-white transition-colors">{product.name}</h5>
-                                                        <div className="flex items-center justify-between mt-2">
-                                                            <span className="text-xs font-mono font-bold text-white">₺{product.price.toLocaleString()}</span>
-                                                            <button
-                                                                onClick={(e) => { e.stopPropagation(); onAddToCart(product, e); }}
-                                                                className="text-[10px] font-bold bg-white text-black px-3 py-1.5 rounded-lg hover:bg-moto-accent transition-colors"
-                                                            >
-                                                                İNCELE
-                                                            </button>
-                                                        </div>
-                                                    </div>
+                                <div className="grid grid-cols-2 gap-3 mb-8">
+                                    <div className="bg-white/5 rounded-2xl p-4 border border-white/5 flex flex-col items-center justify-center gap-2 group hover:bg-white/10 transition-colors">
+                                        <MapPin className="w-5 h-5 text-gray-400 group-hover:text-moto-accent" />
+                                        <span className="text-xs font-bold text-gray-300 text-center">{selectedVlog.locationName || 'Gizli Konum'}</span>
+                                    </div>
+                                    <div className="bg-white/5 rounded-2xl p-4 border border-white/5 flex flex-col items-center justify-center gap-2 group hover:bg-white/10 transition-colors">
+                                        <Eye className="w-5 h-5 text-gray-400 group-hover:text-moto-accent" />
+                                        <span className="text-xs font-bold text-gray-300">{(vlogs.find(v => v.id === selectedVlog.id)?.views || 100).toLocaleString()} İzlenme</span>
+                                    </div>
+                                </div>
+
+                                {/* Products */}
+                                <div>
+                                    <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                        <ShoppingBag className="w-4 h-4" /> Kullanılan Ekipmanlar
+                                    </h3>
+                                    <div className="space-y-3">
+                                        {relatedProducts.length > 0 ? relatedProducts.map(product => (
+                                            <div key={product.id} onClick={() => onProductClick(product)} className="flex items-center gap-4 p-3 bg-white/5 rounded-2xl border border-white/5 hover:bg-moto-accent/10 hover:border-moto-accent/30 transition-all cursor-pointer group">
+                                                <div className="w-12 h-12 bg-white rounded-xl p-1">
+                                                    <img src={product.image} className="w-full h-full object-contain" />
                                                 </div>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="text-center py-8 border border-dashed border-white/10 rounded-xl bg-white/5">
-                                            <p className="text-xs text-gray-500">Bu videoda ürün etiketlenmemiş.</p>
-                                        </div>
-                                    )}
+                                                <div className="flex-1 min-w-0">
+                                                    <div className="text-[10px] text-gray-500 uppercase font-bold">{product.category}</div>
+                                                    <div className="text-sm font-bold text-gray-200 group-hover:text-white truncate">{product.name}</div>
+                                                </div>
+                                                <div className="text-sm font-mono font-bold text-white">₺{product.price.toLocaleString()}</div>
+                                            </div>
+                                        )) : (
+                                            <div className="text-center py-6 text-xs text-gray-600 border border-dashed border-white/5 rounded-2xl">Ekipman bilgisi girilmemiş.</div>
+                                        )}
+                                    </div>
                                 </div>
                             </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
-                {/* --- LOCATION SELECTION ACTION --- */}
-                <AnimatePresence>
-                    {selectedLocation && !isUploadOpen && !selectedVlog && (
-                        <motion.div
-                            initial={{ opacity: 0, y: 50, scale: 0.9 }}
-                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                            exit={{ opacity: 0, y: 20, scale: 0.9 }}
-                            className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30"
+            {/* FLOATING ACTION: UPLOAD AT LOCATION */}
+            <AnimatePresence>
+                {selectedLocation && !isUploadOpen && !selectedVlog && (
+                    <motion.div
+                        initial={{ y: 50, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: 50, opacity: 0 }}
+                        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-40"
+                    >
+                        <button
+                            onClick={() => user ? setIsUploadOpen(true) : onNavigate('auth')}
+                            className="group flex flex-col items-center gap-4"
                         >
-                            <button
-                                onClick={() => {
-                                    if (!user) {
-                                        notify.error('Vlog paylaşmak için giriş yapmalısınız.');
-                                        onNavigate('auth');
-                                        return;
-                                    }
-                                    setIsUploadOpen(true);
-                                }}
-                                className="group flex items-center gap-3 bg-moto-accent text-black px-8 py-4 rounded-full font-bold text-lg shadow-[0_10px_40px_rgba(255,200,0,0.4)] hover:scale-105 active:scale-95 transition-all"
-                            >
-                                <Plus className="w-6 h-6" />
-                                <span>Burada Vlog Paylaş</span>
-                            </button>
-                            <div className="mt-2 text-center">
-                                <span className="text-[10px] font-mono text-white/50 bg-black/50 px-2 py-1 rounded">
-                                    {selectedLocation.lat.toFixed(4)}, {selectedLocation.lng.toFixed(4)}
-                                </span>
+                            <div className="relative">
+                                <div className="absolute inset-0 bg-moto-accent blur-xl opacity-40 group-hover:opacity-60 transition-opacity rounded-full"></div>
+                                <div className="relative w-16 h-16 bg-moto-accent rounded-full flex items-center justify-center text-black shadow-2xl hover:scale-110 transition-transform duration-300">
+                                    <Plus className="w-8 h-8 stroke-[3]" />
+                                </div>
                             </div>
-                        </motion.div>
-                    )}
-                </AnimatePresence>
-            </div>
-
-            {/* --- UPLOAD MODAL --- */}
-            {isUploadOpen && (
-                <div className="fixed inset-0 z-[600] bg-black/80 backdrop-blur-md flex items-center justify-center p-4">
-                    <div className="bg-[#111111] border border-white/10 rounded-[2rem] w-full max-w-md p-8 shadow-2xl relative animate-in zoom-in-95">
-                        <button onClick={() => setIsUploadOpen(false)} className="absolute top-4 right-4 text-gray-400 hover:text-white p-2 hover:bg-white/10 rounded-full transition-colors">
-                            <X className="w-5 h-5" />
+                            <div className="bg-black/60 backdrop-blur-md px-4 py-2 rounded-full border border-white/10 text-xs font-bold text-white uppercase tracking-widest">
+                                Burada Vlog Paylaş
+                            </div>
                         </button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
-                        <h3 className="text-3xl font-display font-bold text-white mb-2">Vlog Yükle</h3>
-                        <p className="text-gray-400 text-sm mb-8">
-                            {selectedLocation
-                                ? 'Seçili konumda sürüş deneyimini paylaş.'
-                                : 'Sürüş rotanı ve deneyimini toplulukla paylaş.'
-                            }
-                        </p>
+            {/* MODAL: UPLOAD */}
+            <AnimatePresence>
+                {isUploadOpen && (
+                    <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex items-center justify-center p-6">
+                        <motion.div
+                            initial={{ scale: 0.9, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.9, opacity: 0 }}
+                            className="w-full max-w-lg bg-[#111] border border-white/10 rounded-[2.5rem] p-8 md:p-10 shadow-2xl relative"
+                        >
+                            <button onClick={() => setIsUploadOpen(false)} className="absolute top-6 right-6 p-2 bg-white/5 rounded-full text-gray-400 hover:text-white hover:bg-white/10"><X className="w-5 h-5" /></button>
 
-                        <form onSubmit={handleUpload} className="space-y-6">
-                            <div>
-                                <label className="text-xs font-bold text-moto-accent uppercase mb-2 block">Vlog Başlığı</label>
-                                <input
-                                    type="text"
-                                    required
-                                    value={uploadForm.title}
-                                    onChange={e => setUploadForm({ ...uploadForm, title: e.target.value })}
-                                    className="w-full bg-black/40 border border-white/10 rounded-2xl px-5 py-4 text-white focus:border-moto-accent focus:bg-white/5 outline-none transition-all placeholder-gray-600"
-                                    placeholder="Örn: Hafta Sonu Gazlaması"
-                                />
-                            </div>
+                            <h2 className="text-3xl font-display font-black text-white mb-2">Vlog'unu Paylaş</h2>
+                            <p className="text-gray-500 mb-8 text-sm">Yolculuğunu haritaya sabitle ve toplulukla paylaş.</p>
 
-                            <div>
-                                <label className="text-xs font-bold text-moto-accent uppercase mb-2 block">Konum Adı</label>
-                                <div className="relative">
-                                    <MapPin className="absolute left-5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-                                    <input
-                                        type="text"
-                                        required
-                                        value={uploadForm.locationName}
-                                        onChange={e => setUploadForm({ ...uploadForm, locationName: e.target.value })}
-                                        className="w-full bg-black/40 border border-white/10 rounded-2xl pl-12 pr-5 py-4 text-white focus:border-moto-accent focus:bg-white/5 outline-none transition-all placeholder-gray-600"
-                                        placeholder="Örn: İstanbul, Şile Yolu"
-                                    />
-                                </div>
-                                {selectedLocation && (
-                                    <div className="mt-2 flex items-center gap-2 text-[10px] text-green-500">
-                                        <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                                        Haritadan konum ({selectedLocation.lat.toFixed(4)}, {selectedLocation.lng.toFixed(4)})
+                            <form onSubmit={handleUpload} className="space-y-6">
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-xs font-bold text-moto-accent uppercase mb-2 ml-1">Başlık</label>
+                                        <input
+                                            value={uploadForm.title} onChange={e => setUploadForm({ ...uploadForm, title: e.target.value })}
+                                            className="w-full bg-black border border-white/10 rounded-2xl px-5 py-4 text-white focus:border-moto-accent focus:ring-1 focus:ring-moto-accent outline-none font-bold placeholder-gray-700 transition-all"
+                                            placeholder="Videonun başlığı..."
+                                        />
                                     </div>
-                                )}
-                            </div>
+                                    <div>
+                                        <label className="block text-xs font-bold text-moto-accent uppercase mb-2 ml-1">Konum</label>
+                                        <div className="flex items-center gap-2 bg-black border border-white/10 rounded-2xl px-5 py-4 text-gray-400">
+                                            <MapPin className="w-5 h-5 text-gray-600" />
+                                            <input
+                                                value={uploadForm.locationName} onChange={e => setUploadForm({ ...uploadForm, locationName: e.target.value })}
+                                                className="bg-transparent w-full outline-none text-white font-medium placeholder-gray-700"
+                                                placeholder="Konum adı..."
+                                            />
+                                        </div>
+                                    </div>
+                                </div>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="text-xs font-bold text-moto-accent uppercase mb-2 block">Video</label>
-                                    <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-white/10 rounded-2xl cursor-pointer hover:border-moto-accent hover:bg-moto-accent/5 transition-all group bg-black/20">
-                                        <Film className="w-6 h-6 text-gray-500 group-hover:text-moto-accent mb-2 transition-colors" />
-                                        <span className="text-[10px] text-gray-500 group-hover:text-white transition-colors">{uploadForm.videoFile ? 'Dosya Seçildi' : 'MP4 / MOV'}</span>
-                                        <input type="file" accept="video/*" className="hidden" onChange={e => setUploadForm({ ...uploadForm, videoFile: e.target.files?.[0] || null })} />
+                                <div className="grid grid-cols-2 gap-4">
+                                    <label className="aspect-square rounded-3xl border-2 border-dashed border-white/10 hover:border-moto-accent hover:bg-moto-accent/5 flex flex-col items-center justify-center gap-3 cursor-pointer transition-all group">
+                                        <Film className="w-8 h-8 text-gray-600 group-hover:text-moto-accent transition-colors" />
+                                        <span className="text-xs font-bold text-gray-500 group-hover:text-white uppercase tracking-wider">{uploadForm.videoFile ? 'Video Seçildi' : 'Video Yükle'}</span>
+                                        <input type="file" className="hidden" accept="video/*" onChange={e => setUploadForm({ ...uploadForm, videoFile: e.target.files?.[0] || null })} />
+                                    </label>
+                                    <label className="aspect-square rounded-3xl border-2 border-dashed border-white/10 hover:border-moto-accent hover:bg-moto-accent/5 flex flex-col items-center justify-center gap-3 cursor-pointer transition-all group">
+                                        <Disc className="w-8 h-8 text-gray-600 group-hover:text-moto-accent transition-colors" />
+                                        <span className="text-xs font-bold text-gray-500 group-hover:text-white uppercase tracking-wider">{uploadForm.thumbnailFile ? 'Kapak Seçildi' : 'Kapak Görseli'}</span>
+                                        <input type="file" className="hidden" accept="image/*" onChange={e => setUploadForm({ ...uploadForm, thumbnailFile: e.target.files?.[0] || null })} />
                                     </label>
                                 </div>
-                                <div>
-                                    <label className="text-xs font-bold text-moto-accent uppercase mb-2 block">Kapak</label>
-                                    <label className="flex flex-col items-center justify-center w-full h-28 border-2 border-dashed border-white/10 rounded-2xl cursor-pointer hover:border-moto-accent hover:bg-moto-accent/5 transition-all group bg-black/20">
-                                        <Search className="w-6 h-6 text-gray-500 group-hover:text-moto-accent mb-2 transition-colors" />
-                                        <span className="text-[10px] text-gray-500 group-hover:text-white transition-colors">{uploadForm.thumbnailFile ? 'Dosya Seçildi' : 'JPG / PNG'}</span>
-                                        <input type="file" accept="image/*" className="hidden" onChange={e => setUploadForm({ ...uploadForm, thumbnailFile: e.target.files?.[0] || null })} />
-                                    </label>
-                                </div>
-                            </div>
 
-                            <div className="pt-4">
-                                <Button type="submit" variant="primary" disabled={!uploadForm.videoFile || isUploading} isLoading={isUploading} className="w-full py-5 text-base font-bold shadow-lg shadow-moto-accent/20 bg-moto-accent text-black hover:bg-white hover:text-black rounded-2xl">
+                                <Button type="submit" variant="primary" isLoading={isUploading} size="lg" className="w-full h-16 rounded-2xl text-lg font-black bg-moto-accent text-black hover:scale-[1.02] shadow-xl shadow-moto-accent/20">
                                     {isUploading ? 'YÜKLENİYOR...' : 'YAYINLA'}
                                 </Button>
-                            </div>
-                        </form>
+                            </form>
+                        </motion.div>
                     </div>
-                </div>
-            )}
+                )}
+            </AnimatePresence>
         </div>
     );
 };

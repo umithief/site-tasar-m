@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { MotoVlog, Product, ViewState } from '../types';
+import { MotoVlog, Product, ViewState, User as UserType } from '../types';
 import { vlogService } from '../services/vlogService';
 import { productService } from '../services/productService';
 import { MapPin, Play, X, Search, Upload, Film, Share2, Eye, User, ShoppingBag, ArrowRight, Navigation, Plus, Map as MapIcon } from 'lucide-react';
@@ -7,6 +7,8 @@ import { Button } from './ui/Button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { storageService } from '../services/storageService';
 import { UserAvatar } from './ui/UserAvatar';
+import { authService } from '../services/auth';
+import { notify } from '../services/notificationService';
 
 declare const L: any;
 
@@ -21,6 +23,9 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
     const [selectedVlog, setSelectedVlog] = useState<MotoVlog | null>(null);
     const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
+
+    // Auth State
+    const [currentUser, setCurrentUser] = useState<UserType | null>(null);
 
     // Search & Geocoding State
     const [placeResults, setPlaceResults] = useState<any[]>([]);
@@ -45,7 +50,13 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
 
     useEffect(() => {
         loadVlogs();
+        checkUser();
     }, []);
+
+    const checkUser = async () => {
+        const user = await authService.getCurrentUser();
+        setCurrentUser(user);
+    };
 
     const loadVlogs = async () => {
         const data = await vlogService.getVlogs();
@@ -223,6 +234,11 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
     const handleUpload = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (!currentUser) {
+            notify.error('Vlog yüklemek için giriş yapmalısınız.');
+            return;
+        }
+
         // Use selected location or random valid coords if manual upload
         const finalCoords = uploadForm.coordinates || {
             lat: 39.0 + (Math.random() * 2 - 1),
@@ -241,7 +257,7 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
 
             await vlogService.addVlog({
                 title: uploadForm.title,
-                author: 'Benim Vlogum',
+                author: currentUser.name || 'Motovibe RIDER',
                 locationName: uploadForm.locationName || 'Bilinmeyen Konum',
                 coordinates: finalCoords,
                 videoUrl: videoUrl,
@@ -259,9 +275,11 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                 tempMarkerRef.current.remove();
                 tempMarkerRef.current = null;
             }
+            notify.success('Vlog başarıyla yüklendi!');
 
         } catch (error) {
             console.error("Upload failed", error);
+            notify.error('Yükleme sırasında bir hata oluştu.');
         } finally {
             setIsUploading(false);
         }
@@ -358,7 +376,13 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                             size="sm"
                             variant="ghost"
                             className="text-[10px] h-auto py-1.5 px-3 bg-moto-accent/10 hover:bg-moto-accent hover:text-black text-moto-accent border border-moto-accent/20 rounded-lg transition-all"
-                            onClick={() => setIsUploadOpen(true)}
+                            onClick={() => {
+                                if (!currentUser) {
+                                    notify.error('Vlog paylaşmak için giriş yapmalısınız.');
+                                    return;
+                                }
+                                setIsUploadOpen(true);
+                            }}
                         >
                             <Upload className="w-3 h-3 mr-1.5" /> YÜKLE
                         </Button>
@@ -548,7 +572,13 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                             className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30"
                         >
                             <button
-                                onClick={() => setIsUploadOpen(true)}
+                                onClick={() => {
+                                    if (!currentUser) {
+                                        notify.error('Vlog paylaşmak için giriş yapmalısınız.');
+                                        return;
+                                    }
+                                    setIsUploadOpen(true);
+                                }}
                                 className="group flex items-center gap-3 bg-moto-accent text-black px-8 py-4 rounded-full font-bold text-lg shadow-[0_10px_40px_rgba(255,200,0,0.4)] hover:scale-105 active:scale-95 transition-all"
                             >
                                 <Plus className="w-6 h-6" />

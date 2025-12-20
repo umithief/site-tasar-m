@@ -67,6 +67,16 @@ export const toggleLike = catchAsync(async (req, res, next) => {
         // Like
         post.likes.push(req.user.id);
         post.likeCount += 1;
+
+        // Notify Post Owner (if not self)
+        if (post.user.toString() !== req.user.id.toString()) {
+            sendNotification(post.user, 'like', {
+                senderId: req.user.id,
+                senderName: req.user.name,
+                postId: post._id,
+                message: `${req.user.name} gönderini beğendi.`
+            });
+        }
     }
 
     await post.save();

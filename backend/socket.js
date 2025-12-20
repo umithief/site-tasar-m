@@ -1,8 +1,10 @@
 import { Server } from 'socket.io';
 import jwt from 'jsonwebtoken';
 import User from './models/User.js';
+import Message from './models/Message.js';
 
 let io;
+const userSocketMap = new Map(); // userId -> socketId
 
 export const initSync = (httpServer) => {
     io = new Server(httpServer, {
@@ -15,12 +17,11 @@ export const initSync = (httpServer) => {
     // Authenticate Socket Connection
     io.use(async (socket, next) => {
         try {
-            // Get token from handshake auth or query
             const token = socket.handshake.auth.token || socket.handshake.query.token;
 
             if (!token) return next(new Error('Authentication error: No token'));
 
-            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'gizli-anahtar-123'); // Match server.js secret
+            const decoded = jwt.verify(token, process.env.JWT_SECRET || 'gizli-anahtar-123');
             const user = await User.findById(decoded.id);
 
             if (!user) return next(new Error('User not found'));
@@ -34,30 +35,68 @@ export const initSync = (httpServer) => {
     });
 
     io.on('connection', (socket) => {
-        const username = socket.user ? socket.user.username || socket.user.name : 'Unknown';
-        console.log(`⚡ Premium Rider Joined: ${username} (${socket.id})`);
+        const userId = socket.user._id.toString();
+        const username = socket.user.name;
 
-        // Join a private room with own User ID to receive personal messages/notifs
-        if (socket.user) {
-            socket.join(socket.user._id.toString());
+        // 1. Map User
+        userSocketMap.set(userId, socket.id);
+        console.log(`⚡ Premium Rider Joined: ${username} (${userId})`);
 
-            // Handle connection status
-            socket.broadcast.emit('user_online', { userId: socket.user._id });
-        }
+        // 2. Broadcast Online Status (to followers ideally, but globally for now)
+        socket.broadcast.emit('user_online', { userId });
 
-        // Private Message Event
-        // In a real scalability scenario, use Redis adapter.
-        // For MERN logic, we rely on client sending the message via HTTP API to persist DB, 
-        // AND then we emit via socket, or we do everything via socket.
-        // The implementation plan says: "implement send_message in backend/controllers/messageController.js"
-        // So HTTP is primary. Socket is for notification.
-        // We will expose a helper to emit events from controllers.
+        // Join personal room
+        socket.join(userId);
+
+        // 3. Private Messaging
+        socket.on('send_message', async (data) => {
+            try {
+                const { receiverId, content, type = 'text', mediaUrl } = data;
+
+                // Save to DB
+                const newMessage = await Message.create({
+                    sender: userId,
+                    receiver: receiverId,
+                    content,
+                    type,
+                    mediaUrl
+                });
+
+                // Emit to Receiver
+                // Option A: Use Room (Preferred)
+                io.to(receiverId).emit('receive_message', {
+                    message: newMessage,
+                    sender: { _id: userId, name: username, avatar: socket.user.avatar }
+                });
+
+                // Option B: Use Socket Map (Fallback)
+                // const receiverSocketId = userSocketMap.get(receiverId);
+                // if (receiverSocketId) {
+                //     io.to(receiverSocketId).emit('receive_message', ...);
+                // }
+
+                // Ack to Sender
+                socket.emit('message_sent', newMessage);
+
+            } catch (err) {
+                console.error('Message Send Error:', err);
+                socket.emit('error', { message: 'Message failed to send' });
+            }
+        });
+
+        // 4. Typing Indicators
+        socket.on('typing_start', ({ receiverId }) => {
+            io.to(receiverId).emit('user_typing', { userId, isTyping: true });
+        });
+
+        socket.on('typing_stop', ({ receiverId }) => {
+            io.to(receiverId).emit('user_typing', { userId, isTyping: false });
+        });
 
         socket.on('disconnect', () => {
-            if (socket.user) {
-                console.log(`🚫 Rider Disconnected: ${username}`);
-                socket.broadcast.emit('user_offline', { userId: socket.user._id });
-            }
+            console.log(`🚫 Rider Disconnected: ${username}`);
+            userSocketMap.delete(userId);
+            socket.broadcast.emit('user_offline', { userId });
         });
     });
 
@@ -69,4 +108,19 @@ export const getIO = () => {
         throw new Error('Socket.io not initialized!');
     }
     return io;
+};
+
+// Helper: Send Notification via Socket
+// Used by Controllers (User/Post)
+export const sendNotification = (userId, type, payload) => {
+    if (!io) return;
+    io.to(userId.toString()).emit('new_notification', {
+        type,
+        ...payload,
+        timestamp: new Date()
+    });
+};
+
+export const getUserSocketId = (userId) => {
+    return userSocketMap.get(userId.toString());
 };

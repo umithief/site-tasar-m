@@ -35,7 +35,7 @@ export const authService = {
         } else {
             // REAL BACKEND
             try {
-                const response = await fetch(`${CONFIG.API_URL}/auth/register`, {
+                const response = await fetch(`${CONFIG.API_URL}/users/register`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(data)
@@ -46,9 +46,11 @@ export const authService = {
                     throw new Error(error.message || 'Kayıt başarısız');
                 }
                 const responseData = await response.json();
-                const user = responseData.user;
+                const user = responseData.data.user; // Adjust based on controller response structure (data: { user })
                 if (responseData.token) {
-                    localStorage.setItem('mv_token', responseData.token);
+                    localStorage.setItem('token', responseData.token); // Standardize on 'token' or 'mv_token'? Context uses 'token'.
+                    // Let's stick to 'token' to match SocketContext. Or update SocketContext to 'mv_token'.
+                    // User prompt didn't specify. I'll use 'token' as per my SocketContext code.
                 }
                 this.setSession(user, true);
 
@@ -108,20 +110,18 @@ export const authService = {
         } else {
             // REAL BACKEND
             try {
-                const response = await fetch(`${CONFIG.API_URL}/auth/login`, {
+                const response = await fetch(`${CONFIG.API_URL}/users/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password })
                 });
 
                 if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.message || 'Giriş başarısız');
                 }
                 const responseData = await response.json();
-                const user = responseData.user;
+                const user = responseData.data.user;
                 if (responseData.token) {
-                    localStorage.setItem('mv_token', responseData.token);
+                    localStorage.setItem('token', responseData.token);
                 }
                 this.setSession(user, rememberMe);
                 return user;
@@ -256,6 +256,7 @@ export const authService = {
     async logout(): Promise<void> {
         await delay(300);
         localStorage.removeItem(DB.SESSION);
+        localStorage.removeItem('token');
         sessionStorage.removeItem(DB.SESSION);
     },
 

@@ -1,31 +1,105 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Send, Image as ImageIcon, MapPin, MoreVertical, Search, Circle } from 'lucide-react';
 import { UserAvatar } from '../ui/UserAvatar';
 import { ChatThread, SocialChatMessage } from '../../types';
+import { useSocket } from '../../context/SocketContext';
+import { messageService } from '../../services/messageService';
+import { MOCK_THREADS_SERVICE } from '../../services/mockMessageService';
 
 interface DirectMessagesProps {
     isOpen: boolean;
     onClose: () => void;
 }
 
-const MOCK_THREADS: ChatThread[] = [
-    { id: '1', userId: 'u1', userName: 'Canberk Hız', userAvatar: '', isOnline: true, lastMessage: 'Yarın sabah 6\'da Şile\'ye çıkıyoruz, geliyor musun?', lastMessageTime: '2m', unreadCount: 2 },
-    { id: '2', userId: 'u2', userName: 'MotoServis', userAvatar: '', isOnline: false, lastMessage: 'Parçalar elimize ulaştı, bekleriz.', lastMessageTime: '1h', unreadCount: 0 },
-    { id: '3', userId: 'u3', userName: 'Zeynep Yılmaz', userAvatar: '', isOnline: true, lastMessage: 'Kaskın linkini atabilir misin?', lastMessageTime: '1d', unreadCount: 0 },
-];
-
-const MOCK_MESSAGES: SocialChatMessage[] = [
-    { id: 'm1', senderId: 'u1', text: 'Selam, nasılsın?', timestamp: '10:00', isRead: true, type: 'text' },
-    { id: 'm2', senderId: 'me', text: 'İyidir kanka senden naber?', timestamp: '10:02', isRead: true, type: 'text' },
-    { id: 'm3', senderId: 'u1', text: 'Yarın sabah 6\'da Şile\'ye çıkıyoruz, geliyor musun?', timestamp: '10:05', isRead: false, type: 'text' },
-];
-
 export const DirectMessages: React.FC<DirectMessagesProps> = ({ isOpen, onClose }) => {
+    const { socket, isConnected } = useSocket();
+    const [threads, setThreads] = useState<ChatThread[]>(MOCK_THREADS_SERVICE);
     const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
+    const [messages, setMessages] = useState<SocialChatMessage[]>([]);
     const [messageInput, setMessageInput] = useState('');
+    const [isTyping, setIsTyping] = useState(false);
+    const messagesEndRef = useRef<null | HTMLDivElement>(null);
 
-    const activeThread = MOCK_THREADS.find(t => t.id === activeThreadId);
+    const activeThread = threads.find(t => t.id === activeThreadId);
+
+    // Scroll to bottom on new message
+    useEffect(() => {
+        messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }, [messages]);
+
+    // Load Conversation History
+    useEffect(() => {
+        if (!activeThreadId || !activeThread) return;
+        const loadMessages = async () => {
+            // In real app, thread.id might be threadId, but here we treat thread.userId as target
+            // Assuming MOCK_THREADS uses userId as 'id' or has userId field. MOCK_THREADS has 'userId'.
+            const history = await messageService.getConversation(activeThread.userId);
+            setMessages(history);
+        };
+        loadMessages();
+    }, [activeThreadId]);
+
+    // Socket Listeners
+    useEffect(() => {
+        if (!socket) return;
+
+        socket.on('receive_message', (payload: any) => {
+            // Payload: { message: MessageObject, sender: UserObject }
+            const newMsg: SocialChatMessage = {
+                id: payload.message._id,
+                senderId: payload.sender._id,
+                text: payload.message.content,
+                timestamp: new Date(payload.message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                isRead: false,
+                type: payload.message.type || 'text'
+            };
+
+            // If chat open with this user, add to list
+            if (activeThread && (payload.sender._id === activeThread.userId)) {
+                setMessages(prev => [...prev, newMsg]);
+            }
+
+            // TODO: Update thread list last message/unread count
+        });
+
+        socket.on('message_sent', (msg: any) => {
+            // Confirm sent (optional, since we optimistically add or wait)
+            // For now we optimistically add in handleSend, so maybe just status update
+        });
+
+        return () => {
+            socket.off('receive_message');
+            socket.off('message_sent');
+        }
+    }, [socket, activeThread]);
+
+    const handleSend = () => {
+        if (!messageInput.trim() || !activeThread || !socket) return;
+
+        const content = messageInput;
+        const tempId = Date.now().toString();
+
+        // Optimistic UI
+        const optimisticMsg: SocialChatMessage = {
+            id: tempId,
+            senderId: 'me',
+            text: content,
+            timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            isRead: false,
+            type: 'text'
+        };
+        setMessages(prev => [...prev, optimisticMsg]);
+        setMessageInput('');
+
+        // Emit to Backend
+        // Backend expects: { receiverId, content, type }
+        socket.emit('send_message', {
+            receiverId: activeThread.userId,
+            content,
+            type: 'text'
+        });
+    };
 
     return (
         <AnimatePresence>
@@ -67,7 +141,7 @@ export const DirectMessages: React.FC<DirectMessagesProps> = ({ isOpen, onClose 
                             </div>
 
                             <div className="flex-1 overflow-y-auto no-scrollbar">
-                                {MOCK_THREADS.map(thread => (
+                                {threads.map(thread => (
                                     <div
                                         key={thread.id}
                                         onClick={() => setActiveThreadId(thread.id)}
@@ -109,8 +183,14 @@ export const DirectMessages: React.FC<DirectMessagesProps> = ({ isOpen, onClose 
                                             <div>
                                                 <h3 className="text-white font-bold text-sm">{activeThread.userName}</h3>
                                                 <span className="text-xs text-green-500 font-mono flex items-center gap-1">
-                                                    {activeThread.isOnline && <Circle className="w-2 h-2 fill-current" />}
-                                                    Online
+                                                    {activeThread.isOnline ? (
+                                                        <>
+                                                            <Circle className="w-2 h-2 fill-current" />
+                                                            Online
+                                                        </>
+                                                    ) : (
+                                                        <span className="text-gray-500">Offline</span>
+                                                    )}
                                                 </span>
                                             </div>
                                         </div>
@@ -122,25 +202,33 @@ export const DirectMessages: React.FC<DirectMessagesProps> = ({ isOpen, onClose 
 
                                     {/* Messages List */}
                                     <div className="flex-1 overflow-y-auto p-6 space-y-6">
-                                        {MOCK_MESSAGES.map((msg) => {
-                                            const isMe = msg.senderId === 'me';
+                                        {messages.length > 0 ? messages.map((msg, index) => {
+                                            const isMe = msg.senderId === 'me' || msg.senderId === socket?.id || (msg.senderId && msg.senderId.length > 10 && msg.senderId !== activeThread.userId);
+                                            // Better logic: if msg.senderId !== activeThread.userId then it's me. 
+                                            // Assuming conversation is just 1-on-1.
+                                            const actuallyMe = msg.senderId !== activeThread.userId;
+
                                             return (
                                                 <motion.div
-                                                    key={msg.id}
+                                                    key={msg.id || index}
                                                     initial={{ opacity: 0, y: 10 }}
                                                     animate={{ opacity: 1, y: 0 }}
-                                                    className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}
+                                                    className={`flex ${actuallyMe ? 'justify-end' : 'justify-start'}`}
                                                 >
-                                                    <div className={`max-w-[70%] rounded-2xl p-4 text-sm leading-relaxed shadow-lg ${isMe ? 'bg-moto-accent text-black rounded-tr-none' : 'bg-white/10 text-white rounded-tl-none border border-white/5'}`}>
+                                                    <div className={`max-w-[70%] rounded-2xl p-4 text-sm leading-relaxed shadow-lg ${actuallyMe ? 'bg-moto-accent text-black rounded-tr-none' : 'bg-white/10 text-white rounded-tl-none border border-white/5'}`}>
                                                         {msg.text}
-                                                        <div className={`text-[9px] mt-1 text-right font-mono opacity-60 ${isMe ? 'text-black' : 'text-gray-400'}`}>
+                                                        <div className={`text-[9px] mt-1 text-right font-mono opacity-60 ${actuallyMe ? 'text-black' : 'text-gray-400'}`}>
                                                             {msg.timestamp}
-                                                            {isMe && msg.isRead && <span className="ml-1">✓✓</span>}
                                                         </div>
                                                     </div>
                                                 </motion.div>
                                             );
-                                        })}
+                                        }) : (
+                                            <div className="flex h-full items-center justify-center text-gray-500 text-sm">
+                                                Conversation is empty. Say hello! 👋
+                                            </div>
+                                        )}
+                                        <div ref={messagesEndRef} />
                                     </div>
 
                                     {/* Input Area */}
@@ -151,11 +239,18 @@ export const DirectMessages: React.FC<DirectMessagesProps> = ({ isOpen, onClose 
                                             <textarea
                                                 value={messageInput}
                                                 onChange={(e) => setMessageInput(e.target.value)}
+                                                onKeyDown={(e) => {
+                                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                                        e.preventDefault();
+                                                        handleSend();
+                                                    }
+                                                }}
                                                 placeholder="Type a message..."
                                                 className="flex-1 bg-transparent border-none text-white placeholder-gray-500 focus:ring-0 resize-none max-h-32 text-sm py-2.5"
                                                 rows={1}
                                             />
                                             <button
+                                                onClick={handleSend}
                                                 disabled={!messageInput.trim()}
                                                 className="p-2 bg-moto-accent text-black rounded-xl hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                                             >

@@ -1,13 +1,6 @@
 import express from 'express';
 import * as messageController from '../controllers/messageController.js';
-
-const protect = async (req, res, next) => {
-    // Temporary mock auth middleware
-    if (req.body.userId || req.query.userId) {
-        req.user = { _id: req.body.userId || req.query.userId };
-    }
-    next();
-};
+import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 router.use(protect);

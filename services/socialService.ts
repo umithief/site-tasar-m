@@ -4,7 +4,7 @@ import { SocialPost } from '../types';
 export const socialService = {
     async getFeed(): Promise<SocialPost[]> {
         try {
-            const response = await fetch(`${CONFIG.API_URL}/social`);
+            const response = await fetch(`${CONFIG.API_URL}/social/feed`);
             if (!response.ok) throw new Error('Failed to fetch feed');
             const data = await response.json();
             return data.map((post: any) => ({

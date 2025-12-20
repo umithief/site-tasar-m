@@ -109,6 +109,13 @@ export const toggleFollow = catchAsync(async (req, res, next) => {
         await User.findByIdAndUpdate(req.user.id, { $push: { following: req.params.id } });
         await User.findByIdAndUpdate(req.params.id, { $push: { followers: req.user.id } });
 
+        // Notify Target
+        sendNotification(req.params.id, 'follow', {
+            senderId: req.user.id,
+            senderName: req.user.name,
+            message: `${req.user.name} seni takip etmeye başladı.`
+        });
+
         res.status(200).json({ status: 'success', message: 'Takip edildi.' });
     }
 });

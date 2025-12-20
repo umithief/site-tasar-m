@@ -16,40 +16,48 @@ interface SocialHubProps {
     onUpdateUser?: (user: any) => void;
 }
 
-const MOCK_POSTS: SocialPost[] = [
-    {
-        _id: '1',
-        userId: '101',
-        userName: 'Alex Rider',
-        userAvatar: 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=100&h=100&q=80',
-        userRank: 'Pro',
-        bikeModel: 'Yamaha R1M',
-        content: 'Just installed the new Akrapovic exhaust. The sound is absolute music to my ears! 🏍️💨 #yamaha #r1m #akrapovic',
-        images: ['https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=800&q=80'],
-        likes: 124,
-        comments: 18,
-        shares: 5,
-        timestamp: '2h ago',
-        isLiked: false,
-        commentList: []
-    },
-    {
-        _id: '2',
-        userId: '102',
-        userName: 'Sarah Speed',
-        userAvatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&h=100&q=80',
-        userRank: 'Elite',
-        bikeModel: 'Ducati Panigale V4',
-        content: 'Sunday morning ride with the crew. The weather could not be more perfect.',
-        images: ['https://images.unsplash.com/photo-1558981403-c5f9899a28bc?w=800&q=80'],
-        likes: 89,
-        comments: 12,
-        shares: 2,
-        timestamp: '4h ago',
-        isLiked: true,
-        commentList: []
+import { socialService } from '../../services/socialService';
+
+// ... (in component)
+const [posts, setPosts] = useState<SocialPost[]>([]);
+const [newPostContent, setNewPostContent] = useState('');
+
+useEffect(() => {
+    loadFeed();
+}, []);
+
+const loadFeed = async () => {
+    const feed = await socialService.getFeed();
+    setPosts(feed);
+};
+
+const handleCreatePost = async () => {
+    if (!newPostContent.trim() || !user) return;
+
+    try {
+        const newPost = await socialService.createPost({
+            userId: user._id || 'guest',
+            userName: user.name || 'Guest',
+            userAvatar: user.avatar || '',
+            // content: newPostContent, // Need to bind this to input
+            content: newPostContent,
+            images: [], // Add image upload later
+            bikeModel: user.garage?.[0]?.model || 'Rider',
+            userRank: user.rank || 'Rider'
+        });
+        if (newPost) {
+            setPosts([newPost, ...posts]);
+            setNewPostContent('');
+        }
+    } catch (error) {
+        console.error('Create post failed');
     }
-];
+};
+
+// ...
+// Update input: value={newPostContent} onChange={(e) => setNewPostContent(e.target.value)}
+// Update map: posts.map
+// Pass currentUserId to PostCard: <PostCard key={post._id} post={post} currentUserId={user?._id} />
 
 const SUGGESTED_RIDERS = [
     { id: 1, name: 'Marc M.', bike: 'Honda CBR1000RR' },
@@ -61,8 +69,44 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user, onNavigate, onLogout
     const [isDMOpen, setIsDMOpen] = useState(false);
     const [view, setView] = useState<'feed' | 'profile'>('feed');
 
-    const handleCreatePost = () => {
-        // Implement create post logic
+    const [posts, setPosts] = useState<SocialPost[]>([]);
+    const [newPostContent, setNewPostContent] = useState('');
+
+    useEffect(() => {
+        loadFeed();
+    }, []);
+
+    const loadFeed = async () => {
+        const feed = await socialService.getFeed();
+        if (feed && feed.length > 0) {
+            setPosts(feed);
+        } else {
+            // Fallback to empty or initial state if preferred, but for now empty
+            setPosts([]);
+        }
+    };
+
+    const handleCreatePost = async () => {
+        if (!newPostContent.trim() || !user) return;
+
+        try {
+            const newPost = await socialService.createPost({
+                userId: user._id || 'guest',
+                userName: user.name || 'Guest',
+                userAvatar: user.avatar || '',
+                content: newPostContent,
+                images: [],
+                bikeModel: user.garage && user.garage.length > 0 ? `${user.garage[0].brand} ${user.garage[0].model}` : 'Bilinmeyen Motor',
+                userRank: user.rank || 'Yeni Üye'
+            });
+
+            if (newPost) {
+                setPosts([newPost, ...posts]);
+                setNewPostContent('');
+            }
+        } catch (error) {
+            console.error('Create post failed');
+        }
     };
 
     return (
@@ -129,8 +173,15 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user, onNavigate, onLogout
                             {/* Create Post Widget */}
                             <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-5 mb-8 flex gap-4 items-center">
                                 <UserAvatar name={user?.name || 'G'} size={40} />
-                                <div className="flex-1 bg-white/5 rounded-2xl h-12 flex items-center px-4 cursor-text hover:bg-white/10 transition-colors">
-                                    <span className="text-gray-500 text-sm">Share your ride experience...</span>
+                                <div className="flex-1 bg-white/5 rounded-2xl h-12 flex items-center px-4 cursor-text hover:bg-white/10 transition-colors focus-within:ring-1 ring-moto-accent">
+                                    <input
+                                        type="text"
+                                        value={newPostContent}
+                                        onChange={(e) => setNewPostContent(e.target.value)}
+                                        onKeyDown={(e) => e.key === 'Enter' && handleCreatePost()}
+                                        className="bg-transparent w-full text-white placeholder-gray-500 text-sm outline-none"
+                                        placeholder="Share your ride experience..."
+                                    />
                                 </div>
                                 <button onClick={handleCreatePost} className="bg-moto-accent text-black p-3 rounded-xl hover:bg-white transition-colors">
                                     <PlusCircle className="w-5 h-5" />
@@ -139,8 +190,8 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user, onNavigate, onLogout
 
                             {/* Posts */}
                             <div className="space-y-6">
-                                {MOCK_POSTS.map(post => (
-                                    <PostCard key={post._id} post={post} />
+                                {posts.map(post => (
+                                    <PostCard key={post._id} post={post} currentUserId={user?._id} />
                                 ))}
                             </div>
                         </>

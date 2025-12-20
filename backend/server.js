@@ -22,7 +22,7 @@ import modelRoutes from './routes/modelRoutes.js';
 import stolenRoutes from './routes/stolenRoutes.js';
 import negotiationRoutes from './routes/negotiationRoutes.js';
 import feedbackRoutes from './routes/feedbackRoutes.js';
-// import socialRoutes from './routes/socialRoutes.js';
+import socialRoutes from './routes/socialRoutes.js';
 import showcaseRoutes from './routes/showcaseRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import userRoutes from './routes/userRoutes.js';
@@ -199,8 +199,25 @@ const forumTopicSchema = new mongoose.Schema({
 
 const ForumTopic = mongoose.models.ForumTopic || mongoose.model('ForumTopic', forumTopicSchema);
 
-// SocialPost Removed
-// const SocialPost = mongoose.models.SocialPost || mongoose.model('SocialPost', socialPostSchema);
+// Social Post Schema
+const socialPostSchema = new mongoose.Schema({
+    userId: { type: String, required: true },
+    userName: String,
+    userAvatar: String,
+    userRank: String,
+    bikeModel: String,
+    content: { type: String, required: true },
+    images: [String],
+    likes: { type: Number, default: 0 },
+    likedBy: [String], // Array of user IDs who liked
+    comments: { type: Number, default: 0 },
+    shares: { type: Number, default: 0 },
+    timestamp: { type: String, default: () => new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) },
+    createdAt: { type: Date, default: Date.now }, // For sorting
+    commentList: [forumCommentSchema] // Reusing ForumComment schema for simplicity or define new one
+}, { versionKey: false });
+
+const SocialPost = mongoose.models.SocialPost || mongoose.model('SocialPost', socialPostSchema);
 
 const musicSchema = new mongoose.Schema({
     title: String,
@@ -451,7 +468,7 @@ app.use('/api/events', eventRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/forum', forumRoutes);
-// app.use('/api/social', socialRoutes);
+app.use('/api/social', socialRoutes);
 app.use('/api/showcase', showcaseRoutes);
 app.use('/api/analytics', analyticsRoutes);
 

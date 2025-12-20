@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Compass, Home, MessageSquare, Calendar, User, Search, Bell, PlusCircle, Grid, Users } from 'lucide-react';
 import { PostCard } from './PostCard';
@@ -18,46 +18,8 @@ interface SocialHubProps {
 
 import { socialService } from '../../services/socialService';
 
-// ... (in component)
-const [posts, setPosts] = useState<SocialPost[]>([]);
-const [newPostContent, setNewPostContent] = useState('');
-
-useEffect(() => {
-    loadFeed();
-}, []);
-
-const loadFeed = async () => {
-    const feed = await socialService.getFeed();
-    setPosts(feed);
-};
-
-const handleCreatePost = async () => {
-    if (!newPostContent.trim() || !user) return;
-
-    try {
-        const newPost = await socialService.createPost({
-            userId: user._id || 'guest',
-            userName: user.name || 'Guest',
-            userAvatar: user.avatar || '',
-            // content: newPostContent, // Need to bind this to input
-            content: newPostContent,
-            images: [], // Add image upload later
-            bikeModel: user.garage?.[0]?.model || 'Rider',
-            userRank: user.rank || 'Rider'
-        });
-        if (newPost) {
-            setPosts([newPost, ...posts]);
-            setNewPostContent('');
-        }
-    } catch (error) {
-        console.error('Create post failed');
-    }
-};
-
-// ...
-// Update input: value={newPostContent} onChange={(e) => setNewPostContent(e.target.value)}
-// Update map: posts.map
-// Pass currentUserId to PostCard: <PostCard key={post._id} post={post} currentUserId={user?._id} />
+// ... (in component) - Removed invalid code block
+// The logic is properly implemented inside the SocialHub component below
 
 const SUGGESTED_RIDERS = [
     { id: 1, name: 'Marc M.', bike: 'Honda CBR1000RR' },

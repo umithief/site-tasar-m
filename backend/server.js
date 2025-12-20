@@ -27,11 +27,23 @@ import showcaseRoutes from './routes/showcaseRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 
+import http from 'http';
+import { initSync } from './socket.js';
+import messageRoutes from './routes/messageRoutes.js';
+
+// Import Models to ensure registration
+import './models/User.js';
+import './models/Post.js'; // Registers 'SocialPost'
+import './models/Message.js';
+
 const __filename = fileURLToPath(import.meta.url);
 
 dotenv.config();
 
 const app = express();
+const server = http.createServer(app); // Create HTTP server
+const io = initSync(server); // Initialize Socket.io
+
 const PORT = process.env.PORT || 5000;
 
 // --- VERİTABANI BAĞLANTISI ---
@@ -40,8 +52,6 @@ const MONGO_URI = process.env.MONGO_URI || 'mongodb+srv://umithief:14531453@moto
 if (MONGO_URI.includes('14531453')) {
     console.warn('⚠️ UYARI: MongoDB bağlantı adresindeki <password> alanını değiştirmediniz.');
 }
-
-
 
 // Multer (Memory Storage)
 const upload = multer({ storage: multer.memoryStorage() });
@@ -53,28 +63,13 @@ app.use(express.json({ limit: '200mb' }));
 app.use(express.urlencoded({ limit: '200mb', extended: true }));
 
 // Uploads klasörünü dışarıya aç (Resimlere erişim için)
-// Uploads klasörünü dışarıya aç (Resimlere erişim için) (Eski dosyalar için açık tutuluyor)
 const __dirname = path.dirname(__filename);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Root route handled at the bottom for static file serving logic
-
 // --- MONGODB MODELS ---
 
-const userSchema = new mongoose.Schema({
-    name: { type: String, required: true },
-    email: { type: String, required: true, unique: true },
-    password: { type: String, required: true },
-    isAdmin: { type: Boolean, default: false },
-    joinDate: { type: String, default: () => new Date().toLocaleDateString('tr-TR') },
-    phone: String,
-    address: String,
-    points: { type: Number, default: 0 },
-    rank: { type: String, default: 'Scooter Çırağı' },
-    followers: { type: Number, default: 0 },
-    following: { type: Number, default: 0 }
-}, { versionKey: false });
-const User = mongoose.models.User || mongoose.model('User', userSchema);
+// User Model moved to backend/models/User.js
+// SocialPost Model moved to backend/models/Post.js
 
 const productSchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -171,7 +166,7 @@ const routeSchema = new mongoose.Schema({
 const Route = mongoose.models.Route || mongoose.model('Route', routeSchema);
 
 const forumCommentSchema = new mongoose.Schema({
-    _id: String, // Ensure we can store custom IDs if needed, or let Mongo generate
+    _id: String,
     authorId: String,
     authorName: String,
     content: String,
@@ -180,11 +175,7 @@ const forumCommentSchema = new mongoose.Schema({
 }, { versionKey: false });
 
 const forumTopicSchema = new mongoose.Schema({
-    _id: { type: String, default: () => new mongoose.Types.ObjectId().toString() }, // Support custom IDs or let mongo handle it. But wait, user wants Standard Mongo ID or Custom? User prompt said: "_id ... example". The example was a Mongo Object ID.
-    // Actually, looking at the user prompt: "69402f05219be8dbf37b8b0b", this is a standard ObjectID.
-    // So I should just let Mongoose handle _id automatically.
-    // But lines 220 in original file had: id: { type: String, required: true, unique: true }
-    // I should remove that custom ID field and rely on _id.
+    _id: { type: String, default: () => new mongoose.Types.ObjectId().toString() },
     authorId: String,
     authorName: String,
     title: String,
@@ -198,26 +189,6 @@ const forumTopicSchema = new mongoose.Schema({
 }, { versionKey: false });
 
 const ForumTopic = mongoose.models.ForumTopic || mongoose.model('ForumTopic', forumTopicSchema);
-
-// Social Post Schema
-const socialPostSchema = new mongoose.Schema({
-    userId: { type: String, required: true },
-    userName: String,
-    userAvatar: String,
-    userRank: String,
-    bikeModel: String,
-    content: { type: String, required: true },
-    images: [String],
-    likes: { type: Number, default: 0 },
-    likedBy: [String], // Array of user IDs who liked
-    comments: { type: Number, default: 0 },
-    shares: { type: Number, default: 0 },
-    timestamp: { type: String, default: () => new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }) },
-    createdAt: { type: Date, default: Date.now }, // For sorting
-    commentList: [forumCommentSchema] // Reusing ForumComment schema for simplicity or define new one
-}, { versionKey: false });
-
-const SocialPost = mongoose.models.SocialPost || mongoose.model('SocialPost', socialPostSchema);
 
 const musicSchema = new mongoose.Schema({
     title: String,
@@ -469,6 +440,7 @@ app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/forum', forumRoutes);
 app.use('/api/social', socialRoutes);
+app.use('/api/messages', messageRoutes);
 app.use('/api/showcase', showcaseRoutes);
 app.use('/api/analytics', analyticsRoutes);
 
@@ -504,7 +476,7 @@ if (process.argv[1] === __filename) {
             console.log('✅ MongoDB bağlantısı başarılı');
 
             await seedDatabase();
-            app.listen(PORT, () => console.log(`🚀 Server çalışıyor: http://localhost:${PORT}`));
+            server.listen(PORT, () => console.log(`🚀 Server çalışıyor: http://localhost:${PORT}`));
         })
         .catch(err => {
             console.error('❌ MongoDB bağlantı hatası:', err.message);

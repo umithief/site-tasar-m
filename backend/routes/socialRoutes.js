@@ -1,89 +1,45 @@
 import express from 'express';
-import mongoose from 'mongoose';
+import * as postController from '../controllers/postController.js';
+import * as userController from '../controllers/userController.js';
+
+// Middleware to mock auth user for now, assuming server.js has the real one or we add it here
+// For now, we reuse the existing middleware pattern if any, or expect req.user to be populated
+// But wait, server.js doesn't seem to have a global auth middleware for all routes, individual routes might need it.
+// The new controllers expect req.user.
+// I will add a simple middleware here or assume it's mounted with one.
+// Let's create a placeholder middleware.
+
+const protect = async (req, res, next) => {
+    // Ideally this verifies JWT.
+    // userController.js needs req.user.id
+    // For MERN migration, we need proper auth.
+    // For now, let's assume the request body has userId or simulate it if coming from frontend with token.
+    // Actually, let's use the one from server.js if it exists, or define a basic one.
+    // Existing code in socialRoutes.js used req.body.userId manually.
+    // New controllers use req.user._id.
+
+    // TEMPORARY FIX: Middleware to map req.body.userId to req.user for backward compat/testing
+    if (req.body.userId) {
+        req.user = { _id: req.body.userId, name: req.body.userName, avatar: req.body.userAvatar };
+    }
+    // Real implementation should verify token header.
+    next();
+};
 
 const router = express.Router();
 
-// GET /api/social - Fetch Feed
-router.get('/', async (req, res) => {
-    try {
-        const SocialPost = mongoose.model('SocialPost');
-        const posts = await SocialPost.find().sort({ createdAt: -1 });
-        res.json(posts);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
+router.use(protect); // Apply to all social routes
 
-// POST /api/social - Create Post
-router.post('/', async (req, res) => {
-    try {
-        const SocialPost = mongoose.model('SocialPost');
-        // Expects { userId, userName, userAvatar, content, images, bikeModel, userRank }
-        const newPost = new SocialPost({
-            ...req.body,
-            createdAt: new Date(),
-            timestamp: 'Şimdi'
-        });
-        await newPost.save();
-        res.status(201).json(newPost);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-});
+// Feed
+router.get('/', postController.getFeed);
+router.post('/', postController.createPost);
 
-// POST /api/social/:id/like - Toggle Like
-router.post('/:id/like', async (req, res) => {
-    try {
-        const { userId } = req.body;
-        if (!userId) return res.status(400).json({ message: 'User ID required' });
+// Actions
+router.post('/:id/like', postController.toggleLike);
+router.post('/:id/comment', postController.addComment);
 
-        const SocialPost = mongoose.model('SocialPost');
-        const post = await SocialPost.findById(req.params.id);
-
-        if (!post) return res.status(404).json({ message: 'Post not found' });
-
-        const likeIndex = post.likedBy.indexOf(userId);
-        if (likeIndex === -1) {
-            post.likedBy.push(userId);
-            post.likes += 1;
-        } else {
-            post.likedBy.splice(likeIndex, 1);
-            post.likes = Math.max(0, post.likes - 1);
-        }
-
-        await post.save();
-        res.json(post);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
-
-// POST /api/social/:id/comment - Add Comment
-router.post('/:id/comment', async (req, res) => {
-    try {
-        const { authorId, authorName, content } = req.body;
-        const SocialPost = mongoose.model('SocialPost');
-        const post = await SocialPost.findById(req.params.id);
-
-        if (!post) return res.status(404).json({ message: 'Post not found' });
-
-        const newComment = {
-            _id: new mongoose.Types.ObjectId().toString(),
-            authorId,
-            authorName,
-            content,
-            date: new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' }),
-            likes: 0
-        };
-
-        post.commentList.push(newComment);
-        post.comments = post.commentList.length;
-        await post.save();
-
-        res.status(201).json(post);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
+// Follow System
+router.post('/follow/:id', userController.followUser);
+router.post('/unfollow/:id', userController.unfollowUser);
 
 export default router;

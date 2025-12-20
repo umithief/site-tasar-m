@@ -17,8 +17,9 @@ interface SocialHubProps {
 }
 
 import { socialService } from '../../services/socialService';
+import { usePosts, useCreatePost } from '../../hooks/usePosts';
 
-// ... (in component) - Removed invalid code block
+// ... (in component)
 // The logic is properly implemented inside the SocialHub component below
 
 const SUGGESTED_RIDERS = [
@@ -30,45 +31,37 @@ const SUGGESTED_RIDERS = [
 export const SocialHub: React.FC<SocialHubProps> = ({ user, onNavigate, onLogout, onUpdateUser }) => {
     const [isDMOpen, setIsDMOpen] = useState(false);
     const [view, setView] = useState<'feed' | 'profile'>('feed');
-
-    const [posts, setPosts] = useState<SocialPost[]>([]);
     const [newPostContent, setNewPostContent] = useState('');
 
-    useEffect(() => {
-        loadFeed();
-    }, []);
+    const {
+        data,
+        error,
+        fetchNextPage,
+        hasNextPage,
+        isFetchingNextPage,
+        status,
+    } = usePosts();
 
-    const loadFeed = async () => {
-        const feed = await socialService.getFeed();
-        if (feed && feed.length > 0) {
-            setPosts(feed);
-        } else {
-            // Fallback to empty or initial state if preferred, but for now empty
-            setPosts([]);
-        }
-    };
+    // No need for loadFeed() useEffect anymore, React Query handles it.
+
+    const { mutate: createPost } = useCreatePost();
 
     const handleCreatePost = async () => {
         if (!newPostContent.trim() || !user) return;
 
-        try {
-            const newPost = await socialService.createPost({
-                userId: user._id || 'guest',
-                userName: user.name || 'Guest',
-                userAvatar: user.avatar || '',
-                content: newPostContent,
-                images: [],
-                bikeModel: user.garage && user.garage.length > 0 ? `${user.garage[0].brand} ${user.garage[0].model}` : 'Bilinmeyen Motor',
-                userRank: user.rank || 'Yeni Üye'
-            });
-
-            if (newPost) {
-                setPosts([newPost, ...posts]);
+        createPost({
+            userId: user._id || 'guest',
+            userName: user.name || 'Guest',
+            userAvatar: user.avatar || '',
+            content: newPostContent,
+            images: [],
+            bikeModel: user.garage && user.garage.length > 0 ? `${user.garage[0].brand} ${user.garage[0].model}` : 'Bilinmeyen Motor',
+            userRank: user.rank || 'Yeni Üye'
+        }, {
+            onSuccess: () => {
                 setNewPostContent('');
             }
-        } catch (error) {
-            console.error('Create post failed');
-        }
+        });
     };
 
     return (
@@ -150,11 +143,35 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user, onNavigate, onLogout
                                 </button>
                             </div>
 
-                            {/* Posts */}
+                            {/* Posts Feed */}
                             <div className="space-y-6">
-                                {posts.map(post => (
-                                    <PostCard key={post._id} post={post} currentUserId={user?._id} />
-                                ))}
+                                {status === 'pending' ? (
+                                    <div className="text-center py-10 text-gray-500 animate-pulse">Yükleniyor...</div>
+                                ) : status === 'error' ? (
+                                    <div className="text-center py-10 text-red-500">Akış yüklenemedi: {error.message}</div>
+                                ) : (
+                                    <>
+                                        {data?.pages.map((page, i) => (
+                                            <React.Fragment key={i}>
+                                                {page && page.length > 0 ? page.map((post: SocialPost) => (
+                                                    <PostCard key={post._id} post={post} currentUserId={user?._id} />
+                                                )) : (
+                                                    i === 0 && <div className="text-center py-10 text-gray-500">Henüz gönderi yok. İlk paylaşımı sen yap!</div>
+                                                )}
+                                            </React.Fragment>
+                                        ))}
+
+                                        {hasNextPage && (
+                                            <button
+                                                onClick={() => fetchNextPage()}
+                                                disabled={isFetchingNextPage}
+                                                className="w-full py-4 text-sm text-moto-accent font-bold hover:bg-white/5 rounded-xl transition-colors disabled:opacity-50"
+                                            >
+                                                {isFetchingNextPage ? 'Yükleniyor...' : 'Daha Fazla Yükle'}
+                                            </button>
+                                        )}
+                                    </>
+                                )}
                             </div>
                         </>
                     )}

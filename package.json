@@ -13,6 +13,8 @@
   "dependencies": {
     "@google/genai": "^1.30.0",
     "@supabase/supabase-js": "^2.87.3",
+    "@tanstack/react-query": "^5.90.12",
+    "axios": "^1.13.2",
     "bcryptjs": "^3.0.3",
     "boring-avatars": "1.10.2",
     "build": "^0.1.4",
@@ -48,7 +50,8 @@
     "socket.io-client": "^4.8.1",
     "tailwind-merge": "^3.4.0",
     "uuid": "^13.0.0",
-    "whatamesh": "latest"
+    "whatamesh": "latest",
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

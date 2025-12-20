@@ -3,6 +3,7 @@ import { DB, getStorage, setStorage, delay } from './db';
 import { CONFIG } from './config';
 import { logService } from './logService';
 import { v4 as uuidv4 } from 'uuid';
+import { api } from './api';
 
 export const authService = {
 
@@ -26,47 +27,23 @@ export const authService = {
 
             users.push(newUser);
             setStorage(DB.USERS, users);
-            this.setSession(newUser, true); // Kayıt sonrası varsayılan olarak oturum açık kalsın
+            this.setSession(newUser, true);
 
-            // LOG: Yeni üye kaydı
             await logService.addLog('info', 'Yeni Üye Kaydı', `Kullanıcı: ${newUser.name} (${newUser.email})`);
-
             return newUser;
         } else {
             // REAL BACKEND
-            try {
-                const response = await fetch(`${CONFIG.API_URL}/users/register`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(data)
-                });
+            const response = await api.post('/users/register', data);
+            const { token, data: responseData } = response.data;
+            const user = responseData?.user || responseData;
 
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.message || 'Kayıt başarısız');
-                }
-                const responseData = await response.json();
-                const user = responseData.data.user; // Adjust based on controller response structure (data: { user })
-                if (responseData.token) {
-                    localStorage.setItem('token', responseData.token); // Standardize on 'token' or 'mv_token'? Context uses 'token'.
-                    // Let's stick to 'token' to match SocketContext. Or update SocketContext to 'mv_token'.
-                    // User prompt didn't specify. I'll use 'token' as per my SocketContext code.
-                }
-                this.setSession(user, true);
-
-                // Backend kendi logunu tutabilir ama frontend tarafında da güncelleyelim
-                if (CONFIG.USE_MOCK_API) {
-                    await logService.addLog('info', 'Yeni Üye Kaydı', `Kullanıcı: ${user.name}`);
-                }
-
-                return user;
-            } catch (error: any) {
-                console.error("Register Error:", error);
-                if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
-                    throw new Error('Sunucuya bağlanılamadı. Backend sunucusunu (node server.js) başlattınız mı?');
-                }
-                throw error;
+            if (token) {
+                localStorage.setItem('token', token);
             }
+            this.setSession(user, true);
+
+            // Optional: Client-side logging if needed, but backend logs primarily.
+            return user;
         }
     },
 
@@ -94,12 +71,9 @@ export const authService = {
             const user = users.find(u => u.email === email && u.password === password);
 
             if (!user) {
-                // Hatalı giriş denemesi (Opsiyonel log)
-                // await logService.addLog('error', 'Hatalı Giriş Denemesi', `Email: ${email}`);
                 throw new Error('E-posta veya şifre hatalı.');
             }
 
-            // Backward compatibility for old users without points
             if (typeof user.points === 'undefined') {
                 user.points = 0;
                 user.rank = 'Scooter Çırağı';
@@ -109,31 +83,15 @@ export const authService = {
             return user;
         } else {
             // REAL BACKEND
-            try {
-                const response = await fetch(`${CONFIG.API_URL}/users/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, password })
-                });
+            const response = await api.post('/users/login', { email, password });
+            const { token, data } = response.data;
+            const user = data?.user || data;
 
-                if (!response.ok) {
-                    const error = await response.json();
-                    throw new Error(error.message || 'Giriş yapılamadı.');
-                }
-                const responseData = await response.json();
-                const user = responseData.data.user;
-                if (responseData.token) {
-                    localStorage.setItem('token', responseData.token);
-                }
-                this.setSession(user, rememberMe);
-                return user;
-            } catch (error: any) {
-                console.error("Login Error:", error);
-                if (error.name === 'TypeError' && error.message === 'Failed to fetch') {
-                    throw new Error('Sunucuya bağlanılamadı. Backend sunucusunu (node server.js) başlattınız mı?');
-                }
-                throw error;
+            if (token) {
+                localStorage.setItem('token', token);
             }
+            this.setSession(user, rememberMe);
+            return user;
         }
     },
 
@@ -153,30 +111,18 @@ export const authService = {
                 setStorage(DB.USERS, users);
             }
 
-            // Oturumu güncelle
-            this.setSession(updatedUser, !!localStorage.getItem(DB.SESSION)); // LocalStorage varsa remember true kabul et
+            this.setSession(updatedUser, !!localStorage.getItem(DB.SESSION));
             await logService.addLog('info', 'Profil Güncelleme', `Kullanıcı: ${updatedUser.name}`);
 
             return updatedUser;
         } else {
             // REAL BACKEND
-            try {
-                // Not: Backend endpoint'i varsayımsaldır, gerçekte uygun endpoint olmalı.
-                // Assuming simple update for now, ideally shouldn't send raw _id to update route if handled inside
-                const response = await fetch(`${CONFIG.API_URL}/auth/profile`, {
-                    method: 'PUT',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(updatedData)
-                });
-
-                if (!response.ok) throw new Error('Profil güncellenemedi');
-
-                const resultUser = await response.json();
-                this.setSession(resultUser, !!localStorage.getItem(DB.SESSION));
-                return resultUser;
-            } catch (error) {
-                throw error;
-            }
+            // Note: Assuming backend has a generic update or specific profile update endpoint
+            // Usually PUT /users/profile or /users/:id
+            const response = await api.put('/users/profile', updatedData); // Adjusted to likely endpoint
+            const resultUser = response.data;
+            this.setSession(resultUser, !!localStorage.getItem(DB.SESSION));
+            return resultUser;
         }
     },
 
@@ -187,9 +133,8 @@ export const authService = {
         } else {
             // REAL BACKEND
             try {
-                const response = await fetch(`${CONFIG.API_URL}/users`);
-                if (!response.ok) return [];
-                return await response.json();
+                const response = await api.get('/users');
+                return response.data;
             } catch {
                 return [];
             }
@@ -203,7 +148,6 @@ export const authService = {
             const user = users.find(u => u._id === userId);
             if (user) return user;
 
-            // Mock data for unknown users (e.g. initial forum data authors)
             if (userId === 'admin-001' || userId === 'system') {
                 return {
                     _id: userId,
@@ -220,7 +164,6 @@ export const authService = {
                 };
             }
 
-            // Default mock for unknown IDs to prevent crash
             return {
                 _id: userId,
                 name: 'Kullanıcı',
@@ -232,9 +175,8 @@ export const authService = {
             } as User;
         } else {
             try {
-                const response = await fetch(`${CONFIG.API_URL}/users/${userId}`);
-                if (response.ok) return await response.json();
-                return null;
+                const response = await api.get(`/users/${userId}`);
+                return response.data;
             } catch {
                 return null;
             }
@@ -249,9 +191,7 @@ export const authService = {
             setStorage(DB.USERS, filtered);
         } else {
             // REAL BACKEND
-            await fetch(`${CONFIG.API_URL}/users/${userId}`, {
-                method: 'DELETE'
-            });
+            await api.delete(`/users/${userId}`);
         }
     },
 
@@ -263,13 +203,11 @@ export const authService = {
     },
 
     async getCurrentUser(): Promise<User | null> {
-        // Check Local Storage first (Persistent)
         const localSession = localStorage.getItem(DB.SESSION);
         if (localSession) {
             try { return JSON.parse(localSession); } catch { return null; }
         }
 
-        // Check Session Storage (Tab only)
         const sessionSession = sessionStorage.getItem(DB.SESSION);
         if (sessionSession) {
             try { return JSON.parse(sessionSession); } catch { return null; }

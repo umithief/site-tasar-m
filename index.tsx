@@ -5,6 +5,18 @@ import { App } from './App';
 import { CONFIG } from './services/config';
 import { LanguageProvider } from './contexts/LanguageProvider';
 
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnWindowFocus: false,
+      retry: 1,
+      staleTime: 1000 * 60 * 5, // 5 minutes
+    },
+  },
+});
+
 async function enableMocking() {
   // Only enable MSW if we are NOT using the internal Mock API mode (localStorage)
   // AND we are in development mode.
@@ -12,12 +24,12 @@ async function enableMocking() {
   // but the real backend isn't running.
   if (!CONFIG.USE_MOCK_API && process.env.NODE_ENV === 'development') {
     const { worker } = await import('./mocks/browser');
-    
+
     // Start the worker
     return worker.start({
-        onUnhandledRequest: 'bypass', // Don't warn about unhandled requests
+      onUnhandledRequest: 'bypass', // Don't warn about unhandled requests
     }).catch(err => {
-        console.warn('MSW worker failed to start. Standard backend connection will be used.', err);
+      console.warn('MSW worker failed to start. Standard backend connection will be used.', err);
     });
   }
 }
@@ -30,11 +42,13 @@ if (!rootElement) {
 const root = createRoot(rootElement);
 
 enableMocking().then(() => {
-    root.render(
-      <React.StrictMode>
+  root.render(
+    <React.StrictMode>
+      <QueryClientProvider client={queryClient}>
         <LanguageProvider>
           <App />
         </LanguageProvider>
-      </React.StrictMode>
-    );
+      </QueryClientProvider>
+    </React.StrictMode>
+  );
 });

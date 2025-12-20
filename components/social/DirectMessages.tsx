@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Send, Image as ImageIcon, MapPin, MoreVertical, Search, Circle } from 'lucide-react';
 import { UserAvatar } from '../ui/UserAvatar';
 import { ChatThread, SocialChatMessage } from '../../types';
-import { useSocket } from '../../context/SocketContext';
+import { useSocket } from '../../hooks/useSocket';
 import { messageService } from '../../services/messageService';
 import { MOCK_THREADS_SERVICE } from '../../services/mockMessageService';
 
@@ -13,12 +13,13 @@ interface DirectMessagesProps {
 }
 
 export const DirectMessages: React.FC<DirectMessagesProps> = ({ isOpen, onClose }) => {
+    // New Hook Usage
     const { socket, isConnected } = useSocket();
+
     const [threads, setThreads] = useState<ChatThread[]>(MOCK_THREADS_SERVICE);
     const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
     const [messages, setMessages] = useState<SocialChatMessage[]>([]);
     const [messageInput, setMessageInput] = useState('');
-    const [isTyping, setIsTyping] = useState(false);
     const messagesEndRef = useRef<null | HTMLDivElement>(null);
 
     const activeThread = threads.find(t => t.id === activeThreadId);
@@ -32,19 +33,22 @@ export const DirectMessages: React.FC<DirectMessagesProps> = ({ isOpen, onClose 
     useEffect(() => {
         if (!activeThreadId || !activeThread) return;
         const loadMessages = async () => {
-            // In real app, thread.id might be threadId, but here we treat thread.userId as target
-            // Assuming MOCK_THREADS uses userId as 'id' or has userId field. MOCK_THREADS has 'userId'.
-            const history = await messageService.getConversation(activeThread.userId);
-            setMessages(history);
+            try {
+                // Using userId from thread as target for conversation fetch
+                const history = await messageService.getConversation(activeThread.userId);
+                setMessages(history);
+            } catch (err) {
+                console.error("Failed to load messages", err);
+            }
         };
         loadMessages();
-    }, [activeThreadId]);
+    }, [activeThreadId, activeThread]);
 
     // Socket Listeners
     useEffect(() => {
-        if (!socket) return;
+        if (!socket || !isConnected) return;
 
-        socket.on('receive_message', (payload: any) => {
+        const handleReceiveMessage = (payload: any) => {
             // Payload: { message: MessageObject, sender: UserObject }
             const newMsg: SocialChatMessage = {
                 id: payload.message._id,
@@ -59,20 +63,14 @@ export const DirectMessages: React.FC<DirectMessagesProps> = ({ isOpen, onClose 
             if (activeThread && (payload.sender._id === activeThread.userId)) {
                 setMessages(prev => [...prev, newMsg]);
             }
+        };
 
-            // TODO: Update thread list last message/unread count
-        });
-
-        socket.on('message_sent', (msg: any) => {
-            // Confirm sent (optional, since we optimistically add or wait)
-            // For now we optimistically add in handleSend, so maybe just status update
-        });
+        socket.on('receive_message', handleReceiveMessage);
 
         return () => {
-            socket.off('receive_message');
-            socket.off('message_sent');
-        }
-    }, [socket, activeThread]);
+            socket.off('receive_message', handleReceiveMessage);
+        };
+    }, [socket, isConnected, activeThread]);
 
     const handleSend = () => {
         if (!messageInput.trim() || !activeThread || !socket) return;
@@ -93,7 +91,6 @@ export const DirectMessages: React.FC<DirectMessagesProps> = ({ isOpen, onClose 
         setMessageInput('');
 
         // Emit to Backend
-        // Backend expects: { receiverId, content, type }
         socket.emit('send_message', {
             receiverId: activeThread.userId,
             content,

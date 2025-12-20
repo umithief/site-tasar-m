@@ -1,13 +1,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { MessageSquare, Heart, Eye, Plus, User, Hash, Calendar, ArrowLeft, Send, Lock, TrendingUp, Search, ShieldAlert, Filter, Image as ImageIcon, ThumbsUp, Share2, MoreHorizontal, Trophy, Flame, ChevronRight, X, Crown, PenTool, CheckCircle2, AlertCircle, BarChart2, Wrench, Map, Coffee, MapPin, HelpCircle, Users, Clock } from 'lucide-react';
-import { ForumTopic, ForumComment, User as UserType, SocialPost } from '../types';
+import { MessageSquare, Heart, Eye, Calendar, ArrowLeft, Send, Lock, Search, ShieldAlert, Trophy, Flame, ChevronRight, X, Crown, PenTool, CheckCircle2 } from 'lucide-react';
+import { ForumTopic, ForumComment, User as UserType } from '../types';
 import { Button } from './ui/Button';
 import { forumService } from '../services/forumService';
 import { authService } from '../services/auth';
 import { UserAvatar } from './ui/UserAvatar';
 import { Highlighter } from './Highlighter';
-import { storageService } from '../services/storageService';
+// storageService removed
 import { motion, AnimatePresence } from 'framer-motion';
 import { notify } from '../services/notificationService';
 import { useLanguage } from '../contexts/LanguageProvider';
@@ -19,18 +19,11 @@ interface ForumProps {
     onOpenPro?: () => void;
 }
 
-type PostStatus = 'riding' | 'garage' | 'coffee' | 'question';
-
-const STATUS_OPTIONS: { id: PostStatus; label: string; icon: any; color: string; bg: string }[] = [
-    { id: 'riding', label: 'Sürüşte', icon: Map, color: 'text-green-600', bg: 'bg-green-50' },
-    { id: 'garage', label: 'Tamirde', icon: Wrench, color: 'text-orange-600', bg: 'bg-orange-50' },
-    { id: 'coffee', label: 'Molada', icon: Coffee, color: 'text-yellow-600', bg: 'bg-yellow-50' },
-    { id: 'question', label: 'Soru', icon: HelpCircle, color: 'text-blue-600', bg: 'bg-blue-50' }
-];
+// Paddock removed
 
 export const Forum: React.FC<ForumProps> = ({ user, onOpenAuth, onViewProfile, onOpenPro }) => {
     const { t } = useLanguage();
-    const [activeTab, setActiveTab] = useState<'feed' | 'forum'>('feed');
+    // const [activeTab, setActiveTab] = useState<'feed' | 'forum'>('feed'); // Removed
 
     const [view, setView] = useState<'list' | 'detail'>('list');
     const [isCreating, setIsCreating] = useState(false);
@@ -38,13 +31,7 @@ export const Forum: React.FC<ForumProps> = ({ user, onOpenAuth, onViewProfile, o
     const [selectedTopic, setSelectedTopic] = useState<ForumTopic | null>(null);
     const [isLoading, setIsLoading] = useState(true);
 
-    const [feedPosts, setFeedPosts] = useState<SocialPost[]>([]);
-    const [newPostContent, setNewPostContent] = useState('');
-    const [newPostImage, setNewPostImage] = useState<string | null>(null);
-    const [postStatus, setPostStatus] = useState<PostStatus>('riding');
-    const [isPosting, setIsPosting] = useState(false);
-    const [expandedPostId, setExpandedPostId] = useState<string | null>(null);
-    const fileInputRef = useRef<HTMLInputElement>(null);
+    // Paddock states removed
 
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedCategory, setSelectedCategory] = useState<string>('ALL');
@@ -62,18 +49,13 @@ export const Forum: React.FC<ForumProps> = ({ user, onOpenAuth, onViewProfile, o
 
     useEffect(() => {
         loadData();
-    }, [activeTab]);
+    }, []);
 
     const loadData = async () => {
         setIsLoading(true);
         try {
-            if (activeTab === 'forum') {
-                const data = await forumService.getTopics();
-                setTopics(data);
-            } else if (activeTab === 'feed') {
-                const feed = await forumService.getFeed();
-                setFeedPosts(feed);
-            }
+            const data = await forumService.getTopics();
+            setTopics(data);
         } catch (error) {
             console.error("Veri yüklenemedi", error);
         } finally {
@@ -81,85 +63,7 @@ export const Forum: React.FC<ForumProps> = ({ user, onOpenAuth, onViewProfile, o
         }
     };
 
-    const [loadedComments, setLoadedComments] = useState<Record<string, ForumComment[]>>({});
-
-    // ... (existing refs and states) ...
-
-    const handleCreatePost = async () => {
-        if (!user || !newPostContent.trim()) return;
-        setIsPosting(true);
-        try {
-            const post = await forumService.createSocialPost(user, newPostContent, newPostImage || undefined);
-            setFeedPosts([post, ...feedPosts]);
-            setNewPostContent('');
-            setNewPostImage(null);
-            notify.success("Gönderi paylaşıldı!");
-        } catch (e) {
-            console.error(e);
-        } finally {
-            setIsPosting(false);
-        }
-    };
-
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        if (file) {
-            try {
-                const url = await storageService.uploadFile(file);
-                setNewPostImage(url);
-            } catch (e) {
-                console.error("Upload error", e);
-            }
-        }
-    };
-
-    const handleLikePost = async (id: string) => {
-        if (!user) { onOpenAuth(); return; }
-        setFeedPosts(prev => prev.map(p => {
-            if (p._id === id) {
-                return {
-                    ...p,
-                    likes: p.isLiked ? p.likes - 1 : p.likes + 1,
-                    isLiked: !p.isLiked
-                };
-            }
-            return p;
-        }));
-        await forumService.likeSocialPost(id);
-    };
-
-    const toggleComments = async (postId: string) => {
-        if (expandedPostId === postId) {
-            setExpandedPostId(null);
-        } else {
-            setExpandedPostId(postId);
-            if (!loadedComments[postId]) {
-                try {
-                    const comments = await forumService.getSocialComments(postId);
-                    setLoadedComments(prev => ({ ...prev, [postId]: comments }));
-                } catch (e) {
-                    console.error("Yorumlar yüklenemedi", e);
-                }
-            }
-        }
-    };
-
-    const handleAddSocialComment = async (postId: string, text: string) => {
-        if (!user || !text.trim()) return;
-        try {
-            const newComment = await forumService.addSocialComment(postId, user, text);
-            setLoadedComments(prev => ({
-                ...prev,
-                [postId]: [...(prev[postId] || []), newComment]
-            }));
-            // Update comment count in feed
-            setFeedPosts(prev => prev.map(p => p._id === postId ? { ...p, comments: p.comments + 1 } : p));
-            notify.success("Yorum eklendi");
-        } catch (e) {
-            console.error("Yorum eklenemedi", e);
-            notify.error("Yorum eklenirken hata oluştu.");
-        }
-    };
+    // Paddock handlers removed
 
     const handleCreateTopic = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -265,224 +169,7 @@ export const Forum: React.FC<ForumProps> = ({ user, onOpenAuth, onViewProfile, o
         </div>
     );
 
-    const renderSocialFeed = () => (
-        <div className="space-y-8">
-            {user ? (
-                <div className="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm relative overflow-hidden group">
-                    {/* ... (Create Post UI remains same) ... */}
-                    <div className="absolute top-0 left-0 w-1 h-full bg-moto-accent"></div>
-                    <div className="flex gap-4">
-                        <div className="flex-shrink-0">
-                            <UserAvatar name={user.name} size={52} className="border-2 border-gray-100" />
-                        </div>
-                        <div className="flex-1">
-                            <div className="flex gap-2 mb-3 overflow-x-auto no-scrollbar pb-1">
-                                {STATUS_OPTIONS.map(status => {
-                                    const Icon = status.icon;
-                                    const isActive = postStatus === status.id;
-                                    return (
-                                        <button
-                                            key={status.id}
-                                            onClick={() => setPostStatus(status.id)}
-                                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${isActive
-                                                ? `${status.bg} ${status.color} border-${status.color.split('-')[1]}-200 shadow-sm`
-                                                : 'bg-gray-50 border-transparent text-gray-500 hover:bg-gray-100'
-                                                }`}
-                                        >
-                                            <Icon className={`w-3 h-3 ${isActive ? 'scale-110' : ''}`} />
-                                            {status.label}
-                                        </button>
-                                    );
-                                })}
-                            </div>
-
-                            <textarea
-                                value={newPostContent}
-                                onChange={(e) => setNewPostContent(e.target.value)}
-                                placeholder={t('forum.share_thought')}
-                                className="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:border-moto-accent focus:ring-0 outline-none text-gray-900 placeholder-gray-400 min-h-[80px] resize-none transition-all focus:bg-white"
-                            />
-
-                            {newPostImage && (
-                                <div className="relative mt-3 rounded-xl overflow-hidden group/img inline-block border border-gray-200">
-                                    <img src={newPostImage} alt="Preview" className="h-32 w-auto object-cover" />
-                                    <button
-                                        onClick={() => setNewPostImage(null)}
-                                        className="absolute top-2 right-2 bg-white text-gray-700 p-1 rounded-full opacity-0 group-hover/img:opacity-100 transition-opacity hover:text-red-600 shadow-md"
-                                    >
-                                        <X className="w-4 h-4" />
-                                    </button>
-                                </div>
-                            )}
-
-                            <div className="flex justify-between items-center mt-3 pt-3 border-t border-gray-100">
-                                <div className="flex gap-2">
-                                    <button
-                                        onClick={() => fileInputRef.current?.click()}
-                                        className="text-gray-400 hover:text-moto-accent p-2 rounded-full hover:bg-gray-50 transition-colors group/icon"
-                                        title="Fotoğraf Ekle"
-                                    >
-                                        <ImageIcon className="w-5 h-5 group-hover/icon:scale-110 transition-transform" />
-                                    </button>
-                                    <input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={handleImageUpload} />
-                                </div>
-
-                                <Button
-                                    size="sm"
-                                    onClick={handleCreatePost}
-                                    isLoading={isPosting}
-                                    disabled={!newPostContent.trim()}
-                                    className="rounded-xl px-6 bg-moto-accent text-black hover:bg-black hover:text-white border-0 shadow-md shadow-moto-accent/20"
-                                >
-                                    {t('forum.post')} <Send className="w-3 h-3 ml-2" />
-                                </Button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            ) : (
-                <div className="bg-white rounded-3xl p-8 border border-gray-200 text-center shadow-sm">
-                    <p className="text-gray-500 mb-4">{t('forum.login_desc')}</p>
-                    <Button variant="outline" onClick={onOpenAuth} className="border-gray-300 text-gray-700 hover:bg-gray-50">{t('nav.login')}</Button>
-                </div>
-            )}
-
-            <div className="space-y-6">
-                {feedPosts.map((post) => (
-                    <motion.div
-                        key={post._id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-white rounded-3xl border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-all group"
-                    >
-                        <div className="p-5 flex items-start justify-between">
-                            <div
-                                className="flex items-center gap-3 cursor-pointer"
-                                onClick={() => { if (onViewProfile) onViewProfile(post.userId); }}
-                            >
-                                <div className="relative">
-                                    <UserAvatar name={post.userName} size={48} className="ring-2 ring-gray-100" />
-                                    <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 border border-gray-200">
-                                        <div className="w-3 h-3 bg-green-500 rounded-full border border-white"></div>
-                                    </div>
-                                </div>
-                                <div>
-                                    <h4 className="font-bold text-sm text-gray-900 hover:text-moto-accent transition-colors flex items-center gap-2">
-                                        {post.userName}
-                                        {post.userName.includes('Canberk') && (
-                                            <span className="bg-yellow-100 text-yellow-700 text-[9px] px-1.5 py-0.5 rounded font-black uppercase tracking-wider flex items-center gap-1 border border-yellow-200">
-                                                <Crown className="w-3 h-3" /> Kaptan
-                                            </span>
-                                        )}
-                                    </h4>
-                                    <div className="flex items-center gap-2 text-xs text-gray-500 mt-0.5">
-                                        <span>{post.timestamp}</span>
-                                        <span>•</span>
-                                        <span className="flex items-center gap-1 text-gray-600 bg-gray-100 px-2 py-0.5 rounded-full border border-gray-200">
-                                            <Map className="w-3 h-3 text-green-500" /> Sürüşte
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-                            <button onClick={() => notify.info('Seçenekler yakında eklenecek.')} className="text-gray-400 hover:text-gray-900 transition-colors p-1"><MoreHorizontal className="w-5 h-5" /></button>
-                        </div>
-
-                        <div className="px-5 pb-3">
-                            <p className="text-sm md:text-base text-gray-700 leading-relaxed whitespace-pre-wrap">{post.content}</p>
-                        </div>
-
-                        {post.image && (
-                            <div className="w-full bg-gray-50 border-y border-gray-100 mt-2">
-                                <img src={post.image} alt="Post content" className="w-full h-auto max-h-[500px] object-cover" loading="lazy" />
-                            </div>
-                        )}
-
-                        <div className="px-5 py-4 flex items-center gap-6 border-t border-gray-100 mt-2 bg-gray-50">
-                            <button
-                                onClick={() => handleLikePost(post._id)}
-                                className={`flex items-center gap-2 text-sm font-bold transition-all group ${post.isLiked ? 'text-red-500' : 'text-gray-500 hover:text-red-500'}`}
-                            >
-                                <Heart className={`w-5 h-5 ${post.isLiked ? 'fill-current' : ''} transition-transform group-hover:scale-110 group-active:scale-95`} />
-                                <span>{post.likes}</span>
-                            </button>
-
-                            <button
-                                onClick={() => toggleComments(post._id)}
-                                className={`flex items-center gap-2 text-sm font-bold transition-all group ${expandedPostId === post._id ? 'text-blue-500' : 'text-gray-500 hover:text-blue-500'}`}
-                            >
-                                <MessageSquare className="w-5 h-5 transition-transform group-hover:scale-110" />
-                                <span>{post.comments}</span>
-                            </button>
-
-                            <button onClick={() => {
-                                navigator.clipboard.writeText(`https://motovibe.com/post/${post._id}`);
-                                notify.success('Link kopyalandı!');
-                            }} className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-green-500 transition-all group ml-auto">
-                                <Share2 className="w-5 h-5 transition-transform group-hover:scale-110" />
-                            </button>
-                        </div>
-
-                        <AnimatePresence>
-                            {expandedPostId === post._id && (
-                                <motion.div
-                                    initial={{ height: 0, opacity: 0 }}
-                                    animate={{ height: 'auto', opacity: 1 }}
-                                    exit={{ height: 0, opacity: 0 }}
-                                    className="bg-gray-50 border-t border-gray-200 px-5 py-4"
-                                >
-                                    <div className="space-y-4 mb-4">
-                                        {(loadedComments[post._id] || []).length > 0 ? (
-                                            (loadedComments[post._id] || []).map((comment) => (
-                                                <div key={comment._id} className="flex gap-3">
-                                                    <div
-                                                        className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0 cursor-pointer"
-                                                        onClick={() => { if (onViewProfile) onViewProfile(comment.authorId); }}
-                                                    >
-                                                        <UserAvatar name={comment.authorName} size={32} />
-                                                    </div>
-                                                    <div className="flex-1">
-                                                        <div className="bg-white p-3 rounded-2xl rounded-tl-none border border-gray-200 shadow-sm">
-                                                            <div
-                                                                className="text-xs font-bold text-gray-900 block mb-1 cursor-pointer hover:text-moto-accent transition-colors"
-                                                                onClick={() => { if (onViewProfile) onViewProfile(comment.authorId); }}
-                                                            >
-                                                                {comment.authorName}
-                                                            </div>
-                                                            <p className="text-xs text-gray-600">{comment.content}</p>
-                                                        </div>
-                                                        <span className="text-[10px] text-gray-400 ml-2 mt-1">{comment.date}</span>
-                                                    </div>
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <p className="text-xs text-gray-400 text-center italic">Henüz yorum yok. İlk yorumu sen yap!</p>
-                                        )}
-                                    </div>
-
-                                    <div className="flex gap-2">
-                                        <input
-                                            type="text"
-                                            placeholder="Yorum yap..."
-                                            className="flex-1 bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 focus:border-moto-accent outline-none"
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    handleAddSocialComment(post._id, e.currentTarget.value);
-                                                    e.currentTarget.value = '';
-                                                }
-                                            }}
-                                        />
-                                        <button className="p-2 bg-moto-accent text-black rounded-xl hover:bg-black hover:text-white transition-colors">
-                                            <Send className="w-4 h-4" />
-                                        </button>
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </motion.div>
-                ))}
-            </div>
-        </div>
-    );
+    // renderSocialFeed Removed
 
     const renderTopicList = () => {
         const filteredTopics = topics.filter(t => {
@@ -773,59 +460,23 @@ export const Forum: React.FC<ForumProps> = ({ user, onOpenAuth, onViewProfile, o
         <div className="pt-24 pb-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-screen">
 
             {view === 'list' && (
-                <div className="flex flex-col items-center mb-8 sticky top-[20px] z-30 pointer-events-none">
-                    <div className="bg-white/90 backdrop-blur-xl p-1.5 rounded-full border border-gray-200 shadow-xl flex gap-1 pointer-events-auto">
-                        <button
-                            onClick={() => setActiveTab('feed')}
-                            className={`relative px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all overflow-hidden ${activeTab === 'feed' ? 'text-black' : 'text-gray-500 hover:text-gray-900'}`}
-                        >
-                            {activeTab === 'feed' && (
-                                <motion.div layoutId="tab-bg" className="absolute inset-0 bg-moto-accent rounded-full" transition={{ type: "spring", bounce: 0.2, duration: 0.6 }} />
-                            )}
-                            <span className="relative z-10 flex items-center gap-2"><ImageIcon className="w-4 h-4" /> Paddock</span>
-                        </button>
-                        <button
-                            onClick={() => setActiveTab('forum')}
-                            className={`relative px-6 py-2.5 rounded-full text-xs sm:text-sm font-bold transition-all overflow-hidden ${activeTab === 'forum' ? 'text-black' : 'text-gray-500 hover:text-gray-900'}`}
-                        >
-                            {activeTab === 'forum' && (
-                                <motion.div layoutId="tab-bg" className="absolute inset-0 bg-moto-accent rounded-full" transition={{ type: "spring", bounce: 0.2, duration: 0.6 }} />
-                            )}
-                            <span className="relative z-10 flex items-center gap-2"><MessageSquare className="w-4 h-4" /> Garage Talk</span>
-                        </button>
-                    </div>
+                <div className="flex flex-col items-center mb-10">
+                    <h1 className="text-4xl font-display font-black text-gray-900 leading-none mb-4 flex items-center gap-3">
+                        GARAGE<span className="text-moto-accent">TALK</span>
+                        <MessageSquare className="w-8 h-8 text-moto-accent" />
+                    </h1>
+                    <p className="text-gray-500 max-w-lg text-center text-sm md:text-base">
+                        Teknik sorular, rota önerileri ve ekipman sohbetleri için buluşma noktası.
+                    </p>
                 </div>
             )}
 
             {view === 'list' ? (
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    <div className="lg:col-span-2">
-                        <AnimatePresence mode="wait">
-                            {activeTab === 'feed' ? (
-                                <motion.div
-                                    key="feed"
-                                    initial={{ opacity: 0, x: -20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: 20 }}
-                                    transition={{ duration: 0.3 }}
-                                >
-                                    {renderSocialFeed()}
-                                </motion.div>
-                            ) : (
-                                <motion.div
-                                    key="forum"
-                                    initial={{ opacity: 0, x: 20 }}
-                                    animate={{ opacity: 1, x: 0 }}
-                                    exit={{ opacity: 0, x: -20 }}
-                                    transition={{ duration: 0.3 }}
-                                >
-                                    {renderTopicList()}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    <div className="lg:col-span-3">
+                        {renderTopicList()}
                     </div>
-
-                    <div className="hidden lg:block">
+                    <div className="lg:col-span-1">
                         {renderSidebar()}
                     </div>
                 </div>

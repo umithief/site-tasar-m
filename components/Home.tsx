@@ -91,7 +91,7 @@ export const Home: React.FC<HomeProps> = ({
                     <div className="flex items-center gap-3">
                         <div onClick={() => onNavigate(user ? 'profile' : 'auth' as any)} className="relative cursor-pointer group">
                             {user ? (
-                                <UserAvatar name={user.name} size={48} className="border-2 border-white shadow-md" />
+                                <UserAvatar name={user.name || 'User'} size={48} className="border-2 border-white shadow-md" />
                             ) : (
                                 <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center border-2 border-white shadow-sm">
                                     <span className="text-sm font-bold text-gray-500">?</span>

@@ -22,7 +22,7 @@ import modelRoutes from './routes/modelRoutes.js';
 import stolenRoutes from './routes/stolenRoutes.js';
 import negotiationRoutes from './routes/negotiationRoutes.js';
 import feedbackRoutes from './routes/feedbackRoutes.js';
-import socialRoutes from './routes/socialRoutes.js';
+// import socialRoutes from './routes/socialRoutes.js';
 import showcaseRoutes from './routes/showcaseRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 
@@ -200,19 +200,8 @@ const forumTopicSchema = new mongoose.Schema({
 
 const ForumTopic = mongoose.models.ForumTopic || mongoose.model('ForumTopic', forumTopicSchema);
 
-const socialPostSchema = new mongoose.Schema({
-    userId: String,
-    userName: String,
-    userAvatar: String,
-    content: String,
-    image: String,
-    likes: { type: Number, default: 0 },
-    comments: [forumCommentSchema],
-    timestamp: { type: String, default: 'Şimdi' },
-    isLiked: { type: Boolean, default: false }
-}, { versionKey: false, collection: 'socialposts' });
-
-const SocialPost = mongoose.models.SocialPost || mongoose.model('SocialPost', socialPostSchema);
+// SocialPost Removed
+// const SocialPost = mongoose.models.SocialPost || mongoose.model('SocialPost', socialPostSchema);
 
 const musicSchema = new mongoose.Schema({
     title: String,
@@ -399,41 +388,7 @@ const seedDatabase = async () => {
             ]);
         }
 
-        const socialCount = await SocialPost.countDocuments();
-        if (socialCount === 0) {
-            console.log('📦 Sosyal medya paylaşımları (Paddock) veritabanına ekleniyor...');
-            await SocialPost.insertMany([
-                {
-                    userId: 'u101',
-                    userName: 'Canberk Hız',
-                    content: 'Bugün Riva yolları efsaneydi! 🔥 Herkese iyi pazarlar.',
-                    image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1200&auto=format&fit=crop',
-                    likes: 124,
-                    comments: [],
-                    timestamp: '2 saat önce',
-                    isLiked: false
-                },
-                {
-                    userId: 'u102',
-                    userName: 'Zeynep Yılmaz',
-                    content: 'Yeni kaskım geldi! AeroSpeed Carbon Pro gerçekten çok hafif. Tavsiye ederim.',
-                    image: 'https://images.unsplash.com/photo-1592758215894-3298a49339d6?q=80&w=800&auto=format&fit=crop',
-                    likes: 89,
-                    comments: [],
-                    timestamp: '5 saat önce',
-                    isLiked: true
-                },
-                {
-                    userId: 'u103',
-                    userName: 'Mehmet Demir',
-                    content: 'Zincir bakımı ihmale gelmez. Temizlik günü! 🧼',
-                    likes: 45,
-                    comments: [],
-                    timestamp: '1 gün önce',
-                    isLiked: false
-                }
-            ]);
-        }
+        // Social seeding removed
 
         const showcaseCount = await ShowcaseProduct.countDocuments();
         if (showcaseCount === 0) {
@@ -497,7 +452,7 @@ app.use('/api/events', eventRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/forum', forumRoutes);
-app.use('/api/social', socialRoutes);
+// app.use('/api/social', socialRoutes);
 app.use('/api/showcase', showcaseRoutes);
 
 app.use('/api/music', musicRoutes);

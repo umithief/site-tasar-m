@@ -1,5 +1,5 @@
 
-import { ForumTopic, ForumComment, User, SocialPost } from '../types';
+import { ForumTopic, ForumComment, User } from '../types';
 import { DB, getStorage, setStorage, delay } from './db';
 import { CONFIG } from './config';
 import { gamificationService, POINTS } from './gamificationService';
@@ -21,55 +21,8 @@ const MOCK_TOPICS: ForumTopic[] = [
     }
 ];
 
-// Mock data for Social Feed
-const MOCK_FEED: SocialPost[] = [
-    {
-        _id: 'post_1',
-        userId: 'u101',
-        userName: 'Canberk Hız',
-        content: 'Bugün Riva yolları efsaneydi! 🔥 Herkese iyi pazarlar.',
-        image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1200&auto=format&fit=crop',
-        likes: 124,
-        comments: 1,
-        timestamp: '2 saat önce',
-        isLiked: false
-    },
-    {
-        _id: 'post_2',
-        userId: 'u102',
-        userName: 'Zeynep Yılmaz',
-        content: 'Yeni kaskım geldi! AeroSpeed Carbon Pro gerçekten çok hafif. Tavsiye ederim.',
-        image: 'https://images.unsplash.com/photo-1592758215894-3298a49339d6?q=80&w=800&auto=format&fit=crop',
-        likes: 89,
-        comments: 0,
-        timestamp: '5 saat önce',
-        isLiked: true
-    },
-    {
-        _id: 'post_3',
-        userId: 'u103',
-        userName: 'Mehmet Demir',
-        content: 'Zincir bakımı ihmale gelmez. Temizlik günü! 🧼',
-        likes: 45,
-        comments: 0,
-        timestamp: '1 gün önce',
-        isLiked: false
-    }
-];
-
-// Mock Comments Store: { [postId]: ForumComment[] }
-const MOCK_COMMENTS: Record<string, ForumComment[]> = {
-    'post_1': [
-        {
-            _id: 'cmt_101',
-            authorId: 'u102',
-            authorName: 'Zeynep Yılmaz',
-            content: 'Harika görünüyor kaptan! Bir dahaki sefere ben de geliyorum. 🏍️',
-            date: '1 saat önce',
-            likes: 5
-        }
-    ]
-};
+// MOCK_FEED removed
+// MOCK_COMMENTS removed
 
 export const forumService = {
     // --- TOPIC METHODS ---
@@ -212,139 +165,7 @@ export const forumService = {
 
     // --- SOCIAL FEED METHODS (New) ---
 
-    async getFeed(): Promise<SocialPost[]> {
-        if (CONFIG.USE_MOCK_API) {
-            await delay(400);
-            const localPosts = getStorage<SocialPost[]>('mv_social_feed', []);
-            // Merge mock comments logic potentially, but better to fetch on expand
-            return [...localPosts, ...MOCK_FEED];
-        } else {
-            // REAL BACKEND
-            try {
-                const response = await fetch(`${CONFIG.API_URL}/social`);
-                if (!response.ok) return MOCK_FEED;
-                return await response.json();
-            } catch {
-                return MOCK_FEED;
-            }
-        }
-    },
-
-    async getSocialComments(postId: string): Promise<ForumComment[]> {
-        if (CONFIG.USE_MOCK_API) {
-            await delay(300);
-            const allComments = getStorage<Record<string, ForumComment[]>>('mv_social_comments', MOCK_COMMENTS);
-            return allComments[postId] || [];
-        } else {
-            const response = await fetch(`${CONFIG.API_URL}/social/${postId}/comments`);
-            if (!response.ok) return [];
-            return await response.json();
-        }
-    },
-
-    async addSocialComment(postId: string, user: User, content: string): Promise<ForumComment> {
-        if (CONFIG.USE_MOCK_API) {
-            await delay(400);
-            const newComment: ForumComment = {
-                _id: `scm_${Date.now()}`,
-                authorId: user._id,
-                authorName: user.name,
-                content,
-                date: 'Şimdi',
-                likes: 0
-            };
-
-            const allComments = getStorage<Record<string, ForumComment[]>>('mv_social_comments', MOCK_COMMENTS);
-            if (!allComments[postId]) allComments[postId] = [];
-            allComments[postId].push(newComment);
-            setStorage('mv_social_comments', allComments);
-
-            // Update comment count on post
-            const localPosts = getStorage<SocialPost[]>('mv_social_feed', []);
-            const postIndex = localPosts.findIndex(p => p._id === postId);
-            if (postIndex >= 0) {
-                localPosts[postIndex].comments += 1;
-                setStorage('mv_social_feed', localPosts);
-            }
-
-            await gamificationService.addPoints(user._id, 5, 'Yorum (Paddock)');
-            return newComment;
-        } else {
-            const newComment = {
-                authorId: user._id,
-                authorName: user.name,
-                content
-            };
-            const response = await fetch(`${CONFIG.API_URL}/social/${postId}/comments`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newComment)
-            });
-            await gamificationService.addPoints(user._id, 5, 'Yorum (Paddock)');
-            return await response.json();
-        }
-    },
-
-    async createSocialPost(user: User, content: string, image?: string): Promise<SocialPost> {
-        if (CONFIG.USE_MOCK_API) {
-            await delay(600);
-            const newPost: SocialPost = {
-                _id: `post_${Date.now()}`,
-                userId: user._id,
-                userName: user.name,
-                content,
-                image,
-                likes: 0,
-                comments: 0,
-                timestamp: 'Şimdi',
-                isLiked: false
-            };
-            const localPosts = getStorage<SocialPost[]>('mv_social_feed', []);
-            localPosts.unshift(newPost);
-            setStorage('mv_social_feed', localPosts);
-
-            await gamificationService.addPoints(user._id, 15, 'Sosyal Paylaşım');
-            return newPost;
-        } else {
-            // REAL BACKEND
-            const newPost = {
-                userId: user._id,
-                userName: user.name,
-                content,
-                image
-            };
-
-            const response = await fetch(`${CONFIG.API_URL}/social`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(newPost)
-            });
-            await gamificationService.addPoints(user._id, 15, 'Sosyal Paylaşım');
-            return await response.json();
-        }
-    },
-
-    async likeSocialPost(postId: string): Promise<void> {
-        if (CONFIG.USE_MOCK_API) {
-            return;
-        } else {
-            await fetch(`${CONFIG.API_URL}/social/${postId}/like`, {
-                method: 'PUT'
-            });
-        }
-    },
-
-    async deleteSocialPost(postId: string): Promise<void> {
-        if (CONFIG.USE_MOCK_API) {
-            const localPosts = getStorage<SocialPost[]>('mv_social_feed', []);
-            const filtered = localPosts.filter(p => p._id !== postId);
-            setStorage('mv_social_feed', filtered);
-        } else {
-            await fetch(`${CONFIG.API_URL}/social/${postId}`, {
-                method: 'DELETE'
-            });
-        }
-    },
+    // Paddock methods removed
 
     async followUser(userId: string): Promise<void> {
         if (CONFIG.USE_MOCK_API) {

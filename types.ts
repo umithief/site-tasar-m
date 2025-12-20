@@ -20,7 +20,7 @@ declare global {
 
 export type Language = 'tr' | 'en';
 
-export type ViewState = 'home' | 'shop' | 'routes' | 'blog' | 'forum' | 'riders' | 'favorites' | 'profile' | 'public-profile' | 'cart' | 'checkout' | 'auth' | 'admin' | 'product-detail' | 'ride-mode' | 'mototool' | 'about' | 'ai-assistant' | 'meetup' | 'service-finder' | 'valuation' | 'qr-generator' | 'vlog-map' | 'lifesaver';
+export type ViewState = 'home' | 'shop' | 'routes' | 'blog' | 'forum' | 'riders' | 'favorites' | 'profile' | 'public-profile' | 'cart' | 'checkout' | 'auth' | 'admin' | 'product-detail' | 'ride-mode' | 'mototool' | 'about' | 'ai-assistant' | 'meetup' | 'service-finder' | 'valuation' | 'qr-generator' | 'vlog-map' | 'lifesaver' | 'social-hub';
 
 
 export interface CategoryItem {
@@ -182,20 +182,54 @@ export interface ForumTopic {
   tags: string[];
 }
 
-// NEW: Social Feed Types
+// NEW: Social Hub Types
 export interface SocialPost {
   _id: string;
   userId: string;
   userName: string;
-  userAvatar?: string; // Optional avatar URL
+  userAvatar: string;
+  userRank?: string;
+  bikeModel?: string; // e.g. "Yamaha R1"
   content: string;
-  image?: string; // Optional post image
+  images: string[];
   likes: number;
   comments: number;
-  timestamp: string; // "2 saat önce" etc.
+  shares: number;
+  timestamp: string;
   isLiked?: boolean;
   commentList?: ForumComment[];
 }
+
+export interface SocialProfile extends User {
+  coverImage: string;
+  followersCount: number;
+  followingCount: number;
+  totalRides: number;
+  garage: UserBike[];
+  isFollowing?: boolean;
+}
+
+export interface SocialChatMessage {
+  id: string;
+  senderId: string;
+  text: string;
+  timestamp: string;
+  isRead: boolean;
+  type: 'text' | 'image' | 'location';
+  mediaUrl?: string;
+}
+
+export interface ChatThread {
+  id: string;
+  userId: string;
+  userName: string;
+  userAvatar: string;
+  isOnline: boolean;
+  lastMessage: string;
+  lastMessageTime: string;
+  unreadCount: number;
+}
+// SocialPost definition removed
 
 export interface Slide {
   _id: string;
@@ -227,7 +261,7 @@ export interface AnalyticsEvent {
   type: 'view_product' | 'add_to_cart' | 'checkout_start' | 'session_duration';
   userId?: string; // 'guest' or user id
   userName?: string;
-  productId?: number;
+  productId?: string | number;
   productName?: string;
   duration?: number; // seconds (for session_duration)
   timestamp: number;

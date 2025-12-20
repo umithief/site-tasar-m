@@ -34,6 +34,7 @@ import { MotoVlogMap } from './components/MotoVlogMap';
 import { LifeSaver } from './components/LifeSaver';
 import { LivingBackground } from './components/LivingBackground';
 import { RidersDirectory } from './components/RidersDirectory';
+import { SocialHub } from './components/social/SocialHub';
 import { authService } from './services/auth';
 import { orderService } from './services/orderService';
 import { productService } from './services/productService';
@@ -370,6 +371,7 @@ export const App: React.FC = () => {
             case 'about': return <About onNavigate={navigateTo} />;
             case 'ai-assistant': return <AIAssistantPage />;
             case 'forum': return <Forum user={user} onOpenAuth={() => navigateTo('auth')} onViewProfile={handleViewProfile} onOpenPro={() => setIsProModalOpen(true)} />;
+            case 'social-hub': return <SocialHub user={user} />;
             case 'riders': return <RidersDirectory onViewProfile={handleViewProfile} onNavigate={navigateTo} />;
             default: return <Home products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
         }

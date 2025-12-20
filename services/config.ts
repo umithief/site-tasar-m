@@ -4,7 +4,7 @@
 export const API_URL = import.meta.env.VITE_API_URL ||
     ((typeof window !== 'undefined' && window.location.hostname === 'localhost')
         ? 'http://localhost:5000/api'
-        : '/api');
+        : 'https://motovibe-api.onrender.com/api');
 
 // Config nesnesi
 export const CONFIG = {

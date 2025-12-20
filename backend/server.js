@@ -7,7 +7,7 @@ import path from 'path';
 
 import { fileURLToPath } from 'url';
 import uploadRoutes from './routes/uploadRoutes.js';
-import authRoutes from './routes/authRoutes.js';
+// import authRoutes from './routes/authRoutes.js';
 import categoryRoutes from './routes/categoryRoutes.js';
 import routeRoutes from './routes/routeRoutes.js';
 import slideRoutes from './routes/slideRoutes.js';
@@ -428,7 +428,8 @@ const seedDatabase = async () => {
 app.use('/api/upload', uploadRoutes);
 
 
-app.use('/api/auth', authRoutes);
+// authRoutes removed in favor of userRoutes
+// app.use('/api/auth', authRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/routes', routeRoutes);
 app.use('/api/slides', slideRoutes);

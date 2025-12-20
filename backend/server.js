@@ -489,6 +489,7 @@ if (process.argv[1] === __filename) {
         })
         .catch(err => {
             console.error('❌ MongoDB bağlantı hatası:', err.message);
+            process.exit(1);
         });
 }
 

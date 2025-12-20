@@ -10,7 +10,17 @@ router.get('/', async (req, res) => {
         const SocialPost = mongoose.model('SocialPost');
         // Sort by _id descending (newest first)
         const posts = await SocialPost.find().sort({ _id: -1 });
-        res.json(posts);
+
+        // Transform comments array to count for the feed
+        const postsWithCount = posts.map(post => {
+            const p = post.toObject();
+            return {
+                ...p,
+                comments: p.comments ? p.comments.length : 0
+            };
+        });
+
+        res.json(postsWithCount);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }
@@ -26,7 +36,10 @@ router.post('/', async (req, res) => {
         newPost.timestamp = new Date().toLocaleString('tr-TR');
 
         await newPost.save();
-        res.status(201).json(newPost);
+
+        // Return object with comments count 0
+        const p = newPost.toObject();
+        res.status(201).json({ ...p, comments: 0 });
     } catch (error) {
         res.status(400).json({ message: error.message });
     }
@@ -55,6 +68,43 @@ router.delete('/:id', async (req, res) => {
         res.json({ message: 'Paylaşım silindi' });
     } catch (error) {
         res.status(500).json({ message: error.message });
+    }
+});
+
+// GET comments
+router.get('/:id/comments', async (req, res) => {
+    try {
+        const SocialPost = mongoose.model('SocialPost');
+        const post = await SocialPost.findById(req.params.id);
+        if (!post) return res.status(404).json({ message: 'Paylaşım bulunamadı' });
+        res.json(post.comments || []);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// POST add comment
+router.post('/:id/comments', async (req, res) => {
+    try {
+        const SocialPost = mongoose.model('SocialPost');
+        const post = await SocialPost.findById(req.params.id);
+        if (!post) return res.status(404).json({ message: 'Paylaşım bulunamadı' });
+
+        const newComment = {
+            authorId: req.body.authorId,
+            authorName: req.body.authorName,
+            content: req.body.content,
+            date: new Date().toLocaleString('tr-TR'),
+            likes: 0
+        };
+
+        post.comments.push(newComment);
+        await post.save();
+
+        // Return updated post so frontend can extract the new comment
+        res.status(201).json(post);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
     }
 });
 

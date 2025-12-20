@@ -24,6 +24,7 @@ import negotiationRoutes from './routes/negotiationRoutes.js';
 import feedbackRoutes from './routes/feedbackRoutes.js';
 import socialRoutes from './routes/socialRoutes.js';
 import showcaseRoutes from './routes/showcaseRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -70,7 +71,9 @@ const userSchema = new mongoose.Schema({
     phone: String,
     address: String,
     points: { type: Number, default: 0 },
-    rank: { type: String, default: 'Scooter Çırağı' }
+    rank: { type: String, default: 'Scooter Çırağı' },
+    followers: { type: Number, default: 0 },
+    following: { type: Number, default: 0 }
 }, { versionKey: false });
 const User = mongoose.models.User || mongoose.model('User', userSchema);
 
@@ -204,7 +207,7 @@ const socialPostSchema = new mongoose.Schema({
     content: String,
     image: String,
     likes: { type: Number, default: 0 },
-    comments: { type: Number, default: 0 },
+    comments: [forumCommentSchema],
     timestamp: { type: String, default: 'Şimdi' },
     isLiked: { type: Boolean, default: false }
 }, { versionKey: false, collection: 'socialposts' });
@@ -406,7 +409,7 @@ const seedDatabase = async () => {
                     content: 'Bugün Riva yolları efsaneydi! 🔥 Herkese iyi pazarlar.',
                     image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1200&auto=format&fit=crop',
                     likes: 124,
-                    comments: 12,
+                    comments: [],
                     timestamp: '2 saat önce',
                     isLiked: false
                 },
@@ -416,7 +419,7 @@ const seedDatabase = async () => {
                     content: 'Yeni kaskım geldi! AeroSpeed Carbon Pro gerçekten çok hafif. Tavsiye ederim.',
                     image: 'https://images.unsplash.com/photo-1592758215894-3298a49339d6?q=80&w=800&auto=format&fit=crop',
                     likes: 89,
-                    comments: 5,
+                    comments: [],
                     timestamp: '5 saat önce',
                     isLiked: true
                 },
@@ -425,7 +428,7 @@ const seedDatabase = async () => {
                     userName: 'Mehmet Demir',
                     content: 'Zincir bakımı ihmale gelmez. Temizlik günü! 🧼',
                     likes: 45,
-                    comments: 2,
+                    comments: [],
                     timestamp: '1 gün önce',
                     isLiked: false
                 }
@@ -500,6 +503,7 @@ app.use('/api/showcase', showcaseRoutes);
 app.use('/api/music', musicRoutes);
 app.use('/api/models', modelRoutes);
 app.use('/api/stolen-items', stolenRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/negotiations', negotiationRoutes);
 app.use('/api/feedback', feedbackRoutes);
 

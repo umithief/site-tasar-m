@@ -104,7 +104,7 @@ export const Home: React.FC<HomeProps> = ({
                                 <Sun className="w-3 h-3 text-yellow-500" />
                                 {greeting}
                             </p>
-                            <h2 className="text-xl font-black text-gray-900 leading-none tracking-tight">{user ? user.name.split(' ')[0] : t('home.guest')}</h2>
+                            <h2 className="text-xl font-black text-gray-900 leading-none tracking-tight">{user && user.name ? user.name.split(' ')[0] : t('home.guest')}</h2>
                         </div>
                     </div>
 

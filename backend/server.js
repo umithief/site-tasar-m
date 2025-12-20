@@ -26,6 +26,7 @@ import socialRoutes from './routes/socialRoutes.js';
 import showcaseRoutes from './routes/showcaseRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import postRoutes from './routes/postRoutes.js';
 
 import http from 'http';
 import { initSync } from './socket.js';
@@ -439,7 +440,9 @@ app.use('/api/events', eventRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/forum', forumRoutes);
-app.use('/api/social', socialRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/posts', postRoutes); // Using postRoutes as requested
+// app.use('/api/social', socialRoutes); // Replaced by postRoutes for social logic
 app.use('/api/messages', messageRoutes);
 app.use('/api/showcase', showcaseRoutes);
 app.use('/api/analytics', analyticsRoutes);
@@ -447,7 +450,6 @@ app.use('/api/analytics', analyticsRoutes);
 app.use('/api/music', musicRoutes);
 app.use('/api/models', modelRoutes);
 app.use('/api/stolen-items', stolenRoutes);
-app.use('/api/users', userRoutes);
 app.use('/api/negotiations', negotiationRoutes);
 app.use('/api/feedback', feedbackRoutes);
 

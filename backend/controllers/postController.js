@@ -1,79 +1,111 @@
 import Post from '../models/Post.js';
+import User from '../models/User.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
 
-// Get Feed
-export const getFeed = catchAsync(async (req, res, next) => {
-    const posts = await Post.find().sort({ createdAt: -1 }); // Simplify for now (global feed)
-    res.status(200).json(posts);
+// Get Feed Posts (From Following + Own)
+export const getFeedPosts = catchAsync(async (req, res, next) => {
+    // 1. Get current user's following list
+    const currentUser = await User.findById(req.user.id);
+
+    // 2. Fetch posts where user is in 'following' list OR is the current user
+    const posts = await Post.find({
+        user: { $in: [...currentUser.following, req.user.id] }
+    })
+        .sort({ createdAt: -1 })
+        // .populate('user', 'name avatar rank bikeModel') // In case we didn't cache enough
+        .populate({
+            path: 'comments.user',
+            select: 'name avatar'
+        });
+
+    res.status(200).json({
+        status: 'success',
+        results: posts.length,
+        data: { posts }
+    });
 });
 
-// Create Post
 export const createPost = catchAsync(async (req, res, next) => {
-    const { content, bikeModel, userRank } = req.body;
+    const { content, mediaUrl } = req.body;
 
-    // In a real app, logic to handle file upload would be here or in middleware
-    // req.body should contain { content, images, etc. }
+    if (!content && !mediaUrl) {
+        return next(new AppError('İçerik boş olamaz.', 400));
+    }
 
     const newPost = await Post.create({
-        user: req.user._id, // Assumes auth middleware populates req.user
-        userName: req.user.name,
+        user: req.user.id,
+        userName: req.user.name, // Cache setup from previous step
         userAvatar: req.user.avatar,
         content,
-        bikeModel, // Optional
-        userRank,  // Optional
-        images: req.body.images || [],
-        timestamp: new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+        images: mediaUrl ? [mediaUrl] : [], // Handling single mediaUrl as requested mapping to images array
+        // mediaUrl field exists in schema too if needed
+        mediaUrl: mediaUrl
     });
 
-    res.status(201).json(newPost);
+    res.status(201).json({
+        status: 'success',
+        data: { post: newPost }
+    });
 });
 
-// Toggle Like
 export const toggleLike = catchAsync(async (req, res, next) => {
     const post = await Post.findById(req.params.id);
 
     if (!post) {
-        return next(new AppError('No post found with that ID.', 404));
+        return next(new AppError('Post bulunamadı.', 404));
     }
 
-    // Check if user already liked
-    // Note: likes array stores ObjectIds
-    const userIdStr = req.user._id.toString();
-    const index = post.likes.findIndex(id => id.toString() === userIdStr);
+    // Check if like exists
+    const isLiked = post.likes.includes(req.user.id);
 
-    if (index === -1) {
-        // Not liked yet -> Like it
-        post.likes.push(req.user._id);
-        post.likeCount = (post.likeCount || 0) + 1;
+    if (isLiked) {
+        // Unlike
+        post.likes.pull(req.user.id);
+        post.likeCount = Math.max(0, post.likeCount - 1);
     } else {
-        // Already liked -> Unlike it
-        post.likes.splice(index, 1);
-        post.likeCount = Math.max(0, (post.likeCount || 0) - 1);
+        // Like
+        post.likes.push(req.user.id);
+        post.likeCount += 1;
     }
 
     await post.save();
 
-    res.status(200).json(post);
+    res.status(200).json({
+        status: 'success',
+        message: isLiked ? 'Beğeni geri alındı' : 'Beğenildi',
+        data: {
+            likes: post.likes,
+            likeCount: post.likeCount
+        }
+    });
 });
 
-// Add Comment
 export const addComment = catchAsync(async (req, res, next) => {
+    const { content } = req.body;
     const post = await Post.findById(req.params.id);
 
-    if (!post) return next(new AppError('Post not found.', 404));
+    if (!post) return next(new AppError('Post bulunamadı.', 404));
+    if (!content) return next(new AppError('Yorum boş olamaz', 400));
 
-    const newComment = {
-        user: req.user._id,
-        authorName: req.user.name, // Cache name
+    const comment = {
+        user: req.user.id,
+        authorName: req.user.name,
         // authorAvatar: req.user.avatar,
-        content: req.body.content,
+        content,
         timestamp: Date.now()
     };
 
-    post.comments.push(newComment);
-    post.commentCount = (post.commentCount || 0) + 1;
+    post.comments.push(comment);
+    post.commentCount += 1;
+
     await post.save();
 
-    res.status(201).json(post);
+    // Re-fetch or simplistic return (Populate user for frontend display)
+    // For now returning post
+    res.status(201).json({
+        status: 'success',
+        message: 'Yorum eklendi',
+        data: { comments: post.comments }
+    });
 });

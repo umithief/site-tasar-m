@@ -1,6 +1,7 @@
 import { Product } from '../types';
+import { CONFIG } from './config';
 
-const API_URL = 'http://localhost:5000/api/showcase';
+const API_URL = `${CONFIG.API_URL}/showcase`;
 
 export const showcaseService = {
     // Get all items

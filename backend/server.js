@@ -56,9 +56,7 @@ app.use(express.urlencoded({ limit: '200mb', extended: true }));
 const __dirname = path.dirname(__filename);
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.get('/', (req, res) => {
-    res.send('🚀 MotoVibe Backend Çalışıyor! API adresleri /api ile başlar.');
-});
+// Root route handled at the bottom for static file serving logic
 
 // --- MONGODB MODELS ---
 
@@ -461,6 +459,24 @@ app.use('/api/stolen-items', stolenRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/negotiations', negotiationRoutes);
 app.use('/api/feedback', feedbackRoutes);
+
+// --- FRONTEND STATIK DOSYALARINI SERVIS ET (PROD) ---
+const frontendPath = path.join(__dirname, '../dist');
+if (process.env.NODE_ENV === 'production' || process.env.SERVE_FRONTEND === 'true') {
+    app.use(express.static(frontendPath));
+
+    app.get('*', (req, res) => {
+        if (req.path.startsWith('/api')) { // API isteklerini engelleme
+            return res.status(404).json({ message: 'API route found but method not handled or path wrong' });
+        }
+        res.sendFile(path.resolve(frontendPath, 'index.html'));
+    });
+} else {
+    // Development modunda bilgilendirme
+    app.get('/', (req, res) => {
+        res.send('🚀 MotoVibe Backend (Dev) Çalışıyor! Frontend için Vite sunucusunu kullanın.');
+    });
+}
 
 // --- START SERVER ---
 if (process.argv[1] === __filename) {

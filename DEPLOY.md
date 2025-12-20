@@ -1,46 +1,57 @@
 # MotoVibe Deployment Guide
 
-This guide explains how to deploy the MotoVibe application to Vercel (Frontend) and Render.com (Backend).
+## Overview
+Your application handles both **Frontend (React)** and **Backend (Node.js/Express)**.
+It is configured to run as a **Monolith** (Single Server) or **Split** (Frontend on Vercel, Backend on Render).
 
-## 1. Backend Deployment (Render.com)
+## Database
+Your application is already connected to a remote MongoDB Atlas database:
+`mongodb+srv://umithief:14531453@motovibe.mslnxhq.mongodb.net/?appName=motovibe`
+This means your data is preserved regardless of where you deploy.
 
-Since the frontend needs the backend URL to work, deploy the backend **first**.
+## Option 1: Single Server Deployment (VPS, DigitalOcean, Hetzner) - Recommended
+This method runs both the API and the React App on the same server/port.
 
-1.  Push your code to a GitHub repository.
-2.  Go to [dashboard.render.com](https://dashboard.render.com/).
-3.  Click **New +** -> **Blueprint**.
-4.  Connect your GitHub repository.
-5.  Render will detect the `render.yaml` file and propose a new "Web Service".
-6.  Click **Apply**.
-7.  **Environment Variables**:
-    You need to set the following environment variables in the Render Dashboard (under the "Environment" tab of your service):
-    *   `MONGO_URI`: Your MongoDB Connection String (e.g., from MongoDB Atlas).
-    *   `MINIO_ENDPOINT`: (Optional) URL of your S3/MinIO storage.
-    *   `MINIO_ACCESS_KEY`: (Optional) Access key for storage.
-    *   `MINIO_SECRET_KEY`: (Optional) Secret key for storage.
-    
-    > **Note on File Uploads**: If you don't provide a valid external MinIO/S3 service, file uploads will not work in production as Render's disk is ephemeral (files are lost on restart) and the local MinIO setup won't run there.
+1.  **Build the Frontend:**
+    Run this command locally or on the server:
+    ```bash
+    npm install
+    npm run build
+    ```
+    This creates a `dist` folder.
 
-8.  Once deployed, copy the **Backend URL** (e.g., `https://motovibe-backend.onrender.com`).
+2.  **Start the Server:**
+    Set `NODE_ENV=production` and start the backend.
+    ```bash
+    export NODE_ENV=production
+    node backend/server.js
+    ```
+    *Windows PowerShell:*
+    ```powershell
+    $env:NODE_ENV="production"
+    node backend/server.js
+    ```
 
----
+3.  **Access:**
+    Go to `http://your-server-ip:5000`. You will see the React App. The API defaults to `/api`.
 
-## 2. Frontend Deployment (Vercel)
+## Option 2: Cloud Platform (Render.com / Heroku)
+1.  Push your code to GitHub.
+2.  Create a new **Web Service** on Render.
+3.  Connect your GitHub repo.
+4.  **Build Command:** `npm install && npm run build`
+5.  **Start Command:** `node backend/server.js`
+6.  **Environment Variables:**
+    -   `NODE_ENV`: `production`
+    -   `MONGO_URI`: (Copy from .env.example)
 
-1.  Go to [vercel.com](https://vercel.com/) and log in.
-2.  Click **Add New...** -> **Project**.
-3.  Import your GitHub repository.
-4.  **Framework Preset**: Vercel should automatically detect **Vite**.
-5.  **Build Command**: `npm run build` (Default).
-6.  **Output Directory**: `dist` (Default).
-7.  **Environment Variables**:
-    *   Click to expand the "Environment Variables" section.
-    *   Add `VITE_API_URL`.
-    *   Value: Your Render Backend URL + `/api` (e.g., `https://motovibe-backend.onrender.com/api`).
-8.  Click **Deploy**.
+Your app will be live at `https://your-service-name.onrender.com`.
 
-## 3. Final Checks
+## Option 3: Split Deployment (Vercel + Render)
+1.  **Backend:** Deploy just the backend to Render (Start Command: `node backend/server.js`).
+2.  **Frontend:** Deploy to Vercel.
+    -   Add Environment Variable in Vercel: `VITE_API_URL` = `https://your-backend-url.onrender.com/api`
 
-*   Open your Vercel app URL.
-*   Check the browser console (F12) to ensure it's connecting to the correct backend URL (not localhost).
-*   If you see connection errors, ensure `VITE_API_URL` is set correctly in Vercel and you triggered a **Redeploy** after setting it.
+## Notes
+-   The `services/config.ts` file automatically detects if it should use `localhost` or the production URL.
+-   We fixed `showcaseService.ts` which had a hardcoded localhost URL.

@@ -18,6 +18,7 @@ import { AdminEvents } from './admin/AdminEvents';
 import { AdminCommunity } from './admin/AdminCommunity';
 import { AdminPaddock } from './admin/AdminPaddock';
 import { AdminShowcase } from './admin/AdminShowcase';
+import { AdminVlogs } from './admin/AdminVlogs';
 import { productService } from '../services/productService';
 import { sliderService } from '../services/sliderService';
 import { categoryService } from '../services/categoryService';
@@ -29,6 +30,7 @@ import { authService } from '../services/auth';
 import { modelService } from '../services/modelService';
 import { eventService } from '../services/eventService';
 import { forumService } from '../services/forumService';
+import { vlogService } from '../services/vlogService';
 import { ToastType } from './Toast';
 import { CONFIG } from '../services/config';
 import { useLanguage } from '../contexts/LanguageProvider';
@@ -63,7 +65,7 @@ interface AdminPanelProps {
     onNavigate: (view: any) => void;
 }
 
-type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'slider' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community' | 'paddock' | 'showcase';
+type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'slider' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community' | 'paddock' | 'showcase' | 'vlogs';
 
 
 
@@ -84,6 +86,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
     const [events, setEvents] = useState<MeetupEvent[]>([]);
     const [topics, setTopics] = useState<ForumTopic[]>([]);
     const [paddockPosts, setPaddockPosts] = useState<SocialPost[]>([]);
+    const [vlogs, setVlogs] = useState<any[]>([]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingItem, setEditingItem] = useState<any>(null);
@@ -116,7 +119,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
                 modelService.getModels(),
                 eventService.getEvents(),
                 forumService.getTopics(),
-                forumService.getFeed()
+                forumService.getFeed(),
+                vlogService.getVlogs()
             ]);
 
             // Helper to safely get value or default
@@ -134,10 +138,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
             setModels(getValue(results[8], []));
             setEvents(getValue(results[9], []));
             setTopics(getValue(results[10], []));
-            setTopics(getValue(results[10], []));
             const paddockData = getValue(results[11], []);
             console.log('🔌 AdminPanel Paddock Data:', paddockData);
             setPaddockPosts(paddockData);
+            setVlogs(getValue(results[12], []));
 
             // Log any failures
             results.forEach((r, i) => {
@@ -181,6 +185,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
         else if (activeTab === 'routes') setFormData({ title: '', location: '', difficulty: 'Orta', distance: '', duration: '', image: '', tags: [] });
         else if (activeTab === 'models') setFormData({ name: '', url: '', poster: '', category: 'Genel' });
         else if (activeTab === 'events') setFormData({ title: '', type: 'night-ride', date: '', time: '', location: '', coordinates: { lat: 41, lng: 29 }, organizer: 'MotoVibe', attendees: 0, image: '', description: '' });
+        else if (activeTab === 'vlogs') setFormData({ title: '', author: 'Admin', locationName: '', coordinates: { lat: 39, lng: 35 }, videoUrl: '', thumbnail: '', productsUsed: [], views: '0' });
 
         setIsModalOpen(true);
     };
@@ -199,6 +204,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
             else if (activeTab === 'events') { await eventService.deleteEvent(id); setEvents(events.filter(e => e._id !== id)); }
             else if (activeTab === 'community') { await forumService.deleteTopic(id); setTopics(topics.filter(t => t._id !== id)); }
             else if (activeTab === 'paddock') { await forumService.deleteSocialPost(id); setPaddockPosts(paddockPosts.filter(p => p._id !== id)); }
+            else if (activeTab === 'vlogs') { await vlogService.deleteVlog(id); setVlogs(vlogs.filter(v => v._id !== id)); }
 
             onShowToast('success', 'Kayıt silindi.');
         } catch (e) {
@@ -252,6 +258,9 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
             } else if (activeTab === 'events') {
                 if (editingItem) await eventService.updateEvent(finalData);
                 else await eventService.addEvent(finalData);
+            } else if (activeTab === 'vlogs') {
+                if (editingItem) await vlogService.updateVlog(editingItem._id, finalData);
+                else await vlogService.addVlog(finalData);
             }
 
             await loadAllData();
@@ -492,6 +501,16 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
                             <AdminShowcase />
                         )}
 
+                        {activeTab === 'vlogs' && (
+                            <AdminVlogs
+                                vlogs={vlogs}
+                                searchTerm={searchTerm}
+                                handleAddNew={handleAddNew}
+                                handleEdit={handleEdit}
+                                handleDelete={handleDelete}
+                            />
+                        )}
+
                     </div>
                 </div>
             </div>
@@ -568,7 +587,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
                                 })}
 
                                 {/* Image Uploader Section */}
-                                {(activeTab === 'products' || activeTab === 'slider' || activeTab === 'stories' || activeTab === 'categories' || activeTab === 'routes' || activeTab === 'events') && (
+                                {(activeTab === 'products' || activeTab === 'slider' || activeTab === 'stories' || activeTab === 'categories' || activeTab === 'routes' || activeTab === 'events' || activeTab === 'vlogs') && (
                                     <div className="bg-white/5 rounded-2xl p-5 border border-white/5 mt-4">
                                         <div className="flex justify-between items-center mb-4">
                                             <label className="text-xs font-bold text-gray-400 uppercase flex items-center gap-2"><ImageIcon className="w-4 h-4" /> Medya Yönetimi</label>

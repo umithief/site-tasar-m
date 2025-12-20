@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MotoVlog, Product, ViewState, User as UserType } from '../types';
 import { vlogService } from '../services/vlogService';
 import { productService } from '../services/productService';
-import { MapPin, Play, X, Search, Upload, Film, Share2, Eye, User, ShoppingBag, ArrowRight, Navigation, Plus, Map as MapIcon, LogIn, Disc } from 'lucide-react';
+import { MapPin, Play, X, Search, Upload, Film, Share2, Eye, User, ShoppingBag, ArrowRight, Navigation, Plus, Map as MapIcon, LogIn, Disc, Trash2, Edit } from 'lucide-react';
 import { Button } from './ui/Button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { storageService } from '../services/storageService';
@@ -31,12 +31,18 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
     // Upload & Selection State
     const [isUploadOpen, setIsUploadOpen] = useState(false);
     const [selectedLocation, setSelectedLocation] = useState<{ lat: number, lng: number } | null>(null);
+    // Edit Mode State
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingVlogId, setEditingVlogId] = useState<string | null>(null);
+
     const [uploadForm, setUploadForm] = useState({
         title: '',
         locationName: '',
         videoFile: null as File | null,
         thumbnailFile: null as File | null,
-        coordinates: null as { lat: number, lng: number } | null
+        coordinates: null as { lat: number, lng: number } | null,
+        videoUrl: '', // For editing existing
+        thumbnail: '' // For editing existing
     });
     const [isUploading, setIsUploading] = useState(false);
 
@@ -212,6 +218,7 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
 
     const handleUpload = async (e: React.FormEvent) => {
         e.preventDefault();
+
         if (!user) {
             notify.error('Lütfen önce giriş yapın.');
             onNavigate('auth');
@@ -223,40 +230,92 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
             lng: 35.0 + (Math.random() * 4 - 2)
         };
 
-        if (!uploadForm.videoFile || !uploadForm.title) return;
+        if (!uploadForm.title) return;
 
         setIsUploading(true);
         try {
-            const videoUrl = await storageService.uploadFile(uploadForm.videoFile);
-            let thumbUrl = 'https://images.unsplash.com/photo-1558981806-ec527fa84c3d?q=80&w=800&auto=format&fit=crop';
+            let videoUrl = uploadForm.videoUrl;
+            if (uploadForm.videoFile) {
+                videoUrl = await storageService.uploadFile(uploadForm.videoFile);
+            }
+
+            let thumbUrl = uploadForm.thumbnail || 'https://images.unsplash.com/photo-1558981806-ec527fa84c3d?q=80&w=800&auto=format&fit=crop';
             if (uploadForm.thumbnailFile) {
                 thumbUrl = await storageService.uploadFile(uploadForm.thumbnailFile);
             }
 
-            await vlogService.addVlog({
-                title: uploadForm.title,
-                author: user.name || 'Rider',
-                locationName: uploadForm.locationName || 'Bilinmeyen Konum',
-                coordinates: finalCoords,
-                videoUrl: videoUrl,
-                thumbnail: thumbUrl,
-                productsUsed: []
-            });
+            if (isEditing && editingVlogId) {
+                await vlogService.updateVlog(editingVlogId, {
+                    title: uploadForm.title,
+                    locationName: uploadForm.locationName,
+                    coordinates: finalCoords,
+                    videoUrl: videoUrl,
+                    thumbnail: thumbUrl
+                });
+                notify.success('Vlog güncellendi!');
+            } else {
+                await vlogService.addVlog({
+                    title: uploadForm.title,
+                    author: user.name || 'Rider',
+                    authorId: user._id, // Add Author ID
+                    locationName: uploadForm.locationName || 'Bilinmeyen Konum',
+                    coordinates: finalCoords,
+                    videoUrl: videoUrl,
+                    thumbnail: thumbUrl,
+                    productsUsed: []
+                });
+                notify.success('Hikayen haritada paylaşıldı!');
+            }
 
             await loadVlogs();
-            setIsUploadOpen(false);
-            setUploadForm({ title: '', locationName: '', videoFile: null, thumbnailFile: null, coordinates: null });
+            closeUploadModal();
             setSelectedLocation(null);
             if (tempMarkerRef.current) {
                 tempMarkerRef.current.remove();
                 tempMarkerRef.current = null;
             }
-            notify.success('Hikayen haritada paylaşıldı!');
+
         } catch (error) {
-            notify.error('Yükleme hatası.');
+            notify.error('İşlem sırasında bir hata oluştu.');
         } finally {
             setIsUploading(false);
         }
+    };
+
+    const handleEditVlog = (vlog: MotoVlog) => {
+        setIsEditing(true);
+        setEditingVlogId(vlog._id);
+        setUploadForm({
+            title: vlog.title,
+            locationName: vlog.locationName,
+            videoFile: null,
+            thumbnailFile: null,
+            coordinates: vlog.coordinates,
+            videoUrl: vlog.videoUrl,
+            thumbnail: vlog.thumbnail
+        });
+        setIsUploadOpen(true);
+        // Ensure modal is viewable by closing video panel if needed, though they can coexist
+    };
+
+    const handleDeleteVlog = async (vlogId: string) => {
+        if (confirm('Bu vlogu silmek istediğinize emin misiniz?')) {
+            try {
+                await vlogService.deleteVlog(vlogId);
+                notify.success('Vlog silindi.');
+                setSelectedVlog(null);
+                loadVlogs();
+            } catch (err) {
+                notify.error('Silinemedi.');
+            }
+        }
+    };
+
+    const closeUploadModal = () => {
+        setIsUploadOpen(false);
+        setIsEditing(false);
+        setEditingVlogId(null);
+        setUploadForm({ title: '', locationName: '', videoFile: null, thumbnailFile: null, coordinates: null, videoUrl: '', thumbnail: '' });
     };
 
     const getYouTubeID = (url: string) => {
@@ -264,6 +323,16 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
         const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
         const match = url.match(regExp);
         return (match && match[7] && match[7].length === 11) ? match[7] : false;
+    };
+
+    // Helper to check ownership
+    const canEdit = (vlog: MotoVlog) => {
+        if (!user) return false;
+        if (user.isAdmin) return true;
+        // If authorId matches
+        if (vlog.authorId && vlog.authorId === user._id) return true;
+        // Fallback to name match (legacy)
+        return vlog.author === user.name;
     };
 
     return (
@@ -431,13 +500,38 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                             <div className="flex-1 overflow-y-auto custom-scrollbar bg-gradient-to-b from-black/0 to-black/50 p-6 md:p-8">
                                 <div className="flex items-start justify-between mb-6">
                                     <h2 className="text-2xl font-display font-black text-white leading-tight w-4/5">{selectedVlog.title}</h2>
-                                    <button className="text-gray-500 hover:text-white transition-colors"><Share2 className="w-5 h-5" /></button>
+                                    <div className="flex items-center gap-2">
+                                        <button className="text-gray-500 hover:text-white transition-colors p-2 hover:bg-white/5 rounded-full"><Share2 className="w-5 h-5" /></button>
+
+                                        {/* EDIT / DELETE ACTIONS */}
+                                        {canEdit(selectedVlog) && (
+                                            <>
+                                                <button onClick={() => handleEditVlog(selectedVlog)} className="text-gray-500 hover:text-moto-accent transition-colors p-2 hover:bg-white/5 rounded-full">
+                                                    <Edit className="w-5 h-5" />
+                                                </button>
+                                                <button onClick={() => handleDeleteVlog(selectedVlog._id)} className="text-gray-500 hover:text-red-500 transition-colors p-2 hover:bg-white/5 rounded-full">
+                                                    <Trash2 className="w-5 h-5" />
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
                                 </div>
 
-                                <div className="flex items-center gap-4 mb-8">
-                                    <UserAvatar name={selectedVlog.author} size={48} className="ring-2 ring-moto-accent ring-offset-2 ring-offset-black" />
+                                {/* Clickable User Profile */}
+                                <div
+                                    className="flex items-center gap-4 mb-8 cursor-pointer group p-2 hover:bg-white/5 rounded-xl transition-colors -mx-2"
+                                    onClick={() => {
+                                        if (selectedVlog.authorId) {
+                                            onNavigate('public-profile', { id: selectedVlog.authorId });
+                                        } else {
+                                            // Fallback if no ID (for old mocks)
+                                            notify.error('Kullanıcı profili bulunamadı.');
+                                        }
+                                    }}
+                                >
+                                    <UserAvatar name={selectedVlog.author} size={48} className="ring-2 ring-moto-accent ring-offset-2 ring-offset-black group-hover:scale-110 transition-transform" />
                                     <div>
-                                        <div className="font-bold text-white text-lg">{selectedVlog.author}</div>
+                                        <div className="font-bold text-white text-lg group-hover:text-moto-accent transition-colors">{selectedVlog.author}</div>
                                         <div className="text-xs text-moto-accent font-bold uppercase tracking-wider">Pro Rider</div>
                                     </div>
                                 </div>
@@ -508,7 +602,7 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                 )}
             </AnimatePresence>
 
-            {/* MODAL: UPLOAD */}
+            {/* MODAL: UPLOAD / EDIT */}
             <AnimatePresence>
                 {isUploadOpen && (
                     <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex items-center justify-center p-6">
@@ -518,10 +612,10 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                             exit={{ scale: 0.9, opacity: 0 }}
                             className="w-full max-w-lg bg-[#111] border border-white/10 rounded-[2.5rem] p-8 md:p-10 shadow-2xl relative"
                         >
-                            <button onClick={() => setIsUploadOpen(false)} className="absolute top-6 right-6 p-2 bg-white/5 rounded-full text-gray-400 hover:text-white hover:bg-white/10"><X className="w-5 h-5" /></button>
+                            <button onClick={closeUploadModal} className="absolute top-6 right-6 p-2 bg-white/5 rounded-full text-gray-400 hover:text-white hover:bg-white/10"><X className="w-5 h-5" /></button>
 
-                            <h2 className="text-3xl font-display font-black text-white mb-2">Vlog'unu Paylaş</h2>
-                            <p className="text-gray-500 mb-8 text-sm">Yolculuğunu haritaya sabitle ve toplulukla paylaş.</p>
+                            <h2 className="text-3xl font-display font-black text-white mb-2">{isEditing ? 'Vlog Düzenle' : "Vlog'unu Paylaş"}</h2>
+                            <p className="text-gray-500 mb-8 text-sm">{isEditing ? 'Detayları güncelle.' : 'Yolculuğunu haritaya sabitle ve toplulukla paylaş.'}</p>
 
                             <form onSubmit={handleUpload} className="space-y-6">
                                 <div className="space-y-4">
@@ -549,18 +643,18 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                                 <div className="grid grid-cols-2 gap-4">
                                     <label className="aspect-square rounded-3xl border-2 border-dashed border-white/10 hover:border-moto-accent hover:bg-moto-accent/5 flex flex-col items-center justify-center gap-3 cursor-pointer transition-all group">
                                         <Film className="w-8 h-8 text-gray-600 group-hover:text-moto-accent transition-colors" />
-                                        <span className="text-xs font-bold text-gray-500 group-hover:text-white uppercase tracking-wider">{uploadForm.videoFile ? 'Video Seçildi' : 'Video Yükle'}</span>
+                                        <span className="text-xs font-bold text-gray-500 group-hover:text-white uppercase tracking-wider">{uploadForm.videoFile || uploadForm.videoUrl ? 'Video Hazır' : 'Video Yükle'}</span>
                                         <input type="file" className="hidden" accept="video/*" onChange={e => setUploadForm({ ...uploadForm, videoFile: e.target.files?.[0] || null })} />
                                     </label>
                                     <label className="aspect-square rounded-3xl border-2 border-dashed border-white/10 hover:border-moto-accent hover:bg-moto-accent/5 flex flex-col items-center justify-center gap-3 cursor-pointer transition-all group">
                                         <Disc className="w-8 h-8 text-gray-600 group-hover:text-moto-accent transition-colors" />
-                                        <span className="text-xs font-bold text-gray-500 group-hover:text-white uppercase tracking-wider">{uploadForm.thumbnailFile ? 'Kapak Seçildi' : 'Kapak Görseli'}</span>
+                                        <span className="text-xs font-bold text-gray-500 group-hover:text-white uppercase tracking-wider">{uploadForm.thumbnailFile || uploadForm.thumbnail ? 'Kapak Hazır' : 'Kapak Görseli'}</span>
                                         <input type="file" className="hidden" accept="image/*" onChange={e => setUploadForm({ ...uploadForm, thumbnailFile: e.target.files?.[0] || null })} />
                                     </label>
                                 </div>
 
                                 <Button type="submit" variant="primary" isLoading={isUploading} size="lg" className="w-full h-16 rounded-2xl text-lg font-black bg-moto-accent text-black hover:scale-[1.02] shadow-xl shadow-moto-accent/20">
-                                    {isUploading ? 'YÜKLENİYOR...' : 'YAYINLA'}
+                                    {isUploading ? 'YÜKLENİYOR...' : (isEditing ? 'GÜNCELLE' : 'YAYINLA')}
                                 </Button>
                             </form>
                         </motion.div>

@@ -112,5 +112,38 @@ export const vlogService = {
             if (!response.ok) throw new Error('Vlog eklenemedi');
             return await response.json();
         }
+    },
+
+    async deleteVlog(id: string): Promise<void> {
+        if (CONFIG.USE_MOCK_API) {
+            await delay(500);
+            const vlogs = getStorage<MotoVlog[]>(DB_KEY_VLOGS, []);
+            const filteredVlogs = vlogs.filter(v => v._id !== id);
+            setStorage(DB_KEY_VLOGS, filteredVlogs);
+        } else {
+            await fetch(`${CONFIG.API_URL}/vlogs/${id}`, { method: 'DELETE' });
+        }
+    },
+
+    async updateVlog(id: string, updates: Partial<MotoVlog>): Promise<MotoVlog> {
+        if (CONFIG.USE_MOCK_API) {
+            await delay(500);
+            const vlogs = getStorage<MotoVlog[]>(DB_KEY_VLOGS, []);
+            const index = vlogs.findIndex(v => v._id === id);
+            if (index !== -1) {
+                vlogs[index] = { ...vlogs[index], ...updates };
+                setStorage(DB_KEY_VLOGS, vlogs);
+                return vlogs[index];
+            }
+            throw new Error('Vlog not found');
+        } else {
+            const response = await fetch(`${CONFIG.API_URL}/vlogs/${id}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(updates)
+            });
+            if (!response.ok) throw new Error('Vlog güncellenemedi');
+            return await response.json();
+        }
     }
 };

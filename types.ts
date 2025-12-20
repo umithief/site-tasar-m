@@ -74,6 +74,7 @@ export interface MotoVlog {
   _id: string;
   title: string;
   author: string;
+  authorId?: string;
   locationName: string;
   coordinates: { lat: number; lng: number };
   videoUrl: string; // YouTube URL

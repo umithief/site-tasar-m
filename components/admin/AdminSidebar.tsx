@@ -2,7 +2,7 @@ import React from 'react';
 import { LayoutDashboard, Package, ShoppingCart, Users, Grid, Map, Circle, MessageSquare, Image as ImageIcon, Box, Zap, Globe, LogOut, Calendar, Activity, Film } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'slider' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community' | 'paddock' | 'showcase';
+type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'slider' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community' | 'paddock' | 'showcase' | 'vlogs';
 
 interface AdminSidebarProps {
     activeTab: AdminTab;
@@ -55,6 +55,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, setActive
                 <div className="my-4 border-t border-white/5 mx-2"></div>
                 <NavItem id="negotiations" label="Teklifler" icon={MessageSquare} active={activeTab === 'negotiations'} onClick={setActiveTab} />
                 <NavItem id="routes" label="Rotalar" icon={Map} active={activeTab === 'routes'} onClick={setActiveTab} />
+                <NavItem id="vlogs" label="Vlog Haritası" icon={Film} active={activeTab === 'vlogs'} onClick={setActiveTab} />
                 <NavItem id="stories" label="Hikayeler" icon={Circle} active={activeTab === 'stories'} onClick={setActiveTab} />
                 <NavItem id="categories" label="Kategoriler" icon={Grid} active={activeTab === 'categories'} onClick={setActiveTab} />
                 <NavItem id="events" label="Etkinlikler" icon={Calendar} active={activeTab === 'events'} onClick={setActiveTab} />

@@ -135,3 +135,8 @@ export const getProfile = catchAsync(async (req, res, next) => {
         data: { user }
     });
 });
+
+export const getAllUsers = catchAsync(async (req, res, next) => {
+    const users = await User.find().select('-password');
+    res.status(200).json(users);
+});

@@ -4,6 +4,7 @@ import { DB, getStorage, setStorage, delay } from './db';
 import { CONFIG } from './config';
 import { logService } from './logService';
 import { gamificationService, POINTS } from './gamificationService';
+import { api } from './api';
 
 export const orderService = {
     async createOrder(user: User, items: CartItem[], total: number): Promise<Order> {
@@ -53,19 +54,9 @@ export const orderService = {
                 }))
             };
 
-            const response = await fetch(`${CONFIG.API_URL}/orders`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(orderData)
-            });
+            const response = await api.post('/orders', orderData);
+            const result = response.data;
 
-            const result = await response.json();
-            // Backend kullanırken de frontend logunu güncelle (Mock mode ile uyumlu olması için)
-            if (CONFIG.USE_MOCK_API) {
-                await logService.addLog('success', 'Yeni Sipariş', `Tutar: ₺${total}`);
-            }
-
-            // Backend should handle points ideally, but for now we call service
             if (pointsEarned > 0) {
                 await gamificationService.addPoints(user._id, pointsEarned, 'Alışveriş Puanı');
             }
@@ -81,9 +72,13 @@ export const orderService = {
             return allOrders.filter(order => order.userId === userId);
         } else {
             // REAL BACKEND
-            const response = await fetch(`${CONFIG.API_URL}/orders?userId=${userId}`);
-            if (!response.ok) return [];
-            return await response.json();
+            try {
+                const response = await api.get(`/orders?userId=${userId}`);
+                return response.data;
+            } catch (error) {
+                console.error("Get User Orders Error", error);
+                return [];
+            }
         }
     },
 
@@ -93,9 +88,13 @@ export const orderService = {
             return getStorage<Order[]>(DB.ORDERS, []);
         } else {
             // REAL BACKEND
-            const response = await fetch(`${CONFIG.API_URL}/orders`);
-            if (!response.ok) return [];
-            return await response.json();
+            try {
+                const response = await api.get('/orders');
+                return response.data;
+            } catch (error) {
+                console.error("Get All Orders Error", error);
+                return [];
+            }
         }
     },
 
@@ -110,11 +109,7 @@ export const orderService = {
             }
         } else {
             // REAL BACKEND
-            await fetch(`${CONFIG.API_URL}/orders/${orderId}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status })
-            });
+            await api.put(`/orders/${orderId}`, { status });
         }
     }
 };

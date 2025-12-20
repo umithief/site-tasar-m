@@ -213,6 +213,13 @@ export const App: React.FC = () => {
         tourService.completeTour();
     };
 
+    const handleLogout = () => {
+        authService.logout();
+        setUser(null);
+        navigateTo('home');
+        addToast('info', 'Çıkış yapıldı');
+    };
+
     useEffect(() => {
         productService.getProducts().then(setProducts);
     }, [view]);

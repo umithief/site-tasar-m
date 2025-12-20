@@ -7,8 +7,11 @@ import { DirectMessages } from './DirectMessages';
 import { SocialPost, SocialProfile, ForumComment } from '../../types';
 import { UserAvatar } from '../ui/UserAvatar';
 
+import { ViewState } from '../../types';
+
 interface SocialHubProps {
     user: any;
+    onNavigate?: (view: ViewState) => void;
 }
 
 // MOCK DATA
@@ -72,7 +75,7 @@ const MOCK_PROFILE: SocialProfile = {
     ]
 };
 
-export const SocialHub: React.FC<SocialHubProps> = ({ user }) => {
+export const SocialHub: React.FC<SocialHubProps> = ({ user, onNavigate }) => {
     const [isDMOpen, setIsDMOpen] = useState(false);
     const [view, setView] = useState<'feed' | 'profile'>('feed');
 
@@ -112,10 +115,10 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user }) => {
 
                     <nav className="space-y-1">
                         {[
-                            { id: 'feed', icon: Home, label: 'Feed' },
-                            { id: 'discover', icon: Compass, label: 'Discover' },
-                            { id: 'garage', icon: Grid, label: 'My Garage' },
-                            { id: 'events', icon: Calendar, label: 'Club Events' },
+                            { id: 'feed', icon: Home, label: 'Feed', action: () => setView('feed') },
+                            { id: 'discover', icon: Compass, label: 'Discover', action: () => onNavigate && onNavigate('riders') },
+                            { id: 'garage', icon: Grid, label: 'My Garage', action: () => setView('profile') },
+                            { id: 'events', icon: Calendar, label: 'Club Events', action: () => onNavigate && onNavigate('meetup') },
                             { id: 'messages', icon: MessageSquare, label: 'Messages', action: () => setIsDMOpen(true), badge: 2 },
                         ].map((item: any) => (
                             <button

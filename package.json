@@ -44,6 +44,8 @@
     "react-router-dom": "6.22.0",
     "react-simple-star-rating": "5.1.1",
     "rrweb": "^2.0.0-alpha.4",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "tailwind-merge": "^3.4.0",
     "uuid": "^13.0.0",
     "whatamesh": "latest"

@@ -117,6 +117,8 @@ export const authService = {
                 });
 
                 if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.message || 'Giriş yapılamadı.');
                 }
                 const responseData = await response.json();
                 const user = responseData.data.user;

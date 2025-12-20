@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { MessageSquare, Heart, Eye, Plus, User, Hash, Calendar, ArrowLeft, Send, Lock, TrendingUp, Search, ShieldAlert, Filter, Image as ImageIcon, ThumbsUp, Share2, MoreHorizontal, Trophy, Flame, ChevronRight, X, Crown, PenTool, CheckCircle2, AlertCircle, BarChart2, Wrench, Map, Coffee, MapPin, HelpCircle, Users, Clock } from 'lucide-react';
-import { ForumTopic, User as UserType, SocialPost } from '../types';
+import { ForumTopic, ForumComment, User as UserType, SocialPost } from '../types';
 import { Button } from './ui/Button';
 import { forumService } from '../services/forumService';
 import { authService } from '../services/auth';
@@ -81,6 +81,10 @@ export const Forum: React.FC<ForumProps> = ({ user, onOpenAuth, onViewProfile, o
         }
     };
 
+    const [loadedComments, setLoadedComments] = useState<Record<string, ForumComment[]>>({});
+
+    // ... (existing refs and states) ...
+
     const handleCreatePost = async () => {
         if (!user || !newPostContent.trim()) return;
         setIsPosting(true);
@@ -124,11 +128,36 @@ export const Forum: React.FC<ForumProps> = ({ user, onOpenAuth, onViewProfile, o
         await forumService.likeSocialPost(id);
     };
 
-    const toggleComments = (postId: string) => {
+    const toggleComments = async (postId: string) => {
         if (expandedPostId === postId) {
             setExpandedPostId(null);
         } else {
             setExpandedPostId(postId);
+            if (!loadedComments[postId]) {
+                try {
+                    const comments = await forumService.getSocialComments(postId);
+                    setLoadedComments(prev => ({ ...prev, [postId]: comments }));
+                } catch (e) {
+                    console.error("Yorumlar yüklenemedi", e);
+                }
+            }
+        }
+    };
+
+    const handleAddSocialComment = async (postId: string, text: string) => {
+        if (!user || !text.trim()) return;
+        try {
+            const newComment = await forumService.addSocialComment(postId, user, text);
+            setLoadedComments(prev => ({
+                ...prev,
+                [postId]: [...(prev[postId] || []), newComment]
+            }));
+            // Update comment count in feed
+            setFeedPosts(prev => prev.map(p => p._id === postId ? { ...p, comments: p.comments + 1 } : p));
+            notify.success("Yorum eklendi");
+        } catch (e) {
+            console.error("Yorum eklenemedi", e);
+            notify.error("Yorum eklenirken hata oluştu.");
         }
     };
 
@@ -240,6 +269,7 @@ export const Forum: React.FC<ForumProps> = ({ user, onOpenAuth, onViewProfile, o
         <div className="space-y-8">
             {user ? (
                 <div className="bg-white rounded-3xl p-5 border border-gray-200 shadow-sm relative overflow-hidden group">
+                    {/* ... (Create Post UI remains same) ... */}
                     <div className="absolute top-0 left-0 w-1 h-full bg-moto-accent"></div>
                     <div className="flex gap-4">
                         <div className="flex-shrink-0">
@@ -384,7 +414,10 @@ export const Forum: React.FC<ForumProps> = ({ user, onOpenAuth, onViewProfile, o
                                 <span>{post.comments}</span>
                             </button>
 
-                            <button className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-green-500 transition-all group ml-auto">
+                            <button onClick={() => {
+                                navigator.clipboard.writeText(`https://motovibe.com/post/${post._id}`);
+                                notify.success('Link kopyalandı!');
+                            }} className="flex items-center gap-2 text-sm font-bold text-gray-500 hover:text-green-500 transition-all group ml-auto">
                                 <Share2 className="w-5 h-5 transition-transform group-hover:scale-110" />
                             </button>
                         </div>
@@ -398,17 +431,29 @@ export const Forum: React.FC<ForumProps> = ({ user, onOpenAuth, onViewProfile, o
                                     className="bg-gray-50 border-t border-gray-200 px-5 py-4"
                                 >
                                     <div className="space-y-4 mb-4">
-                                        {post.comments > 0 ? (
-                                            <div className="flex gap-3">
-                                                <div className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0"></div>
-                                                <div className="flex-1">
-                                                    <div className="bg-white p-3 rounded-2xl rounded-tl-none border border-gray-200 shadow-sm">
-                                                        <span className="text-xs font-bold text-gray-900 block mb-1">Demo Kullanıcı</span>
-                                                        <p className="text-xs text-gray-600">Harika fotoğraf! Kazasız belasız sürüşler.</p>
+                                        {(loadedComments[post._id] || []).length > 0 ? (
+                                            (loadedComments[post._id] || []).map((comment) => (
+                                                <div key={comment._id} className="flex gap-3">
+                                                    <div
+                                                        className="w-8 h-8 rounded-full bg-gray-200 flex-shrink-0 cursor-pointer"
+                                                        onClick={() => { if (onViewProfile) onViewProfile(comment.authorId); }}
+                                                    >
+                                                        <UserAvatar name={comment.authorName} size={32} />
                                                     </div>
-                                                    <span className="text-[10px] text-gray-400 ml-2 mt-1">10dk önce</span>
+                                                    <div className="flex-1">
+                                                        <div className="bg-white p-3 rounded-2xl rounded-tl-none border border-gray-200 shadow-sm">
+                                                            <div
+                                                                className="text-xs font-bold text-gray-900 block mb-1 cursor-pointer hover:text-moto-accent transition-colors"
+                                                                onClick={() => { if (onViewProfile) onViewProfile(comment.authorId); }}
+                                                            >
+                                                                {comment.authorName}
+                                                            </div>
+                                                            <p className="text-xs text-gray-600">{comment.content}</p>
+                                                        </div>
+                                                        <span className="text-[10px] text-gray-400 ml-2 mt-1">{comment.date}</span>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            ))
                                         ) : (
                                             <p className="text-xs text-gray-400 text-center italic">Henüz yorum yok. İlk yorumu sen yap!</p>
                                         )}
@@ -419,6 +464,12 @@ export const Forum: React.FC<ForumProps> = ({ user, onOpenAuth, onViewProfile, o
                                             type="text"
                                             placeholder="Yorum yap..."
                                             className="flex-1 bg-white border border-gray-300 rounded-xl px-3 py-2 text-xs text-gray-900 focus:border-moto-accent outline-none"
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    handleAddSocialComment(post._id, e.currentTarget.value);
+                                                    e.currentTarget.value = '';
+                                                }
+                                            }}
                                         />
                                         <button className="p-2 bg-moto-accent text-black rounded-xl hover:bg-black hover:text-white transition-colors">
                                             <Send className="w-4 h-4" />

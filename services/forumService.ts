@@ -1,5 +1,4 @@
 
-
 import { ForumTopic, ForumComment, User, SocialPost } from '../types';
 import { DB, getStorage, setStorage, delay } from './db';
 import { CONFIG } from './config';
@@ -31,7 +30,7 @@ const MOCK_FEED: SocialPost[] = [
         content: 'Bugün Riva yolları efsaneydi! 🔥 Herkese iyi pazarlar.',
         image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1200&auto=format&fit=crop',
         likes: 124,
-        comments: 12,
+        comments: 1,
         timestamp: '2 saat önce',
         isLiked: false
     },
@@ -42,7 +41,7 @@ const MOCK_FEED: SocialPost[] = [
         content: 'Yeni kaskım geldi! AeroSpeed Carbon Pro gerçekten çok hafif. Tavsiye ederim.',
         image: 'https://images.unsplash.com/photo-1592758215894-3298a49339d6?q=80&w=800&auto=format&fit=crop',
         likes: 89,
-        comments: 5,
+        comments: 0,
         timestamp: '5 saat önce',
         isLiked: true
     },
@@ -52,11 +51,25 @@ const MOCK_FEED: SocialPost[] = [
         userName: 'Mehmet Demir',
         content: 'Zincir bakımı ihmale gelmez. Temizlik günü! 🧼',
         likes: 45,
-        comments: 2,
+        comments: 0,
         timestamp: '1 gün önce',
         isLiked: false
     }
 ];
+
+// Mock Comments Store: { [postId]: ForumComment[] }
+const MOCK_COMMENTS: Record<string, ForumComment[]> = {
+    'post_1': [
+        {
+            _id: 'cmt_101',
+            authorId: 'u102',
+            authorName: 'Zeynep Yılmaz',
+            content: 'Harika görünüyor kaptan! Bir dahaki sefere ben de geliyorum. 🏍️',
+            date: '1 saat önce',
+            likes: 5
+        }
+    ]
+};
 
 export const forumService = {
     // --- TOPIC METHODS ---
@@ -203,7 +216,8 @@ export const forumService = {
         if (CONFIG.USE_MOCK_API) {
             await delay(400);
             const localPosts = getStorage<SocialPost[]>('mv_social_feed', []);
-            return [...localPosts, ...MOCK_FEED]; // Merge new local posts with mock
+            // Merge mock comments logic potentially, but better to fetch on expand
+            return [...localPosts, ...MOCK_FEED];
         } else {
             // REAL BACKEND
             try {
@@ -213,6 +227,61 @@ export const forumService = {
             } catch {
                 return MOCK_FEED;
             }
+        }
+    },
+
+    async getSocialComments(postId: string): Promise<ForumComment[]> {
+        if (CONFIG.USE_MOCK_API) {
+            await delay(300);
+            const allComments = getStorage<Record<string, ForumComment[]>>('mv_social_comments', MOCK_COMMENTS);
+            return allComments[postId] || [];
+        } else {
+            const response = await fetch(`${CONFIG.API_URL}/social/${postId}/comments`);
+            if (!response.ok) return [];
+            return await response.json();
+        }
+    },
+
+    async addSocialComment(postId: string, user: User, content: string): Promise<ForumComment> {
+        if (CONFIG.USE_MOCK_API) {
+            await delay(400);
+            const newComment: ForumComment = {
+                _id: `scm_${Date.now()}`,
+                authorId: user._id,
+                authorName: user.name,
+                content,
+                date: 'Şimdi',
+                likes: 0
+            };
+
+            const allComments = getStorage<Record<string, ForumComment[]>>('mv_social_comments', MOCK_COMMENTS);
+            if (!allComments[postId]) allComments[postId] = [];
+            allComments[postId].push(newComment);
+            setStorage('mv_social_comments', allComments);
+
+            // Update comment count on post
+            const localPosts = getStorage<SocialPost[]>('mv_social_feed', []);
+            const postIndex = localPosts.findIndex(p => p._id === postId);
+            if (postIndex >= 0) {
+                localPosts[postIndex].comments += 1;
+                setStorage('mv_social_feed', localPosts);
+            }
+
+            await gamificationService.addPoints(user._id, 5, 'Yorum (Paddock)');
+            return newComment;
+        } else {
+            const newComment = {
+                authorId: user._id,
+                authorName: user.name,
+                content
+            };
+            const response = await fetch(`${CONFIG.API_URL}/social/${postId}/comments`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(newComment)
+            });
+            await gamificationService.addPoints(user._id, 5, 'Yorum (Paddock)');
+            return await response.json();
         }
     },
 
@@ -273,6 +342,18 @@ export const forumService = {
         } else {
             await fetch(`${CONFIG.API_URL}/social/${postId}`, {
                 method: 'DELETE'
+            });
+        }
+    },
+
+    async followUser(userId: string): Promise<void> {
+        if (CONFIG.USE_MOCK_API) {
+            await delay(300);
+            // In a real app, update current user's following list and target user's followers list
+            await gamificationService.addPoints(userId, 20, 'Takip'); // Add points to target user (mock)
+        } else {
+            await fetch(`${CONFIG.API_URL}/users/${userId}/follow`, {
+                method: 'POST'
             });
         }
     }

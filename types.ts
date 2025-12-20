@@ -194,6 +194,7 @@ export interface SocialPost {
   comments: number;
   timestamp: string; // "2 saat önce" etc.
   isLiked?: boolean;
+  commentList?: ForumComment[];
 }
 
 export interface Slide {

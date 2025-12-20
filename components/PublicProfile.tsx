@@ -6,6 +6,7 @@ import { Trophy, Calendar, MapPin, Bike, UserPlus, MessageCircle, Share2, Grid, 
 import { Button } from './ui/Button';
 import { motion } from 'framer-motion';
 import { notify } from '../services/notificationService';
+import { forumService } from '../services/forumService';
 import { BikeDetailModal } from './BikeDetailModal';
 
 interface PublicProfileProps {
@@ -16,8 +17,8 @@ interface PublicProfileProps {
 
 // Mock Data Generator for visual richness if data is missing
 const generateMockGarage = (): UserBike[] => [
-    { id: 101, brand: 'Yamaha', model: 'R6', year: '2020', km: '15.000', color: 'Mavi', image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?q=80&w=800&auto=format&fit=crop', maintenance: [], modifications: [], isPublic: true },
-    { id: 102, brand: 'Honda', model: 'CBR650R', year: '2022', km: '5.000', color: 'Kırmızı', image: 'https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?q=80&w=800&auto=format&fit=crop', maintenance: [], modifications: [], isPublic: true }
+    { _id: '101', brand: 'Yamaha', model: 'R6', year: '2020', km: '15.000', color: 'Mavi', image: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?q=80&w=800&auto=format&fit=crop', maintenance: [], modifications: [], isPublic: true },
+    { _id: '102', brand: 'Honda', model: 'CBR650R', year: '2022', km: '5.000', color: 'Kırmızı', image: 'https://images.unsplash.com/photo-1591637333184-19aa84b3e01f?q=80&w=800&auto=format&fit=crop', maintenance: [], modifications: [], isPublic: true }
 ];
 
 export const PublicProfile: React.FC<PublicProfileProps> = ({ user, onBack, currentUserId }) => {
@@ -32,8 +33,9 @@ export const PublicProfile: React.FC<PublicProfileProps> = ({ user, onBack, curr
         }
     }, [user]);
 
-    const handleFollow = () => {
+    const handleFollow = async () => {
         setIsFollowing(!isFollowing);
+        await forumService.followUser(user._id);
         notify.success(isFollowing ? `${user.name} takipten çıkarıldı.` : `${user.name} takip ediliyor.`);
     };
 
@@ -45,7 +47,7 @@ export const PublicProfile: React.FC<PublicProfileProps> = ({ user, onBack, curr
     return (
         <div className="pt-24 pb-20 min-h-screen bg-gray-50 dark:bg-[#050505] transition-colors duration-300">
             <div className="max-w-5xl mx-auto px-4 sm:px-6">
-                
+
                 {/* Back Button */}
                 <button onClick={onBack} className="flex items-center gap-2 text-gray-500 hover:text-moto-accent mb-6 transition-colors font-bold text-sm group">
                     <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" /> Geri Dön
@@ -106,8 +108,8 @@ export const PublicProfile: React.FC<PublicProfileProps> = ({ user, onBack, curr
                             {/* Actions */}
                             {currentUserId !== user.id && (
                                 <div className="flex gap-3 w-full md:w-auto mt-4 md:mt-0">
-                                    <Button 
-                                        variant={isFollowing ? 'outline' : 'primary'} 
+                                    <Button
+                                        variant={isFollowing ? 'outline' : 'primary'}
                                         className={isFollowing ? 'border-moto-accent text-moto-accent' : ''}
                                         onClick={handleFollow}
                                     >
@@ -157,11 +159,11 @@ export const PublicProfile: React.FC<PublicProfileProps> = ({ user, onBack, curr
                             <h3 className="text-2xl font-bold text-gray-900 dark:text-white mb-6 flex items-center gap-2">
                                 <Bike className="w-6 h-6 text-moto-accent" /> GARAJ
                             </h3>
-                            
+
                             {garage.length > 0 ? (
                                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                     {garage.map((bike) => (
-                                        <motion.div 
+                                        <motion.div
                                             key={bike.id}
                                             initial={{ opacity: 0, y: 20 }}
                                             whileInView={{ opacity: 1, y: 0 }}
@@ -238,7 +240,7 @@ export const PublicProfile: React.FC<PublicProfileProps> = ({ user, onBack, curr
 
             {/* Read-Only Modal */}
             {selectedBike && (
-                <BikeDetailModal 
+                <BikeDetailModal
                     isOpen={!!selectedBike}
                     onClose={() => setSelectedBike(null)}
                     bike={selectedBike}

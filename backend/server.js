@@ -465,7 +465,7 @@ const frontendPath = path.join(__dirname, '../dist');
 if (process.env.NODE_ENV === 'production' || process.env.SERVE_FRONTEND === 'true') {
     app.use(express.static(frontendPath));
 
-    app.get('*', (req, res) => {
+    app.get(/(.*)/, (req, res) => {
         if (req.path.startsWith('/api')) { // API isteklerini engelleme
             return res.status(404).json({ message: 'API route found but method not handled or path wrong' });
         }

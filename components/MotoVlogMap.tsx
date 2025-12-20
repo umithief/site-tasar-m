@@ -2,12 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MotoVlog, Product, ViewState, User as UserType } from '../types';
 import { vlogService } from '../services/vlogService';
 import { productService } from '../services/productService';
-import { MapPin, Play, X, Search, Upload, Film, Share2, Eye, User, ShoppingBag, ArrowRight, Navigation, Plus, Map as MapIcon } from 'lucide-react';
+import { MapPin, Play, X, Search, Upload, Film, Share2, Eye, User, ShoppingBag, ArrowRight, Navigation, Plus, Map as MapIcon, LogIn } from 'lucide-react';
 import { Button } from './ui/Button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { storageService } from '../services/storageService';
 import { UserAvatar } from './ui/UserAvatar';
-import { authService } from '../services/auth';
 import { notify } from '../services/notificationService';
 
 declare const L: any;
@@ -16,16 +15,14 @@ interface MotoVlogMapProps {
     onNavigate: (view: ViewState, data?: any) => void;
     onAddToCart: (product: Product, event?: React.MouseEvent) => void;
     onProductClick: (product: Product) => void;
+    user: UserType | null;
 }
 
-export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCart, onProductClick }) => {
+export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCart, onProductClick, user }) => {
     const [vlogs, setVlogs] = useState<MotoVlog[]>([]);
     const [selectedVlog, setSelectedVlog] = useState<MotoVlog | null>(null);
     const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
-
-    // Auth State
-    const [currentUser, setCurrentUser] = useState<UserType | null>(null);
 
     // Search & Geocoding State
     const [placeResults, setPlaceResults] = useState<any[]>([]);
@@ -50,13 +47,7 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
 
     useEffect(() => {
         loadVlogs();
-        checkUser();
     }, []);
-
-    const checkUser = async () => {
-        const user = await authService.getCurrentUser();
-        setCurrentUser(user);
-    };
 
     const loadVlogs = async () => {
         const data = await vlogService.getVlogs();
@@ -234,8 +225,9 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
     const handleUpload = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (!currentUser) {
+        if (!user) {
             notify.error('Vlog yüklemek için giriş yapmalısınız.');
+            onNavigate('auth');
             return;
         }
 
@@ -257,7 +249,7 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
 
             await vlogService.addVlog({
                 title: uploadForm.title,
-                author: currentUser.name || 'Motovibe RIDER',
+                author: user.name || 'Motovibe RIDER',
                 locationName: uploadForm.locationName || 'Bilinmeyen Konum',
                 coordinates: finalCoords,
                 videoUrl: videoUrl,
@@ -308,12 +300,32 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                             </div>
                             <span className="text-xs font-bold uppercase tracking-widest">Geri Dön</span>
                         </button>
-                        <div className="flex items-center gap-3 px-4 py-1.5 bg-red-500/10 border border-red-500/20 rounded-full">
-                            <span className="relative flex h-2.5 w-2.5">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
-                                <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
-                            </span>
-                            <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">Live Map</span>
+
+                        <div className="flex items-center gap-3">
+                            {!user ? (
+                                <button
+                                    onClick={() => onNavigate('auth')}
+                                    className="px-4 py-1.5 bg-white/10 hover:bg-white/20 border border-white/10 rounded-full flex items-center gap-2 text-[10px] font-bold uppercase tracking-widest text-white transition-colors"
+                                >
+                                    <LogIn className="w-3 h-3" /> Giriş Yap
+                                </button>
+                            ) : (
+                                <div className="flex items-center gap-3 px-4 py-1.5 bg-green-500/10 border border-green-500/20 rounded-full">
+                                    <span className="relative flex h-2.5 w-2.5">
+                                        <span className="animate-pulse absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-green-500"></span>
+                                    </span>
+                                    <span className="text-[10px] font-bold text-green-500 uppercase tracking-widest truncate max-w-[80px]">{user.name.split(' ')[0]}</span>
+                                </div>
+                            )}
+
+                            <div className="flex items-center gap-3 px-4 py-1.5 bg-red-500/10 border border-red-500/20 rounded-full">
+                                <span className="relative flex h-2.5 w-2.5">
+                                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-500 opacity-75"></span>
+                                    <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+                                </span>
+                                <span className="text-[10px] font-bold text-red-500 uppercase tracking-widest">Live</span>
+                            </div>
                         </div>
                     </div>
 
@@ -377,8 +389,9 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                             variant="ghost"
                             className="text-[10px] h-auto py-1.5 px-3 bg-moto-accent/10 hover:bg-moto-accent hover:text-black text-moto-accent border border-moto-accent/20 rounded-lg transition-all"
                             onClick={() => {
-                                if (!currentUser) {
+                                if (!user) {
                                     notify.error('Vlog paylaşmak için giriş yapmalısınız.');
+                                    onNavigate('auth');
                                     return;
                                 }
                                 setIsUploadOpen(true);
@@ -573,8 +586,9 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                         >
                             <button
                                 onClick={() => {
-                                    if (!currentUser) {
+                                    if (!user) {
                                         notify.error('Vlog paylaşmak için giriş yapmalısınız.');
+                                        onNavigate('auth');
                                         return;
                                     }
                                     setIsUploadOpen(true);

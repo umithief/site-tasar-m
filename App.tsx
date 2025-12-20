@@ -358,7 +358,7 @@ export const App: React.FC = () => {
             case 'mototool': return <MotoTool onNavigate={navigateTo} />;
             case 'valuation': return <MotoValuation onNavigate={navigateTo} />;
             case 'qr-generator': return <HelmetQRGenerator onNavigate={navigateTo} />;
-            case 'vlog-map': return <MotoVlogMap onNavigate={navigateTo} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} />;
+            case 'vlog-map': return <MotoVlogMap onNavigate={navigateTo} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} user={user} />;
             case 'lifesaver': return <LifeSaver onClose={() => navigateTo('home')} />;
             case 'profile': return user ? <UserProfile user={user} onLogout={() => { authService.logout(); setUser(null); navigateTo('home'); }} onUpdateUser={setUser} onNavigate={navigateTo} colorTheme={colorTheme} onColorChange={setColorTheme} /> : <div className="pt-32 text-center text-gray-500">Lütfen giriş yapın.</div>;
             case 'public-profile': return viewingUser ? <PublicProfile user={viewingUser} onBack={() => navigateTo('riders')} currentUserId={user?._id} /> : <div className="pt-32 text-center text-gray-500">Kullanıcı yüklenemedi.</div>;

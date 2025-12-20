@@ -26,7 +26,7 @@ export const statsService = {
     } else {
       // REAL BACKEND
       try {
-        await fetch(`${CONFIG.API_URL}/stats/visit`, { method: 'POST' });
+        await fetch(`${CONFIG.API_URL}/analytics/visit`, { method: 'POST' });
         sessionStorage.setItem('mv_visit_recorded', 'true');
       } catch (e) {
         console.error('Visit record failed', e);
@@ -49,7 +49,7 @@ export const statsService = {
     } else {
       // REAL BACKEND
       try {
-        const response = await fetch(`${CONFIG.API_URL}/stats`);
+        const response = await fetch(`${CONFIG.API_URL}/analytics/visitors`);
         if (!response.ok) return { totalVisits: 0, todayVisits: 0 };
         return await response.json();
       } catch (e) {

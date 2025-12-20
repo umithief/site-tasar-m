@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { MotoVlog, Product, ViewState } from '../types';
 import { vlogService } from '../services/vlogService';
 import { productService } from '../services/productService';
-import { MapPin, Play, X, Search, Upload, Film, Share2, Eye, User, ShoppingBag, ArrowRight, Navigation, Plus } from 'lucide-react';
+import { MapPin, Play, X, Search, Upload, Film, Share2, Eye, User, ShoppingBag, ArrowRight, Navigation, Plus, Map as MapIcon } from 'lucide-react';
 import { Button } from './ui/Button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { storageService } from '../services/storageService';
@@ -21,6 +21,10 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
     const [selectedVlog, setSelectedVlog] = useState<MotoVlog | null>(null);
     const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
     const [searchQuery, setSearchQuery] = useState('');
+
+    // Search & Geocoding State
+    const [placeResults, setPlaceResults] = useState<any[]>([]);
+    const [isSearchingPlaces, setIsSearchingPlaces] = useState(false);
 
     // Upload & Selection State
     const [isUploadOpen, setIsUploadOpen] = useState(false);
@@ -46,6 +50,56 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
     const loadVlogs = async () => {
         const data = await vlogService.getVlogs();
         setVlogs(data);
+    };
+
+    // --- GEOCODING SEARCH ---
+    useEffect(() => {
+        const timer = setTimeout(async () => {
+            if (searchQuery.length > 2) {
+                setIsSearchingPlaces(true);
+                try {
+                    // Search strict in TR context? Or global? Global is fine, maybe map bounds bias later.
+                    const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(searchQuery)}&limit=5`);
+                    const data = await response.json();
+                    setPlaceResults(data);
+                } catch (error) {
+                    console.error("Geocoding failed", error);
+                    setPlaceResults([]);
+                } finally {
+                    setIsSearchingPlaces(false);
+                }
+            } else {
+                setPlaceResults([]);
+            }
+        }, 500); // 500ms debounce
+
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
+    const handlePlaceSelect = (place: any) => {
+        const lat = parseFloat(place.lat);
+        const lng = parseFloat(place.lon);
+
+        if (mapRef.current) {
+            mapRef.current.flyTo([lat, lng], 13);
+
+            // Mark location
+            if (tempMarkerRef.current) tempMarkerRef.current.remove();
+
+            // Add nice pulse marker
+            const pulsingIcon = L.divIcon({
+                className: 'selection-marker',
+                html: `<div class="w-6 h-6 bg-moto-accent rounded-full border-2 border-white animate-bounce shadow-[0_0_20px_#FFA500]"></div>`,
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
+            });
+
+            const newMarker = L.marker([lat, lng], { icon: pulsingIcon }).addTo(mapRef.current);
+            tempMarkerRef.current = newMarker;
+
+            setSelectedLocation({ lat, lng });
+            setUploadForm(prev => ({ ...prev, title: searchQuery, locationName: place.display_name.split(',')[0], coordinates: { lat, lng } }));
+        }
     };
 
     useEffect(() => {
@@ -258,11 +312,43 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full bg-white/5 border border-white/10 rounded-2xl pl-14 pr-4 py-4 text-sm text-white focus:border-moto-accent/50 focus:bg-white/10 outline-none transition-all placeholder-gray-500 shadow-inner"
                         />
+                        {isSearchingPlaces && (
+                            <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                                <div className="w-4 h-4 border-2 border-moto-accent border-t-transparent rounded-full animate-spin"></div>
+                            </div>
+                        )}
                     </div>
                 </div>
 
                 {/* List */}
                 <div className="flex-1 overflow-y-auto px-4 md:px-8 pb-24 space-y-4 custom-scrollbar">
+
+                    {/* --- PLACE RESULTS SECTION --- */}
+                    {placeResults.length > 0 && (
+                        <div className="mb-6">
+                            <span className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2 px-1 mb-2">
+                                <MapIcon className="w-3 h-3 text-moto-accent" />
+                                Konum Sonuçları
+                            </span>
+                            <div className="space-y-2">
+                                {placeResults.map((place, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => handlePlaceSelect(place)}
+                                        className="w-full text-left p-3.5 bg-white/5 border border-white/5 rounded-xl hover:bg-moto-accent/10 hover:border-moto-accent/30 hover:text-white group transition-all"
+                                    >
+                                        <div className="text-sm font-bold text-gray-200 group-hover:text-white truncate">
+                                            {place.display_name.split(',')[0]}
+                                        </div>
+                                        <div className="text-[10px] text-gray-500 truncate group-hover:text-gray-400">
+                                            {place.display_name}
+                                        </div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     <div className="flex items-center justify-between px-1 mb-4">
                         <span className="text-xs font-bold text-gray-400 uppercase tracking-widest flex items-center gap-2">
                             <Film className="w-3 h-3" />
@@ -523,7 +609,7 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                                 {selectedLocation && (
                                     <div className="mt-2 flex items-center gap-2 text-[10px] text-green-500">
                                         <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse"></div>
-                                        Haritadan konum seçildi ({selectedLocation.lat.toFixed(4)}, {selectedLocation.lng.toFixed(4)})
+                                        Haritadan konum ({selectedLocation.lat.toFixed(4)}, {selectedLocation.lng.toFixed(4)})
                                     </div>
                                 )}
                             </div>

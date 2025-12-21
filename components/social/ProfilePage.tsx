@@ -44,7 +44,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userId, onNavigate, on
 
     // --- Data Fetching ---
     const { data: profile, isLoading: isProfileLoading, error: profileError } = useQuery({
-        queryKey: ['userProfile', userId],
+        queryKey: ['profile', userId],
         queryFn: () => socialService.getUserProfile(userId),
         enabled: !!userId
     });

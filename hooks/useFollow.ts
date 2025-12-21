@@ -68,7 +68,8 @@ export const useFollow = () => {
         onSuccess: (data, variables) => {
             // Invalidate to refetch fresh data
             queryClient.invalidateQueries({ queryKey: ['profile', variables.targetUserId] });
-            queryClient.invalidateQueries({ queryKey: ['me'] }); // Refetch own profile to update 'following' array
+            queryClient.invalidateQueries({ queryKey: ['userProfile', variables.targetUserId] });
+            queryClient.invalidateQueries({ queryKey: ['me'] });
 
             // Also update React Query cache for Riders list if needed
             queryClient.invalidateQueries({ queryKey: ['users'] });

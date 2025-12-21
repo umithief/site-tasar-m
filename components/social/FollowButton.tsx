@@ -33,9 +33,9 @@ export const FollowButton: React.FC<FollowButtonProps> = ({ targetUserId, isFoll
         });
     }, [currentUser?.following, targetUserId]);
 
-    // Use derived state: prop can override if needed for immediate animations,
-    // but default to amIFollowing.
-    const effectiveIsFollowing = isFollowing !== undefined ? isFollowing : amIFollowing;
+    // Use derived state: prioritise store truth (amIFollowing) if logged in.
+    // Propped value (isFollowing) is used as a fallback for guest or initial render.
+    const effectiveIsFollowing = currentUser ? amIFollowing : isFollowing;
 
     const handleFollow = (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent card clicks

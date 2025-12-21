@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Compass, Home, MessageSquare, Calendar, User, Search, Bell, PlusCircle, Grid, Users } from 'lucide-react';
 import { PostCard } from './PostCard';
+import { FollowButton } from './FollowButton';
 import { UserProfile } from './UserProfile'; // Can be used when user clicks profile
 import { DirectMessages } from './DirectMessages';
 import { SocialPost, SocialProfile, ForumComment } from '../../types';
@@ -159,7 +160,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                 onClick={() => onNavigate && onNavigate('auth')}
                                 className="bg-moto-accent text-black px-8 py-4 rounded-xl font-bold hover:bg-white transition-all transform hover:scale-105 shadow-xl shadow-moto-accent/20"
                             >
-                                Giriş Yap / Kayıt Ol
+                                GiriV Yap / Kayit Ol
                             </button>
                         </div>
                     ) : (
@@ -274,18 +275,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                             <p className="text-[10px] text-gray-500 font-mono">{rider.bike}</p>
                                         </div>
                                     </div>
-                                    <button
-                                        onClick={async () => {
-                                            const res = await socialService.toggleFollow(rider.id || rider._id);
-                                            // Optimistic update or refresh
-                                            if (res) {
-                                                // Refresh threads/suggestions if needed
-                                            }
-                                        }}
-                                        className="text-xs bg-white/10 hover:bg-moto-accent hover:text-black text-white px-3 py-1.5 rounded-lg font-bold transition-all"
-                                    >
-                                        Takip Et
-                                    </button>
+                                    <FollowButton targetUserId={rider.id || rider._id} className="px-3 py-1.5 h-auto text-[10px]" />
                                 </div>
                             )) : (
                                 <p className="text-xs text-gray-500">Önerilecek sürücü bulunamadı.</p>

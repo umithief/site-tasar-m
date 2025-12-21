@@ -1,19 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, memo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, MessageCircle, Share2, MoreHorizontal, Check, ChevronRight, UserPlus } from 'lucide-react';
 import { SocialPost } from '../../types';
 import { UserAvatar } from '../ui/UserAvatar';
 import { socialService } from '../../services/socialService';
+import { FollowButton } from './FollowButton';
 
 interface PostCardProps {
     post: SocialPost;
+    currentUserId?: string;
 }
 
-export const PostCard: React.FC<PostCardProps & { currentUserId?: string }> = ({ post, currentUserId }) => {
+export const PostCard: React.FC<PostCardProps> = memo(({ post, currentUserId }) => {
     const [isLiked, setIsLiked] = useState(post.isLiked);
     // Safety check: ensure likeCount is a number
     const [likeCount, setLikeCount] = useState(typeof post.likes === 'number' ? post.likes : (Array.isArray(post.likes) ? post.likes.length : 0));
-    const [isFollowing, setIsFollowing] = useState(false);
     const [showComments, setShowComments] = useState(false);
     const [commentText, setCommentText] = useState('');
     const [comments, setComments] = useState(post.commentList || []);
@@ -35,19 +36,6 @@ export const PostCard: React.FC<PostCardProps & { currentUserId?: string }> = ({
             // Revert on failure
             setIsLiked(!newState);
             setLikeCount(prev => !newState ? prev + 1 : prev - 1);
-        }
-    };
-
-    const handleFollow = async () => {
-        if (!currentUserId) return alert('Takip etmek için lütfen giriş yapın');
-
-        try {
-            const result = await socialService.toggleFollow(post.userId);
-            if (result) {
-                setIsFollowing(result.isFollowing);
-            }
-        } catch (error) {
-            console.error('Follow toggle failed', error);
         }
     };
 
@@ -105,18 +93,7 @@ export const PostCard: React.FC<PostCardProps & { currentUserId?: string }> = ({
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <motion.button
-                        onClick={handleFollow}
-                        className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-bold uppercase tracking-wider transition-all border ${isFollowing ? 'bg-transparent border-green-500 text-green-500' : 'bg-white/10 border-transparent text-white hover:bg-white/20'}`}
-                        whileTap={{ scale: 0.95 }}
-                        layout
-                    >
-                        {isFollowing ? (
-                            <> <Check className="w-3 h-3" /> Takip Ediliyor </>
-                        ) : (
-                            <> <UserPlus className="w-3 h-3" /> Takip Et </>
-                        )}
-                    </motion.button>
+                    <FollowButton targetUserId={post.userId} />
                     <button className="text-gray-500 hover:text-white transition-colors">
                         <MoreHorizontal className="w-6 h-6" />
                     </button>
@@ -260,4 +237,4 @@ export const PostCard: React.FC<PostCardProps & { currentUserId?: string }> = ({
             </AnimatePresence>
         </motion.div>
     );
-};
+});

@@ -107,7 +107,8 @@ export const toggleFollow = catchAsync(async (req, res, next) => {
     }
 
     // Check if already following
-    const isFollowing = currentUser.following.includes(targetUserId);
+    // Convert to string for reliable comparison (ObjectId vs String)
+    const isFollowing = currentUser.following.some(id => id.toString() === targetUserId.toString());
 
     if (isFollowing) {
         // Unfollow

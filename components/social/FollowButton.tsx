@@ -17,32 +17,24 @@ export const FollowButton: React.FC<FollowButtonProps> = ({ targetUserId, isFoll
     const { mutate: toggleFollow, isPending } = useFollow();
     const { user: currentUser } = useAuthStore();
 
-    // Determine follow status from store if not explicitly passed (or fallback)
+    // Determine follow status from store.
+    // This is the absolute source of truth to avoid sync issues.
     const amIFollowing = React.useMemo(() => {
-        if (isFollowing !== undefined) return isFollowing; // Prop priority? Or Store priority?
-        // Usually Store is truth.
         if (!currentUser || !currentUser.following) return false;
 
-        // Handle following as number (count) vs array (ids) type mismatch
-        if (typeof currentUser.following === 'number') return false; // Can't know from count
+        const followingList = Array.isArray(currentUser.following)
+            ? currentUser.following
+            : [];
 
-        const followingList = currentUser.following as any[];
         return followingList.some(f => {
-            const fId = typeof f === 'object' ? f._id : f;
-            return fId === targetUserId;
+            const fId = (typeof f === 'object' && f !== null) ? (f._id || f.id) : f;
+            return fId && fId.toString() === targetUserId.toString();
         });
-    }, [currentUser, targetUserId, isFollowing]);
+    }, [currentUser?.following, targetUserId]);
 
-    // Use derived state for UI
-    const isActive = isFollowing || amIFollowing;
-
-    // Actually, simply:
-    // If we passed `isFollowing` prop, use it (optimistic parent).
-    // If we didn't, check store.
-    // Given usage in PublicProfile where we might not pass it, we should check store.
-    // BUT `useFollow` optimistically updates the cache which might update parent prop.
-    // Let's rely on the prop if passed, otherwise store.   
-    const effectiveIsFollowing = isFollowing ?? amIFollowing;
+    // Use derived state: prop can override if needed for immediate animations,
+    // but default to amIFollowing.
+    const effectiveIsFollowing = isFollowing !== undefined ? isFollowing : amIFollowing;
 
     const handleFollow = (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent card clicks

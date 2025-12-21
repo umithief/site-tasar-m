@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { User, UserBike } from '../types';
 import { UserAvatar } from './ui/UserAvatar';
-import { Trophy, Calendar, MapPin, Bike, UserPlus, MessageCircle, Share2, Grid, ArrowLeft, Shield, Eye } from 'lucide-react';
+import { Trophy, Calendar, MapPin, Bike, UserPlus, MessageCircle, Share2, Grid, ArrowLeft, Shield, Eye, Award, Medal, Zap, Star } from 'lucide-react';
 import { Button } from './ui/Button';
 import { motion } from 'framer-motion';
 import { notify } from '../services/notificationService';
@@ -141,9 +141,14 @@ export const PublicProfile: React.FC<PublicProfileProps> = ({ user, onBack, curr
                                 <Trophy className="w-5 h-5 text-moto-accent" /> Başarılar
                             </h3>
                             <div className="grid grid-cols-4 gap-4">
-                                {[1, 2, 3, 4].map(i => (
-                                    <div key={i} className="aspect-square rounded-xl bg-gray-100 dark:bg-white/5 flex items-center justify-center grayscale hover:grayscale-0 transition-all cursor-help" title="Başarım Kilidi Açık">
-                                        <img src={`https://cdn-icons-png.flaticon.com/512/5900/590029${i}.png`} className="w-8 h-8 opacity-70" alt="Badge" />
+                                {[
+                                    { icon: Award, label: "İlk Sürüş" },
+                                    { icon: Zap, label: "Hızlı Cevap" },
+                                    { icon: Star, label: "Popüler" },
+                                    { icon: Medal, label: "Sadık Üye" }
+                                ].map((badge, i) => (
+                                    <div key={i} className="aspect-square rounded-xl bg-gray-100 dark:bg-white/5 flex items-center justify-center text-moto-accent transition-all cursor-help hover:bg-moto-accent/10 hover:scale-105" title={badge.label}>
+                                        <badge.icon className="w-8 h-8 opacity-80" />
                                     </div>
                                 ))}
                             </div>

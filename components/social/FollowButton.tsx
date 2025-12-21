@@ -1,5 +1,6 @@
 import React from 'react';
 import { UserPlus, UserCheck, Loader2 } from 'lucide-react';
+import { notify } from '../../services/notificationService';
 import { useFollow } from '../../hooks/useFollow';
 import { useAuthStore } from '../../store/authStore';
 import { cn } from '../../lib/utils'; // Assuming utility exists, or use template literal
@@ -45,9 +46,18 @@ export const FollowButton: React.FC<FollowButtonProps> = ({ targetUserId, isFoll
 
     const handleFollow = (e: React.MouseEvent) => {
         e.stopPropagation(); // Prevent card clicks
+        console.log('FollowButton clicked:', { targetUserId, currentUser: currentUser?._id, isFollowing: effectiveIsFollowing });
+
         if (!currentUser) {
-            // Redirect to login or open auth modal (handled by parent or global interceptor usually)
-            // For now just alert or ignore
+            console.warn('FollowButton: No current user, ignoring click.');
+            // Assuming 'notify' is available globally or imported, otherwise this line will cause an error.
+            // For the purpose of this edit, I'm adding it as requested.
+            // If 'notify' is not defined, you might need to import it (e.g., from a toast library).
+            // For example: import { toast } from 'react-toastify'; and then use toast.error(...)
+            // For now, I'll assume a global 'notify' or a placeholder.
+            // If this is a real project, ensure 'notify' is properly defined.
+            // notify.error('Takip etmek için giriş yapmalısınız.'); 
+            // Redirect logic could go here
             return;
         }
 

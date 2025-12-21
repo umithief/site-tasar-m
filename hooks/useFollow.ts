@@ -9,7 +9,9 @@ export const useFollow = () => {
 
     return useMutation({
         mutationFn: async ({ targetUserId, isCurrentlyFollowing }: { targetUserId: string, isCurrentlyFollowing: boolean }) => {
+            console.log('useFollow: Mutating...', { targetUserId });
             const { data } = await api.post(`/users/follow/${targetUserId}`);
+            console.log('useFollow: Success', data);
             return data;
         },
         onMutate: async ({ targetUserId, isCurrentlyFollowing }) => {
@@ -61,6 +63,7 @@ export const useFollow = () => {
             return { previousProfile };
         },
         onError: (err, newTodo, context) => {
+            console.error('useFollow: Mutation Error', err);
             // Rollback
             queryClient.setQueryData(['profile', newTodo.targetUserId], context?.previousProfile);
             notify.error('Takip işlemi başarısız oldu.');

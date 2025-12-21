@@ -78,3 +78,65 @@ body {
         transform: translateX(250%) skewX(-20deg);
     }
 }
+
+@keyframes scan-v {
+    0% {
+        top: -10%;
+    }
+
+    100% {
+        top: 110%;
+    }
+}
+
+@keyframes scan {
+    0% {
+        transform: translateY(-100%);
+    }
+
+    100% {
+        transform: translateY(1100%);
+    }
+}
+
+@keyframes radar-pulse {
+    0% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+@keyframes spin-slow {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-scan-v {
+    animation: scan-v 4s linear infinite;
+}
+
+.animate-scan {
+    animation: scan 2s linear infinite;
+}
+
+.animate-radar-pulse {
+    animation: radar-pulse 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.animate-spin-slow {
+    animation: spin-slow 8s linear infinite;
+}
+
+.slant {
+    transform: skewX(-20deg);
+}

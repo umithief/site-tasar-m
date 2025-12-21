@@ -335,72 +335,213 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout, onUpda
                 )}
             </div>
 
-            {/* Edit Modal */}
-            {isEditModalOpen && (
-                <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+            {/* Premium System Config (Edit Profile) */}
+            <AnimatePresence>
+                {isEditModalOpen && (
                     <motion.div
-                        initial={{ scale: 0.9, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        className="bg-[#121212] border border-white/10 rounded-3xl w-full max-w-lg p-6 shadow-2xl"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] bg-black/98 backdrop-blur-2xl flex items-center justify-center p-0 md:p-8 overflow-hidden"
                     >
-                        <div className="flex justify-between items-center mb-6">
-                            <h2 className="text-xl font-bold text-white flex items-center gap-2"><Edit3 className="w-5 h-5 text-moto-accent" /> Edit Profile</h2>
-                            <button onClick={() => setIsEditModalOpen(false)} className="p-2 bg-white/5 rounded-full hover:bg-white/10 transition-colors"><X className="w-5 h-5 text-gray-400" /></button>
+                        {/* Background Decorative Elements */}
+                        <div className="absolute inset-0 pointer-events-none opacity-20">
+                            <div className="absolute top-0 left-0 w-full h-[1px] bg-moto-accent animate-scan-v shadow-[0_0_15px_rgba(242,166,25,0.5)]" />
+                            <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(242,166,25,0.1),transparent_70%)]" />
                         </div>
 
-                        <div className="space-y-4">
-                            <div>
-                                <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Name</label>
-                                <input type="text" value={editForm.name} onChange={e => setEditForm({ ...editForm, name: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-moto-accent transition-colors" />
-                            </div>
-                            <div>
-                                <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Bio</label>
-                                <textarea value={editForm.bio} onChange={e => setEditForm({ ...editForm, bio: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-moto-accent h-24 resize-none transition-colors" placeholder="Tell us about yourself..." />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Location</label>
-                                    <input type="text" value={editForm.location} onChange={e => setEditForm({ ...editForm, location: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-moto-accent transition-colors" />
+                        <motion.div
+                            initial={{ scale: 0.95, y: 20, opacity: 0 }}
+                            animate={{ scale: 1, y: 0, opacity: 1 }}
+                            exit={{ scale: 0.95, y: 20, opacity: 0 }}
+                            className="bg-zinc-900/50 border border-white/10 w-full max-w-5xl h-full md:h-[85vh] rounded-none md:rounded-[2rem] overflow-hidden flex flex-col md:flex-row relative shadow-[0_0_50px_rgba(0,0,0,1)]"
+                        >
+                            {/* Left Panel: Preview & Status */}
+                            <div className="md:w-1/3 bg-black/40 border-r border-white/5 p-8 flex flex-col items-center justify-center relative overflow-hidden">
+                                <div className="absolute top-4 left-6">
+                                    <div className="flex items-center gap-2">
+                                        <div className="w-2 h-2 bg-moto-accent rounded-full animate-pulse" />
+                                        <span className="text-[10px] font-black text-gray-500 uppercase tracking-[0.3em]">System Link: Active</span>
+                                    </div>
                                 </div>
-                                <div>
-                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-2">Phone</label>
-                                    <input type="tel" value={editForm.phone} onChange={e => setEditForm({ ...editForm, phone: e.target.value })} className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white outline-none focus:border-moto-accent transition-colors" />
+
+                                <div className="relative mb-8 group">
+                                    <div className="absolute inset-0 bg-moto-accent rounded-full blur-2xl opacity-20 group-hover:opacity-40 transition-opacity animate-pulse" />
+                                    <UserAvatar name={editForm.name} size={160} className="relative z-10 border-4 border-white/5 shadow-2xl ring-1 ring-moto-accent/30" />
+                                    <button className="absolute bottom-2 right-2 z-20 p-3 bg-moto-accent text-black rounded-full shadow-xl hover:scale-110 active:scale-95 transition-all">
+                                        <ImageIcon className="w-5 h-5" />
+                                    </button>
+                                </div>
+
+                                <div className="text-center space-y-2">
+                                    <h3 className="text-2xl font-display font-black text-white uppercase tracking-tight">{editForm.name || "UNNAMED"}</h3>
+                                    <div className="flex items-center justify-center gap-4 py-2 border-y border-white/5">
+                                        <div className="text-center">
+                                            <span className="block text-[8px] text-gray-500 font-black uppercase tracking-widest">Rank</span>
+                                            <span className="text-xs text-moto-accent font-mono font-bold uppercase">{user.rank}</span>
+                                        </div>
+                                        <div className="w-[1px] h-6 bg-white/5" />
+                                        <div className="text-center">
+                                            <span className="block text-[8px] text-gray-500 font-black uppercase tracking-widest">XP</span>
+                                            <span className="text-xs text-white font-mono font-bold">{user.points || 0}</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="mt-auto w-full pt-8">
+                                    <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
+                                        <div className="flex items-center justify-between mb-4">
+                                            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Core Theme</span>
+                                            <div className="w-2 h-2 rounded-full shadow-[0_0_8px_currentColor]" style={{ backgroundColor: colorTheme === 'orange' ? '#F2A619' : colorTheme === 'red' ? '#EF4444' : colorTheme === 'blue' ? '#3B82F6' : colorTheme === 'green' ? '#22C55E' : colorTheme === 'purple' ? '#A855F7' : colorTheme === 'cyan' ? '#06B6D4' : '#EAB308' }} />
+                                        </div>
+                                        <div className="grid grid-cols-7 gap-2">
+                                            {[
+                                                { id: 'orange', color: '#F2A619' },
+                                                { id: 'red', color: '#EF4444' },
+                                                { id: 'blue', color: '#3B82F6' },
+                                                { id: 'green', color: '#22C55E' },
+                                                { id: 'purple', color: '#A855F7' },
+                                                { id: 'cyan', color: '#06B6D4' },
+                                                { id: 'yellow', color: '#EAB308' },
+                                            ].map(theme => (
+                                                <button
+                                                    key={theme.id}
+                                                    onClick={() => onColorChange && onColorChange(theme.id as any)}
+                                                    className={`w-full aspect-square rounded-lg flex items-center justify-center transition-all hover:scale-110 active:scale-90 ${colorTheme === theme.id ? 'ring-2 ring-white ring-offset-4 ring-offset-zinc-900 scale-110 shadow-lg' : 'opacity-40 grayscale-[0.5] hover:opacity-100 hover:grayscale-0'}`}
+                                                    style={{ backgroundColor: theme.color }}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
-                            {/* Theme Selector Integration */}
-                            <div className="bg-white/5 rounded-xl p-4 border border-white/10 mt-4">
-                                <h4 className="text-sm font-bold text-white mb-4 flex items-center gap-2"><Settings className="w-4 h-4" /> App Theme</h4>
-                                <div className="grid grid-cols-7 gap-2">
-                                    {[
-                                        { id: 'orange', color: '#F2A619' },
-                                        { id: 'red', color: '#EF4444' },
-                                        { id: 'blue', color: '#3B82F6' },
-                                        { id: 'green', color: '#22C55E' },
-                                        { id: 'purple', color: '#A855F7' },
-                                        { id: 'cyan', color: '#06B6D4' },
-                                        { id: 'yellow', color: '#EAB308' },
-                                    ].map(theme => (
-                                        <button
-                                            key={theme.id}
-                                            onClick={() => onColorChange && onColorChange(theme.id as any)}
-                                            className={`w-8 h-8 rounded-full flex items-center justify-center transition-transform hover:scale-110 ${colorTheme === theme.id ? 'ring-2 ring-white ring-offset-2 ring-offset-black' : ''}`}
-                                            style={{ backgroundColor: theme.color }}
-                                        >
-                                            {colorTheme === theme.id && <div className="w-2 h-2 bg-white rounded-full"></div>}
-                                        </button>
-                                    ))}
+                            {/* Right Panel: Fields */}
+                            <div className="flex-1 p-8 md:p-12 overflow-y-auto custom-scrollbar relative">
+                                <div className="flex justify-between items-center mb-12">
+                                    <div>
+                                        <h2 className="text-3xl font-display font-black text-white uppercase tracking-tighter">System Config</h2>
+                                        <p className="text-sm text-gray-400 mt-1 uppercase tracking-widest font-mono">Profile and Identity Synchronization</p>
+                                    </div>
+                                    <button
+                                        onClick={() => setIsEditModalOpen(false)}
+                                        className="w-12 h-12 flex items-center justify-center rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:border-white/20 transition-all active:scale-95"
+                                    >
+                                        <X className="w-6 h-6" />
+                                    </button>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-10">
+                                    {/* Name Field */}
+                                    <div className="col-span-1">
+                                        <div className="relative group">
+                                            <input
+                                                type="text"
+                                                value={editForm.name}
+                                                onChange={e => setEditForm({ ...editForm, name: e.target.value })}
+                                                className="w-full bg-transparent border-b-2 border-white/10 pt-6 pb-2 text-xl text-white outline-none focus:border-moto-accent transition-all peer"
+                                                placeholder=" "
+                                            />
+                                            <label className="absolute left-0 top-0 text-[10px] font-black text-gray-500 uppercase tracking-widest transition-all peer-focus:text-moto-accent peer-placeholder-shown:top-6 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-[10px]">
+                                                Operator Name
+                                            </label>
+                                            <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-moto-accent transition-all duration-300 group-focus-within:w-full" />
+                                        </div>
+                                    </div>
+
+                                    {/* Location Field */}
+                                    <div className="col-span-1">
+                                        <div className="relative group">
+                                            <input
+                                                type="text"
+                                                value={editForm.location}
+                                                onChange={e => setEditForm({ ...editForm, location: e.target.value })}
+                                                className="w-full bg-transparent border-b-2 border-white/10 pt-6 pb-2 text-xl text-white outline-none focus:border-moto-accent transition-all peer"
+                                                placeholder=" "
+                                            />
+                                            <label className="absolute left-0 top-0 text-[10px] font-black text-gray-500 uppercase tracking-widest transition-all peer-focus:text-moto-accent peer-placeholder-shown:top-6 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-[10px]">
+                                                Current Sector (Location)
+                                            </label>
+                                            <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-moto-accent transition-all duration-300 group-focus-within:w-full" />
+                                        </div>
+                                    </div>
+
+                                    {/* Bio Field */}
+                                    <div className="col-span-full">
+                                        <div className="relative group">
+                                            <textarea
+                                                value={editForm.bio}
+                                                onChange={e => setEditForm({ ...editForm, bio: e.target.value })}
+                                                className="w-full bg-transparent border-b-2 border-white/10 pt-6 pb-2 text-xl text-white outline-none focus:border-moto-accent transition-all peer h-12 min-h-[48px] overflow-hidden resize-none"
+                                                placeholder=" "
+                                            />
+                                            <label className="absolute left-0 top-0 text-[10px] font-black text-gray-500 uppercase tracking-widest transition-all peer-focus:text-moto-accent peer-placeholder-shown:top-6 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-[10px]">
+                                                Operational Bio / Vision
+                                            </label>
+                                            <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-moto-accent transition-all duration-300 group-focus-within:w-full" />
+                                        </div>
+                                    </div>
+
+                                    {/* Phone Field */}
+                                    <div className="col-span-1">
+                                        <div className="relative group">
+                                            <input
+                                                type="tel"
+                                                value={editForm.phone}
+                                                onChange={e => setEditForm({ ...editForm, phone: e.target.value })}
+                                                className="w-full bg-transparent border-b-2 border-white/10 pt-6 pb-2 text-xl text-white outline-none focus:border-moto-accent transition-all peer"
+                                                placeholder=" "
+                                            />
+                                            <label className="absolute left-0 top-0 text-[10px] font-black text-gray-500 uppercase tracking-widest transition-all peer-focus:text-moto-accent peer-placeholder-shown:top-6 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-[10px]">
+                                                Comms Link (Phone)
+                                            </label>
+                                            <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-moto-accent transition-all duration-300 group-focus-within:w-full" />
+                                        </div>
+                                    </div>
+
+                                    {/* Social: Instagram (Mock Field) */}
+                                    <div className="col-span-1">
+                                        <div className="relative group opacity-60 hover:opacity-100 transition-opacity">
+                                            <input
+                                                type="text"
+                                                className="w-full bg-transparent border-b-2 border-white/10 pt-6 pb-2 text-xl text-white outline-none focus:border-moto-accent transition-all peer"
+                                                placeholder="@username"
+                                            />
+                                            <label className="absolute left-0 top-0 text-[10px] font-black text-gray-500 uppercase tracking-widest transition-all peer-focus:text-moto-accent peer-placeholder-shown:top-6 peer-placeholder-shown:text-sm peer-focus:top-0 peer-focus:text-[10px]">
+                                                Instagram Signal
+                                            </label>
+                                            <div className="absolute bottom-0 left-0 w-0 h-[2px] bg-moto-accent transition-all duration-300 group-focus-within:w-full" />
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div className="mt-16 flex items-center justify-between pb-8">
+                                    <button
+                                        onClick={() => setIsEditModalOpen(false)}
+                                        className="text-gray-500 hover:text-white text-xs font-black uppercase tracking-widest transition-colors py-4 px-8"
+                                    >
+                                        Abort Change
+                                    </button>
+                                    <button
+                                        onClick={handleSaveProfile}
+                                        className="group relative px-12 py-5 bg-moto-accent text-black font-black uppercase tracking-[0.2em] text-sm rounded-none md:rounded-2xl overflow-hidden shadow-[0_0_30px_rgba(242,166,25,0.3)] hover:shadow-[0_0_50px_rgba(242,166,25,0.5)] transition-all hover:scale-105"
+                                    >
+                                        <div className="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 slant" />
+                                        <span className="relative z-10 flex items-center gap-3">
+                                            Synchronize Profile
+                                            <Shield className="w-4 h-4" />
+                                        </span>
+                                    </button>
                                 </div>
                             </div>
-                        </div>
 
-                        <div className="flex justify-end gap-3 mt-8">
-                            <Button variant="outline" onClick={() => setIsEditModalOpen(false)} className="border-white/10 text-gray-400 hover:bg-white/5 hover:text-white">Cancel</Button>
-                            <Button onClick={handleSaveProfile} className="px-8 bg-moto-accent text-black hover:bg-white">Save</Button>
-                        </div>
+                            {/* Tactical Border Accents */}
+                            <div className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-moto-accent/30 rounded-tr-[2rem] pointer-events-none" />
+                            <div className="absolute bottom-0 left-0 w-12 h-12 border-b-2 border-l-2 border-moto-accent/30 rounded-bl-[2rem] pointer-events-none" />
+                        </motion.div>
                     </motion.div>
-                </div>
-            )}
+                )}
+            </AnimatePresence>
 
             {selectedBike && (
                 <BikeDetailModal

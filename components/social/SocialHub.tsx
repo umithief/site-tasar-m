@@ -14,6 +14,7 @@ interface SocialHubProps {
     onNavigate?: (view: ViewState) => void;
     onLogout?: () => void;
     onUpdateUser?: (user: any) => void;
+    initialData?: any;
 }
 
 import { socialService } from '../../services/socialService';
@@ -33,12 +34,22 @@ import { useAuthStore } from '../../store/authStore';
 
 // ... (imports)
 
-export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate, onLogout, onUpdateUser }) => {
+export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate, onLogout, onUpdateUser, initialData }) => {
     // Prefer global user state if available, fallback to props
     const { user: globalUser } = useAuthStore();
     const currentUser = globalUser || propUser;
 
     const [isDMOpen, setIsDMOpen] = useState(false);
+
+    // Auto-open DM if requested
+    useEffect(() => {
+        if (initialData?.openChat) {
+            setIsDMOpen(true);
+            // Ideally pass the target user ID to DirectMessages component if it supports it
+            // For now just opening the modal
+            console.log('Opening chat with:', initialData.openChat);
+        }
+    }, [initialData]);
     const [view, setView] = useState<'feed' | 'profile'>('feed');
     const [newPostContent, setNewPostContent] = useState('');
     const [mediaUrl, setMediaUrl] = useState<string | null>(null);

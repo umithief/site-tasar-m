@@ -79,5 +79,45 @@ export const socialService = {
             console.error('Comment Error:', error);
             return null;
         }
+    },
+
+    async getUserProfile(userId: string): Promise<any> {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await fetch(`${CONFIG.API_URL}/users/${userId}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!response.ok) throw new Error('Failed to fetch user profile');
+            return await response.json();
+        } catch (error) {
+            console.error('Get Profile Error:', error);
+            return null;
+        }
+    },
+
+    async getUserPosts(userId: string): Promise<SocialPost[]> {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await fetch(`${CONFIG.API_URL}/social/user/${userId}/posts`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!response.ok) throw new Error('Failed to fetch user posts');
+            const data = await response.json();
+
+            // Handle both array and { data: { posts: [] } } formats
+            const posts = Array.isArray(data) ? data : (data.data?.posts || []);
+
+            return posts.map((post: any) => ({
+                ...post,
+                commentList: post.comments || [],
+                comments: post.commentCount || 0,
+                likes: post.likeCount || 0,
+                // Ensure isLiked is correctly set if backend returns it
+                isLiked: post.isLiked || false
+            }));
+        } catch (error) {
+            console.error('Get User Posts Error:', error);
+            return [];
+        }
     }
 };

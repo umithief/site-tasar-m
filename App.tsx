@@ -7,7 +7,8 @@ import { CartDrawer } from './components/layout/CartDrawer';
 import { AuthModal } from './components/AuthModal';
 import { PaymentModal } from './components/PaymentModal';
 import { UserProfile } from './components/social/UserProfile';
-import { PublicProfile } from './components/PublicProfile';
+import { ProfilePage } from './components/social/ProfilePage';
+import { PublicProfile } from './components/PublicProfile'; // Keeping for reference if needed, but ProfilePage replaces it for viewing others
 import { About } from './components/About';
 import { Forum } from './components/Forum';
 import { AdminPanel } from './components/AdminPanel';
@@ -90,6 +91,7 @@ export const App: React.FC = () => {
     const [activeRoute, setActiveRoute] = useState<RouteType | null>(null);
 
     const [flyingItems, setFlyingItems] = useState<Array<{ id: number; image: string; startRect: any; targetRect: any }>>([]);
+    const [socialHubData, setSocialHubData] = useState<any>(null);
 
     // Fixed Light Mode
     useEffect(() => {
@@ -241,6 +243,12 @@ export const App: React.FC = () => {
             setSelectedProduct(data);
         }
 
+        if (newView === 'social-hub' && data) {
+            setSocialHubData(data);
+        } else {
+            setSocialHubData(null);
+        }
+
         setView(newView);
         setIsMobileMenuOpen(false);
     };
@@ -378,13 +386,13 @@ export const App: React.FC = () => {
             case 'vlog-map': return <MotoVlogMap onNavigate={navigateTo} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} user={user} />;
             case 'lifesaver': return <LifeSaver onClose={() => navigateTo('home')} />;
             case 'profile': return user ? <UserProfile user={user} onLogout={() => { authService.logout(); setUser(null); navigateTo('home'); }} onUpdateUser={setUser} onNavigate={navigateTo} colorTheme={colorTheme} onColorChange={setColorTheme} /> : <div className="pt-32 text-center text-gray-500">Lütfen giriş yapın.</div>;
-            case 'public-profile': return viewingUser ? <PublicProfile user={viewingUser} onBack={() => navigateTo('riders')} currentUserId={user?._id} /> : <div className="pt-32 text-center text-gray-500">Kullanıcı yüklenemedi.</div>;
+            case 'public-profile': return viewingUser ? <ProfilePage userId={viewingUser._id} onNavigate={navigateTo} onBack={() => navigateTo('riders')} /> : <div className="pt-32 text-center text-gray-500">Kullanıcı yüklenemedi.</div>;
             case 'admin': return user?.isAdmin ? <AdminPanel onLogout={() => { authService.logout(); setUser(null); navigateTo('home'); }} onShowToast={addToast} onNavigate={navigateTo} /> : <div className="pt-32 text-center text-gray-500">Yetkisiz erişim.</div>;
             case 'blog': return <Blog onNavigate={navigateTo} />;
             case 'about': return <About onNavigate={navigateTo} />;
             case 'ai-assistant': return <AIAssistantPage />;
             case 'forum': return <Forum user={user} onOpenAuth={() => navigateTo('auth')} onViewProfile={handleViewProfile} onOpenPro={() => setIsProModalOpen(true)} />;
-            case 'social-hub': return <SocialHub user={user} onNavigate={navigateTo} onLogout={handleLogout} onUpdateUser={setUser} />;
+            case 'social-hub': return <SocialHub user={user} onNavigate={navigateTo} onLogout={handleLogout} onUpdateUser={setUser} initialData={socialHubData} />;
             case 'riders': return <RidersDirectory onViewProfile={handleViewProfile} onNavigate={navigateTo} />;
             default: return <Home products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
         }

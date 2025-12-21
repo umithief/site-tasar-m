@@ -18,45 +18,69 @@ export const useSocket = () => useContext(SocketContext);
 
 export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [socket, setSocket] = useState<Socket | null>(null);
+    const socketRef = React.useRef<Socket | null>(null);
     const [isConnected, setIsConnected] = useState(false);
     const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
 
     useEffect(() => {
-        const token = localStorage.getItem('token'); // Assumes authService saves it here
-        if (!token) return;
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.warn('🔌 [Socket] No token found, skipping connection');
+            return;
+        }
+
+        // Prevent double initialization
+        if (socketRef.current) {
+            console.log('🔌 [Socket] reusing existing connection');
+            return;
+        }
+
+        console.log('🔌 [Socket] Initializing connection...');
 
         // Initialize Socket
-        // Ensure CONFIG.API_URL points to backend base URL (e.g. http://localhost:5000)
-        // Adjust if your API_URL includes /api suffix
         const socketUrl = CONFIG.API_URL.replace('/api', '');
 
         const socketInstance = io(socketUrl, {
             auth: { token },
             query: { token },
             reconnection: true,
+            reconnectionAttempts: 5,
+            reconnectionDelay: 1000,
         });
 
         socketInstance.on('connect', () => {
-            console.log('⚡ Socket connected:', socketInstance.id);
+            console.log('⚡ [Socket] Connected:', socketInstance.id);
             setIsConnected(true);
         });
 
-        socketInstance.on('disconnect', () => {
-            console.log('🚫 Socket disconnected');
+        socketInstance.on('connect_error', (err) => {
+            console.error('❌ [Socket] Connection Error:', err.message);
+        });
+
+        socketInstance.on('disconnect', (reason) => {
+            console.log('🚫 [Socket] Disconnected:', reason);
             setIsConnected(false);
+            if (reason === 'io server disconnect') {
+                // If server disconnects (e.g. invalid token), don't auto reconnect?
+                // socketInstance.connect();
+            }
         });
 
         socketInstance.on('user_online', (data: { userId: string }) => {
-            // For simplicity, just logging or handling a list if backend broadcasts full list
-            // Backend currently broadcasts single user online event
-            // To maintain a list, we'd need more robust state management
-            // For now, simpler implementation
+            console.debug('🟢 [Socket] User Online:', data.userId);
         });
 
+        socketRef.current = socketInstance;
         setSocket(socketInstance);
 
+        // Cleanup on unmount
         return () => {
-            socketInstance.disconnect();
+            if (socketRef.current) {
+                console.log('🔌 [Socket] Cleaning up connection');
+                socketRef.current.disconnect();
+                socketRef.current = null;
+                setSocket(null);
+            }
         };
     }, []);
 

@@ -36,6 +36,9 @@ export const useLikePost = () => {
             // Snapshot previous value
             const previousPosts = queryClient.getQueryData(['posts']);
 
+            // System Audit Tracer
+            console.log(`👍 [React Query] Optimistic Like: Post ${postId} (User: ${userId})`);
+
             // Optimistic Update
             queryClient.setQueryData(['posts'], (old: any) => {
                 if (!old) return old;
@@ -43,8 +46,8 @@ export const useLikePost = () => {
                     ...old,
                     pages: old.pages.map((page: SocialPost[]) =>
                         page.map(post => {
-                            if (post.id === postId) {
-                                const isLiked = post.isLiked; // Assuming frontend prop
+                            if (post._id === postId) {
+                                const isLiked = post.isLiked;
                                 return {
                                     ...post,
                                     likes: isLiked ? post.likes - 1 : post.likes + 1,
@@ -60,9 +63,11 @@ export const useLikePost = () => {
             return { previousPosts };
         },
         onError: (err, newTodo, context) => {
+            console.error('❌ [React Query] Like Mutation Failed:', err);
             queryClient.setQueryData(['posts'], context?.previousPosts);
         },
         onSettled: () => {
+            console.log('✅ [React Query] Like Mutation Settled (Refetching...)');
             queryClient.invalidateQueries({ queryKey: ['posts'] });
         }
     });

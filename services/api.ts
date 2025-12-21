@@ -15,10 +15,21 @@ api.interceptors.request.use(
         const token = localStorage.getItem('token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
+            // System Audit Tracer
+            if (process.env.NODE_ENV === 'development') {
+                console.debug('🔐 [API] Attaching Token:', token.substring(0, 10) + '...');
+            }
+        } else {
+            if (process.env.NODE_ENV === 'development') {
+                console.warn('⚠️ [API] No token found in localStorage');
+            }
         }
         return config;
     },
-    (error) => Promise.reject(error)
+    (error) => {
+        console.error('❌ [API] Request Error:', error);
+        return Promise.reject(error);
+    }
 );
 
 // Response Interceptor: Handle Errors (Global 401)

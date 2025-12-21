@@ -19,13 +19,20 @@ export const initSync = (httpServer) => {
         try {
             const token = socket.handshake.auth.token || socket.handshake.query.token;
 
-            if (!token) return next(new Error('Authentication error: No token'));
+            if (!token) {
+                console.error('❌ [Socket Auth] No token provided for handshake');
+                return next(new Error('Authentication error: No token'));
+            }
 
             const decoded = jwt.verify(token, process.env.JWT_SECRET || 'gizli-anahtar-123');
             const user = await User.findById(decoded.id);
 
-            if (!user) return next(new Error('User not found'));
+            if (!user) {
+                console.error('❌ [Socket Auth] User not found for token payload');
+                return next(new Error('User not found'));
+            }
 
+            // console.log(`✅ [Socket Auth] Valid: ${user.name}`);
             socket.user = user;
             next();
         } catch (err) {
@@ -70,10 +77,12 @@ export const initSync = (httpServer) => {
                 });
 
                 // Option B: Use Socket Map (Fallback)
-                // const receiverSocketId = userSocketMap.get(receiverId);
-                // if (receiverSocketId) {
-                //     io.to(receiverSocketId).emit('receive_message', ...);
-                // }
+                const receiverSocketId = userSocketMap.get(receiverId);
+                if (receiverSocketId) {
+                    // console.log(`📨 [Socket] Pushing private message to socket: ${receiverSocketId}`);
+                } else {
+                    console.warn(`⚠️ [Socket] Receiver ${receiverId} not found in socket map (Offline?)`);
+                }
 
                 // Ack to Sender
                 socket.emit('message_sent', newMessage);

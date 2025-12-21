@@ -58,10 +58,14 @@ if (MONGO_URI.includes('14531453')) {
 const upload = multer({ storage: multer.memoryStorage() });
 
 // Middleware
-app.use(cors());
+app.use(cors({
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://motovibe.vercel.app'], // Allow frontend
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+}));
 
-app.use(express.json({ limit: '200mb' }));
-app.use(express.urlencoded({ limit: '200mb', extended: true }));
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Uploads klasörünü dışarıya aç (Resimlere erişim için)
 const __dirname = path.dirname(__filename);
@@ -502,7 +506,11 @@ if (process.argv[1] === __filename) {
             console.log('✅ MongoDB bağlantısı başarılı');
 
             await seedDatabase();
-            server.listen(PORT, () => console.log(`🚀 Server çalışıyor: http://localhost:${PORT}`));
+            server.listen(PORT, () => {
+                console.log(`🚀 Server çalışıyor: http://localhost:${PORT}`);
+                console.log(`📡 CORS Origin: Allowed`);
+                console.log(`📂 Uploads: Local & Supabase enabled`);
+            });
         })
         .catch(err => {
             console.error('❌ MongoDB bağlantı hatası:', err.message);

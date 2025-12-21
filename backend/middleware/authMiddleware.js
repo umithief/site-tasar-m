@@ -14,6 +14,7 @@ export const protect = catchAsync(async (req, res, next) => {
     }
 
     if (!token) {
+        console.warn('⚠️ [Auth Middleware] No token provided in headers');
         return next(new AppError('Giriş yapmanız gerekiyor.', 401));
     }
 
@@ -22,10 +23,14 @@ export const protect = catchAsync(async (req, res, next) => {
     const currentUser = await User.findById(decoded.id);
 
     if (!currentUser) {
+        console.error('❌ [Auth Middleware] User not found for token payload:', decoded);
         return next(
             new AppError('Bu tokena ait kullanıcı artık mevcut değil.', 401)
         );
     }
+
+    // System Audit Tracer
+    // console.log(`✅ [Auth Middleware] Authenticated: ${currentUser.name} (${currentUser._id})`);
 
     req.user = currentUser;
     next();

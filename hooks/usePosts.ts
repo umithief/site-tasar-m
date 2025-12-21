@@ -7,7 +7,13 @@ const fetchFeed = async ({ pageParam = 1 }) => {
     // Backend should support pagination, e.g., ?page=1
     const { data } = await api.get(`/social/feed?page=${pageParam}&limit=10`);
     // Unwrap the actual posts array from the API response envelope: { status: 'success', data: { posts: [...] } }
-    return data.data.posts;
+    const rawPosts = data.data.posts;
+    return rawPosts.map((post: any) => ({
+        ...post,
+        commentList: post.comments || [],
+        comments: post.commentCount || 0,
+        likes: post.likeCount || 0
+    }));
 };
 
 export const usePosts = () => {

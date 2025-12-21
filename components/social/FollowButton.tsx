@@ -28,7 +28,8 @@ export const FollowButton: React.FC<FollowButtonProps> = ({ targetUserId, isFoll
 
         return followingList.some(f => {
             const fId = (typeof f === 'object' && f !== null) ? (f._id || f.id) : f;
-            return fId && fId.toString() === targetUserId.toString();
+            if (!fId || !targetUserId) return false;
+            return fId.toString() === targetUserId.toString();
         });
     }, [currentUser?.following, targetUserId]);
 

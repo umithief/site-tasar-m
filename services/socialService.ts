@@ -119,5 +119,48 @@ export const socialService = {
             console.error('Get User Posts Error:', error);
             return [];
         }
+    },
+    async toggleFollow(targetUserId: string): Promise<{ isFollowing: boolean } | null> {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await fetch(`${CONFIG.API_URL}/users/follow/${targetUserId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (!response.ok) throw new Error('Toggle Follow Failed');
+            const data = await response.json();
+            return data.data; // Should return { isFollowing: boolean }
+        } catch (error) {
+            console.error('Toggle Follow Error:', error);
+            return null;
+        }
+    },
+
+    async getSuggestedRiders(): Promise<any[]> {
+        const token = localStorage.getItem('token');
+        try {
+            // Fetch users, perhaps exclude current user on backend or frontend
+            const response = await fetch(`${CONFIG.API_URL}/users`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!response.ok) throw new Error('Failed to fetch suggestions');
+            const data = await response.json();
+            // Backend returns array of user objects for GET /users
+            const users = Array.isArray(data) ? data : (data.data?.users || data.users || []);
+
+            // Limit to 5 for the sidebar and basic mapping
+            return users.slice(0, 5).map((u: any) => ({
+                id: u._id,
+                name: u.name,
+                bike: u.garage && u.garage.length > 0 ? `${u.garage[0].brand} ${u.garage[0].model}` : 'Motor Tutkunu',
+                avatar: u.profileImage || u.avatar
+            }));
+        } catch (error) {
+            console.error('Get Suggestions Error:', error);
+            return [];
+        }
     }
 };

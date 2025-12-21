@@ -22,7 +22,7 @@ export const PostCard: React.FC<PostCardProps & { currentUserId?: string }> = ({
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     const handleLike = async () => {
-        if (!currentUserId) return alert('Please login to like');
+        if (!currentUserId) return alert('Beğenmek için lütfen giriş yapın');
 
         // Optimistic update
         const newState = !isLiked;
@@ -38,19 +38,29 @@ export const PostCard: React.FC<PostCardProps & { currentUserId?: string }> = ({
         }
     };
 
-    const handleFollow = () => {
-        setIsFollowing(!isFollowing);
+    const handleFollow = async () => {
+        if (!currentUserId) return alert('Takip etmek için lütfen giriş yapın');
+
+        try {
+            const result = await socialService.toggleFollow(post.userId);
+            if (result) {
+                setIsFollowing(result.isFollowing);
+            }
+        } catch (error) {
+            console.error('Follow toggle failed', error);
+        }
     };
 
     const handlePostComment = async () => {
         if (!commentText.trim() || !currentUserId) return;
 
         try {
-            // Note: service returns { status: 'success', data: { comments: [...] } }
-            // We cast response to any to handle the structure mismatch vs SocialPost quite loosely here
+            const userStr = localStorage.getItem('user');
+            const currentUser = userStr ? JSON.parse(userStr) : null;
+
             const response: any = await socialService.commentPost(post._id, {
                 authorId: currentUserId,
-                authorName: 'User', // Needs fix: pass actual user name
+                authorName: currentUser?.name || 'Kullanıcı',
                 content: commentText
             });
 
@@ -102,9 +112,9 @@ export const PostCard: React.FC<PostCardProps & { currentUserId?: string }> = ({
                         layout
                     >
                         {isFollowing ? (
-                            <> <Check className="w-3 h-3" /> Following </>
+                            <> <Check className="w-3 h-3" /> Takip Ediliyor </>
                         ) : (
-                            <> <UserPlus className="w-3 h-3" /> Follow </>
+                            <> <UserPlus className="w-3 h-3" /> Takip Et </>
                         )}
                     </motion.button>
                     <button className="text-gray-500 hover:text-white transition-colors">
@@ -234,7 +244,7 @@ export const PostCard: React.FC<PostCardProps & { currentUserId?: string }> = ({
                                 type="text"
                                 value={commentText}
                                 onChange={(e) => setCommentText(e.target.value)}
-                                placeholder="Add a comment..."
+                                placeholder="Yorum ekle..."
                                 className="flex-1 bg-white/5 border border-white/10 rounded-xl px-4 py-2 text-sm text-white placeholder-gray-600 focus:border-moto-accent focus:ring-0 outline-none transition-colors"
                                 onKeyDown={(e) => e.key === 'Enter' && handlePostComment()}
                             />
@@ -242,7 +252,7 @@ export const PostCard: React.FC<PostCardProps & { currentUserId?: string }> = ({
                                 onClick={handlePostComment}
                                 className="text-moto-accent font-bold text-sm uppercase px-2 hover:text-white transition-colors"
                             >
-                                Post
+                                Paylaş
                             </button>
                         </div>
                     </motion.div>

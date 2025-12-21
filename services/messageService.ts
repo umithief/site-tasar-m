@@ -56,5 +56,23 @@ export const messageService = {
             console.error('Send Message Error:', error);
             return null;
         }
+    },
+
+    // Get list of active threads (recent conversations)
+    async getThreads(): Promise<ChatThread[]> {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await fetch(`${CONFIG.API_URL}/messages/threads`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (!response.ok) throw new Error('Failed to fetch threads');
+            const data = await response.json();
+            return data.data; // Assuming backend returns { status: 'success', data: [...] }
+        } catch (error) {
+            console.error('Get Threads Error:', error);
+            return [];
+        }
     }
 };

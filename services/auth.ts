@@ -176,7 +176,11 @@ export const authService = {
         } else {
             try {
                 const response = await api.get(`/users/${userId}`);
-                return response.data;
+                // Unwrap: { status: 'success', data: { user: ... } }
+                if (response.data.data && response.data.data.user) {
+                    return response.data.data.user;
+                }
+                return response.data; // Fallback if backend structure changes
             } catch {
                 return null;
             }

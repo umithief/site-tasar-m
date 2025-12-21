@@ -27,10 +27,8 @@ export const PublicProfile: React.FC<PublicProfileProps> = ({ user, onBack, curr
     const [selectedBike, setSelectedBike] = useState<UserBike | null>(null);
 
     useEffect(() => {
-        // If user has no garage data (mock users), give them some cool bikes for display
-        if (!user.garage || user.garage.length === 0) {
-            setGarage(generateMockGarage());
-        }
+        // Use actual user garage
+        setGarage(user.garage || []);
     }, [user]);
 
     const handleFollow = async () => {

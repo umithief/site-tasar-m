@@ -92,9 +92,9 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                 <div className="hidden lg:col-span-3 lg:flex flex-col gap-2 py-6 sticky top-20 h-full">
                     <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-6 mb-4">
                         <div className="flex items-center gap-4 mb-6">
-                            <UserAvatar name={currentUser?.name || 'Misafir'} size={56} className="border-2 border-moto-accent cursor-pointer" onClick={() => setView('profile')} />
+                            <UserAvatar name={currentUser?.name || 'Misafir'} size={56} className="border-2 border-moto-accent cursor-pointer" onClick={() => onNavigate && onNavigate('my-profile')} />
                             <div>
-                                <h3 className="font-bold text-lg leading-tight cursor-pointer hover:text-moto-accent transition-colors" onClick={() => setView('profile')}>{currentUser?.name || 'Misafir Kullanıcı'}</h3>
+                                <h3 className="font-bold text-lg leading-tight cursor-pointer hover:text-moto-accent transition-colors" onClick={() => onNavigate && onNavigate('my-profile')}>{currentUser?.name || 'Misafir Kullanıcı'}</h3>
                                 <p className="text-xs text-gray-500 font-mono">{currentUser?.rank || 'Rider'}</p>
                             </div>
                         </div>
@@ -118,7 +118,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                         {[
                             { id: 'feed', icon: Home, label: 'Akış', action: () => setView('feed') },
                             { id: 'discover', icon: Compass, label: 'Keşfet', action: () => onNavigate && onNavigate('riders') },
-                            { id: 'garage', icon: Grid, label: 'Garajım', action: () => setView('profile') },
+                            { id: 'garage', icon: Grid, label: 'Garajım', action: () => onNavigate && onNavigate('my-profile') },
                             { id: 'events', icon: Calendar, label: 'Etkinlikler', action: () => onNavigate && onNavigate('meetup') },
                             { id: 'messages', icon: MessageSquare, label: 'Mesajlar', action: () => setIsDMOpen(true), badge: 2 },
                         ].map((item: any) => (
@@ -141,9 +141,8 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
 
                 {/* CENTER (Feed) */}
                 <div className="lg:col-span-6 h-full overflow-y-auto no-scrollbar py-6">
-                    {view === 'profile' ? (
-                        <UserProfile user={currentUser} onNavigate={onNavigate} onLogout={onLogout} onUpdateUser={onUpdateUser} />
-                    ) : (
+                    {/* Only Feed View Below (Profile moved to global route) */}
+                    {true && (
                         <>
                             {!currentUser ? (
                                 <div className="flex flex-col items-center justify-center h-[60vh] text-center space-y-6">

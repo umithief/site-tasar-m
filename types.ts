@@ -140,6 +140,12 @@ export interface User {
   bio?: string;
   followers?: number;
   following?: number;
+  // Social Additions
+  username?: string;
+  location?: string;
+  coverImage?: string;
+  followersCount?: number;
+  followingCount?: number;
 }
 
 export interface OrderItem {

@@ -8,6 +8,7 @@ import { AuthModal } from './components/AuthModal';
 import { PaymentModal } from './components/PaymentModal';
 import { UserProfile } from './components/social/UserProfile';
 import { ProfilePage } from './components/social/ProfilePage';
+import { MyProfile } from './components/social/MyProfile';
 import { PublicProfile } from './components/PublicProfile'; // Keeping for reference if needed, but ProfilePage replaces it for viewing others
 import { About } from './components/About';
 import { Forum } from './components/Forum';
@@ -386,6 +387,7 @@ export const App: React.FC = () => {
             case 'vlog-map': return <MotoVlogMap onNavigate={navigateTo} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} user={user} />;
             case 'lifesaver': return <LifeSaver onClose={() => navigateTo('home')} />;
             case 'profile': return user ? <UserProfile user={user} onLogout={() => { authService.logout(); setUser(null); navigateTo('home'); }} onUpdateUser={setUser} onNavigate={navigateTo} colorTheme={colorTheme} onColorChange={setColorTheme} /> : <div className="pt-32 text-center text-gray-500">Lütfen giriş yapın.</div>;
+            case 'my-profile': return user ? <MyProfile /> : <div className="pt-32 text-center text-gray-500">Lütfen giriş yapın.</div>;
             case 'public-profile': return viewingUser ? <ProfilePage userId={viewingUser._id} onNavigate={navigateTo} onBack={() => navigateTo('riders')} /> : <div className="pt-32 text-center text-gray-500">Kullanıcı yüklenemedi.</div>;
             case 'admin': return user?.isAdmin ? <AdminPanel onLogout={() => { authService.logout(); setUser(null); navigateTo('home'); }} onShowToast={addToast} onNavigate={navigateTo} /> : <div className="pt-32 text-center text-gray-500">Yetkisiz erişim.</div>;
             case 'blog': return <Blog onNavigate={navigateTo} />;

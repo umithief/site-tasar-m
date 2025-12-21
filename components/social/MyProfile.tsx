@@ -199,14 +199,20 @@ export const MyProfile: React.FC = () => {
 
                 {/* Edit & Settings Quick Actions */}
                 <div className="absolute top-24 right-8 flex gap-4 z-20">
+                    <button
+                        onClick={() => window.dispatchEvent(new CustomEvent('navigate-to', { detail: 'social-hub' }))}
+                        className="p-3 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full hover:bg-white/10 transition-colors group mr-auto text-white/50 hover:text-white"
+                    >
+                        ← Back to Hub
+                    </button>
                     <button className="p-3 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full hover:bg-white/10 transition-colors group">
                         <Settings className="w-5 h-5 text-gray-300 group-hover:text-white group-hover:rotate-90 transition-all duration-500" />
                     </button>
                     <button
                         onClick={() => isEditing ? handleSaveProfile() : setIsEditing(true)}
                         className={`flex items-center gap-2 px-6 py-3 backdrop-blur-xl border rounded-full font-bold uppercase text-xs tracking-widest transition-all ${isEditing
-                                ? 'bg-moto-accent text-black border-moto-accent hover:brightness-110'
-                                : 'bg-white/5 border-white/10 text-white hover:bg-white/10'
+                            ? 'bg-moto-accent text-black border-moto-accent hover:brightness-110'
+                            : 'bg-white/5 border-white/10 text-white hover:bg-white/10'
                             }`}
                     >
                         {isEditing ? (
@@ -329,7 +335,7 @@ export const MyProfile: React.FC = () => {
                     >
                         <StatGauge value={influenceScore} max={100} label="Influence" color="#ef4444" icon={<Activity className="w-6 h-6" />} />
                         <div className="h-16 w-px bg-white/10" />
-                        <StatGauge value={user.followersCount || user.followers?.length || 0} max={1000} label="Net Reach" color="#3b82f6" icon={<Shield className="w-6 h-6" />} />
+                        <StatGauge value={user.followersCount || user.followers || 0} max={1000} label="Net Reach" color="#3b82f6" icon={<Shield className="w-6 h-6" />} />
                     </motion.div>
 
                     <motion.div

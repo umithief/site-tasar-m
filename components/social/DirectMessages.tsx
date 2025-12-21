@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { MessageSquare, X, Send, Image as ImageIcon, MapPin, MoreVertical, Search, Circle } from 'lucide-react';
 import { UserAvatar } from '../ui/UserAvatar';
 import { ChatThread, SocialChatMessage } from '../../types';
-import { useSocket } from '../../hooks/useSocket';
+import { useSocket } from '../../context/SocketContext';
 import { messageService } from '../../services/messageService';
 import { MOCK_THREADS_SERVICE } from '../../services/mockMessageService';
 

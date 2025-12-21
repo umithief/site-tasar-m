@@ -89,7 +89,8 @@ export const socialService = {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (!response.ok) throw new Error('Failed to fetch user profile');
-            return await response.json();
+            const data = await response.json();
+            return data.data?.user || data.user || data;
         } catch (error) {
             console.error('Get Profile Error:', error);
             return null;

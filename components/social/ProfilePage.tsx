@@ -1,55 +1,64 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-    MapPin, Calendar, Link as LinkIcon, MessageCircle,
-    Settings, Grid, Image as ImageIcon, Info, ShieldCheck,
-    MoreHorizontal, Camera
+    MapPin, Calendar, MessageCircle, Settings,
+    Grid as GridIcon, Image as ImageIcon, Info, ShieldCheck,
+    MoreHorizontal, Heart, MessageSquare, Share2, Camera,
+    Trophy, Users as UsersIcon
 } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useAuthStore } from '../../store/authStore';
 import { socialService } from '../../services/socialService';
 import { UserAvatar } from '../ui/UserAvatar';
 import { FollowButton } from './FollowButton';
-import { PostCard } from './PostCard';
-import { SocialPost, User, SocialProfile } from '../../types';
+import { SocialPost } from '../../types';
 import { useSocket } from '../../context/SocketContext';
 
+// --- Types & Interfaces ---
 interface ProfilePageProps {
     userId: string;
     onNavigate?: (view: string, data?: any) => void;
     onBack?: () => void;
 }
 
+// Stats Component for reuse
+const StatItem = ({ label, value }: { label: string; value: number }) => (
+    <div className="flex flex-col items-center group cursor-pointer">
+        <span className="text-2xl md:text-3xl font-display font-black text-white group-hover:text-moto-accent transition-colors">
+            {value}
+        </span>
+        <span className="text-[10px] md:text-xs text-gray-500 uppercase tracking-widest font-bold font-mono group-hover:text-white transition-colors">
+            {label}
+        </span>
+    </div>
+);
+
 export const ProfilePage: React.FC<ProfilePageProps> = ({ userId, onNavigate, onBack }) => {
     const { user: currentUser } = useAuthStore();
     const { socket } = useSocket();
-    const [activeTab, setActiveTab] = useState<'posts' | 'garage' | 'about'>('posts');
+    const [activeTab, setActiveTab] = useState<'posts' | 'media' | 'specs'>('posts');
     const [isOnline, setIsOnline] = useState(false);
     const [realtimeFollowers, setRealtimeFollowers] = useState<number | null>(null);
 
     const isOwnProfile = currentUser?._id === userId;
 
-    // Fetch User Profile
+    // --- Data Fetching ---
     const { data: profile, isLoading: isProfileLoading, error: profileError } = useQuery({
         queryKey: ['userProfile', userId],
         queryFn: () => socialService.getUserProfile(userId),
         enabled: !!userId
     });
 
-    // Fetch User Posts
     const { data: posts, isLoading: isPostsLoading } = useQuery({
         queryKey: ['userPosts', userId],
         queryFn: () => socialService.getUserPosts(userId),
         enabled: !!userId
     });
 
-    // Real-time Online Status & Follower Updates
+    // --- socket.io Logic ---
     useEffect(() => {
         if (!socket || !userId) return;
 
-        // Check if user is online (emit event to server to check, or listen for status)
-        // For now, assuming we listen for specific events if server supports it
-        // Simulating online status check based on socket presence if needed
         socket.emit('check_online_status', { userId });
 
         const handleStatus = (data: { userId: string, isOnline: boolean }) => {
@@ -71,278 +80,328 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userId, onNavigate, on
         };
     }, [socket, userId]);
 
-    // Update followers count when profile loads or realtime update happens
+    // --- Logic Wrappers ---
     const followerCount = realtimeFollowers ?? profile?.followers?.length ?? profile?.followersCount ?? 0;
     const followingCount = profile?.following?.length ?? profile?.followingCount ?? 0;
+    const postCount = posts?.length || 0;
 
+    const handleMessage = () => {
+        if (onNavigate) {
+            onNavigate('social-hub', { openChat: userId });
+        }
+    };
+
+    // --- Loading & Error States ---
     if (isProfileLoading) {
         return (
-            <div className="flex items-center justify-center min-h-screen bg-[#f9fafb]">
-                <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-moto-accent"></div>
+            <div className="flex items-center justify-center min-h-screen bg-[#050505]">
+                <div className="relative">
+                    <div className="w-16 h-16 border-4 border-white/10 border-t-moto-accent rounded-full animate-spin"></div>
+                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <div className="w-2 h-2 bg-moto-accent rounded-full animate-ping"></div>
+                    </div>
+                </div>
             </div>
         );
     }
 
     if (profileError || !profile) {
         return (
-            <div className="flex flex-col items-center justify-center min-h-screen bg-[#f9fafb] text-center p-4">
-                <h2 className="text-2xl font-bold text-gray-800 mb-2">Profil Bulunamadı</h2>
-                <p className="text-gray-500 mb-6">Aradığınız sürücü profili mevcut değil veya erişilemiyor.</p>
-                <button onClick={onBack} className="text-moto-accent font-bold hover:underline">Geri Dön</button>
+            <div className="flex flex-col items-center justify-center min-h-screen bg-[#050505] text-center p-8">
+                <Trophy className="w-24 h-24 text-gray-800 mb-6" />
+                <h2 className="text-3xl font-display font-bold text-white mb-2">Sürücü Bulunamadı</h2>
+                <p className="text-gray-500 mb-8 max-w-md">Aradığınız profil mevcut değil veya garajına çekilmiş.</p>
+                <button
+                    onClick={onBack}
+                    className="px-8 py-3 bg-white/5 border border-white/10 hover:bg-white/10 text-white rounded-xl font-bold transition-all"
+                >
+                    Rehbere Dön
+                </button>
             </div>
         );
     }
 
-    // Determine Cover Image
-    const coverImage = profile.coverImage || 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop';
+    // --- Derived UI Data ---
+    const coverImage = profile.coverImage || 'https://images.unsplash.com/photo-1625055088214-5d8f6155680d?q=80&w=2069&auto=format&fit=crop';
 
-    const handleMessage = () => {
-        if (onNavigate) {
-            // Navigate to SocialHub with intent to chat
-            onNavigate('social-hub', { openChat: userId });
-        }
-    };
+    // Safety check for name
+    const safeName = profile.name || 'Unknown Rider';
+    const safeUsername = profile.username || safeName.toLowerCase().replace(/\s/g, '');
+
 
     return (
-        <div className="min-h-screen bg-[#f9fafb] pb-20">
-            {/* 1. Cover Image */}
-            <div className="relative h-64 md:h-80 w-full overflow-hidden">
+        <div className="min-h-screen bg-[#050505] text-gray-200 font-sans pb-20 selection:bg-moto-accent/30 selection:text-white">
+
+            {/* 1. Cinematic Hero Header */}
+            <div className="relative h-[45vh] lg:h-[500px] w-full overflow-hidden group">
                 <motion.div
                     initial={{ scale: 1.1 }}
                     animate={{ scale: 1 }}
-                    transition={{ duration: 0.8 }}
+                    transition={{ duration: 1.5, ease: "easeOut" }}
                     className="w-full h-full"
                 >
                     <img
                         src={coverImage}
-                        alt="Cover"
-                        className="w-full h-full object-cover"
+                        alt="Garage Cover"
+                        className="w-full h-full object-cover opacity-80"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                    {/* Heavy Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/60 to-transparent" />
+
+                    {/* Cinematic Noise Texture (Optional visual flair) */}
+                    <div className="absolute inset-0 opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] mix-blend-overlay"></div>
                 </motion.div>
 
+                {/* Back Button */}
                 <button
                     onClick={onBack}
-                    className="absolute top-4 left-4 p-2 bg-black/30 backdrop-blur-md rounded-full text-white hover:bg-black/50 transition-colors z-10"
+                    className="absolute top-6 left-6 p-3 bg-black/40 backdrop-blur-xl border border-white/10 rounded-full text-white hover:bg-moto-accent hover:text-black hover:border-moto-accent transition-all duration-300 z-50 group-hover:scale-110"
                 >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" /></svg>
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7 7-7" /></svg>
                 </button>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative -mt-20 z-20">
-                <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
-                    <div className="p-6 md:p-8">
-                        {/* 2. Profile Header */}
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-8">
+            {/* 2. Identity & Stats Core */}
+            <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 -mt-32 z-20">
+                <div className="flex flex-col lg:flex-row items-end gap-8 mb-12">
 
-                            {/* Avatar & Info */}
-                            <div className="flex flex-col md:flex-row items-center md:items-end gap-6 w-full md:w-auto">
-                                <div className="relative -mt-16 md:-mt-20">
-                                    <div className="p-1.5 bg-white rounded-full shadow-lg">
-                                        <div className="relative">
-                                            <UserAvatar
-                                                name={profile.name}
-                                                variant="beam"
-                                                size={120}
-                                                className="shadow-inner"
-                                            />
-                                            {isOnline && (
-                                                <div className="absolute bottom-1 right-1 w-6 h-6 bg-green-500 border-4 border-white rounded-full animate-pulse" />
-                                            )}
-                                        </div>
-                                    </div>
-                                    {profile.rank === 'Yol Kaptanı' && (
-                                        <div className="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white text-[10px] font-bold px-3 py-1 rounded-full shadow-lg uppercase tracking-wider whitespace-nowrap flex items-center gap-1">
-                                            <ShieldCheck className="w-3 h-3" />
-                                            Premium
-                                        </div>
-                                    )}
+                    {/* Floating Avatar */}
+                    <motion.div
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.2 }}
+                        className="relative mx-auto lg:mx-0"
+                    >
+                        <div className="relative rounded-full p-1.5 bg-[#050505] ring-1 ring-white/10">
+                            <UserAvatar
+                                name={safeName}
+                                variant="beam"
+                                size={140}
+                                className="shadow-2xl border-4 border-[#050505]"
+                            />
+                            {/* Glowing Neon Border Effect */}
+                            <div className="absolute inset-0 rounded-full border border-moto-accent/30 shadow-[0_0_30px_rgba(255,59,59,0.2)] pointer-events-none"></div>
+
+                            {/* Online Status Pinger */}
+                            {isOnline && (
+                                <div className="absolute bottom-4 right-4 w-5 h-5 bg-green-500 border-[3px] border-[#050505] rounded-full animate-pulse shadow-[0_0_10px_#22c55e]" />
+                            )}
+
+                            {/* Verified Badge */}
+                            {profile.rank === 'Yol Kaptanı' && (
+                                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-gradient-to-r from-yellow-600 to-yellow-400 text-black text-[10px] font-black px-3 py-1 rounded-full shadow-lg uppercase tracking-wider flex items-center gap-1 border-2 border-[#050505]">
+                                    <ShieldCheck className="w-3 h-3" />
+                                    ELITE
                                 </div>
-
-                                <div className="text-center md:text-left flex-1">
-                                    <h1 className="text-3xl font-display font-bold text-gray-900 flex items-center justify-center md:justify-start gap-2">
-                                        {profile.name}
-                                        {profile.isVerified && (
-                                            <span className="text-blue-500" title="Doğrulanmış Hesap">
-                                                <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" /></svg>
-                                            </span>
-                                        )}
-                                    </h1>
-                                    <p className="text-gray-500 font-medium">@{profile.username || (profile.name || '').toLowerCase().replace(/\s/g, '')}</p>
-
-                                    {profile.bio && (
-                                        <p className="mt-2 text-gray-600 max-w-md">{profile.bio}</p>
-                                    )}
-
-                                    <div className="flex items-center justify-center md:justify-start gap-4 mt-4 text-sm text-gray-500">
-                                        {profile.location && (
-                                            <div className="flex items-center gap-1">
-                                                <MapPin className="w-4 h-4" />
-                                                {profile.location}
-                                            </div>
-                                        )}
-                                        <div className="flex items-center gap-1">
-                                            <Calendar className="w-4 h-4" />
-                                            Katıldı: {new Date(profile.joinDate).toLocaleDateString()}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Stats & Actions */}
-                            <div className="flex flex-col items-center md:items-end gap-6 w-full md:w-auto">
-                                <div className="flex items-center gap-8">
-                                    <div className="text-center">
-                                        <div className="text-2xl font-bold text-gray-900">{posts?.length || 0}</div>
-                                        <div className="text-xs text-gray-500 uppercase font-bold tracking-wider">Posts</div>
-                                    </div>
-                                    <div className="text-center cursor-pointer hover:opacity-70 transition-opacity">
-                                        <div className="text-2xl font-bold text-gray-900">{followerCount}</div>
-                                        <div className="text-xs text-gray-500 uppercase font-bold tracking-wider">Followers</div>
-                                    </div>
-                                    <div className="text-center cursor-pointer hover:opacity-70 transition-opacity">
-                                        <div className="text-2xl font-bold text-gray-900">{followingCount}</div>
-                                        <div className="text-xs text-gray-500 uppercase font-bold tracking-wider">Following</div>
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-3">
-                                    {isOwnProfile ? (
-                                        <button className="flex items-center gap-2 px-6 py-2.5 bg-gray-100 hover:bg-gray-200 text-gray-900 rounded-xl font-bold transition-all">
-                                            <Settings className="w-4 h-4" />
-                                            Profili Düzenle
-                                        </button>
-                                    ) : (
-                                        <>
-                                            <FollowButton
-                                                targetUserId={userId}
-                                                className="!px-6 !py-2.5 !text-sm !rounded-xl"
-                                                isFollowing={profile.isFollowing}
-                                            />
-                                            <button
-                                                onClick={handleMessage}
-                                                className="flex items-center gap-2 px-6 py-2.5 bg-white border border-gray-200 hover:bg-gray-50 text-gray-900 rounded-xl font-bold transition-all shadow-sm"
-                                            >
-                                                <MessageCircle className="w-4 h-4" />
-                                                Mesaj
-                                            </button>
-                                        </>
-                                    )}
-                                    <button className="p-2.5 rounded-xl border border-gray-200 text-gray-500 hover:text-gray-900 hover:bg-gray-50">
-                                        <MoreHorizontal className="w-5 h-5" />
-                                    </button>
-                                </div>
-                            </div>
+                            )}
                         </div>
+                    </motion.div>
 
-                        {/* 3. Tabs System */}
-                        <div className="border-b border-gray-100 mb-8">
-                            <div className="flex justify-center md:justify-start gap-8">
-                                {[
-                                    { id: 'posts', label: 'Posts', icon: Grid },
-                                    { id: 'garage', label: 'Garage & Media', icon: ImageIcon },
-                                    { id: 'about', label: 'About', icon: Info },
-                                ].map((tab) => (
-                                    <button
-                                        key={tab.id}
-                                        onClick={() => setActiveTab(tab.id as any)}
-                                        className={`relative pb-4 px-2 flex items-center gap-2 font-bold text-sm transition-colors ${activeTab === tab.id ? 'text-moto-accent' : 'text-gray-400 hover:text-gray-600'
-                                            }`}
-                                    >
-                                        <tab.icon className="w-4 h-4" />
-                                        {tab.label}
-                                        {activeTab === tab.id && (
-                                            <motion.div
-                                                layoutId="active-tab"
-                                                className="absolute bottom-0 left-0 right-0 h-0.5 bg-moto-accent rounded-full"
-                                            />
-                                        )}
-                                    </button>
-                                ))}
+                    {/* Identity Info Panel */}
+                    <div className="flex-1 text-center lg:text-left">
+                        <motion.div
+                            initial={{ y: 20, opacity: 0 }}
+                            animate={{ y: 0, opacity: 1 }}
+                            transition={{ delay: 0.3 }}
+                        >
+                            <h1 className="text-4xl md:text-6xl font-display font-black text-white leading-none tracking-tight mb-2">
+                                {safeName}
+                            </h1>
+                            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-4 text-sm font-mono text-gray-400 mb-6">
+                                <span className="text-moto-accent">@{safeUsername}</span>
+                                <span className="hidden sm:inline text-gray-700">|</span>
+                                <span className="flex items-center gap-1">
+                                    <MapPin className="w-3 h-3" />
+                                    {profile.location || 'Unknown Location'}
+                                </span>
+                                <span className="hidden sm:inline text-gray-700">|</span>
+                                <span className="flex items-center gap-1">
+                                    <Calendar className="w-3 h-3" />
+                                    Since {new Date(profile.joinDate).getFullYear()}
+                                </span>
                             </div>
-                        </div>
 
-                        {/* 4. Tab Content */}
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={activeTab}
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -10 }}
-                                transition={{ duration: 0.2 }}
-                            >
-                                {activeTab === 'posts' && (
-                                    <div className="space-y-6 max-w-2xl mx-auto md:mx-0">
-                                        {isPostsLoading ? (
-                                            <div className="text-center py-10 text-gray-400">Yükleniyor...</div>
-                                        ) : posts && posts.length > 0 ? (
-                                            posts.map((post) => (
-                                                <PostCard
-                                                    key={post._id}
-                                                    post={post}
-                                                    currentUserId={currentUser?._id}
-                                                />
-                                            ))
-                                        ) : (
-                                            <div className="flex flex-col items-center justify-center py-16 text-gray-400 bg-gray-50 rounded-2xl border border-dashed border-gray-200">
-                                                <Camera className="w-12 h-12 mb-3 opacity-20" />
-                                                <p>Henüz gönderi yok.</p>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-
-                                {activeTab === 'garage' && (
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-                                        {profile.garage && profile.garage.length > 0 ? (
-                                            profile.garage.map((bike: any) => (
-                                                <div key={bike._id} className="group relative aspect-[4/3] rounded-2xl overflow-hidden bg-black/5">
-                                                    <img
-                                                        src={bike.image}
-                                                        alt={`${bike.brand} ${bike.model}`}
-                                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                                    />
-                                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-4">
-                                                        <h3 className="text-white font-bold">{bike.brand} {bike.model}</h3>
-                                                        <p className="text-gray-300 text-xs">{bike.year} • {bike.km} km</p>
-                                                    </div>
-                                                </div>
-                                            ))
-                                        ) : (
-                                            <div className="col-span-full text-center py-12 text-gray-400">
-                                                Garaj boş.
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-
-                                {activeTab === 'about' && (
-                                    <div className="bg-gray-50 rounded-2xl p-6 md:p-8">
-                                        <h3 className="font-display font-bold text-gray-900 mb-4">Hakkında</h3>
-                                        <p className="text-gray-600 leading-relaxed">
-                                            {profile.bio || "Bu kullanıcı henüz bir biyografi eklemedi."}
-                                        </p>
-
-                                        {profile.equipment && (
-                                            <div className="mt-8">
-                                                <h4 className="font-bold text-sm text-gray-900 mb-3 uppercase tracking-wider">Ekipmanlar</h4>
-                                                <div className="flex flex-wrap gap-2">
-                                                    {profile.equipment.map((gear: string, idx: number) => (
-                                                        <span key={idx} className="px-3 py-1 bg-white border border-gray-200 rounded-lg text-xs font-medium text-gray-600">
-                                                            {gear}
-                                                        </span>
-                                                    ))}
-                                                </div>
-                                            </div>
-                                        )}
-                                    </div>
-                                )}
-                            </motion.div>
-                        </AnimatePresence>
-
+                            {/* Bio Snippet */}
+                            <p className="text-gray-400 max-w-2xl mx-auto lg:mx-0 leading-relaxed mb-6 font-light border-l-2 border-moto-accent/50 pl-4">
+                                {profile.bio || "Rider bio not initialized."}
+                            </p>
+                        </motion.div>
                     </div>
+
+                    {/* Dashboard Stats Box */}
+                    <motion.div
+                        initial={{ y: 20, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        transition={{ delay: 0.4 }}
+                        className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 flex items-center gap-8 md:gap-12 shadow-2xl mx-auto lg:mx-0 w-full lg:w-auto justify-center"
+                    >
+                        <StatItem label="Followers" value={followerCount} />
+                        <div className="w-px h-10 bg-white/10"></div>
+                        <StatItem label="Following" value={followingCount} />
+                        <div className="w-px h-10 bg-white/10"></div>
+                        <StatItem label="Ride Outs" value={postCount} />
+                    </motion.div>
+                </div>
+
+                {/* 3. Command Center (Actions) */}
+                <div className="flex flex-col sm:flex-row items-center gap-4 mb-16 border-t border-white/10 pt-8">
+                    {isOwnProfile ? (
+                        <button className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-white text-black hover:bg-moto-accent font-black uppercase tracking-wider rounded-xl transition-all shadow-lg hover:shadow-moto-accent/50">
+                            <Settings className="w-4 h-4" />
+                            System Config
+                        </button>
+                    ) : (
+                        <>
+                            <div className="w-full sm:w-auto">
+                                <FollowButton
+                                    targetUserId={userId}
+                                    isFollowing={profile.isFollowing}
+                                    className="!w-full !px-8 !py-4 !text-base !font-black !uppercase !tracking-wider !rounded-xl"
+                                />
+                            </div>
+                            <button
+                                onClick={handleMessage}
+                                className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-white/5 border border-white/10 hover:bg-white/10 text-white font-bold uppercase tracking-wider rounded-xl transition-all backdrop-blur-sm group"
+                            >
+                                <MessageCircle className="w-4 h-4 group-hover:text-moto-accent transition-colors" />
+                                Initiate Chat
+                            </button>
+                        </>
+                    )}
+
+                    <button className="p-4 rounded-xl border border-white/10 text-gray-500 hover:text-white hover:border-white/30 hover:bg-white/5 transition-colors ml-auto hidden sm:block">
+                        <MoreHorizontal className="w-5 h-5" />
+                    </button>
+                </div>
+
+                {/* 4. Content Content Vault (Tabs) */}
+                <div className="mb-20">
+                    <div className="flex items-center gap-8 border-b border-white/10 mb-8 overflow-x-auto no-scrollbar">
+                        {[
+                            { id: 'posts', label: 'Ride Log', icon: GridIcon },
+                            { id: 'media', label: 'Garage & Media', icon: ImageIcon },
+                            { id: 'specs', label: 'Rider Specs', icon: Info },
+                        ].map((tab) => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id as any)}
+                                className={`relative pb-4 flex items-center gap-3 font-bold text-sm tracking-wide uppercase transition-colors whitespace-nowrap ${activeTab === tab.id ? 'text-white' : 'text-gray-500 hover:text-gray-300'
+                                    }`}
+                            >
+                                <tab.icon className={`w-4 h-4 ${activeTab === tab.id ? 'text-moto-accent' : ''}`} />
+                                {tab.label}
+                                {activeTab === tab.id && (
+                                    <motion.div
+                                        layoutId="active-tab-indicator"
+                                        className="absolute bottom-0 left-0 right-0 h-0.5 bg-moto-accent shadow-[0_0_10px_#ff3b3b]"
+                                    />
+                                )}
+                            </button>
+                        ))}
+                    </div>
+
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={activeTab}
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: -20 }}
+                            transition={{ duration: 0.3 }}
+                        >
+                            {/* POSTS GRID TAB */}
+                            {activeTab === 'posts' && (
+                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {isPostsLoading ? (
+                                        [1, 2, 3].map(i => <div key={i} className="aspect-square bg-white/5 rounded-2xl animate-pulse" />)
+                                    ) : posts && posts.length > 0 ? (
+                                        posts.map((post: SocialPost) => (
+                                            <div key={post._id} className="group relative aspect-square bg-[#111] rounded-2xl overflow-hidden border border-white/5 cursor-pointer hover:border-moto-accent/50 transition-colors">
+                                                {/* Image or Text Placeholder */}
+                                                {post.images && post.images.length > 0 ? (
+                                                    <img src={post.images[0]} alt="Post" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+                                                ) : (
+                                                    <div className="w-full h-full flex items-center justify-center p-6 text-center text-gray-500 bg-white/5">
+                                                        <p className="line-clamp-4 text-sm font-mono">{post.content}</p>
+                                                    </div>
+                                                )}
+
+                                                {/* Hover Overlay */}
+                                                <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300 backdrop-blur-sm">
+                                                    <div className="flex items-center gap-6 font-bold text-white">
+                                                        <span className="flex items-center gap-2"><Heart className="w-5 h-5 fill-white" /> {post.likes || 0}</span>
+                                                        <span className="flex items-center gap-2"><MessageSquare className="w-5 h-5 fill-white" /> {post.comments || 0}</span>
+                                                    </div>
+                                                    <button className="px-6 py-2 bg-white/10 hover:bg-moto-accent hover:text-black rounded-full text-xs font-bold uppercase tracking-widest transition-colors">
+                                                        View Data
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="col-span-full py-20 text-center border border-dashed border-white/10 rounded-3xl bg-white/5">
+                                            <Camera className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+                                            <p className="text-gray-400">No signals detected in the log.</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* GARAGE TAB */}
+                            {activeTab === 'media' && (
+                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                    {profile.garage && profile.garage.length > 0 ? (
+                                        profile.garage.map((bike: any) => (
+                                            <div key={bike._id} className="group relative aspect-[16/9] rounded-2xl overflow-hidden bg-black/50 border border-white/10">
+                                                <img
+                                                    src={bike.image}
+                                                    alt={`${bike.brand} ${bike.model}`}
+                                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 opacity-70 group-hover:opacity-100"
+                                                />
+                                                <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black via-black/80 to-transparent">
+                                                    <h3 className="text-xl font-display font-bold text-white uppercase italic">{bike.brand} <span className="text-moto-accent">{bike.model}</span></h3>
+                                                    <p className="text-gray-400 text-xs font-mono mt-1 flex items-center gap-4">
+                                                        <span>{bike.year}</span>
+                                                        <span>|</span>
+                                                        <span>{bike.km.toLocaleString()} KM</span>
+                                                    </p>
+                                                </div>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="col-span-full text-center py-20 bg-white/5 rounded-3xl border border-white/5">
+                                            <p className="text-gray-500">Garage is empty.</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            {/* SPECS TAB */}
+                            {activeTab === 'specs' && (
+                                <div className="bg-white/5 border border-white/10 rounded-3xl p-8 max-w-2xl">
+                                    <h3 className="font-mono text-xs text-moto-accent uppercase tracking-widest mb-6">./RIDER_MANIFESTO.log</h3>
+                                    <p className="text-gray-300 leading-relaxed font-light mb-8">
+                                        {profile.bio || "No bio data available."}
+                                    </p>
+
+                                    {profile.equipment && (
+                                        <div>
+                                            <h4 className="font-mono text-xs text-gray-500 uppercase tracking-widest mb-4">./EQUIPMENT_LOADOUT</h4>
+                                            <div className="flex flex-wrap gap-2">
+                                                {profile.equipment.map((gear: string, idx: number) => (
+                                                    <span key={idx} className="px-3 py-1.5 bg-black/40 border border-white/10 rounded-lg text-xs font-mono text-gray-300">
+                                                        {gear}
+                                                    </span>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </motion.div>
+                    </AnimatePresence>
                 </div>
             </div>
         </div>
     );
 };
+

@@ -6,7 +6,8 @@ import { SocialPost } from '../types';
 const fetchFeed = async ({ pageParam = 1 }) => {
     // Backend should support pagination, e.g., ?page=1
     const { data } = await api.get(`/social/feed?page=${pageParam}&limit=10`);
-    return data; // Assuming data is array or { docs: [], nextCursor: ... }
+    // Unwrap the actual posts array from the API response envelope: { status: 'success', data: { posts: [...] } }
+    return data.data.posts;
 };
 
 export const usePosts = () => {

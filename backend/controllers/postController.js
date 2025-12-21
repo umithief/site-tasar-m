@@ -5,6 +5,10 @@ import AppError from '../utils/appError.js';
 
 // Get Feed Posts (From Following + Own)
 export const getFeedPosts = catchAsync(async (req, res, next) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
+
     // 1. Get current user's following list
     const currentUser = await User.findById(req.user.id);
 
@@ -13,15 +17,23 @@ export const getFeedPosts = catchAsync(async (req, res, next) => {
         user: { $in: [...currentUser.following, req.user.id] }
     })
         .sort({ createdAt: -1 })
-        // .populate('user', 'name avatar rank bikeModel') // In case we didn't cache enough
+        .skip(skip)
+        .limit(limit)
         .populate({
             path: 'comments.user',
             select: 'name avatar'
         });
 
+    const total = await Post.countDocuments({
+        user: { $in: [...currentUser.following, req.user.id] }
+    });
+
     res.status(200).json({
         status: 'success',
         results: posts.length,
+        total,
+        page,
+        pages: Math.ceil(total / limit),
         data: { posts }
     });
 });

@@ -26,7 +26,7 @@ export const RidersDirectory: React.FC<RidersDirectoryProps> = ({ onViewProfile 
         try {
             const users = await authService.getAllUsers();
             // Sort alphabetically by name A-Z
-            const sortedUsers = users.sort((a, b) => a.name.localeCompare(b.name));
+            const sortedUsers = users.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
             setAllUsers(sortedUsers);
         } catch (error) {
             console.error("Kullanıcı verisi yüklenemedi", error);
@@ -36,7 +36,7 @@ export const RidersDirectory: React.FC<RidersDirectoryProps> = ({ onViewProfile 
     };
 
     const filteredUsers = allUsers.filter(u =>
-        u.name.toLowerCase().includes(userSearchQuery.toLowerCase()) ||
+        (u.name && u.name.toLowerCase().includes(userSearchQuery.toLowerCase())) ||
         (u.email && u.email.toLowerCase().includes(userSearchQuery.toLowerCase()))
     );
 

@@ -168,7 +168,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userId, onNavigate, on
                                             </span>
                                         )}
                                     </h1>
-                                    <p className="text-gray-500 font-medium">@{profile.username || profile.name.toLowerCase().replace(/\s/g, '')}</p>
+                                    <p className="text-gray-500 font-medium">@{profile.username || (profile.name || '').toLowerCase().replace(/\s/g, '')}</p>
 
                                     {profile.bio && (
                                         <p className="mt-2 text-gray-600 max-w-md">{profile.bio}</p>

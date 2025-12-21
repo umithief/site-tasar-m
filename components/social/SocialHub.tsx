@@ -92,35 +92,35 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                 <div className="hidden lg:col-span-3 lg:flex flex-col gap-2 py-6 sticky top-20 h-full">
                     <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-6 mb-4">
                         <div className="flex items-center gap-4 mb-6">
-                            <UserAvatar name={currentUser?.name || 'Guest'} size={56} className="border-2 border-moto-accent cursor-pointer" onClick={() => setView('profile')} />
+                            <UserAvatar name={currentUser?.name || 'Misafir'} size={56} className="border-2 border-moto-accent cursor-pointer" onClick={() => setView('profile')} />
                             <div>
-                                <h3 className="font-bold text-lg leading-tight cursor-pointer hover:text-moto-accent transition-colors" onClick={() => setView('profile')}>{currentUser?.name || 'Guest User'}</h3>
+                                <h3 className="font-bold text-lg leading-tight cursor-pointer hover:text-moto-accent transition-colors" onClick={() => setView('profile')}>{currentUser?.name || 'Misafir Kullanıcı'}</h3>
                                 <p className="text-xs text-gray-500 font-mono">{currentUser?.rank || 'Rider'}</p>
                             </div>
                         </div>
                         <div className="grid grid-cols-3 gap-2 text-center text-xs">
                             <div className="bg-white/5 rounded-lg p-2">
                                 <span className="block font-bold text-white text-sm">{currentUser?.followers || 0}</span>
-                                <span className="text-gray-500">Followers</span>
+                                <span className="text-gray-500">Takipçi</span>
                             </div>
                             <div className="bg-white/5 rounded-lg p-2">
                                 <span className="block font-bold text-white text-sm">{currentUser?.following || 0}</span>
-                                <span className="text-gray-500">Following</span>
+                                <span className="text-gray-500">Takip</span>
                             </div>
                             <div className="bg-white/5 rounded-lg p-2">
                                 <span className="block font-bold text-white text-sm">{currentUser?.garage?.length || 0}</span>
-                                <span className="text-gray-500">Rides</span>
+                                <span className="text-gray-500">Araçlar</span>
                             </div>
                         </div>
                     </div>
 
                     <nav className="space-y-1">
                         {[
-                            { id: 'feed', icon: Home, label: 'Feed', action: () => setView('feed') },
-                            { id: 'discover', icon: Compass, label: 'Discover', action: () => onNavigate && onNavigate('riders') },
-                            { id: 'garage', icon: Grid, label: 'My Garage', action: () => setView('profile') },
-                            { id: 'events', icon: Calendar, label: 'Club Events', action: () => onNavigate && onNavigate('meetup') },
-                            { id: 'messages', icon: MessageSquare, label: 'Messages', action: () => setIsDMOpen(true), badge: 2 },
+                            { id: 'feed', icon: Home, label: 'Akış', action: () => setView('feed') },
+                            { id: 'discover', icon: Compass, label: 'Keşfet', action: () => onNavigate && onNavigate('riders') },
+                            { id: 'garage', icon: Grid, label: 'Garajım', action: () => setView('profile') },
+                            { id: 'events', icon: Calendar, label: 'Etkinlikler', action: () => onNavigate && onNavigate('meetup') },
+                            { id: 'messages', icon: MessageSquare, label: 'Mesajlar', action: () => setIsDMOpen(true), badge: 2 },
                         ].map((item: any) => (
                             <button
                                 key={item.id}
@@ -169,14 +169,14 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                     {/* Create Post Widget */}
                                     <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-5 mb-8 flex flex-col gap-4">
                                         <div className="flex gap-4 items-start">
-                                            <UserAvatar name={currentUser?.name || 'G'} size={40} />
+                                            <UserAvatar name={currentUser?.name || 'M'} size={40} />
                                             <div className="flex-1 bg-white/5 rounded-2xl min-h-[48px] flex items-center px-4 cursor-text hover:bg-white/10 transition-colors focus-within:ring-1 ring-moto-accent">
                                                 <textarea
                                                     value={newPostContent}
                                                     onChange={(e) => setNewPostContent(e.target.value)}
                                                     onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleCreatePost()}
                                                     className="bg-transparent w-full text-white placeholder-gray-500 text-sm outline-none resize-none py-3 h-full"
-                                                    placeholder="Share your ride experience..."
+                                                    placeholder="Sürüş deneyimi paylaş..."
                                                     rows={1}
                                                 />
                                             </div>
@@ -190,7 +190,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                                 onUploadComplete={(url) => setMediaUrl(url)}
                                                 onUploadError={(err) => alert(err)} // Replace with toast later
                                             />
-                                            {mediaUrl && <p className="text-xs text-green-500 mt-2">✓ Media attached</p>}
+                                            {mediaUrl && <p className="text-xs text-green-500 mt-2">✓ Medya eklendi</p>}
                                         </div>
                                     </div>
 
@@ -236,8 +236,8 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                     {/* Active Conversations (Mini Chat Heads) */}
                     <div className="bg-gradient-to-br from-white/5 to-transparent backdrop-blur-md border border-white/10 rounded-3xl p-6">
                         <div className="flex justify-between items-center mb-4">
-                            <h3 className="font-bold text-white text-sm">ACTIVE CHATS</h3>
-                            <span className="text-[10px] bg-green-500/20 text-green-500 px-2 py-0.5 rounded uppercase font-bold">3 Online</span>
+                            <h3 className="font-bold text-white text-sm">AKTİF SOHBETLER</h3>
+                            <span className="text-[10px] bg-green-500/20 text-green-500 px-2 py-0.5 rounded uppercase font-bold">3 Çevrimiçi</span>
                         </div>
                         <div className="flex gap-2 overflow-x-auto pb-2 no-scrollbar">
                             {[1, 2, 3, 4, 5].map((i) => (
@@ -252,8 +252,8 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                     {/* Suggested Riders */}
                     <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-6">
                         <div className="flex justify-between items-center mb-6">
-                            <h3 className="font-bold text-white text-sm uppercase">Suggested Riders</h3>
-                            <button className="text-xs text-moto-accent hover:underline">View All</button>
+                            <h3 className="font-bold text-white text-sm uppercase">Önerilen Sürücüler</h3>
+                            <button className="text-xs text-moto-accent hover:underline">Tümünü Gör</button>
                         </div>
                         <div className="space-y-4">
                             {SUGGESTED_RIDERS.map(rider => (
@@ -266,7 +266,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                         </div>
                                     </div>
                                     <button className="text-xs bg-white/10 hover:bg-moto-accent hover:text-black text-white px-3 py-1.5 rounded-lg font-bold transition-all">
-                                        Follow
+                                        Takip Et
                                     </button>
                                 </div>
                             ))}
@@ -277,10 +277,10 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                     <div className="relative overflow-hidden rounded-3xl aspect-[4/5] group cursor-pointer">
                         <img src="https://images.unsplash.com/photo-1558981806-ec527fa84d3d?q=80&w=800" alt="Event" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-transparent flex flex-col justify-end p-6">
-                            <span className="text-moto-accent text-xs font-black uppercase tracking-widest mb-2">UPCOMING EVENT</span>
-                            <h3 className="text-2xl font-display font-black text-white leading-none mb-2">NIGHT RIDE<br />ISTANBUL</h3>
-                            <p className="text-gray-300 text-xs mb-4">Join 500+ riders for the biggest night ride of the year.</p>
-                            <button className="w-full bg-white text-black font-bold py-3 rounded-xl uppercase hover:bg-moto-accent transition-colors">RSVP NOW</button>
+                            <span className="text-moto-accent text-xs font-black uppercase tracking-widest mb-2">GELECEK ETKİNLİK</span>
+                            <h3 className="text-2xl font-display font-black text-white leading-none mb-2">GECE SÜRÜŞÜ<br />İSTANBUL</h3>
+                            <p className="text-gray-300 text-xs mb-4">Yılın en büyük gece sürüşü için 500+ sürücüye katılın.</p>
+                            <button className="w-full bg-white text-black font-bold py-3 rounded-xl uppercase hover:bg-moto-accent transition-colors">KAYDOL</button>
                         </div>
                     </div>
                 </div>

@@ -138,7 +138,7 @@ export const addComment = catchAsync(async (req, res, next) => {
         data: { comments: post.comments }
     });
 });
-});
+
 
 export const getUserPosts = catchAsync(async (req, res, next) => {
     const userId = req.params.id;

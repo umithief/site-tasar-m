@@ -22,7 +22,13 @@ export const getFeedPosts = catchAsync(async (req, res, next) => {
         .populate({
             path: 'comments.user',
             select: 'name avatar'
-        });
+        })
+        .lean();
+
+    const postsWithLikeStatus = posts.map(post => ({
+        ...post,
+        isLiked: post.likes.some(id => id.toString() === req.user.id.toString())
+    }));
 
     const total = await Post.countDocuments({
         user: { $in: [...currentUser.following, req.user.id] }
@@ -30,11 +36,11 @@ export const getFeedPosts = catchAsync(async (req, res, next) => {
 
     res.status(200).json({
         status: 'success',
-        results: posts.length,
+        results: postsWithLikeStatus.length,
         total,
         page,
         pages: Math.ceil(total / limit),
-        data: { posts }
+        data: { posts: postsWithLikeStatus }
     });
 });
 

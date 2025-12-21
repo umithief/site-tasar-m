@@ -14,7 +14,9 @@ export const socialService = {
             const data = await response.json();
             return data.map((post: any) => ({
                 ...post,
-                commentList: post.commentList || []
+                commentList: post.comments || [],
+                comments: post.commentCount || 0,
+                likes: post.likeCount || 0
             }));
         } catch (error) {
             console.error('Get Feed Error:', error);

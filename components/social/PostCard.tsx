@@ -11,12 +11,14 @@ interface PostCardProps {
 
 export const PostCard: React.FC<PostCardProps & { currentUserId?: string }> = ({ post, currentUserId }) => {
     const [isLiked, setIsLiked] = useState(post.isLiked);
-    const [likeCount, setLikeCount] = useState(post.likes);
+    // Safety check: ensure likeCount is a number
+    const [likeCount, setLikeCount] = useState(typeof post.likes === 'number' ? post.likes : (Array.isArray(post.likes) ? post.likes.length : 0));
     const [isFollowing, setIsFollowing] = useState(false);
     const [showComments, setShowComments] = useState(false);
     const [commentText, setCommentText] = useState('');
     const [comments, setComments] = useState(post.commentList || []);
-    const [commentCount, setCommentCount] = useState(post.comments || 0);
+    // Safety check: ensure commentCount is a number, handling cases where it might be the comments array
+    const [commentCount, setCommentCount] = useState(typeof post.comments === 'number' ? post.comments : (Array.isArray(post.comments) ? post.comments.length : 0));
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     const handleLike = async () => {
@@ -43,22 +45,19 @@ export const PostCard: React.FC<PostCardProps & { currentUserId?: string }> = ({
     const handlePostComment = async () => {
         if (!commentText.trim() || !currentUserId) return;
 
-        // We need user name/avatar. For now, we might need to pass user object or fetch it.
-        // Assuming we pass user name in props or just use "You" for optimistic.
-        // Better: Wait for API response which returns updated post.
-
         try {
-            const updatedPost = await socialService.commentPost(post._id, {
+            // Note: service returns { status: 'success', data: { comments: [...] } }
+            // We cast response to any to handle the structure mismatch vs SocialPost quite loosely here
+            const response: any = await socialService.commentPost(post._id, {
                 authorId: currentUserId,
                 authorName: 'User', // Needs fix: pass actual user name
                 content: commentText
             });
 
-            if (updatedPost) {
-                // Assuming updatedPost follows the same structure
-                const newComments = updatedPost.commentList || [];
+            if (response && response.data && response.data.comments) {
+                const newComments = response.data.comments;
                 setComments(newComments);
-                setCommentCount(updatedPost.comments); // updatedPost.comments is number
+                setCommentCount(newComments.length);
                 setCommentText('');
             }
         } catch (error) {
@@ -218,12 +217,12 @@ export const PostCard: React.FC<PostCardProps & { currentUserId?: string }> = ({
                     >
                         <div className="space-y-3 mb-4">
                             {comments.map((comment) => (
-                                <div key={comment._id} className="flex gap-3">
-                                    <UserAvatar name={comment.authorName} size={24} className="mt-1" />
+                                <div key={comment._id || Math.random().toString()} className="flex gap-3">
+                                    <UserAvatar name={typeof comment.authorName === 'string' ? comment.authorName : 'User'} size={24} className="mt-1" />
                                     <div>
                                         <p className="text-xs text-gray-400">
-                                            <span className="text-white font-bold mr-2">{comment.authorName}</span>
-                                            {comment.content}
+                                            <span className="text-white font-bold mr-2">{typeof comment.authorName === 'string' ? comment.authorName : 'User'}</span>
+                                            {typeof comment.content === 'string' ? comment.content : ''}
                                         </p>
                                     </div>
                                 </div>

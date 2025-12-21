@@ -76,9 +76,13 @@ export const gamificationService = {
         } else {
             // REAL BACKEND implementation
             try {
+                const token = localStorage.getItem('token');
                 await fetch(`${CONFIG.API_URL}/users/${userId}/points`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
                     body: JSON.stringify({ amount, reason })
                 });
             } catch (e) {

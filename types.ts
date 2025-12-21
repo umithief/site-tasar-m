@@ -138,8 +138,8 @@ export interface User {
   rank: 'Scooter Çırağı' | 'Viraj Ustası' | 'Yol Kaptanı';
   garage?: UserBike[];
   bio?: string;
-  followers?: number;
-  following?: number;
+  followers?: string[] | any[];
+  following?: string[] | any[];
   // Social Additions
   username?: string;
   location?: string;

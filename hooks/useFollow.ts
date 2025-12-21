@@ -34,38 +34,35 @@ export const useFollow = () => {
             });
 
             // 2. Update Local User Store (following list)
+            const previousUser = user;
             if (user) {
-                const currentFollowing = (user.following as any) || [];
+                const currentFollowing = (user.following as any[]) || [];
                 let newFollowing: any[];
 
                 if (isCurrentlyFollowing) {
-                    // Remove
-                    newFollowing = Array.isArray(currentFollowing)
-                        ? currentFollowing.filter((f: any) => {
-                            const fId = typeof f === 'object' ? f._id : f;
-                            return fId !== targetUserId;
-                        })
-                        : [];
+                    newFollowing = currentFollowing.filter((f: any) => {
+                        const fId = (typeof f === 'object' && f !== null) ? (f._id || f.id) : f;
+                        return fId?.toString() !== targetUserId.toString();
+                    });
                 } else {
-                    // Add (optimistically push ID)
-                    newFollowing = Array.isArray(currentFollowing) ? [...currentFollowing, targetUserId] : [targetUserId];
+                    newFollowing = [...currentFollowing, targetUserId];
                 }
 
-                // We update the local user object in store to reflect change immediately
-                // updateProfile is available from useAuthStore? 
-                // Creating a simplified update since updateProfile usually calls API. 
-                // Here we just want to update the CLIENT state.
-                // useAuthStore might need a set method or we just wait for invalidation.
-                // For now, relying on invalidation 'me' in onSuccess is safer than hacking the store state directly without a proper reducer.
-                // So I will comment out the manual store update to avoid complex type hacks and rely on 'me' refetching.
+                // Update the store immediately for all FollowButtons to see
+                updateProfile({ following: newFollowing });
             }
 
-            return { previousProfile };
+            return { previousProfile, previousUser };
         },
-        onError: (err, newTodo, context) => {
+        onError: (err, variables, context) => {
             console.error('useFollow: Mutation Error', err);
             // Rollback
-            queryClient.setQueryData(['profile', newTodo.targetUserId], context?.previousProfile);
+            if (context?.previousProfile) {
+                queryClient.setQueryData(['profile', variables.targetUserId], context.previousProfile);
+            }
+            if (context?.previousUser) {
+                updateProfile({ following: context.previousUser.following });
+            }
             notify.error('Takip işlemi başarısız oldu.');
         },
         onSuccess: (data, variables) => {

@@ -75,8 +75,8 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout, onUpda
     const displayProfile: any = propProfile || {
         ...user,
         coverImage: 'https://images.unsplash.com/photo-1625043484555-47841a752840?q=80&w=2000', // Default cover
-        followersCount: user.followers || 0,
-        followingCount: user.following || 0,
+        followersCount: user.followersCount || (Array.isArray(user.followers) ? user.followers.length : 0),
+        followingCount: user.followingCount || (Array.isArray(user.following) ? user.following.length : 0),
         totalRides: 0, // Mock for now
         garage: user.garage || []
     };
@@ -183,12 +183,16 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout, onUpda
                     </div>
                     <div className="w-[1px] h-8 bg-white/10" />
                     <div className="flex flex-col items-center flex-1">
-                        <span className="text-xl md:text-2xl font-display font-black text-white">{displayProfile.followersCount}</span>
+                        <span className="text-xl md:text-2xl font-display font-black text-white">
+                            {Array.isArray(displayProfile.followers) ? displayProfile.followers.length : (displayProfile.followersCount || 0)}
+                        </span>
                         <span className="text-[9px] md:text-[10px] text-gray-500 uppercase tracking-widest font-bold">Followers</span>
                     </div>
                     <div className="w-[1px] h-8 bg-white/10" />
                     <div className="flex flex-col items-center flex-1">
-                        <span className="text-xl md:text-2xl font-display font-black text-white">{displayProfile.followingCount}</span>
+                        <span className="text-xl md:text-2xl font-display font-black text-white">
+                            {Array.isArray(displayProfile.following) ? displayProfile.following.length : (displayProfile.followingCount || 0)}
+                        </span>
                         <span className="text-[9px] md:text-[10px] text-gray-500 uppercase tracking-widest font-bold">Following</span>
                     </div>
 

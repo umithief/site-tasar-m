@@ -145,8 +145,12 @@ export const toggleFollow = catchAsync(async (req, res, next) => {
 
         res.status(200).json({
             status: 'success',
-            message: 'Takip edildi.',
-            data: { isFollowing: true }
+            message: isFollowing ? 'Takip edildi.' : 'Takipten çıkıldı.',
+            data: {
+                isFollowing,
+                followersCount: targetUser.followers.length,
+                followingCount: currentUser.following.length
+            }
         });
     }
 });
@@ -166,9 +170,13 @@ export const getProfile = catchAsync(async (req, res, next) => {
         return next(new AppError('Kullanıcı bulunamadı', 404));
     }
 
+    const userObj = user.toObject();
+    userObj.followersCount = user.followers.length;
+    userObj.followingCount = user.following.length;
+
     res.status(200).json({
         status: 'success',
-        data: { user }
+        data: { user: userObj }
     });
 });
 

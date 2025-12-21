@@ -14,6 +14,7 @@ interface AuthState {
     register: (data: any) => Promise<void>;
     logout: () => void;
     updateProfile: (userData: Partial<User>) => void;
+    setUser: (user: User | null) => void;
     checkAuth: () => Promise<void>;
 }
 
@@ -67,6 +68,10 @@ export const useAuthStore = create<AuthState>()(
                 set((state) => ({
                     user: state.user ? { ...state.user, ...userData } : null
                 }));
+            },
+
+            setUser: (user) => {
+                set({ user, isAuthenticated: !!user });
             },
 
             checkAuth: async () => {

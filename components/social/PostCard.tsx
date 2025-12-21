@@ -15,13 +15,8 @@ export const PostCard: React.FC<PostCardProps & { currentUserId?: string }> = ({
     const [isFollowing, setIsFollowing] = useState(false);
     const [showComments, setShowComments] = useState(false);
     const [commentText, setCommentText] = useState('');
-    const [comments, setComments] = useState(post.comments || []);
-    // Ensure commentCount is a number. If post.comments exists, use its length, otherwise fallback to post.commentCount
-    const [commentCount, setCommentCount] = useState(
-        (post.comments && Array.isArray(post.comments))
-            ? post.comments.length
-            : (post.commentCount || 0)
-    );
+    const [comments, setComments] = useState(post.commentList || []);
+    const [commentCount, setCommentCount] = useState(post.comments || 0);
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     const handleLike = async () => {
@@ -61,9 +56,9 @@ export const PostCard: React.FC<PostCardProps & { currentUserId?: string }> = ({
 
             if (updatedPost) {
                 // Assuming updatedPost follows the same structure
-                const newComments = (updatedPost.comments as any[]) || [];
+                const newComments = updatedPost.commentList || [];
                 setComments(newComments);
-                setCommentCount(newComments.length);
+                setCommentCount(updatedPost.comments); // updatedPost.comments is number
                 setCommentText('');
             }
         } catch (error) {

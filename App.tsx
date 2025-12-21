@@ -43,6 +43,7 @@ import { tourService } from './services/tourService';
 import { recordingService } from './services/recordingService';
 import { notify } from './services/notificationService';
 import { gamificationService } from './services/gamificationService';
+import { useAuthStore } from './store/authStore';
 import { useAppSounds } from './hooks/useAppSounds';
 import { ArrowUp, Zap, Instagram, Twitter, Youtube, Facebook, MapPin, Phone, Mail } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -106,10 +107,14 @@ export const App: React.FC = () => {
 
     const sessionStartTime = useRef(Date.now());
     const userRef = useRef<User | null>(null);
+    const { setUser: setStoreUser } = useAuthStore();
 
     const { playSuccess, playClick } = useAppSounds();
 
-    useEffect(() => { userRef.current = user; }, [user]);
+    useEffect(() => {
+        userRef.current = user;
+        setStoreUser(user);
+    }, [user]);
 
     useEffect(() => {
         const root = window.document.documentElement;

@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { createRoot } from 'react-dom/client';
+import './index.css'; // Added global styles
 import { App } from './App';
 import { CONFIG } from './services/config';
 import { LanguageProvider } from './contexts/LanguageProvider';

@@ -59,7 +59,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 // Middleware
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://motovibe.vercel.app'], // Allow frontend
+    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://motovibe.vercel.app', 'https://motovibe-frontend.onrender.com'], // Allow frontend
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH', 'HEAD'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']

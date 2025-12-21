@@ -25,12 +25,10 @@ export const sendMessage = catchAsync(async (req, res, next) => {
         content
     });
 
-});
-
-res.status(201).json({
-    status: 'success',
-    data: newMessage
-});
+    res.status(201).json({
+        status: 'success',
+        data: newMessage
+    });
 });
 
 export const getThreads = catchAsync(async (req, res, next) => {

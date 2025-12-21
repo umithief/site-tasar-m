@@ -8,6 +8,7 @@ import { motion } from 'framer-motion';
 import { notify } from '../services/notificationService';
 import { forumService } from '../services/forumService';
 import { BikeDetailModal } from './BikeDetailModal';
+import { FollowButton } from './social/FollowButton';
 
 interface PublicProfileProps {
     user: User;
@@ -106,13 +107,11 @@ export const PublicProfile: React.FC<PublicProfileProps> = ({ user, onBack, curr
                             {/* Actions */}
                             {currentUserId !== user.id && (
                                 <div className="flex gap-3 w-full md:w-auto mt-4 md:mt-0">
-                                    <Button
-                                        variant={isFollowing ? 'outline' : 'primary'}
-                                        className={isFollowing ? 'border-moto-accent text-moto-accent' : ''}
-                                        onClick={handleFollow}
-                                    >
-                                        {isFollowing ? <><UserPlus className="w-4 h-4 mr-2" /> TAKİP EDİLİYOR</> : <><UserPlus className="w-4 h-4 mr-2" /> TAKİP ET</>}
-                                    </Button>
+                                    <FollowButton
+                                        targetUserId={user._id}
+                                        isFollowing={!!user.isFollowing}
+                                    />
+
                                     <Button variant="secondary" onClick={() => notify.info("Mesajlaşma özelliği yakında aktif olacak.")}>
                                         <MessageCircle className="w-4 h-4" />
                                     </Button>

@@ -85,6 +85,8 @@ export const loginUser = catchAsync(async (req, res, next) => {
 
 // --- SOCIAL CONTROLLERS ---
 
+import { sendNotification } from '../socket.js'; // Ensure this is imported
+
 export const toggleFollow = catchAsync(async (req, res, next) => {
     if (!mongoose.isValidObjectId(req.params.id)) {
         return next(new AppError('Geçersiz Kullanıcı ID.', 400));
@@ -94,34 +96,57 @@ export const toggleFollow = catchAsync(async (req, res, next) => {
         return next(new AppError('Kendinizi takip edemezsiniz.', 400));
     }
 
-    const userToFollow = await User.findById(req.params.id);
-    const currentUser = await User.findById(req.user.id);
+    const { id: targetUserId } = req.params;
+    const currentUserId = req.user.id;
 
-    if (!userToFollow || !currentUser) {
+    const currentUser = await User.findById(currentUserId);
+    const targetUser = await User.findById(targetUserId);
+
+    if (!targetUser || !currentUser) {
         return next(new AppError('Kullanıcı bulunamadı.', 404));
     }
 
-    const isFollowing = currentUser.following.includes(req.params.id);
+    // Check if already following
+    const isFollowing = currentUser.following.includes(targetUserId);
 
     if (isFollowing) {
         // Unfollow
-        await User.findByIdAndUpdate(req.user.id, { $pull: { following: req.params.id } });
-        await User.findByIdAndUpdate(req.params.id, { $pull: { followers: req.user.id } });
+        await User.findByIdAndUpdate(currentUserId, { $pull: { following: targetUserId } });
+        await User.findByIdAndUpdate(targetUserId, { $pull: { followers: currentUserId } });
 
-        res.status(200).json({ status: 'success', message: 'Takipten çıkıldı.' });
-    } else {
-        // Follow
-        await User.findByIdAndUpdate(req.user.id, { $push: { following: req.params.id } });
-        await User.findByIdAndUpdate(req.params.id, { $push: { followers: req.user.id } });
-
-        // Notify Target
-        sendNotification(req.params.id, 'follow', {
-            senderId: req.user.id,
-            senderName: req.user.name,
-            message: `${req.user.name} seni takip etmeye başladı.`
+        res.status(200).json({
+            status: 'success',
+            message: 'Takipten çıkıldı.',
+            data: { isFollowing: false }
         });
+    } else {
+        // Follow (addToSet avoids duplicates naturally, but our check handles logic flow)
+        await User.findByIdAndUpdate(currentUserId, { $addToSet: { following: targetUserId } });
+        await User.findByIdAndUpdate(targetUserId, { $addToSet: { followers: currentUserId } });
 
-        res.status(200).json({ status: 'success', message: 'Takip edildi.' });
+        // Real-time Notification
+        // Emit 'new_follower' specifically as requested
+        const io = await import('../socket.js').then(m => m.getIO()).catch(() => null);
+        if (io) {
+            io.to(targetUserId.toString()).emit('new_follower', {
+                followerId: currentUserId,
+                followerName: req.user.name,
+                followerAvatar: req.user.avatar
+            });
+
+            // Allow general notification as well for notification center
+            sendNotification(targetUserId, 'follow', {
+                senderId: currentUserId,
+                senderName: req.user.name,
+                message: `${req.user.name} seni takip etmeye başladı.`
+            });
+        }
+
+        res.status(200).json({
+            status: 'success',
+            message: 'Takip edildi.',
+            data: { isFollowing: true }
+        });
     }
 });
 

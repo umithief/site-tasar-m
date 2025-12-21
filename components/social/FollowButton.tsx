@@ -43,14 +43,7 @@ export const FollowButton: React.FC<FollowButtonProps> = ({ targetUserId, isFoll
 
         if (!currentUser) {
             console.warn('FollowButton: No current user, ignoring click.');
-            // Assuming 'notify' is available globally or imported, otherwise this line will cause an error.
-            // For the purpose of this edit, I'm adding it as requested.
-            // If 'notify' is not defined, you might need to import it (e.g., from a toast library).
-            // For example: import { toast } from 'react-toastify'; and then use toast.error(...)
-            // For now, I'll assume a global 'notify' or a placeholder.
-            // If this is a real project, ensure 'notify' is properly defined.
-            // notify.error('Takip etmek için giriş yapmalısınız.'); 
-            // Redirect logic could go here
+            notify.error('Takip etmek için giriş yapmalısınız.');
             return;
         }
 

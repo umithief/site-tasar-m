@@ -27,20 +27,21 @@ export const getFeedPosts = catchAsync(async (req, res, next) => {
 });
 
 export const createPost = catchAsync(async (req, res, next) => {
-    const { content, mediaUrl } = req.body;
+    const { content, mediaUrl, images } = req.body;
 
-    if (!content && !mediaUrl) {
+    if (!content && !mediaUrl && (!images || images.length === 0)) {
         return next(new AppError('İçerik boş olamaz.', 400));
     }
 
+    const finalImages = images && images.length > 0 ? images : (mediaUrl ? [mediaUrl] : []);
+
     const newPost = await Post.create({
         user: req.user.id,
-        userName: req.user.name, // Cache setup from previous step
+        userName: req.user.name,
         userAvatar: req.user.avatar,
         content,
-        images: mediaUrl ? [mediaUrl] : [], // Handling single mediaUrl as requested mapping to images array
-        // mediaUrl field exists in schema too if needed
-        mediaUrl: mediaUrl
+        images: finalImages,
+        mediaUrl: finalImages.length > 0 ? finalImages[0] : null // Keep backward compatibility
     });
 
     res.status(201).json({

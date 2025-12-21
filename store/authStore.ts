@@ -1,4 +1,5 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
 import { api } from '../services/api';
 import { User } from '../types';
 
@@ -12,66 +13,80 @@ interface AuthState {
     login: (email: string, password: string) => Promise<void>;
     register: (data: any) => Promise<void>;
     logout: () => void;
+    updateProfile: (userData: Partial<User>) => void;
     checkAuth: () => Promise<void>;
 }
 
-export const useAuthStore = create<AuthState>((set, get) => ({
-    user: null,
-    token: localStorage.getItem('token'),
-    isAuthenticated: !!localStorage.getItem('token'),
-    isLoading: false,
-    error: null,
+export const useAuthStore = create<AuthState>()(
+    persist(
+        (set, get) => ({
+            user: null,
+            token: null,
+            isAuthenticated: false,
+            isLoading: false,
+            error: null,
 
-    login: async (email, password) => {
-        set({ isLoading: true, error: null });
-        try {
-            const response = await api.post('/users/login', { email, password });
-            const { token, data } = response.data;
-            // Handle different backend response structures (data.data.user vs data.user)
-            const user = data?.user || data;
+            login: async (email, password) => {
+                set({ isLoading: true, error: null });
+                try {
+                    const response = await api.post('/users/login', { email, password });
+                    const { token, data } = response.data;
+                    const user = data?.user || data;
 
-            localStorage.setItem('token', token);
-            set({ user, token, isAuthenticated: true, isLoading: false });
-        } catch (error: any) {
-            set({ error: error.message, isLoading: false });
-            throw error;
+                    localStorage.setItem('token', token); // Keep for legacy axios interceptors if needed
+                    set({ user, token, isAuthenticated: true, isLoading: false });
+                } catch (error: any) {
+                    const msg = error.response?.data?.message || error.message || 'Login failed';
+                    set({ error: msg, isLoading: false });
+                    throw error;
+                }
+            },
+
+            register: async (registerData) => {
+                set({ isLoading: true, error: null });
+                try {
+                    const response = await api.post('/users/register', registerData);
+                    const { token, data } = response.data;
+                    const user = data?.user || data;
+
+                    localStorage.setItem('token', token);
+                    set({ user, token, isAuthenticated: true, isLoading: false });
+                } catch (error: any) {
+                    const msg = error.response?.data?.message || error.message || 'Registration failed';
+                    set({ error: msg, isLoading: false });
+                    throw error;
+                }
+            },
+
+            logout: () => {
+                localStorage.removeItem('token');
+                set({ user: null, token: null, isAuthenticated: false });
+            },
+
+            updateProfile: (userData) => {
+                set((state) => ({
+                    user: state.user ? { ...state.user, ...userData } : null
+                }));
+            },
+
+            checkAuth: async () => {
+                const token = get().token || localStorage.getItem('token');
+                if (!token) return;
+
+                try {
+                    // Start loading silently
+                    // set({ isLoading: true });
+                    // Verify token validity or fetch fresh user data
+                    // For now, trust the persisted state or decode token if we had jwt-decode
+                } catch (error) {
+                    get().logout();
+                }
+            }
+        }),
+        {
+            name: 'auth-storage', // unique name
+            storage: createJSONStorage(() => localStorage),
+            partialize: (state) => ({ user: state.user, token: state.token, isAuthenticated: state.isAuthenticated }), // Only persist these
         }
-    },
-
-    register: async (registerData) => {
-        set({ isLoading: true, error: null });
-        try {
-            const response = await api.post('/users/register', registerData);
-            const { token, data } = response.data;
-            const user = data?.user || data;
-
-            localStorage.setItem('token', token);
-            set({ user, token, isAuthenticated: true, isLoading: false });
-        } catch (error: any) {
-            set({ error: error.message, isLoading: false });
-            throw error;
-        }
-    },
-
-    logout: () => {
-        localStorage.removeItem('token');
-        set({ user: null, token: null, isAuthenticated: false });
-    },
-
-    checkAuth: async () => {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
-        try {
-            // Assuming there is a /users/me or /auth/me endpoint. 
-            // If not, we might decoding token or fetch profile by stored ID if we had it.
-            // For now, let's assume we maintain session via persistence or fetch profile.
-            // We'll use a placeholder or previous userService logic if needed.
-            // But properly, we should fetch 'me'.
-            // set({ isLoading: true });
-            // const res = await api.get('/users/me'); ...
-        } catch (error) {
-            get().logout();
-        }
-    }
-}));
+    )
+);

@@ -28,10 +28,20 @@ const SUGGESTED_RIDERS = [
     { id: 3, name: 'Kenan S.', bike: 'Kawasaki H2R' },
 ];
 
-export const SocialHub: React.FC<SocialHubProps> = ({ user, onNavigate, onLogout, onUpdateUser }) => {
+import { MediaUploader } from '../ui/MediaUploader';
+import { useAuthStore } from '../../store/authStore';
+
+// ... (imports)
+
+export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate, onLogout, onUpdateUser }) => {
+    // Prefer global user state if available, fallback to props
+    const { user: globalUser } = useAuthStore();
+    const currentUser = globalUser || propUser;
+
     const [isDMOpen, setIsDMOpen] = useState(false);
     const [view, setView] = useState<'feed' | 'profile'>('feed');
     const [newPostContent, setNewPostContent] = useState('');
+    const [mediaUrl, setMediaUrl] = useState<string | null>(null);
 
     const {
         data,
@@ -42,24 +52,23 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user, onNavigate, onLogout
         status,
     } = usePosts();
 
-    // No need for loadFeed() useEffect anymore, React Query handles it.
-
     const { mutate: createPost } = useCreatePost();
 
     const handleCreatePost = async () => {
-        if (!newPostContent.trim() || !user) return;
+        if ((!newPostContent.trim() && !mediaUrl) || !currentUser) return;
 
         createPost({
-            userId: user._id || 'guest',
-            userName: user.name || 'Guest',
-            userAvatar: user.avatar || '',
+            userId: currentUser._id || 'guest',
+            userName: currentUser.name || 'Guest',
+            userAvatar: currentUser.avatar || '',
             content: newPostContent,
-            images: [],
-            bikeModel: user.garage && user.garage.length > 0 ? `${user.garage[0].brand} ${user.garage[0].model}` : 'Bilinmeyen Motor',
-            userRank: user.rank || 'Yeni Üye'
+            images: mediaUrl ? [mediaUrl] : [],
+            bikeModel: currentUser.garage && currentUser.garage.length > 0 ? `${currentUser.garage[0].brand} ${currentUser.garage[0].model}` : 'Bilinmeyen Motor',
+            userRank: currentUser.rank || 'Yeni Üye'
         }, {
             onSuccess: () => {
                 setNewPostContent('');
+                setMediaUrl(null);
             }
         });
     };
@@ -72,23 +81,23 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user, onNavigate, onLogout
                 <div className="hidden lg:col-span-3 lg:flex flex-col gap-2 py-6 sticky top-20 h-full">
                     <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-6 mb-4">
                         <div className="flex items-center gap-4 mb-6">
-                            <UserAvatar name={user?.name || 'Guest'} size={56} className="border-2 border-moto-accent cursor-pointer" onClick={() => setView('profile')} />
+                            <UserAvatar name={currentUser?.name || 'Guest'} size={56} className="border-2 border-moto-accent cursor-pointer" onClick={() => setView('profile')} />
                             <div>
-                                <h3 className="font-bold text-lg leading-tight cursor-pointer hover:text-moto-accent transition-colors" onClick={() => setView('profile')}>{user?.name || 'Guest User'}</h3>
-                                <p className="text-xs text-gray-500 font-mono">{user?.rank || 'Rider'}</p>
+                                <h3 className="font-bold text-lg leading-tight cursor-pointer hover:text-moto-accent transition-colors" onClick={() => setView('profile')}>{currentUser?.name || 'Guest User'}</h3>
+                                <p className="text-xs text-gray-500 font-mono">{currentUser?.rank || 'Rider'}</p>
                             </div>
                         </div>
                         <div className="grid grid-cols-3 gap-2 text-center text-xs">
                             <div className="bg-white/5 rounded-lg p-2">
-                                <span className="block font-bold text-white text-sm">{user?.followers || 0}</span>
+                                <span className="block font-bold text-white text-sm">{currentUser?.followers || 0}</span>
                                 <span className="text-gray-500">Followers</span>
                             </div>
                             <div className="bg-white/5 rounded-lg p-2">
-                                <span className="block font-bold text-white text-sm">{user?.following || 0}</span>
+                                <span className="block font-bold text-white text-sm">{currentUser?.following || 0}</span>
                                 <span className="text-gray-500">Following</span>
                             </div>
                             <div className="bg-white/5 rounded-lg p-2">
-                                <span className="block font-bold text-white text-sm">{user?.garage?.length || 0}</span>
+                                <span className="block font-bold text-white text-sm">{currentUser?.garage?.length || 0}</span>
                                 <span className="text-gray-500">Rides</span>
                             </div>
                         </div>
@@ -122,25 +131,35 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user, onNavigate, onLogout
                 {/* CENTER (Feed) */}
                 <div className="lg:col-span-6 h-full overflow-y-auto no-scrollbar py-6">
                     {view === 'profile' ? (
-                        <UserProfile user={user} onNavigate={onNavigate} onLogout={onLogout} onUpdateUser={onUpdateUser} />
+                        <UserProfile user={currentUser} onNavigate={onNavigate} onLogout={onLogout} onUpdateUser={onUpdateUser} />
                     ) : (
                         <>
                             {/* Create Post Widget */}
-                            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-5 mb-8 flex gap-4 items-center">
-                                <UserAvatar name={user?.name || 'G'} size={40} />
-                                <div className="flex-1 bg-white/5 rounded-2xl h-12 flex items-center px-4 cursor-text hover:bg-white/10 transition-colors focus-within:ring-1 ring-moto-accent">
-                                    <input
-                                        type="text"
-                                        value={newPostContent}
-                                        onChange={(e) => setNewPostContent(e.target.value)}
-                                        onKeyDown={(e) => e.key === 'Enter' && handleCreatePost()}
-                                        className="bg-transparent w-full text-white placeholder-gray-500 text-sm outline-none"
-                                        placeholder="Share your ride experience..."
-                                    />
+                            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-5 mb-8 flex flex-col gap-4">
+                                <div className="flex gap-4 items-start">
+                                    <UserAvatar name={currentUser?.name || 'G'} size={40} />
+                                    <div className="flex-1 bg-white/5 rounded-2xl min-h-[48px] flex items-center px-4 cursor-text hover:bg-white/10 transition-colors focus-within:ring-1 ring-moto-accent">
+                                        <textarea
+                                            value={newPostContent}
+                                            onChange={(e) => setNewPostContent(e.target.value)}
+                                            onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleCreatePost()}
+                                            className="bg-transparent w-full text-white placeholder-gray-500 text-sm outline-none resize-none py-3 h-full"
+                                            placeholder="Share your ride experience..."
+                                            rows={1}
+                                        />
+                                    </div>
+                                    <button onClick={handleCreatePost} disabled={!newPostContent.trim() && !mediaUrl} className="bg-moto-accent text-black p-3 rounded-xl hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                        <PlusCircle className="w-5 h-5" />
+                                    </button>
                                 </div>
-                                <button onClick={handleCreatePost} className="bg-moto-accent text-black p-3 rounded-xl hover:bg-white transition-colors">
-                                    <PlusCircle className="w-5 h-5" />
-                                </button>
+
+                                <div className="pl-14">
+                                    <MediaUploader
+                                        onUploadComplete={(url) => setMediaUrl(url)}
+                                        onUploadError={(err) => alert(err)} // Replace with toast later
+                                    />
+                                    {mediaUrl && <p className="text-xs text-green-500 mt-2">✓ Media attached</p>}
+                                </div>
                             </div>
 
                             {/* Posts Feed */}
@@ -154,7 +173,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user, onNavigate, onLogout
                                         {data?.pages.map((page, i) => (
                                             <React.Fragment key={i}>
                                                 {page && page.length > 0 ? page.map((post: SocialPost) => (
-                                                    <PostCard key={post._id} post={post} currentUserId={user?._id} />
+                                                    <PostCard key={post._id} post={post} currentUserId={currentUser?._id} />
                                                 )) : (
                                                     i === 0 && <div className="text-center py-10 text-gray-500">Henüz gönderi yok. İlk paylaşımı sen yap!</div>
                                                 )}

@@ -6,6 +6,7 @@ import { UserAvatar } from '../ui/UserAvatar';
 import { Button } from '../ui/Button';
 import { orderService } from '../../services/orderService';
 import { authService } from '../../services/auth';
+import { useAuthStore } from '../../store/authStore';
 import { storageService } from '../../services/storageService';
 import { notify } from '../../services/notificationService';
 import { useLanguage } from '../../contexts/LanguageProvider';
@@ -115,6 +116,10 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout, onUpda
                 phone: editForm.phone
             });
             onUpdateUser(updatedUser);
+
+            // Sync with global store
+            useAuthStore.getState().updateProfile(updatedUser);
+
             setIsEditModalOpen(false);
             notify.success('Profil güncellendi!');
         } catch (error) {
@@ -127,7 +132,10 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout, onUpda
         if (isOwnProfile && onUpdateUser) {
             await authService.updateProfile({ garage: newGarage });
             const updatedUser = await authService.getCurrentUser();
-            if (updatedUser) onUpdateUser(updatedUser);
+            if (updatedUser) {
+                onUpdateUser(updatedUser);
+                useAuthStore.getState().updateProfile(updatedUser);
+            }
         }
     };
 

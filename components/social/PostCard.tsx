@@ -17,6 +17,7 @@ export const PostCard: React.FC<PostCardProps & { currentUserId?: string }> = ({
     const [commentText, setCommentText] = useState('');
     const [comments, setComments] = useState(post.commentList || []);
     const [commentCount, setCommentCount] = useState(post.comments || 0);
+    const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
     const handleLike = async () => {
         if (!currentUserId) return alert('Please login to like');
@@ -114,19 +115,42 @@ export const PostCard: React.FC<PostCardProps & { currentUserId?: string }> = ({
             {/* Content */}
             <div className="relative group cursor-pointer overflow-hidden bg-black/50">
                 {post.images && post.images.length > 0 && (
-                    <motion.div
-                        className="w-full h-auto max-h-[600px] object-cover"
-                        whileHover={{ scale: 1.05 }}
-                        transition={{ duration: 0.7, ease: "easeOut" }}
-                    >
-                        <img src={post.images[0]} alt="Post content" className="w-full h-full object-cover" />
-                    </motion.div>
+                    <div className="relative w-full h-auto max-h-[600px] aspect-[4/3] md:aspect-auto">
+                        <img
+                            src={post.images[currentImageIndex] || post.images[0]}
+                            alt="Post content"
+                            className="w-full h-full object-cover"
+                        />
+
+                        {/* Navigation Buttons */}
+                        {post.images.length > 1 && (
+                            <>
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(prev => prev === 0 ? post.images.length - 1 : prev - 1); }}
+                                    className="absolute left-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
+                                >
+                                    <ChevronRight className="w-5 h-5 rotate-180" />
+                                </button>
+                                <button
+                                    onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(prev => (prev + 1) % post.images.length); }}
+                                    className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 rounded-full bg-black/50 text-white opacity-0 group-hover:opacity-100 transition-opacity hover:bg-black/70"
+                                >
+                                    <ChevronRight className="w-5 h-5" />
+                                </button>
+                            </>
+                        )}
+                    </div>
                 )}
-                {/* Image Progress Bar (Placeholder for multiple images) */}
+
+                {/* Image Progress Bar */}
                 {post.images && post.images.length > 1 && (
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5">
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 bg-black/20 p-1.5 rounded-full backdrop-blur-sm">
                         {post.images.map((_, idx) => (
-                            <div key={idx} className={`h-1 rounded-full transition-all ${idx === 0 ? 'w-6 bg-white' : 'w-1.5 bg-white/50'}`} />
+                            <button
+                                key={idx}
+                                onClick={(e) => { e.stopPropagation(); setCurrentImageIndex(idx); }}
+                                className={`h-1.5 rounded-full transition-all ${idx === currentImageIndex ? 'w-6 bg-white' : 'w-1.5 bg-white/50 hover:bg-white/80'}`}
+                            />
                         ))}
                     </div>
                 )}

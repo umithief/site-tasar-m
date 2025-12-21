@@ -9,8 +9,9 @@ const userSocketMap = new Map(); // userId -> socketId
 export const initSync = (httpServer) => {
     io = new Server(httpServer, {
         cors: {
-            origin: "*", // Adjust for production
-            methods: ["GET", "POST"]
+            origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://motovibe.vercel.app'],
+            methods: ["GET", "POST"],
+            credentials: true
         }
     });
 

@@ -61,7 +61,8 @@ const upload = multer({ storage: multer.memoryStorage() });
 app.use(cors({
     origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://motovibe.vercel.app'], // Allow frontend
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH', 'HEAD'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 }));
 
 app.use(express.json({ limit: '50mb' }));

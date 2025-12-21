@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import User from '../models/User.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
@@ -85,6 +86,10 @@ export const loginUser = catchAsync(async (req, res, next) => {
 // --- SOCIAL CONTROLLERS ---
 
 export const toggleFollow = catchAsync(async (req, res, next) => {
+    if (!mongoose.isValidObjectId(req.params.id)) {
+        return next(new AppError('Geçersiz Kullanıcı ID.', 400));
+    }
+
     if (req.user.id === req.params.id) {
         return next(new AppError('Kendinizi takip edemezsiniz.', 400));
     }
@@ -121,6 +126,11 @@ export const toggleFollow = catchAsync(async (req, res, next) => {
 });
 
 export const getProfile = catchAsync(async (req, res, next) => {
+    // Validate ID format to prevent CastError
+    if (!mongoose.isValidObjectId(req.params.id)) {
+        return next(new AppError('Kullanıcı bulunamadı (Geçersiz ID)', 404));
+    }
+
     const user = await User.findById(req.params.id)
         .populate('followers', 'name avatar')
         .populate('following', 'name avatar')

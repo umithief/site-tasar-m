@@ -138,3 +138,33 @@ export const addComment = catchAsync(async (req, res, next) => {
         data: { comments: post.comments }
     });
 });
+});
+
+export const getUserPosts = catchAsync(async (req, res, next) => {
+    const userId = req.params.id;
+
+    // Check if user exists? Optional.
+
+    const posts = await Post.find({ user: userId })
+        .sort({ createdAt: -1 })
+        .populate({
+            path: 'comments.user',
+            select: 'name avatar'
+        })
+        .lean();
+
+    // Calculate isLiked if user is authenticated
+    let postsWithLikeStatus = posts;
+    if (req.user) {
+        postsWithLikeStatus = posts.map(post => ({
+            ...post,
+            isLiked: post.likes.some(id => id.toString() === req.user.id.toString())
+        }));
+    }
+
+    res.status(200).json({
+        status: 'success',
+        results: postsWithLikeStatus.length,
+        data: { posts: postsWithLikeStatus }
+    });
+});

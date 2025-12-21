@@ -4,7 +4,11 @@ import * as postController from '../controllers/postController.js';
 
 const router = express.Router();
 
-router.use(protect); // Protect all post routes
+// Public Routes
+router.get('/user/:id/posts', postController.getUserPosts);
+
+// Protected Routes
+router.use(protect);
 
 router.get('/feed', postController.getFeedPosts);
 router.post('/', postController.createPost);

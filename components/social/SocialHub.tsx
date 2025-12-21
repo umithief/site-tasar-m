@@ -145,64 +145,87 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                         <UserProfile user={currentUser} onNavigate={onNavigate} onLogout={onLogout} onUpdateUser={onUpdateUser} />
                     ) : (
                         <>
-                            {/* Create Post Widget */}
-                            <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-5 mb-8 flex flex-col gap-4">
-                                <div className="flex gap-4 items-start">
-                                    <UserAvatar name={currentUser?.name || 'G'} size={40} />
-                                    <div className="flex-1 bg-white/5 rounded-2xl min-h-[48px] flex items-center px-4 cursor-text hover:bg-white/10 transition-colors focus-within:ring-1 ring-moto-accent">
-                                        <textarea
-                                            value={newPostContent}
-                                            onChange={(e) => setNewPostContent(e.target.value)}
-                                            onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleCreatePost()}
-                                            className="bg-transparent w-full text-white placeholder-gray-500 text-sm outline-none resize-none py-3 h-full"
-                                            placeholder="Share your ride experience..."
-                                            rows={1}
-                                        />
+                            {!currentUser ? (
+                                <div className="flex flex-col items-center justify-center h-[60vh] text-center space-y-6">
+                                    <div className="relative">
+                                        <div className="absolute inset-0 bg-moto-accent blur-2xl opacity-20 rounded-full"></div>
+                                        <div className="relative bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-full">
+                                            <Users className="w-12 h-12 text-moto-accent" />
+                                        </div>
                                     </div>
-                                    <button onClick={handleCreatePost} disabled={!newPostContent.trim() && !mediaUrl} className="bg-moto-accent text-black p-3 rounded-xl hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
-                                        <PlusCircle className="w-5 h-5" />
+                                    <div className="max-w-md space-y-2">
+                                        <h2 className="text-3xl font-display font-bold text-white">Topluluğa Katıl</h2>
+                                        <p className="text-gray-400">Diğer sürücüleri takip etmek, gönderi paylaşmak ve etkinliklere katılmak için giriş yap.</p>
+                                    </div>
+                                    <button
+                                        onClick={() => onNavigate && onNavigate('auth')}
+                                        className="bg-moto-accent text-black px-8 py-4 rounded-xl font-bold hover:bg-white transition-all transform hover:scale-105 shadow-xl shadow-moto-accent/20"
+                                    >
+                                        Giriş Yap / Kayıt Ol
                                     </button>
                                 </div>
-
-                                <div className="pl-14">
-                                    <MediaUploader
-                                        onUploadComplete={(url) => setMediaUrl(url)}
-                                        onUploadError={(err) => alert(err)} // Replace with toast later
-                                    />
-                                    {mediaUrl && <p className="text-xs text-green-500 mt-2">✓ Media attached</p>}
-                                </div>
-                            </div>
-
-                            {/* Posts Feed */}
-                            <div className="space-y-6">
-                                {status === 'pending' ? (
-                                    <div className="text-center py-10 text-gray-500 animate-pulse">Yükleniyor...</div>
-                                ) : status === 'error' ? (
-                                    <div className="text-center py-10 text-red-500">Akış yüklenemedi: {error.message}</div>
-                                ) : (
-                                    <>
-                                        {data?.pages.map((page, i) => (
-                                            <React.Fragment key={i}>
-                                                {page && page.length > 0 ? page.map((post: SocialPost) => (
-                                                    <PostCard key={post._id} post={post} currentUserId={currentUser?._id} />
-                                                )) : (
-                                                    i === 0 && <div className="text-center py-10 text-gray-500">Henüz gönderi yok. İlk paylaşımı sen yap!</div>
-                                                )}
-                                            </React.Fragment>
-                                        ))}
-
-                                        {hasNextPage && (
-                                            <button
-                                                onClick={() => fetchNextPage()}
-                                                disabled={isFetchingNextPage}
-                                                className="w-full py-4 text-sm text-moto-accent font-bold hover:bg-white/5 rounded-xl transition-colors disabled:opacity-50"
-                                            >
-                                                {isFetchingNextPage ? 'Yükleniyor...' : 'Daha Fazla Yükle'}
+                            ) : (
+                                <>
+                                    {/* Create Post Widget */}
+                                    <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-5 mb-8 flex flex-col gap-4">
+                                        <div className="flex gap-4 items-start">
+                                            <UserAvatar name={currentUser?.name || 'G'} size={40} />
+                                            <div className="flex-1 bg-white/5 rounded-2xl min-h-[48px] flex items-center px-4 cursor-text hover:bg-white/10 transition-colors focus-within:ring-1 ring-moto-accent">
+                                                <textarea
+                                                    value={newPostContent}
+                                                    onChange={(e) => setNewPostContent(e.target.value)}
+                                                    onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && handleCreatePost()}
+                                                    className="bg-transparent w-full text-white placeholder-gray-500 text-sm outline-none resize-none py-3 h-full"
+                                                    placeholder="Share your ride experience..."
+                                                    rows={1}
+                                                />
+                                            </div>
+                                            <button onClick={handleCreatePost} disabled={!newPostContent.trim() && !mediaUrl} className="bg-moto-accent text-black p-3 rounded-xl hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                                <PlusCircle className="w-5 h-5" />
                                             </button>
+                                        </div>
+
+                                        <div className="pl-14">
+                                            <MediaUploader
+                                                onUploadComplete={(url) => setMediaUrl(url)}
+                                                onUploadError={(err) => alert(err)} // Replace with toast later
+                                            />
+                                            {mediaUrl && <p className="text-xs text-green-500 mt-2">✓ Media attached</p>}
+                                        </div>
+                                    </div>
+
+                                    {/* Posts Feed */}
+                                    <div className="space-y-6">
+                                        {status === 'pending' || (status as any) === 'loading' ? (
+                                            <div className="text-center py-10 text-gray-500 animate-pulse">Yükleniyor...</div>
+                                        ) : status === 'error' ? (
+                                            <div className="text-center py-10 text-red-500">Akış yüklenemedi: {error.message}</div>
+                                        ) : (
+                                            <>
+                                                {data?.pages.map((page, i) => (
+                                                    <React.Fragment key={i}>
+                                                        {page && page.length > 0 ? page.map((post: SocialPost) => (
+                                                            <PostCard key={post._id} post={post} currentUserId={currentUser?._id} />
+                                                        )) : (
+                                                            i === 0 && <div className="text-center py-10 text-gray-500">Henüz gönderi yok. İlk paylaşımı sen yap!</div>
+                                                        )}
+                                                    </React.Fragment>
+                                                ))}
+
+                                                {hasNextPage && (
+                                                    <button
+                                                        onClick={() => fetchNextPage()}
+                                                        disabled={isFetchingNextPage}
+                                                        className="w-full py-4 text-sm text-moto-accent font-bold hover:bg-white/5 rounded-xl transition-colors disabled:opacity-50"
+                                                    >
+                                                        {isFetchingNextPage ? 'Yükleniyor...' : 'Daha Fazla Yükle'}
+                                                    </button>
+                                                )}
+                                            </>
                                         )}
-                                    </>
-                                )}
-                            </div>
+                                    </div>
+                                </>
+                            )}
                         </>
                     )}
                 </div>

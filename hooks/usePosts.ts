@@ -17,9 +17,11 @@ const fetchFeed = async ({ pageParam = 1 }) => {
 };
 
 export const usePosts = () => {
+    const token = localStorage.getItem('token');
     return useInfiniteQuery({
         queryKey: ['posts'],
         queryFn: fetchFeed,
+        enabled: !!token,
         getNextPageParam: (lastPage, allPages) => {
             // Mocking logic: stop after 5 pages or if empty
             if (!lastPage || lastPage.length === 0) return undefined;

@@ -60,7 +60,7 @@ export const statsService = {
 
   // --- ADVANCED ANALYTICS ---
 
-  async trackEvent(type: AnalyticsEvent['type'], data: { productId?: number; productName?: string; userId?: string; userName?: string; duration?: number }): Promise<void> {
+  async trackEvent(type: AnalyticsEvent['type'], data: { productId?: string | number; productName?: string; userId?: string; userName?: string; duration?: number }): Promise<void> {
     const event: AnalyticsEvent = {
       id: `EVT-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       type,

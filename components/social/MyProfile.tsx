@@ -65,7 +65,7 @@ const StatGauge: React.FC<StatGaugeProps> = ({ value, max, label, color, icon })
 };
 
 // --- Tactical Achievement Badge ---
-const AchievementBadge = ({ achievement }: { achievement: Achievement }) => (
+const AchievementBadge: React.FC<{ achievement: Achievement }> = ({ achievement }) => (
     <motion.div
         whileHover={{ scale: 1.05, y: -5 }}
         className="min-w-[160px] p-6 rounded-2xl bg-white/5 border border-white/10 flex flex-col items-center text-center group cursor-pointer relative overflow-hidden"
@@ -81,7 +81,7 @@ const AchievementBadge = ({ achievement }: { achievement: Achievement }) => (
 );
 
 // --- Digital Garage Card (Enhanced) ---
-const GarageCard = ({ bike, isAdd = false, onClick }: { bike?: any, isAdd?: boolean, onClick?: () => void }) => {
+const GarageCard: React.FC<{ bike?: any, isAdd?: boolean, onClick?: () => void }> = ({ bike, isAdd = false, onClick }) => {
     if (isAdd) {
         return (
             <motion.div

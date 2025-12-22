@@ -108,7 +108,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
 
                 {/* Feed Content */}
                 <div className="w-full max-w-[900px] mx-auto pb-32 px-4 md:px-0"> {/* Removed standard paddings */}
-                    {status === 'loading' ? (
+                    {status === 'pending' ? (
                         <div className="h-screen w-full flex items-center justify-center">
                             <div className="text-[#FF4500] font-mono text-xs animate-pulse">INITIALIZING_FEED...</div>
                         </div>

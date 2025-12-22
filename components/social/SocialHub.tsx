@@ -55,60 +55,25 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
     return (
         <div className="flex bg-[#050505] min-h-screen text-white font-sans selection:bg-[#FF4500] selection:text-black">
 
-            {/* 1. RAZOR SIDEBAR */}
-            <nav className="fixed left-0 top-0 h-full w-[72px] border-r border-white/5 flex flex-col items-center py-8 z-50 bg-[#050505]/80 backdrop-blur-xl">
-                {/* Brand Icon or Profile */}
-                <div onClick={() => onNavigate && onNavigate('my-profile')} className="mb-12 cursor-pointer group">
-                    {currentUser ? (
-                        <div className="p-[1px] bg-gradient-to-b from-white/20 to-transparent rounded-full">
-                            <UserAvatar name={currentUser.name} src={currentUser.avatar} size={40} className="grayscale group-hover:grayscale-0 transition-all duration-500" />
-                        </div>
-                    ) : (
-                        <div className="w-10 h-10 bg-white/5 rounded-full" />
-                    )}
-                </div>
+            {/* 2. THE STAGE (MAIN FEED) */}
+            <main className="flex-1 w-full min-h-screen relative pt-24">
 
-                <div className="flex-1 flex flex-col gap-8 w-full items-center">
+                {/* Internal Tabs (Minimalist) */}
+                <div className="sticky top-24 z-30 flex justify-center gap-8 mb-12 mix-blend-difference">
                     {[
-                        { id: 'feed', icon: Activity, label: 'FEED' },
-                        { id: 'discover', icon: Compass, label: 'DISCOVER' },
-                        { id: 'messages', icon: MessageSquare, label: 'MESSAGES' },
-                        { id: 'events', icon: Calendar, label: 'EVENTS' },
+                        { id: 'feed', label: 'FEED' },
+                        { id: 'discover', label: 'DISCOVER' },
+                        { id: 'events', label: 'EVENTS' },
                     ].map((item) => (
                         <button
                             key={item.id}
-                            onClick={() => item.id === 'messages' ? setIsDMOpen(true) : setView('feed')}
-                            className="group relative flex items-center justify-center w-full h-10"
+                            onClick={() => setView('feed')}
+                            className={`text-[10px] font-bold tracking-[0.2em] transition-all duration-300 ${view === 'feed' && item.id === 'feed' ? 'text-[#FF4500] scale-110' : 'text-gray-500 hover:text-white'}`}
                         >
-                            <item.icon
-                                strokeWidth={1}
-                                className={`w-6 h-6 transition-all duration-300 ${view === 'feed' && item.id === 'feed' ? 'text-[#FF4500]' : 'text-gray-500 group-hover:text-white'}`}
-                            />
-
-                            {/* Hover Label */}
-                            <span className="absolute left-full ml-4 opacity-0 group-hover:opacity-100 translate-x-[-10px] group-hover:translate-x-0 transition-all duration-300 text-[10px] tracking-[0.2em] font-bold text-gray-400 whitespace-nowrap">
-                                {item.label}
-                            </span>
-
-                            {/* Active Indicator */}
-                            {view === 'feed' && item.id === 'feed' && (
-                                <div className="absolute left-0 w-[2px] h-full bg-[#FF4500]" />
-                            )}
+                            {item.label}
                         </button>
                     ))}
-
-                    {/* Compose Button */}
-                    <button
-                        onClick={() => setIsComposeOpen(!isComposeOpen)}
-                        className="mt-8 w-10 h-10 rounded-full border border-white/10 hover:border-[#FF4500] hover:bg-[#FF4500]/10 flex items-center justify-center transition-all group"
-                    >
-                        <PlusCircle strokeWidth={1} className="w-5 h-5 text-white group-hover:text-[#FF4500] transition-colors" />
-                    </button>
                 </div>
-            </nav>
-
-            {/* 2. THE STAGE (MAIN FEED) */}
-            <main className="flex-1 ml-[72px] lg:mr-[320px] min-h-screen relative">
 
                 {/* Compose Overlay (Minimalist) */}
                 <AnimatePresence>
@@ -142,7 +107,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                 </AnimatePresence>
 
                 {/* Feed Content */}
-                <div className="w-full max-w-[900px] mx-auto pt-12 pb-32 px-4 md:px-0"> {/* Removed standard paddings */}
+                <div className="w-full max-w-[900px] mx-auto pb-32 px-4 md:px-0"> {/* Removed standard paddings */}
                     {status === 'loading' ? (
                         <div className="h-screen w-full flex items-center justify-center">
                             <div className="text-[#FF4500] font-mono text-xs animate-pulse">INITIALIZING_FEED...</div>
@@ -180,6 +145,13 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                     )}
                 </div>
 
+                {/* Floating Action Button for Mobile/Desktop since Sidebar is gone */}
+                <button
+                    onClick={() => setIsComposeOpen(!isComposeOpen)}
+                    className="fixed bottom-8 left-8 w-14 h-14 bg-[#FF4500] rounded-full flex items-center justify-center shadow-lg shadow-[#FF4500]/20 hover:scale-110 transition-transform z-40"
+                >
+                    <PlusCircle className="w-6 h-6 text-black" />
+                </button>
             </main>
 
             {/* 3. THE RADAR (RIGHT PANEL) */}

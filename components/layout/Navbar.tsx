@@ -45,10 +45,41 @@ export const Navbar: React.FC<NavbarProps> = ({
     const [notifications, setNotifications] = useState(0);
 
     const { scrollY } = useScroll();
-    const navbarWidth = useTransform(scrollY, [0, 100], ['90%', '75%']);
+
+    // Dynamic transforms based on view
+    const isFeed = currentView === 'home';
+
+    const navbarWidth = useTransform(
+        scrollY,
+        [0, 100],
+        ['90%', isFeed ? '100%' : '75%']
+    );
+
+    const navbarTop = useTransform(
+        scrollY,
+        [0, 100],
+        ['1.5rem', isFeed ? '0rem' : '1.5rem']
+    );
+
+    const navbarRadius = useTransform(
+        scrollY,
+        [0, 100],
+        ['9999px', isFeed ? '0px' : '9999px']
+    );
+
+    const navbarBorder = useTransform(
+        scrollY,
+        [0, 100],
+        ['1px solid rgba(255,255,255,0.1)', isFeed ? '0px solid rgba(0,0,0,0)' : '1px solid rgba(255,255,255,0.1)']
+    );
+
     const navbarOpacity = useTransform(scrollY, [0, 100], [1, 0.95]);
     const navbarBlur = useTransform(scrollY, [0, 100], [24, 32]);
-    const navbarBg = useTransform(scrollY, [0, 100], ['rgba(255, 255, 255, 0.05)', 'rgba(18, 18, 18, 0.9)']);
+    const navbarBg = useTransform(
+        scrollY,
+        [0, 100],
+        ['rgba(255, 255, 255, 0.05)', isFeed ? '#050505' : 'rgba(18, 18, 18, 0.9)']
+    );
 
     useEffect(() => {
         if (socket) {
@@ -82,10 +113,18 @@ export const Navbar: React.FC<NavbarProps> = ({
     return (
         <>
             <motion.header
-                style={{ width: navbarWidth, opacity: navbarOpacity, backdropFilter: `blur(${navbarBlur}px)`, backgroundColor: navbarBg }}
+                style={{
+                    width: navbarWidth,
+                    top: navbarTop,
+                    borderRadius: navbarRadius,
+                    border: navbarBorder,
+                    opacity: navbarOpacity,
+                    backdropFilter: `blur(${navbarBlur}px)`,
+                    backgroundColor: navbarBg
+                }}
                 initial={{ y: -100, x: '-50%' }}
                 animate={{ y: 0, x: '-50%' }}
-                className="fixed top-6 left-1/2 z-[999] h-16 border border-white/10 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_15px_rgba(249,115,22,0.1)] flex items-center justify-between px-8 transition-all duration-500"
+                className="fixed z-[999] h-16 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_15px_rgba(249,115,22,0.1)] flex items-center justify-between px-8 transition-all duration-500"
             >
                 {/* Neon Glow Accent */}
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500/0 via-orange-500/5 to-orange-500/0 pointer-events-none" />

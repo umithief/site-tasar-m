@@ -80,7 +80,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 style={{ width: navbarWidth, opacity: navbarOpacity, backdropFilter: `blur(${navbarBlur}px)`, backgroundColor: navbarBg }}
                 initial={{ y: -100, x: '-50%' }}
                 animate={{ y: 0, x: '-50%' }}
-                className="fixed top-6 left-1/2 z-[100] h-16 border border-white/10 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_15px_rgba(249,115,22,0.1)] flex items-center justify-between px-8 transition-all duration-500"
+                className="fixed top-6 left-1/2 z-[999] h-16 border border-white/10 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_15px_rgba(249,115,22,0.1)] flex items-center justify-between px-8 transition-all duration-500"
             >
                 {/* Neon Glow Accent */}
                 <div className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500/0 via-orange-500/5 to-orange-500/0 pointer-events-none" />

@@ -86,6 +86,10 @@ export const Home: React.FC<HomeProps> = ({
         <>
             <LiquidSlider />
 
+            <ErrorBoundary name="VelocityReels">
+                <VelocityReels />
+            </ErrorBoundary>
+
             {/* Mobile Top Bar (Enhanced Visibility) */}
             <div className="md:hidden pt-safe-top pb-3 px-4 bg-white/95 backdrop-blur-xl sticky top-0 z-30 border-b border-gray-200/50 shadow-sm transition-colors duration-500 h-20 flex flex-col justify-center">
                 <div className="flex justify-between items-center">

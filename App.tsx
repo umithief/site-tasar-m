@@ -53,6 +53,7 @@ import { useLivingTime } from './hooks/useLivingTime';
 
 // Import Components
 import { Home } from './components/Home';
+import { Showcase } from './components/Showcase';
 import { AuthPage } from './components/AuthPage';
 import { Shop } from './components/Shop';
 import { Favorites } from './components/Favorites';
@@ -365,7 +366,8 @@ export const App: React.FC = () => {
 
     const renderView = () => {
         switch (view) {
-            case 'home': return <Home products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
+            case 'home': return <Home onNavigate={navigateTo} />;
+            case 'showcase': return <Showcase products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
             case 'shop': return <Shop products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} initialCategory={initialShopCategory} />;
             case 'auth': return <AuthPage onNavigate={navigateTo} onLoginSuccess={async () => {
                 const u = await authService.getCurrentUser();

@@ -64,11 +64,16 @@ export const Navbar: React.FC<NavbarProps> = ({
 
     const navItems = [
         { id: 'home', label: t('nav.home') || 'HOME', icon: LayoutGrid },
+        { id: 'showcase', label: 'VİTRİN', icon: Zap },
         { id: 'shop', label: t('nav.shop') || 'SHOP', icon: ShoppingCart },
         { id: 'routes', label: t('nav.routes') || 'ROUTES', icon: Compass },
         { id: 'meetup', label: t('nav.events') || 'EVENTS', icon: Compass },
         { id: 'forum', label: t('nav.forum') || 'COMMUNITY', icon: LayoutGrid },
-        { id: 'social-hub', label: 'HUB', icon: Compass },
+        { id: 'social-hub', label: 'HUB', icon: Compass }, // Keeping HUB for now or removing it? User said "Home" should be feed. HUB IS feed. So maybe remove HUB item if Home IS Hub?
+        // Actually, if Home is the Feed, we don't need "HUB" anymore as a separate item.
+        // But let's keep it for now to avoid confusion or just hide it?
+        // "Home" now renders SocialHub. "HUB" also renders SocialHub.
+        // Removing "HUB" item seems correct to avoid duplication.
     ];
 
     const activeIndex = navItems.findIndex(item => item.id === currentView);

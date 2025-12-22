@@ -19,6 +19,7 @@ import { AdminCommunity } from './admin/AdminCommunity';
 import { AdminPaddock } from './admin/AdminPaddock';
 import { AdminShowcase } from './admin/AdminShowcase';
 import { AdminVlogs } from './admin/AdminVlogs';
+import { AdminReelManager } from './admin/AdminReelManager';
 import { productService } from '../services/productService';
 import { sliderService } from '../services/sliderService';
 import { categoryService } from '../services/categoryService';
@@ -65,7 +66,7 @@ interface AdminPanelProps {
     onNavigate: (view: any) => void;
 }
 
-type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'slider' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community' | 'paddock' | 'showcase' | 'vlogs';
+type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'slider' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community' | 'paddock' | 'showcase' | 'vlogs' | 'reels';
 
 
 
@@ -509,6 +510,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
                                 handleEdit={handleEdit}
                                 handleDelete={handleDelete}
                             />
+                        )}
+
+                        {activeTab === 'reels' && (
+                            <AdminReelManager />
                         )}
 
                     </div>

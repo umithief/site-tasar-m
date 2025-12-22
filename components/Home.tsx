@@ -18,6 +18,7 @@ import { useLanguage } from '../contexts/LanguageProvider';
 import ProductCatalog from './ProductCatalog';
 import { CinemaShowcase } from './CinemaShowcase';
 import { ErrorBoundary } from './ErrorBoundary';
+import { VelocityReels } from './reels/VelocityReels';
 
 interface HomeProps {
     products: Product[];

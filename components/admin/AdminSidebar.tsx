@@ -63,6 +63,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, setActive
                 <NavItem id="paddock" label="Paddock" icon={Activity} active={activeTab === 'paddock'} onClick={setActiveTab} />
                 <NavItem id="slider" label="Slider" icon={ImageIcon} active={activeTab === 'slider'} onClick={setActiveTab} />
                 <NavItem id="showcase" label="Vitrin (Cinema)" icon={Film} active={activeTab === 'showcase'} onClick={setActiveTab} />
+                <NavItem id="reels" label="Velocity Reels" icon={Film} active={activeTab === 'reels'} onClick={setActiveTab} />
                 <NavItem id="models" label="3D Modeller" icon={Box} active={activeTab === 'models'} onClick={setActiveTab} />
             </div>
 

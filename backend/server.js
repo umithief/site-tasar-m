@@ -26,7 +26,13 @@ import feedbackRoutes from './routes/feedbackRoutes.js';
 import showcaseRoutes from './routes/showcaseRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import userRoutes from './routes/userRoutes.js';
-import postRoutes from './routes/postRoutes.js';
+import reelRoutes from './routes/reelRoutes.js';
+
+// ... imports
+
+app.use('/api/negotiations', negotiationRoutes);
+app.use('/api/feedback', feedbackRoutes);
+app.use('/api/reels', reelRoutes);
 
 import http from 'http';
 import { initSync } from './socket.js';

@@ -1,10 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Search, ShoppingBag, Zap, LogIn, X, ChevronDown, Bell, Warehouse, Settings, LogOut, Menu, User as UserIcon, Heart, Globe, ShieldCheck } from 'lucide-react';
-import { ViewState, User as UserType, ColorTheme, Product } from '../../types';
-import { motion, AnimatePresence } from 'framer-motion';
-import { UserAvatar } from '../ui/UserAvatar';
-import { productService } from '../../services/productService';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import {
+    Search, ShoppingBag, Bell, User as UserIcon,
+    Settings, LogOut, LayoutGrid, Compass, ShoppingCart,
+    Zap, ChevronDown, Warehouse, ShieldCheck
+} from 'lucide-react';
+import { ViewState, User as UserType, ColorTheme } from '../../types';
+import { useAuthStore } from '../../store/authStore';
+import { useSocket } from '../../hooks/useSocket';
 import { useLanguage } from '../../contexts/LanguageProvider';
+import { SearchOverlay } from './SearchOverlay';
+import { Magnetic } from '../ui/Magnetic';
+import { UserAvatar } from '../ui/UserAvatar';
 
 interface NavbarProps {
     cartCount: number;
@@ -12,9 +19,7 @@ interface NavbarProps {
     onCartClick: () => void;
     onFavoritesClick: () => void;
     onSearch: (query: string) => void;
-    user: UserType | null;
     onOpenAuth: () => void;
-    onLogout: () => void;
     onNavigate: (view: ViewState, data?: any) => void;
     currentView: ViewState;
     colorTheme?: ColorTheme;
@@ -27,305 +32,224 @@ export const Navbar: React.FC<NavbarProps> = ({
     onCartClick,
     onOpenAuth,
     onNavigate,
-    user,
     currentView,
-    onLogout,
-    onToggleMenu
+    onToggleMenu,
+    onSearch
 }) => {
-    const { t, language, setLanguage } = useLanguage();
-    const [isScrolled, setIsScrolled] = useState(false);
-    const [isSearchActive, setIsSearchActive] = useState(false);
-    const [productQuery, setProductQuery] = useState('');
-    const [allProducts, setAllProducts] = useState<Product[]>([]);
-    const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+    const { user, logout, isAuthenticated } = useAuthStore();
+    const { socket } = useSocket();
+    const { t } = useLanguage();
 
-    const searchInputRef = useRef<HTMLInputElement>(null);
-    const navbarRef = useRef<HTMLDivElement>(null);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
+    const [isProfileOpen, setIsProfileOpen] = useState(false);
+    const [notifications, setNotifications] = useState(0);
 
-    useEffect(() => {
-        const handleScroll = () => setIsScrolled(window.scrollY > 20);
-        window.addEventListener('scroll', handleScroll);
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, []);
+    const { scrollY } = useScroll();
+    const navbarWidth = useTransform(scrollY, [0, 100], ['90%', '75%']);
+    const navbarOpacity = useTransform(scrollY, [0, 100], [1, 0.95]);
+    const navbarBlur = useTransform(scrollY, [0, 100], [24, 32]);
 
     useEffect(() => {
-        productService.getProducts().then(setAllProducts);
-    }, []);
-
-    useEffect(() => {
-        if (isSearchActive && searchInputRef.current) {
-            setTimeout(() => searchInputRef.current?.focus(), 100);
+        if (socket) {
+            const handleNotification = () => setNotifications(prev => prev + 1);
+            socket.on('new_message', handleNotification);
+            socket.on('new_follower', handleNotification);
+            return () => {
+                socket.off('new_message', handleNotification);
+                socket.off('new_follower', handleNotification);
+            };
         }
-    }, [isSearchActive]);
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (navbarRef.current && !navbarRef.current.contains(event.target as Node)) {
-                setIsSearchActive(false);
-                setIsProfileMenuOpen(false);
-            }
-        };
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
-
-    const filteredProducts = allProducts.filter(p =>
-        p.name.toLowerCase().includes(productQuery.toLowerCase()) ||
-        p.category.toLowerCase().includes(productQuery.toLowerCase())
-    ).slice(0, 5);
+    }, [socket]);
 
     const navItems = [
-        { id: 'home', label: t('nav.home') },
-        { id: 'shop', label: t('nav.shop') },
-        { id: 'routes', label: t('nav.routes') },
-        { id: 'social-hub', label: 'HUB' },
-        { id: 'meetup', label: t('nav.events') },
+        { id: 'home', label: t('nav.home') || 'FEED', icon: LayoutGrid },
+        { id: 'social-hub', label: 'DISCOVER', icon: Compass },
+        { id: 'shop', label: t('nav.shop') || 'SHOP', icon: ShoppingCart },
     ];
 
-    const toggleLanguage = () => {
-        setLanguage(language === 'tr' ? 'en' : 'tr');
-    };
+    const activeIndex = navItems.findIndex(item => item.id === currentView);
 
     return (
         <>
-            {/* --- DESKTOP ISLAND NAVBAR --- */}
-            <div className="hidden md:flex fixed top-0 left-0 right-0 z-50 justify-center pointer-events-none pt-6 px-4">
-                <motion.div
-                    ref={navbarRef}
-                    initial={{ y: -100, opacity: 0 }}
-                    animate={{
-                        y: 0,
-                        opacity: 1,
-                        width: isSearchActive ? '850px' : isScrolled ? '75%' : '90%',
-                    }}
-                    transition={{ type: "spring", stiffness: 200, damping: 25 }}
-                    className={`pointer-events-auto relative bg-white/90 backdrop-blur-2xl border border-white/40 rounded-full shadow-2xl flex items-center justify-between px-3 py-3 transition-all duration-500`}
+            <motion.header
+                style={{ width: navbarWidth, opacity: navbarOpacity, backdropFilter: `blur(${navbarBlur}px)` }}
+                initial={{ y: -100, x: '-50%' }}
+                animate={{ y: 0, x: '-50%' }}
+                className="fixed top-6 left-1/2 z-[100] h-16 bg-white/5 border border-white/10 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_15px_rgba(249,115,22,0.1)] flex items-center justify-between px-8 transition-all duration-500"
+            >
+                {/* Neon Glow Accent */}
+                <div className="absolute inset-0 rounded-full bg-gradient-to-r from-orange-500/0 via-orange-500/5 to-orange-500/0 pointer-events-none" />
+
+                {/* Left: Logo */}
+                <div
+                    className="flex items-center gap-3 cursor-pointer group"
+                    onClick={() => onNavigate('home')}
                 >
-                    {/* 1. LEFT: LOGO */}
-                    <button
-                        onClick={() => onNavigate('home')}
-                        className="flex items-center gap-3 pl-4 pr-4 group shrink-0"
-                    >
-                        <div className="w-10 h-10 bg-moto-accent rounded-xl flex items-center justify-center shadow-lg shadow-moto-accent/30 group-hover:scale-110 transition-transform">
-                            <Zap className="w-6 h-6 text-white fill-white" />
-                        </div>
-                        {!isSearchActive && (
-                            <motion.span
-                                initial={{ opacity: 0, width: 0 }}
-                                animate={{ opacity: 1, width: 'auto' }}
-                                className="font-display font-black text-2xl text-gray-900 tracking-tight whitespace-nowrap overflow-hidden"
-                            >
-                                MOTO<span className="text-moto-accent font-bold italic">VIBE</span>
-                            </motion.span>
-                        )}
-                    </button>
-
-                    {/* 2. CENTER: NAVIGATION */}
-                    <div className="flex-1 flex justify-center items-center px-6 relative h-12">
-                        <AnimatePresence mode="wait">
-                            {isSearchActive ? (
-                                <motion.div
-                                    key="search-bar"
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.95 }}
-                                    className="w-full relative flex items-center"
-                                >
-                                    <Search className="absolute left-0 w-5 h-5 text-moto-accent" />
-                                    <input
-                                        ref={searchInputRef}
-                                        type="text"
-                                        placeholder={t('nav.search_placeholder')}
-                                        className="w-full bg-transparent border-none outline-none text-gray-900 placeholder-gray-400 text-base pl-10 font-medium h-full"
-                                        value={productQuery}
-                                        onChange={(e) => setProductQuery(e.target.value)}
-                                    />
-                                    <button onClick={() => { setIsSearchActive(false); setProductQuery(''); }} className="p-2 hover:bg-gray-100 rounded-full text-gray-400 hover:text-gray-900 transition-colors">
-                                        <X className="w-5 h-5" />
-                                    </button>
-
-                                    {/* Dropdown */}
-                                    {productQuery && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10 }}
-                                            animate={{ opacity: 1, y: 0 }}
-                                            className="absolute top-14 left-0 right-0 bg-white border border-gray-200 rounded-3xl shadow-2xl overflow-hidden z-50 p-3"
-                                        >
-                                            {filteredProducts.length > 0 ? filteredProducts.map(product => (
-                                                <button
-                                                    key={product.id}
-                                                    onClick={() => { onNavigate('product-detail', product); setIsSearchActive(false); }}
-                                                    className="w-full flex items-center gap-4 p-3 hover:bg-gray-50 rounded-2xl transition-colors text-left group"
-                                                >
-                                                    <div className="w-12 h-12 rounded-xl bg-gray-100 overflow-hidden flex-shrink-0 p-1 border border-gray-200">
-                                                        <img src={product.image} className="w-full h-full object-contain" />
-                                                    </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <div className="text-base font-bold text-gray-900 truncate group-hover:text-moto-accent">{product.name}</div>
-                                                        <div className="text-sm text-gray-500 font-mono">₺{product.price.toLocaleString()}</div>
-                                                    </div>
-                                                </button>
-                                            )) : <div className="p-6 text-center text-gray-500 text-sm font-medium">Sonuç bulunamadı.</div>}
-                                        </motion.div>
-                                    )}
-                                </motion.div>
-                            ) : (
-                                <motion.nav
-                                    key="nav-links"
-                                    initial={{ opacity: 0, scale: 0.95 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.95 }}
-                                    className="flex items-center gap-2"
-                                >
-                                    {navItems.map((item) => {
-                                        const isActive = currentView === item.id;
-                                        return (
-                                            <button
-                                                key={item.id}
-                                                onClick={() => onNavigate(item.id as ViewState)}
-                                                className={`relative px-5 py-2.5 rounded-full text-sm font-bold uppercase tracking-wide transition-all ${isActive ? 'text-white' : 'text-gray-500 hover:text-gray-900 hover:bg-gray-100'
-                                                    }`}
-                                            >
-                                                {isActive && (
-                                                    <motion.div
-                                                        layoutId="island-nav-active"
-                                                        className="absolute inset-0 bg-[#121212] rounded-full shadow-lg"
-                                                        transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
-                                                    />
-                                                )}
-                                                <span className="relative z-10">{item.label}</span>
-                                            </button>
-                                        );
-                                    })}
-                                </motion.nav>
-                            )}
-                        </AnimatePresence>
+                    <div className="w-8 h-8 bg-orange-500 rounded-lg flex items-center justify-center shadow-[0_0_15px_rgba(249,115,22,0.5)] group-hover:scale-110 transition-transform">
+                        <Zap className="w-5 h-5 text-black fill-black" />
                     </div>
+                    <span className="hidden md:block font-display font-black text-xl text-white tracking-[0.15em] uppercase">
+                        MOTO<span className="text-orange-500">VIBE</span>
+                    </span>
+                </div>
 
-                    {/* 3. RIGHT: ACTIONS */}
-                    <div className="flex items-center gap-3 pr-2">
-
-                        {!isSearchActive && (
-                            <button
-                                onClick={() => setIsSearchActive(true)}
-                                className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-900 transition-colors"
-                            >
-                                <Search className="w-5 h-5" />
-                            </button>
+                {/* Center: Navigation */}
+                <nav className="hidden lg:flex items-center gap-1 relative h-10 px-1 bg-black/20 rounded-full border border-white/5">
+                    {/* Sliding Hover Indicator (Active) */}
+                    <AnimatePresence>
+                        {activeIndex !== -1 && (
+                            <motion.div
+                                layoutId="nav-active-bg"
+                                className="absolute bg-white/10 rounded-full h-8 w-[100px]"
+                                initial={false}
+                                transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                style={{
+                                    left: `${activeIndex * 104 + 4}px`
+                                }}
+                            />
                         )}
+                    </AnimatePresence>
 
+                    {navItems.map((item) => (
                         <button
-                            onClick={toggleLanguage}
-                            className="w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-500 hover:text-gray-900 transition-colors font-black text-sm"
+                            key={item.id}
+                            onClick={() => onNavigate(item.id as ViewState)}
+                            className={`relative w-[100px] h-8 flex items-center justify-center text-[10px] font-black tracking-widest uppercase transition-colors group ${currentView === item.id ? 'text-white' : 'text-white/40 hover:text-white'
+                                }`}
                         >
-                            {language === 'tr' ? 'TR' : 'EN'}
+                            <span className="relative z-10">{item.label}</span>
+                            {currentView === item.id && (
+                                <motion.div
+                                    layoutId="nav-dot"
+                                    className="absolute -bottom-1 w-1 h-1 bg-orange-500 rounded-full"
+                                />
+                            )}
                         </button>
+                    ))}
+                </nav>
 
-                        <div className="w-[2px] h-6 bg-gray-200 mx-1 rounded-full"></div>
+                {/* Right: Actions */}
+                <div className="flex items-center gap-2">
+                    {/* Search */}
+                    <Magnetic strength={0.2}>
+                        <button
+                            onClick={() => setIsSearchOpen(true)}
+                            className="w-10 h-10 flex items-center justify-center rounded-full text-white/60 hover:text-white hover:bg-white/5 transition-all"
+                        >
+                            <Search className="w-5 h-5" />
+                        </button>
+                    </Magnetic>
 
+                    {/* Notifications */}
+                    <Magnetic strength={0.3}>
+                        <button className="relative w-10 h-10 flex items-center justify-center rounded-full text-white/60 hover:text-white hover:bg-white/5 transition-all">
+                            <Bell className="w-5 h-5" />
+                            {notifications > 0 && (
+                                <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-orange-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
+                            )}
+                        </button>
+                    </Magnetic>
+
+                    <div className="w-[1px] h-6 bg-white/10 mx-2" />
+
+                    {/* Cart */}
+                    <Magnetic strength={0.2}>
                         <button
                             onClick={onCartClick}
-                            className="relative w-11 h-11 flex items-center justify-center rounded-full hover:bg-gray-100 text-gray-900 transition-colors group"
+                            className="relative w-10 h-10 flex items-center justify-center rounded-full text-white/60 hover:text-white hover:bg-white/5 transition-all"
                         >
-                            <ShoppingBag className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                            <ShoppingBag className="w-5 h-5" />
                             {cartCount > 0 && (
-                                <span className="absolute top-2 right-2 w-2.5 h-2.5 bg-moto-accent rounded-full shadow-sm border-2 border-white"></span>
+                                <span className="absolute -top-1 -right-1 bg-orange-500 text-black text-[8px] font-black w-4 h-4 flex items-center justify-center rounded-full shadow-lg">
+                                    {cartCount}
+                                </span>
                             )}
                         </button>
+                    </Magnetic>
 
-                        <div className="relative">
-                            {user ? (
-                                <button
-                                    onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                                    className="flex items-center gap-2 pl-2 rounded-full hover:bg-gray-100 transition-colors pr-1 py-1 border border-transparent hover:border-gray-200"
-                                >
-                                    <UserAvatar name={user.name} size={36} className="ring-2 ring-gray-200" />
-                                    <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform ${isProfileMenuOpen ? 'rotate-180' : ''}`} />
-                                </button>
-                            ) : (
-                                <button
-                                    onClick={onOpenAuth}
-                                    className="w-11 h-11 flex items-center justify-center rounded-full bg-[#121212] text-white hover:bg-black transition-colors shadow-xl hover:shadow-2xl hover:scale-105 transform duration-200"
-                                >
-                                    <LogIn className="w-5 h-5" />
-                                </button>
-                            )}
+                    {/* User Profile / Auth */}
+                    {isAuthenticated && user ? (
+                        <div className="relative ml-2">
+                            <button
+                                onClick={() => setIsProfileOpen(!isProfileOpen)}
+                                className="flex items-center gap-2 p-1 rounded-full border border-white/10 hover:border-orange-500/50 bg-white/5 transition-all group"
+                            >
+                                <div className="relative">
+                                    <UserAvatar name={user.name} size={32} className="rounded-full" />
+                                    <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 rounded-full border-2 border-[#121212] shadow-sm" />
+                                </div>
+                                <ChevronDown className={`w-4 h-4 text-white/40 group-hover:text-white transition-transform ${isProfileOpen ? 'rotate-180' : ''}`} />
+                            </button>
 
                             <AnimatePresence>
-                                {isProfileMenuOpen && user && (
+                                {isProfileOpen && (
                                     <motion.div
                                         initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
                                         exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                        className="absolute top-full right-0 mt-4 w-64 bg-white border border-gray-200 rounded-3xl shadow-2xl overflow-hidden z-50 p-2"
+                                        className="absolute top-full right-0 mt-4 w-60 bg-[#121212]/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-[110] p-1"
                                     >
-                                        <div className="p-4 mb-2 bg-gray-50 rounded-2xl mx-1 border border-gray-100">
-                                            <p className="text-[10px] text-moto-accent font-black uppercase tracking-widest mb-1">{user.rank}</p>
-                                            <p className="text-base font-bold text-gray-900 truncate">{user.name}</p>
+                                        <div className="p-4 mb-1 bg-white/5 rounded-xl border border-white/5">
+                                            <p className="text-[9px] text-orange-500 font-black uppercase tracking-[0.2em] mb-1">{user.rank || 'MEMBER'}</p>
+                                            <p className="text-sm font-bold text-white truncate">{user.name}</p>
                                         </div>
 
-                                        <div className="space-y-1">
+                                        <div className="space-y-0.5">
                                             {user.isAdmin && (
-                                                <button onClick={() => { onNavigate('admin'); setIsProfileMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-blue-600 hover:text-blue-700 hover:bg-blue-50 rounded-xl transition-colors">
-                                                    <ShieldCheck className="w-5 h-5" /> Admin Panel
+                                                <button onClick={() => { onNavigate('admin'); setIsProfileOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-blue-400 hover:text-blue-300 hover:bg-blue-400/10 rounded-xl transition-colors">
+                                                    <ShieldCheck className="w-4 h-4" /> ADMIN PANEL
                                                 </button>
                                             )}
-                                            <button onClick={() => { onNavigate('profile'); setIsProfileMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-xl transition-colors">
-                                                <UserIcon className="w-5 h-5" /> {t('nav.profile')}
+                                            <button onClick={() => { onNavigate('profile'); setIsProfileOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-white/60 hover:text-white hover:bg-white/5 rounded-xl transition-colors uppercase tracking-wider">
+                                                <UserIcon className="w-4 h-4" /> My Profile
                                             </button>
-                                            <button onClick={() => { onNavigate('profile'); setIsProfileMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-xl transition-colors">
-                                                <Warehouse className="w-5 h-5" /> {t('nav.garage')}
+                                            <button onClick={() => { onNavigate('profile'); setIsProfileOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-white/60 hover:text-white hover:bg-white/5 rounded-xl transition-colors uppercase tracking-wider">
+                                                <Warehouse className="w-4 h-4" /> My Garage
                                             </button>
-                                            <button onClick={() => { onNavigate('settings' as any); setIsProfileMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-gray-600 hover:text-gray-900 hover:bg-gray-50 rounded-xl transition-colors">
-                                                <Settings className="w-5 h-5" /> {t('nav.settings')}
+                                            <button onClick={() => { onNavigate('settings' as any); setIsProfileOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-white/60 hover:text-white hover:bg-white/5 rounded-xl transition-colors uppercase tracking-wider">
+                                                <Settings className="w-4 h-4" /> Settings
                                             </button>
                                         </div>
 
-                                        <div className="h-[1px] bg-gray-100 my-2 mx-2"></div>
+                                        <div className="h-[1px] bg-white/5 my-1 mx-2" />
 
-                                        <button onClick={() => { onLogout(); setIsProfileMenuOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-sm font-bold text-red-600 hover:bg-red-50 rounded-xl transition-colors">
-                                            <LogOut className="w-5 h-5" /> {t('nav.logout')}
+                                        <button onClick={() => { logout(); setIsProfileOpen(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-red-500 hover:bg-red-500/10 rounded-xl transition-colors uppercase tracking-wider">
+                                            <LogOut className="w-4 h-4" /> Logout
                                         </button>
                                     </motion.div>
                                 )}
                             </AnimatePresence>
                         </div>
-                    </div>
-                </motion.div>
-            </div>
+                    ) : (
+                        <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={onOpenAuth}
+                            className="ml-2 relative group"
+                        >
+                            <div className="absolute -inset-[1px] bg-gradient-to-r from-orange-600 to-orange-400 rounded-full blur-[2px] opacity-50 group-hover:opacity-100 transition-opacity" />
+                            <div className="relative px-6 py-2 bg-black rounded-full border border-white/10 flex items-center gap-2">
+                                <span className="text-[10px] font-black text-white tracking-[0.2em] uppercase">Join Club</span>
+                            </div>
+                        </motion.button>
+                    )}
 
-            {/* --- MOBILE NAVBAR (Sticky Top) --- */}
-            <div className={`md:hidden fixed top-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-xl border-b border-gray-200 px-4 h-20 flex items-center justify-between transition-transform duration-300 shadow-sm ${currentView === 'home' ? '-translate-y-full' : 'translate-y-0'}`}>
-                <button onClick={() => onNavigate('home')} className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-moto-accent rounded-xl flex items-center justify-center shadow-lg shadow-moto-accent/20">
-                        <Zap className="w-6 h-6 text-white fill-white" />
-                    </div>
-                    <span className="font-display font-black text-2xl text-gray-900 tracking-tight">MOTO<span className="text-moto-accent">VIBE</span></span>
-                </button>
-
-                <div className="flex items-center gap-2">
-                    <button
-                        onClick={toggleLanguage}
-                        className="w-11 h-11 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 active:scale-95 transition-transform text-sm font-black"
-                    >
-                        {language === 'tr' ? 'TR' : 'EN'}
-                    </button>
-                    <button
-                        onClick={() => onNavigate('shop')}
-                        className="w-11 h-11 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 active:scale-95 transition-transform hover:bg-gray-200"
-                    >
-                        <Search className="w-5 h-5" />
-                    </button>
+                    {/* Mobile Menu Toggle */}
                     <button
                         onClick={onToggleMenu}
-                        className="w-11 h-11 flex items-center justify-center rounded-full bg-[#121212] text-white active:scale-95 transition-transform shadow-lg hover:shadow-xl"
+                        className="lg:hidden w-10 h-10 flex items-center justify-center rounded-full bg-white/5 text-white"
                     >
-                        <Menu className="w-5 h-5" />
+                        <LayoutGrid className="w-5 h-5" />
                     </button>
                 </div>
-            </div>
+            </motion.header>
+
+            {/* Search Overlay Implementation */}
+            <SearchOverlay
+                isOpen={isSearchOpen}
+                onClose={() => setIsSearchOpen(false)}
+                onSearch={onSearch}
+            />
         </>
     );
 };

@@ -16,9 +16,10 @@ interface MotoVlogMapProps {
     onAddToCart: (product: Product, event?: React.MouseEvent) => void;
     onProductClick: (product: Product) => void;
     user: UserType | null;
+    isEmbedded?: boolean;
 }
 
-export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCart, onProductClick, user }) => {
+export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCart, onProductClick, user, isEmbedded = false }) => {
     const [vlogs, setVlogs] = useState<MotoVlog[]>([]);
     const [selectedVlog, setSelectedVlog] = useState<MotoVlog | null>(null);
     const [relatedProducts, setRelatedProducts] = useState<Product[]>([]);
@@ -336,7 +337,7 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
     };
 
     return (
-        <div className="relative w-full h-screen bg-black overflow-hidden font-sans select-none">
+        <div className={`relative w-full ${isEmbedded ? 'h-full bg-transparent' : 'h-screen bg-black'} overflow-hidden font-sans select-none`}>
 
             {/* FULL SCREEN MAP */}
             <div ref={mapContainerRef} className="absolute inset-0 z-0 bg-[#050505]" />
@@ -344,24 +345,27 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
             {/* OVERLAYS */}
             <div className="absolute inset-0 z-10 pointer-events-none bg-gradient-to-t from-black/80 via-transparent to-black/40"></div>
 
-            {/* FLOATING HEADER / BACK */}
-            <div className="absolute top-6 left-6 z-50 flex items-center gap-4">
-                <button
-                    onClick={() => onNavigate('home')}
-                    className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all hover:scale-105 active:scale-95 group"
-                >
-                    <ArrowRight className="w-5 h-5 rotate-180" />
-                </button>
-                <h1 className="text-2xl font-display font-black text-white/90 tracking-widest pointer-events-auto select-none opacity-0 md:opacity-100 transition-opacity">
-                    MOTO<span className="text-moto-accent">MAP</span>
-                </h1>
-            </div>
+            {/* FLOATING HEADER / BACK - Only show if not embedded */}
+            {!isEmbedded && (
+                <div className="absolute top-6 left-6 z-50 flex items-center gap-4">
+                    <button
+                        onClick={() => onNavigate('home')}
+                        className="w-12 h-12 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-white/10 transition-all hover:scale-105 active:scale-95 group"
+                    >
+                        <ArrowRight className="w-5 h-5 rotate-180" />
+                    </button>
+                    <h1 className="text-2xl font-display font-black text-white/90 tracking-widest pointer-events-auto select-none opacity-0 md:opacity-100 transition-opacity">
+                        MOTO<span className="text-moto-accent">MAP</span>
+                    </h1>
+                </div>
+            )}
 
             {/* FLOATING SIDEBAR PANEL */}
             <motion.div
                 initial={{ x: -400, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
-                className="absolute top-24 left-6 bottom-6 w-[360px] z-40 flex flex-col pointer-events-none"
+                // If embedded, push it down a bit so it doesn't hit the top edge too hard or depend on global padding
+                className={`absolute ${isEmbedded ? 'top-6 left-6 bottom-6' : 'top-24 left-6 bottom-6'} w-[320px] lg:w-[360px] z-40 flex flex-col pointer-events-none`}
             >
                 <div className="flex-1 bg-black/60 backdrop-blur-2xl rounded-3xl border border-white/5 flex flex-col overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.5)] pointer-events-auto">
 

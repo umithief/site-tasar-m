@@ -13,9 +13,10 @@ interface MotoMeetupProps {
     user: User | null;
     onOpenAuth: () => void;
     onNavigate: (view: ViewState) => void;
+    isEmbedded?: boolean;
 }
 
-export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavigate }) => {
+export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavigate, isEmbedded = false }) => {
     const [events, setEvents] = useState<MeetupEvent[]>([]);
     const [selectedEvent, setSelectedEvent] = useState<MeetupEvent | null>(null);
     const [filter, setFilter] = useState<string>('all');
@@ -232,7 +233,7 @@ export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavi
     };
 
     return (
-        <div className="fixed inset-0 z-50 bg-[#050505] overflow-hidden flex flex-col">
+        <div className={isEmbedded ? "relative w-full h-full bg-[#050505] overflow-hidden flex flex-col" : "fixed inset-0 z-50 bg-[#050505] overflow-hidden flex flex-col"}>
 
             {/* Map Background */}
             <div className="absolute inset-0 z-0">
@@ -244,7 +245,7 @@ export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavi
             <div className="absolute inset-0 z-10 flex flex-col pointer-events-none">
 
                 {/* Header & Controls */}
-                <div className="pt-safe-top px-4 md:px-8 py-6 pointer-events-auto flex flex-col gap-4">
+                <div className={isEmbedded ? "px-4 py-4 pointer-events-auto flex flex-col gap-4" : "pt-safe-top px-4 md:px-8 py-6 pointer-events-auto flex flex-col gap-4"}>
                     <div className="flex justify-between items-start">
                         <div>
                             <div className="flex items-center gap-2 text-moto-accent mb-1 font-bold text-xs uppercase shadow-black drop-shadow-md">
@@ -254,12 +255,14 @@ export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavi
                             <h1 className="text-3xl md:text-5xl font-display font-black text-white tracking-tight drop-shadow-lg">MOTO<span className="text-moto-accent">MEETUP</span></h1>
                         </div>
 
-                        <button
-                            onClick={() => onNavigate('home')}
-                            className="w-10 h-10 bg-black/60 backdrop-blur-md text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors border border-white/10 shadow-xl"
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
+                        {!isEmbedded && (
+                            <button
+                                onClick={() => onNavigate('home')}
+                                className="w-10 h-10 bg-black/60 backdrop-blur-md text-white rounded-full flex items-center justify-center hover:bg-red-600 transition-colors border border-white/10 shadow-xl"
+                            >
+                                <X className="w-5 h-5" />
+                            </button>
+                        )}
                     </div>
 
                     {/* Filters */}
@@ -275,8 +278,8 @@ export const MotoMeetup: React.FC<MotoMeetupProps> = ({ user, onOpenAuth, onNavi
                                 key={cat.id}
                                 onClick={() => setFilter(cat.id)}
                                 className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase transition-all whitespace-nowrap border shadow-lg ${filter === cat.id
-                                        ? 'bg-moto-accent border-moto-accent text-black'
-                                        : 'bg-black/60 border-white/10 text-gray-300 hover:bg-black/80 hover:text-white backdrop-blur-md'
+                                    ? 'bg-moto-accent border-moto-accent text-black'
+                                    : 'bg-black/60 border-white/10 text-gray-300 hover:bg-black/80 hover:text-white backdrop-blur-md'
                                     }`}
                             >
                                 <cat.icon className="w-3 h-3" /> {cat.label}

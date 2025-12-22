@@ -27,12 +27,10 @@ import showcaseRoutes from './routes/showcaseRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import reelRoutes from './routes/reelRoutes.js';
+import postRoutes from './routes/postRoutes.js';
 
 // ... imports
 
-app.use('/api/negotiations', negotiationRoutes);
-app.use('/api/feedback', feedbackRoutes);
-app.use('/api/reels', reelRoutes);
 
 import http from 'http';
 import { initSync } from './socket.js';
@@ -478,6 +476,7 @@ app.use('/api/forum', forumRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes); // Using postRoutes as requested
 app.use('/api/social', postRoutes); // Map legacy route to new logic
+app.use('/api/reels', reelRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/showcase', showcaseRoutes);
 app.use('/api/analytics', analyticsRoutes);

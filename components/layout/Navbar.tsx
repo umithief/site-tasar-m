@@ -62,12 +62,16 @@ export const Navbar: React.FC<NavbarProps> = ({
     }, [socket]);
 
     const navItems = [
-        { id: 'home', label: t('nav.home') || 'FEED', icon: LayoutGrid },
-        { id: 'social-hub', label: 'DISCOVER', icon: Compass },
+        { id: 'home', label: t('nav.home') || 'HOME', icon: LayoutGrid },
         { id: 'shop', label: t('nav.shop') || 'SHOP', icon: ShoppingCart },
+        { id: 'routes', label: t('nav.routes') || 'ROUTES', icon: Compass },
+        { id: 'meetup', label: t('nav.events') || 'EVENTS', icon: Compass },
+        { id: 'forum', label: t('nav.forum') || 'COMMUNITY', icon: LayoutGrid },
+        { id: 'social-hub', label: 'HUB', icon: Compass },
     ];
 
     const activeIndex = navItems.findIndex(item => item.id === currentView);
+    const itemWidth = 90; // Fixed width for each nav item to ensure alignment
 
     return (
         <>
@@ -94,17 +98,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
 
                 {/* Center: Navigation */}
-                <nav className="hidden lg:flex items-center gap-1 relative h-10 px-1 bg-black/20 rounded-full border border-white/5">
+                <nav className="hidden lg:flex items-center gap-0.5 relative h-10 px-1 bg-black/20 rounded-full border border-white/5">
                     {/* Sliding Hover Indicator (Active) */}
                     <AnimatePresence>
                         {activeIndex !== -1 && (
                             <motion.div
                                 layoutId="nav-active-bg"
-                                className="absolute bg-white/10 rounded-full h-8 w-[100px]"
+                                className="absolute bg-white/10 rounded-full h-8"
                                 initial={false}
                                 transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                                 style={{
-                                    left: `${activeIndex * 104 + 4}px`
+                                    width: `${itemWidth}px`,
+                                    left: `${activeIndex * (itemWidth + 2) + 4}px`
                                 }}
                             />
                         )}
@@ -114,8 +119,9 @@ export const Navbar: React.FC<NavbarProps> = ({
                         <button
                             key={item.id}
                             onClick={() => onNavigate(item.id as ViewState)}
-                            className={`relative w-[100px] h-8 flex items-center justify-center text-[10px] font-black tracking-widest uppercase transition-colors group ${currentView === item.id ? 'text-white' : 'text-white/40 hover:text-white'
+                            className={`relative h-8 flex items-center justify-center text-[9px] font-black tracking-widest uppercase transition-colors group ${currentView === item.id ? 'text-white' : 'text-white/40 hover:text-white'
                                 }`}
+                            style={{ width: `${itemWidth}px` }}
                         >
                             <span className="relative z-10">{item.label}</span>
                             {currentView === item.id && (

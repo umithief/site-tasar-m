@@ -60,6 +60,8 @@ import { Favorites } from './components/Favorites';
 import { AIAssistantPage } from './components/AIAssistantPage';
 import { ProductDetail } from './components/ProductDetail';
 import { SocketProvider } from './context/SocketContext';
+import { MobileLayout } from './components/mobile/MobileLayout';
+import { ReelsPage } from './components/reels/ReelsPage';
 
 export const App: React.FC = () => {
     const [view, setView] = useState<ViewState>('home');
@@ -398,6 +400,10 @@ export const App: React.FC = () => {
             case 'forum': return <Forum user={user} onOpenAuth={() => navigateTo('auth')} onViewProfile={handleViewProfile} onOpenPro={() => setIsProModalOpen(true)} />;
             case 'social-hub': return <SocialHub user={user} onNavigate={navigateTo} onLogout={handleLogout} onUpdateUser={setUser} initialData={socialHubData} />;
             case 'riders': return <RidersDirectory onViewProfile={handleViewProfile} onNavigate={navigateTo} />;
+            case 'reels': return <ReelsPage />;
+            case 'explore': return <Showcase products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} onToggleMenu={() => setIsMobileMenuOpen(true)} />; // Reuse Showcase for Explore
+            case 'create': return <RideMode route={activeRoute} onNavigate={navigateTo} />; // Placeholder
+            case 'garage': return user ? <MyProfile /> : <div className="pt-32 text-center text-gray-500">Lütfen giriş yapın.</div>;
             default: return <Home products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
         }
     };
@@ -469,177 +475,175 @@ export const App: React.FC = () => {
                 />
 
                 {!isFullScreenMode && (
-                    <>
-                        <Navbar
-                            cartCount={cartItems.reduce((a, b) => a + b.quantity, 0)}
-                            favoritesCount={favoriteIds.length}
-                            onCartClick={() => setIsCartOpen(true)}
-                            onFavoritesClick={() => navigateTo('favorites')}
-                            onSearch={() => navigateTo('shop')}
-                            user={user}
-                            onOpenAuth={() => navigateTo('auth')}
-                            onLogout={() => { authService.logout(); setUser(null); }}
-                            onNavigate={navigateTo}
-                            currentView={view}
-                            colorTheme={colorTheme}
-                            onColorChange={setColorTheme}
-                            onToggleMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        />
-                        <BottomNav
-                            currentView={view}
-                            onNavigate={navigateTo}
-                            cartCount={cartItems.reduce((a, b) => a + b.quantity, 0)}
-                            isOpen={isMobileMenuOpen}
-                            onClose={() => setIsMobileMenuOpen(false)}
-                            user={user}
-                            onOpenAuth={() => navigateTo('auth')}
-                            onOpenFeedback={() => setIsFeedbackOpen(true)}
-                            onToggle={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                            onOpenThemeModal={() => setIsThemeModalOpen(true)}
-                        />
-                    </>
-                )}
-
-                {/* Main Content */}
-                <main className={`relative w-full flex-1 z-10 transition-all duration-300 ${isFullScreenMode ? 'h-full' : 'pb-20 md:pb-0'}`}>
-                    <AnimatePresence mode="wait" onExitComplete={() => window.scrollTo(0, 0)}>
-                        <motion.div
-                            key={view}
-                            initial={{ opacity: 0, filter: 'blur(10px)', scale: 0.98 }}
-                            animate={{ opacity: 1, filter: 'blur(0px)', scale: 1 }}
-                            exit={{ opacity: 0, filter: 'blur(10px)', scale: 1.02 }}
-                            transition={{ duration: 0.3, ease: "easeInOut" }}
-                            className="w-full h-full"
-                        >
-                            {renderView()}
-                        </motion.div>
-                    </AnimatePresence>
-                </main>
-
-                <AnimatePresence>
-                    {compareList.length > 0 && (
-                        <CompareBar
-                            items={compareList}
-                            onRemove={(id) => setCompareList(prev => prev.filter(p => p._id !== id))}
-                            onCompare={() => setIsCompareModalOpen(true)}
-                            onClear={() => setCompareList([])}
-                        />
-                    )}
-                </AnimatePresence>
-
-                <CompareModal
-                    isOpen={isCompareModalOpen}
-                    onClose={() => setIsCompareModalOpen(false)}
-                    products={compareList}
-                    onAddToCart={addToCart}
-                />
-
-                <FeedbackModal
-                    isOpen={isFeedbackOpen}
-                    onClose={() => setIsFeedbackOpen(false)}
-                    user={user}
-                />
-
-                <ProductQuickViewModal
-                    isOpen={!!quickViewProduct}
-                    onClose={() => setQuickViewProduct(null)}
-                    product={quickViewProduct}
-                    onAddToCart={(p, e) => { addToCart(p, e); setQuickViewProduct(null); }}
-                    onViewDetail={(p) => { navigateTo('product-detail', p); setQuickViewProduct(null); }}
-                />
-
-                {!isFullScreenMode && (
-                    <footer className="bg-white text-gray-900 pt-20 pb-24 md:pb-10 border-t border-gray-200 relative overflow-hidden z-10">
-                        <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
-
-                                <div className="space-y-6">
-                                    <div className="flex items-center gap-2">
-                                        <div className="w-10 h-10 bg-moto-accent rounded-xl flex items-center justify-center shadow-lg shadow-moto-accent/20 text-white">
-                                            <Zap className="w-6 h-6 fill-current" />
-                                        </div>
-                                        <span className="text-2xl font-display font-bold tracking-tighter text-gray-900">
-                                            MOTO<span className="text-moto-accent">VIBE</span>
-                                        </span>
-                                    </div>
-                                    <p className="text-gray-500 text-sm leading-relaxed max-w-xs">
-                                        Geleceğin sürüş deneyimini tasarlıyoruz. Yapay zeka destekli ekipman seçimi ve premium motosiklet kültürü.
-                                    </p>
-                                    <div className="flex gap-4 pt-2">
-                                        {[
-                                            { icon: Instagram, href: "#" },
-                                            { icon: Twitter, href: "#" },
-                                            { icon: Youtube, href: "#" },
-                                            { icon: Facebook, href: "#" }
-                                        ].map((social, idx) => (
-                                            <a
-                                                key={idx}
-                                                href={social.href}
-                                                className="group relative w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 border border-gray-200 hover:border-moto-accent hover:bg-moto-accent transition-all duration-300 hover:-translate-y-1"
-                                            >
-                                                <social.icon className="w-5 h-5 text-gray-500 group-hover:text-white relative z-10 transition-colors" />
-                                            </a>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <h4 className="font-bold mb-6 flex items-center gap-2 text-gray-900">
-                                        <span className="w-1 h-4 bg-moto-accent rounded-full"></span>
-                                        HIZLI ERİŞİM
-                                    </h4>
-                                    <ul className="space-y-3 text-sm text-gray-500">
-                                        {['Koleksiyon', 'Rotalar', 'Etkinlikler', 'Blog', 'Hakkımızda', 'İletişim'].map((item) => (
-                                            <li key={item}>
-                                                <button
-                                                    onClick={() => navigateTo(
-                                                        item === 'Koleksiyon' ? 'shop' :
-                                                            item === 'Rotalar' ? 'routes' :
-                                                                item === 'Etkinlikler' ? 'meetup' :
-                                                                    item === 'Blog' ? 'blog' :
-                                                                        item === 'Hakkımızda' ? 'about' : 'home'
-                                                    )}
-                                                    className="hover:text-moto-accent hover:translate-x-1 transition-all duration-200 flex items-center gap-2"
-                                                >
-                                                    <div className="w-1 h-1 bg-gray-300 rounded-full"></div> {item}
-                                                </button>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                </div>
-
-                                <div>
-                                    <h4 className="font-bold mb-6 flex items-center gap-2 text-gray-900">
-                                        <span className="w-1 h-4 bg-moto-accent rounded-full"></span>
-                                        İLETİŞİM
-                                    </h4>
-                                    <ul className="space-y-4 text-sm text-gray-500">
-                                        <li className="flex items-start gap-3">
-                                            <MapPin className="w-5 h-5 text-moto-accent shrink-0" />
-                                            <span>Maslak, Büyükdere Cd. No:123<br />34398 Sarıyer/İstanbul</span>
-                                        </li>
-                                        <li className="flex items-center gap-3">
-                                            <Phone className="w-5 h-5 text-moto-accent shrink-0" />
-                                            <span>+90 (212) 555 01 23</span>
-                                        </li>
-                                        <li className="flex items-center gap-3">
-                                            <Mail className="w-5 h-5 text-moto-accent shrink-0" />
-                                            <span>hello@motovibe.com</span>
-                                        </li>
-                                    </ul>
-                                </div>
-                            </div>
-
-                            <div className="pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-400 font-mono">
-                                <p>© 2024 MotoVibe Inc. All rights reserved.</p>
-                                <div className="flex gap-6">
-                                    <a href="#" className="hover:text-moto-accent transition-colors">Gizlilik</a>
-                                    <a href="#" className="hover:text-moto-accent transition-colors">Şartlar</a>
-                                    <a href="#" className="hover:text-moto-accent transition-colors">KVKK</a>
-                                </div>
-                            </div>
+                    <MobileLayout
+                        currentView={view}
+                        onNavigate={navigateTo}
+                        user={user}
+                        cartCount={cartItems.reduce((a, b) => a + b.quantity, 0)}
+                        onOpenAuth={() => navigateTo('auth')}
+                        onOpenFeedback={() => setIsFeedbackOpen(true)}
+                        onToggleTheme={() => setIsThemeModalOpen(true)}
+                    >
+                        <div className="hidden md:block">
+                            <Navbar
+                                cartCount={cartItems.reduce((a, b) => a + b.quantity, 0)}
+                                favoritesCount={favoriteIds.length}
+                                onCartClick={() => setIsCartOpen(true)}
+                                onFavoritesClick={() => navigateTo('favorites')}
+                                onSearch={() => navigateTo('shop')}
+                                user={user}
+                                onOpenAuth={() => navigateTo('auth')}
+                                onLogout={() => { authService.logout(); setUser(null); }}
+                                onNavigate={navigateTo}
+                                currentView={view}
+                                colorTheme={colorTheme}
+                                onColorChange={setColorTheme}
+                                onToggleMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                            />
                         </div>
-                    </footer>
+
+                        {/* Main Content */}
+                        <main className={`relative w-full flex-1 z-10 transition-all duration-300 ${isFullScreenMode ? 'h-full' : 'pb-20 md:pb-0'}`}>
+                            <AnimatePresence mode="wait" onExitComplete={() => window.scrollTo(0, 0)}>
+                                <motion.div
+                                    key={view}
+                                    initial={{ opacity: 0, filter: 'blur(10px)', scale: 0.98 }}
+                                    animate={{ opacity: 1, filter: 'blur(0px)', scale: 1 }}
+                                    exit={{ opacity: 0, filter: 'blur(10px)', scale: 1.02 }}
+                                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                                    className="w-full h-full"
+                                >
+                                    {renderView()}
+                                </motion.div>
+                            </AnimatePresence>
+                        </main>
+
+                        <AnimatePresence>
+                            {compareList.length > 0 && (
+                                <CompareBar
+                                    items={compareList}
+                                    onRemove={(id) => setCompareList(prev => prev.filter(p => p._id !== id))}
+                                    onCompare={() => setIsCompareModalOpen(true)}
+                                    onClear={() => setCompareList([])}
+                                />
+                            )}
+                        </AnimatePresence>
+
+                        <CompareModal
+                            isOpen={isCompareModalOpen}
+                            onClose={() => setIsCompareModalOpen(false)}
+                            products={compareList}
+                            onAddToCart={addToCart}
+                        />
+
+                        <FeedbackModal
+                            isOpen={isFeedbackOpen}
+                            onClose={() => setIsFeedbackOpen(false)}
+                            user={user}
+                        />
+
+                        <ProductQuickViewModal
+                            isOpen={!!quickViewProduct}
+                            onClose={() => setQuickViewProduct(null)}
+                            product={quickViewProduct}
+                            onAddToCart={(p, e) => { addToCart(p, e); setQuickViewProduct(null); }}
+                            onViewDetail={(p) => { navigateTo('product-detail', p); setQuickViewProduct(null); }}
+                        />
+
+                        {!isFullScreenMode && (
+                            <footer className="bg-white text-gray-900 pt-20 pb-24 md:pb-10 border-t border-gray-200 relative overflow-hidden z-10">
+                                <div className="max-w-7xl mx-auto px-6 lg:px-8 relative z-10">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-16">
+
+                                        <div className="space-y-6">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-10 h-10 bg-moto-accent rounded-xl flex items-center justify-center shadow-lg shadow-moto-accent/20 text-white">
+                                                    <Zap className="w-6 h-6 fill-current" />
+                                                </div>
+                                                <span className="text-2xl font-display font-bold tracking-tighter text-gray-900">
+                                                    MOTO<span className="text-moto-accent">VIBE</span>
+                                                </span>
+                                            </div>
+                                            <p className="text-gray-500 text-sm leading-relaxed max-w-xs">
+                                                Geleceğin sürüş deneyimini tasarlıyoruz. Yapay zeka destekli ekipman seçimi ve premium motosiklet kültürü.
+                                            </p>
+                                            <div className="flex gap-4 pt-2">
+                                                {[
+                                                    { icon: Instagram, href: "#" },
+                                                    { icon: Twitter, href: "#" },
+                                                    { icon: Youtube, href: "#" },
+                                                    { icon: Facebook, href: "#" }
+                                                ].map((social, idx) => (
+                                                    <a
+                                                        key={idx}
+                                                        href={social.href}
+                                                        className="group relative w-10 h-10 flex items-center justify-center rounded-xl bg-gray-100 border border-gray-200 hover:border-moto-accent hover:bg-moto-accent transition-all duration-300 hover:-translate-y-1"
+                                                    >
+                                                        <social.icon className="w-5 h-5 text-gray-500 group-hover:text-white relative z-10 transition-colors" />
+                                                    </a>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <h4 className="font-bold mb-6 flex items-center gap-2 text-gray-900">
+                                                <span className="w-1 h-4 bg-moto-accent rounded-full"></span>
+                                                HIZLI ERİŞİM
+                                            </h4>
+                                            <ul className="space-y-3 text-sm text-gray-500">
+                                                {['Koleksiyon', 'Rotalar', 'Etkinlikler', 'Blog', 'Hakkımızda', 'İletişim'].map((item) => (
+                                                    <li key={item}>
+                                                        <button
+                                                            onClick={() => navigateTo(
+                                                                item === 'Koleksiyon' ? 'shop' :
+                                                                    item === 'Rotalar' ? 'routes' :
+                                                                        item === 'Etkinlikler' ? 'meetup' :
+                                                                            item === 'Blog' ? 'blog' :
+                                                                                item === 'Hakkımızda' ? 'about' : 'home'
+                                                            )}
+                                                            className="hover:text-moto-accent hover:translate-x-1 transition-all duration-200 flex items-center gap-2"
+                                                        >
+                                                            <div className="w-1 h-1 bg-gray-300 rounded-full"></div> {item}
+                                                        </button>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+
+                                        <div>
+                                            <h4 className="font-bold mb-6 flex items-center gap-2 text-gray-900">
+                                                <span className="w-1 h-4 bg-moto-accent rounded-full"></span>
+                                                İLETİŞİM
+                                            </h4>
+                                            <ul className="space-y-4 text-sm text-gray-500">
+                                                <li className="flex items-start gap-3">
+                                                    <MapPin className="w-5 h-5 text-moto-accent shrink-0" />
+                                                    <span>Maslak, Büyükdere Cd. No:123<br />34398 Sarıyer/İstanbul</span>
+                                                </li>
+                                                <li className="flex items-center gap-3">
+                                                    <Phone className="w-5 h-5 text-moto-accent shrink-0" />
+                                                    <span>+90 (212) 555 01 23</span>
+                                                </li>
+                                                <li className="flex items-center gap-3">
+                                                    <Mail className="w-5 h-5 text-moto-accent shrink-0" />
+                                                    <span>hello@motovibe.com</span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <div className="pt-8 border-t border-gray-200 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-400 font-mono">
+                                        <p>© 2024 MotoVibe Inc. All rights reserved.</p>
+                                        <div className="flex gap-6">
+                                            <a href="#" className="hover:text-moto-accent transition-colors">Gizlilik</a>
+                                            <a href="#" className="hover:text-moto-accent transition-colors">Şartlar</a>
+                                            <a href="#" className="hover:text-moto-accent transition-colors">KVKK</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </footer>
+                        )}
+                    </MobileLayout>
                 )}
 
                 {showScrollTop && (

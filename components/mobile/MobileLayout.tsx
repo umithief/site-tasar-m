@@ -71,13 +71,13 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
                     </div>
 
                     {/* Actions */}
-                    <div className="flex items-center gap-4">
-                        <button className="relative">
-                            <Bell className="w-6 h-6 text-white" />
-                            <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full border-2 border-black"></span>
+                    <div className="flex items-center gap-3">
+                        <button className="relative w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/5 transition-all active:scale-95">
+                            <Bell className="w-5 h-5 text-gray-200" />
+                            <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-black"></span>
                         </button>
-                        <button onClick={() => onNavigate('forum')}>
-                            <MessageCircle className="w-6 h-6 text-white" />
+                        <button onClick={() => onNavigate('forum')} className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/5 transition-all active:scale-95">
+                            <MessageCircle className="w-5 h-5 text-gray-200" />
                         </button>
                     </div>
                 </div>

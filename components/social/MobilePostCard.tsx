@@ -44,8 +44,8 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = ({ post, currentUse
                         )}
                     </div>
                 </div>
-                <button className="text-white/60">
-                    <MoreVertical className="w-5 h-5" />
+                <button className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
+                    <MoreVertical className="w-5 h-5 text-gray-400" />
                 </button>
             </div>
 
@@ -95,8 +95,8 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = ({ post, currentUse
                             <Share2 className="w-7 h-7 text-white" />
                         </button>
                     </div>
-                    <button>
-                        <Bookmark className="w-7 h-7 text-white" />
+                    <button className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors active:scale-95">
+                        <Bookmark className="w-6 h-6 text-white" />
                     </button>
                 </div>
 

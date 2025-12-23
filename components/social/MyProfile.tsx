@@ -215,7 +215,7 @@ export const MyProfile: React.FC = () => {
                 <div className="absolute top-6 right-6 z-20 flex gap-3">
                     <button
                         onClick={() => setIsEditing(true)}
-                        className="h-10 px-6 bg-black/40 backdrop-blur-xl border border-white/10 rounded-full hover:bg-white/10 hover:border-white/20 transition-all text-xs font-bold uppercase tracking-widest text-white flex items-center gap-2"
+                        className="h-10 px-6 bg-black/60 backdrop-blur-md border border-white/20 rounded-full hover:bg-white/10 hover:border-white/30 transition-all text-xs font-bold uppercase tracking-widest text-white flex items-center gap-2 shadow-lg"
                     >
                         <Settings className="w-4 h-4" />
                         <span className="hidden md:inline">Edit Profile</span>
@@ -293,9 +293,9 @@ export const MyProfile: React.FC = () => {
                                 <button
                                     key={tab.id}
                                     onClick={() => setActiveTab(tab.id as any)}
-                                    className={`flex items-center gap-2 px-1 py-4 text-sm font-bold uppercase tracking-widest transition-all relative ${activeTab === tab.id
-                                        ? 'text-white'
-                                        : 'text-gray-500 hover:text-white'
+                                    className={`flex items-center gap-2 px-4 py-3 rounded-full text-sm font-bold uppercase tracking-widest transition-all relative ${activeTab === tab.id
+                                        ? 'text-white bg-white/10 shadow-[0_0_15px_rgba(255,255,255,0.1)] border border-white/10'
+                                        : 'text-gray-500 hover:text-white hover:bg-white/5 border border-transparent'
                                         }`}
                                 >
                                     <tab.icon className={`w-4 h-4 ${activeTab === tab.id ? 'text-moto-accent' : ''}`} />

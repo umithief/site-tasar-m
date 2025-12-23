@@ -136,14 +136,19 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                             <button
                                 key={item.id}
                                 onClick={item.action ? item.action : () => setView(item.id as HubView)}
-                                className={`w-full flex items-center justify-between px-6 py-4 rounded-2xl transition-all group ${view === item.id ? 'bg-moto-accent text-black font-bold shadow-lg shadow-moto-accent/20' : 'hover:bg-white/5 text-gray-400 hover:text-white'}`}
+                                className={`relative w-full flex items-center justify-between px-6 py-4 rounded-2xl transition-all duration-300 group border overflow-hidden ${view === item.id
+                                    ? 'bg-gradient-to-r from-moto-accent to-yellow-500 text-black font-bold shadow-[0_0_20px_rgba(242,166,25,0.4)] border-yellow-300/50 scale-[1.02]'
+                                    : 'bg-transparent border-transparent hover:bg-white/5 hover:border-white/10 text-gray-400 hover:text-white hover:shadow-lg'}`}
                             >
-                                <div className="flex items-center gap-4">
-                                    <item.icon className={`w-5 h-5 ${view === item.id ? 'stroke-[2.5]' : 'group-hover:scale-110 transition-transform'}`} />
+                                {view === item.id && (
+                                    <div className="absolute inset-0 bg-white/20 animate-pulse pointer-events-none mix-blend-overlay"></div>
+                                )}
+                                <div className="flex items-center gap-4 relative z-10">
+                                    <item.icon className={`w-5 h-5 ${view === item.id ? 'stroke-[2.5]' : 'group-hover:scale-110 transition-transform duration-300'}`} />
                                     <span>{item.label}</span>
                                 </div>
                                 {item.badge && (
-                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${view === item.id ? 'bg-black text-moto-accent' : 'bg-red-500 text-white'}`}>{item.badge}</span>
+                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full relative z-10 ${view === item.id ? 'bg-black text-moto-accent' : 'bg-red-500 text-white shadow-red-500/50 shadow-lg'}`}>{item.badge}</span>
                                 )}
                             </button>
                         ))}

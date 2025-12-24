@@ -221,9 +221,12 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                                 {t('home.vlog_desc')}
                             </p>
 
-                            <button className="bg-red-600 text-white px-8 py-4 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-red-600/30 w-fit group-hover:scale-105 transition-transform">
-                                {t('home.open_map')}
-                                <ArrowRight className="w-4 h-4" />
+                            <button className="relative overflow-hidden bg-red-600 text-white px-8 py-4 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-red-600/30 w-fit group-hover:scale-105 transition-transform duration-300 uppercase tracking-wider hover:shadow-red-500/50">
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shine" />
+                                <span className="relative z-10 flex items-center gap-2">
+                                    {t('home.open_map')}
+                                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                </span>
                             </button>
                         </div>
 
@@ -258,10 +261,10 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                             </p>
                         </div>
 
-                        <button className="bg-black text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 shadow-xl group-hover:scale-105 transition-transform">
+                        <button className="bg-black text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 shadow-xl group-hover:scale-105 transition-transform hover:bg-moto-accent hover:text-black duration-300 border border-transparent hover:border-black/10">
                             <Calculator className="w-4 h-4" />
                             {t('home.calculate')}
-                            <ArrowRight className="w-4 h-4" />
+                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </button>
                     </div>
                 </motion.div>

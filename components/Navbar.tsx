@@ -89,12 +89,12 @@ export const Navbar: React.FC<NavbarProps> = ({
                             <button
                                 key={item.id}
                                 onClick={() => onNavigate(item.id as ViewState)}
-                                className={`text-sm font-bold transition-colors relative group ${currentView === item.id ? 'text-white' : 'text-gray-400 hover:text-white'
+                                className={`relative px-4 py-2 text-sm font-bold transition-all duration-300 group overflow-hidden rounded-full ${currentView === item.id ? 'text-black bg-white shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'text-gray-400 hover:text-white hover:bg-white/5'
                                     }`}
                             >
-                                {item.label}
-                                {currentView === item.id && (
-                                    <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-moto-accent rounded-full"></span>
+                                <span className="relative z-10">{item.label}</span>
+                                {currentView !== item.id && (
+                                    <span className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-0"></span>
                                 )}
                             </button>
                         ))}
@@ -149,17 +149,19 @@ export const Navbar: React.FC<NavbarProps> = ({
                         {user ? (
                             <button
                                 onClick={() => onNavigate('profile')}
-                                className="hidden md:block rounded-full border-2 border-transparent hover:border-moto-accent transition-all"
+                                className="hidden md:block rounded-full border-2 border-transparent hover:border-moto-accent transition-all hover:shadow-[0_0_15px_rgba(242,166,25,0.5)]"
                             >
                                 <UserAvatar name={user.name} size={40} />
                             </button>
                         ) : (
                             <button
                                 onClick={onOpenAuth}
-                                className="hidden md:flex items-center gap-2 px-5 py-2.5 text-white font-bold text-xs uppercase tracking-wider hover:text-moto-accent transition-colors"
+                                className="hidden md:flex items-center gap-2 px-6 py-2.5 bg-white text-black rounded-full font-bold text-xs uppercase tracking-wider hover:bg-moto-accent hover:text-white transition-all duration-300 shadow-lg hover:shadow-moto-accent/40 active:scale-95 group"
                             >
-                                <UserIcon className="w-4 h-4" />
-                                Giriş
+                                <div className="p-1 bg-black rounded-full text-white group-hover:bg-white group-hover:text-moto-accent transition-colors">
+                                    <UserIcon className="w-3 h-3" />
+                                </div>
+                                Giriş Yap
                             </button>
                         )}
 

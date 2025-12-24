@@ -137,8 +137,8 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                 key={item.id}
                                 onClick={item.action ? item.action : () => setView(item.id as HubView)}
                                 className={`relative w-full flex items-center justify-between px-6 py-4 rounded-2xl transition-all duration-300 group border overflow-hidden ${view === item.id
-                                    ? 'bg-gradient-to-r from-moto-accent to-yellow-500 text-black font-bold shadow-[0_0_20px_rgba(242,166,25,0.4)] border-yellow-300/50 scale-[1.02]'
-                                    : 'bg-white/5 border-transparent hover:bg-white/10 hover:border-white/10 text-gray-400 hover:text-white hover:shadow-lg'}`}
+                                    ? 'bg-gradient-to-r from-moto-accent to-yellow-500 text-black font-bold shadow-[0_0_25px_rgba(242,166,25,0.6)] border-yellow-300/50 scale-[1.02] ring-2 ring-yellow-400/20'
+                                    : 'bg-white/5 border-transparent hover:bg-white/10 hover:border-white/10 text-gray-400 hover:text-white hover:shadow-lg hover:shadow-white/5 hover:translate-x-1'}`}
                             >
                                 {view === item.id && (
                                     <div className="absolute inset-0 bg-white/20 animate-pulse pointer-events-none mix-blend-overlay"></div>

@@ -94,8 +94,8 @@ export const PostCard: React.FC<PostCardProps> = memo(({ post, currentUserId }) 
 
                 <div className="flex items-center gap-3">
                     <FollowButton targetUserId={post.userId} />
-                    <button className="text-gray-500 hover:text-white transition-colors">
-                        <MoreHorizontal className="w-6 h-6" />
+                    <button className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 text-gray-400 hover:text-white transition-colors">
+                        <MoreHorizontal className="w-5 h-5" />
                     </button>
                 </div>
             </div>
@@ -153,8 +153,8 @@ export const PostCard: React.FC<PostCardProps> = memo(({ post, currentUserId }) 
                             className="flex items-center gap-2 group"
                             whileTap={{ scale: 0.8 }}
                         >
-                            <div className="relative">
-                                <Heart className={`w-7 h-7 transition-colors ${isLiked ? 'text-red-500 fill-red-500' : 'text-gray-400 group-hover:text-white'}`} />
+                            <div className="relative p-2 rounded-full bg-white/5 group-hover:bg-white/10 transition-colors">
+                                <Heart className={`w-6 h-6 transition-colors ${isLiked ? 'text-red-500 fill-red-500' : 'text-gray-400 group-hover:text-white'}`} />
                                 {isLiked && (
                                     <motion.div
                                         initial={{ scale: 0.5, opacity: 0 }}
@@ -171,12 +171,16 @@ export const PostCard: React.FC<PostCardProps> = memo(({ post, currentUserId }) 
                             onClick={() => setShowComments(!showComments)}
                             className="flex items-center gap-2 group"
                         >
-                            <MessageCircle className="w-7 h-7 text-gray-400 group-hover:text-moto-accent transition-colors" />
+                            <div className="p-2 rounded-full bg-white/5 group-hover:bg-white/10 transition-colors">
+                                <MessageCircle className="w-6 h-6 text-gray-400 group-hover:text-moto-accent transition-colors" />
+                            </div>
                             <span className="font-mono text-sm font-bold text-gray-400 group-hover:text-white">{commentCount}</span>
                         </button>
 
                         <button className="flex items-center gap-2 group">
-                            <Share2 className="w-7 h-7 text-gray-400 group-hover:text-green-500 transition-colors" />
+                            <div className="p-2 rounded-full bg-white/5 group-hover:bg-white/10 transition-colors">
+                                <Share2 className="w-6 h-6 text-gray-400 group-hover:text-green-500 transition-colors" />
+                            </div>
                         </button>
                     </div>
                 </div>

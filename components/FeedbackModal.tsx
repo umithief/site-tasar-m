@@ -63,7 +63,7 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, u
 
     return (
         <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
-            <motion.div 
+            <motion.div
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
@@ -85,14 +85,14 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, u
                             </h2>
                             <p className="text-gray-400 text-sm mt-1">Düşüncelerin bizim için çok değerli.</p>
                         </div>
-                        <button onClick={onClose} className="p-2 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-colors">
+                        <button onClick={onClose} className="p-2 bg-white/5 hover:bg-white/10 rounded-full text-gray-400 hover:text-white transition-colors">
                             <X className="w-5 h-5" />
                         </button>
                     </div>
 
                     <AnimatePresence mode="wait">
                         {isSuccess ? (
-                            <motion.div 
+                            <motion.div
                                 key="success"
                                 initial={{ opacity: 0, scale: 0.8 }}
                                 animate={{ opacity: 1, scale: 1 }}
@@ -120,8 +120,8 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, u
                                             onMouseEnter={() => setRating(star)}
                                             className="transition-transform hover:scale-110 focus:outline-none"
                                         >
-                                            <Star 
-                                                className={`w-8 h-8 ${star <= rating ? 'fill-moto-accent text-moto-accent' : 'text-gray-600'}`} 
+                                            <Star
+                                                className={`w-8 h-8 ${star <= rating ? 'fill-moto-accent text-moto-accent' : 'text-gray-600'}`}
                                                 strokeWidth={star <= rating ? 0 : 1.5}
                                             />
                                         </button>
@@ -134,11 +134,10 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, u
                                         <button
                                             key={t.id}
                                             onClick={() => setType(t.id)}
-                                            className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${
-                                                type === t.id 
-                                                ? 'bg-moto-accent text-black border-moto-accent shadow-lg' 
-                                                : 'bg-white/5 text-gray-400 border-white/5 hover:bg-white/10 hover:text-white'
-                                            }`}
+                                            className={`flex flex-col items-center justify-center p-3 rounded-xl border transition-all ${type === t.id
+                                                    ? 'bg-moto-accent text-black border-moto-accent shadow-lg'
+                                                    : 'bg-white/5 text-gray-400 border-white/5 hover:bg-white/10 hover:text-white'
+                                                }`}
                                         >
                                             <t.icon className="w-5 h-5 mb-1" />
                                             <span className="text-[10px] font-bold">{t.label}</span>
@@ -154,9 +153,9 @@ export const FeedbackModal: React.FC<FeedbackModalProps> = ({ isOpen, onClose, u
                                     className="w-full h-32 bg-black/40 border border-white/10 rounded-xl p-4 text-sm text-white placeholder-gray-500 focus:border-moto-accent focus:ring-1 focus:ring-moto-accent outline-none resize-none"
                                 />
 
-                                <Button 
-                                    onClick={handleSubmit} 
-                                    variant="primary" 
+                                <Button
+                                    onClick={handleSubmit}
+                                    variant="primary"
                                     className="w-full py-4 shadow-lg shadow-moto-accent/20"
                                     isLoading={isSubmitting}
                                 >

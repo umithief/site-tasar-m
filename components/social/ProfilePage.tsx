@@ -155,7 +155,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userId, onNavigate, on
                 {/* Back Button */}
                 <button
                     onClick={onBack}
-                    className="absolute top-6 left-6 p-3 bg-black/40 backdrop-blur-xl border border-white/10 rounded-full text-white hover:bg-moto-accent hover:text-black hover:border-moto-accent transition-all duration-300 z-50 group-hover:scale-110"
+                    className="absolute top-safe-top left-6 z-50 p-3 bg-black/40 backdrop-blur-xl border border-white/10 rounded-full text-white hover:bg-moto-accent hover:text-black hover:border-moto-accent transition-all duration-300 group-hover:scale-110 shadow-lg"
                 >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7 7-7" /></svg>
                 </button>

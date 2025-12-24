@@ -85,14 +85,14 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = ({ post, currentUse
             <div className="px-4 py-3 pb-1">
                 <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-6">
-                        <button onClick={handleLike} className="group">
-                            <Heart className={`w-7 h-7 transition-colors ${isLiked ? 'text-red-500 fill-red-500' : 'text-white group-active:scale-90'}`} />
+                        <button onClick={handleLike} className="group w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
+                            <Heart className={`w-6 h-6 transition-colors ${isLiked ? 'text-red-500 fill-red-500' : 'text-white group-active:scale-90'}`} />
                         </button>
-                        <button onClick={() => onComment && onComment(post._id)}>
-                            <MessageCircle className="w-7 h-7 text-white" />
+                        <button onClick={() => onComment && onComment(post._id)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
+                            <MessageCircle className="w-6 h-6 text-white" />
                         </button>
-                        <button>
-                            <Share2 className="w-7 h-7 text-white" />
+                        <button className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
+                            <Share2 className="w-6 h-6 text-white" />
                         </button>
                     </div>
                     <button className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors active:scale-95">

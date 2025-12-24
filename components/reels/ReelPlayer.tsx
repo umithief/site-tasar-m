@@ -118,7 +118,7 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({ reels, initialIndex, onC
                             Velocity Reels
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-2 bg-black/20 backdrop-blur-xl rounded-full text-white hover:bg-white/20 transition-colors">
+                    <button onClick={onClose} className="p-2 bg-black/40 backdrop-blur-xl rounded-full text-white hover:bg-white/20 transition-colors border border-white/10">
                         <X className="w-6 h-6" />
                     </button>
                 </div>
@@ -205,10 +205,10 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({ reels, initialIndex, onC
 
                     {/* Navigation Arrows */}
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-10">
-                        <button onClick={handlePrev} disabled={currentIndex === 0} className="p-2 rounded-full bg-black/20 hover:bg-white/20 text-white disabled:opacity-30 backdrop-blur-md transition-all">
+                        <button onClick={handlePrev} disabled={currentIndex === 0} className="p-3 rounded-full bg-black/40 hover:bg-white/20 text-white disabled:opacity-30 backdrop-blur-md transition-all border border-white/10">
                             <ChevronUp className="w-6 h-6" />
                         </button>
-                        <button onClick={handleNext} disabled={currentIndex === currentReels.length - 1} className="p-2 rounded-full bg-black/20 hover:bg-white/20 text-white disabled:opacity-30 backdrop-blur-md transition-all">
+                        <button onClick={handleNext} disabled={currentIndex === currentReels.length - 1} className="p-3 rounded-full bg-black/40 hover:bg-white/20 text-white disabled:opacity-30 backdrop-blur-md transition-all border border-white/10">
                             <ChevronDown className="w-6 h-6" />
                         </button>
                     </div>

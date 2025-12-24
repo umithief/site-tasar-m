@@ -275,10 +275,10 @@ export const DirectMessages: React.FC<DirectMessagesProps> = ({ isOpen, onClose,
                                             </div>
                                         </div>
                                         <div className="flex items-center gap-2">
-                                            <button className="p-2 hover:bg-white/5 rounded-full text-gray-400 transition-colors">
+                                            <button className="p-2 bg-white/5 hover:bg-white/10 rounded-full text-gray-400 transition-colors">
                                                 <MoreVertical className="w-5 h-5" />
                                             </button>
-                                            <button onClick={onClose} className="hidden md:block p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"><X className="w-5 h-5" /></button>
+                                            <button onClick={onClose} className="hidden md:block p-2 bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 rounded-full transition-colors"><X className="w-5 h-5" /></button>
                                         </div>
                                     </div>
 
@@ -309,10 +309,10 @@ export const DirectMessages: React.FC<DirectMessagesProps> = ({ isOpen, onClose,
                                     {/* Message Input */}
                                     <div className="p-4 border-t border-white/10 bg-black/20">
                                         <div className="flex items-center gap-2 bg-white/5 border border-white/10 rounded-2xl p-2 focus-within:border-moto-accent/50 transition-all">
-                                            <button className="p-2 hover:bg-white/10 rounded-xl text-gray-500 transition-colors">
+                                            <button className="p-2 bg-white/5 hover:bg-white/10 rounded-xl text-gray-500 transition-colors">
                                                 <ImageIcon className="w-5 h-5" />
                                             </button>
-                                            <button className="p-2 hover:bg-white/10 rounded-xl text-gray-500 transition-colors"><MapPin className="w-5 h-5" /></button>
+                                            <button className="p-2 bg-white/5 hover:bg-white/10 rounded-xl text-gray-500 transition-colors"><MapPin className="w-5 h-5" /></button>
                                             <input
                                                 value={messageInput}
                                                 onChange={(e) => setMessageInput(e.target.value)}

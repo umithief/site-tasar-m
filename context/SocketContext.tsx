@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { CONFIG } from '../services/config';
+import { useNotificationStore } from '../store/useNotificationStore';
+import { notify } from '../services/notificationService';
 
 interface SocketContextType {
     socket: Socket | null;
@@ -68,6 +70,12 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
 
         socketInstance.on('user_online', (data: { userId: string }) => {
             console.debug('🟢 [Socket] User Online:', data.userId);
+        });
+
+        socketInstance.on('new_notification', (notification) => {
+            console.log('🔔 [Socket] New Notification:', notification);
+            useNotificationStore.getState().addNotification(notification);
+            notify.success('Yeni bir bildiriminiz var!');
         });
 
         socketRef.current = socketInstance;

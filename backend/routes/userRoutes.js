@@ -17,4 +17,8 @@ router.use(protect);
 router.post('/follow/:id', userController.toggleFollow);
 // router.post('/unfollow/:id', userController.toggleFollow); // Single toggle endpoint handles both
 
+// Garage
+router.post('/garage', userController.addToGarage);
+router.delete('/garage/:garageId', userController.removeFromGarage);
+
 export default router;

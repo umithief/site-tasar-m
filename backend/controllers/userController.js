@@ -184,3 +184,43 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
     const users = await User.find().select('-password');
     res.status(200).json(users);
 });
+
+// --- GARAGE CONTROLLERS ---
+
+export const addToGarage = catchAsync(async (req, res, next) => {
+    const { brand, model, year, image } = req.body;
+
+    if (!brand || !model) {
+        return next(new AppError('Marka ve model gereklidir.', 400));
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user.id,
+        {
+            $push: {
+                garage: { brand, model, year, image: image || 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=800' }
+            }
+        },
+        { new: true, runValidators: true }
+    );
+
+    res.status(200).json({
+        status: 'success',
+        data: { garage: user.garage }
+    });
+});
+
+export const removeFromGarage = catchAsync(async (req, res, next) => {
+    const { garageId } = req.params;
+
+    const user = await User.findByIdAndUpdate(
+        req.user.id,
+        { $pull: { garage: { _id: garageId } } },
+        { new: true }
+    );
+
+    res.status(200).json({
+        status: 'success',
+        data: { garage: user.garage }
+    });
+});

@@ -106,6 +106,11 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({ reels, initialIndex, onC
         }
     };
 
+    const currentReel = currentReels[currentIndex];
+
+    // Safe guard: If no reel is available, render nothing (or a fallback)
+    if (!currentReel) return null;
+
     return (
         <motion.div
             initial={{ opacity: 0 }}
@@ -139,7 +144,7 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({ reels, initialIndex, onC
                         >
                             <video
                                 ref={el => videoRefs.current[currentIndex] = el}
-                                src={currentReels[currentIndex]?.videoUrl}
+                                src={currentReel.videoUrl}
                                 className="w-full h-full object-cover"
                                 loop
                                 muted={isMuted}
@@ -160,13 +165,13 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({ reels, initialIndex, onC
                                 <div className="flex items-end justify-between">
                                     <div className="flex-1 mr-4">
                                         <div className="flex items-center gap-3 mb-3">
-                                            <UserAvatar name={currentReels[currentIndex]?.userName} src={currentReels[currentIndex]?.userAvatar} size={40} className="border-2 border-orange-500" />
+                                            <UserAvatar name={currentReel.userName} src={currentReel.userAvatar} size={40} className="border-2 border-orange-500" />
                                             <div>
                                                 <div className="font-bold text-white text-sm flex items-center gap-2">
-                                                    {currentReels[currentIndex]?.userName}
-                                                    {currentReels[currentIndex]?.bikeModel && (
+                                                    {currentReel.userName}
+                                                    {currentReel.bikeModel && (
                                                         <span className="text-[10px] px-1.5 py-0.5 bg-orange-500 text-black font-black rounded uppercase">
-                                                            {currentReels[currentIndex]?.bikeModel}
+                                                            {currentReel.bikeModel}
                                                         </span>
                                                     )}
                                                 </div>
@@ -174,7 +179,7 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({ reels, initialIndex, onC
                                             </div>
                                         </div>
                                         <p className="text-white text-sm leading-relaxed line-clamp-2">
-                                            {currentReels[currentIndex]?.caption}
+                                            {currentReel.caption}
                                         </p>
                                     </div>
 
@@ -184,7 +189,7 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({ reels, initialIndex, onC
                                             <div className={`p-3 rounded-full backdrop-blur-md transition-all ${liked ? 'bg-red-500/20 text-red-500' : 'bg-white/10 text-white group-hover:bg-white/20'}`}>
                                                 <Heart className={`w-6 h-6 ${liked ? 'fill-current' : ''}`} />
                                             </div>
-                                            <span className="text-xs font-bold text-white">{currentReels[currentIndex].likes}</span>
+                                            <span className="text-xs font-bold text-white">{currentReel.likes}</span>
                                         </button>
 
                                         <button className="flex flex-col items-center gap-1 group">

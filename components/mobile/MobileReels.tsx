@@ -16,16 +16,16 @@ interface ReelItemProps {
 }
 
 const ReelItem: React.FC<ReelItemProps> = ({ data, isActive, isMuted, toggleMute, onToggleLike }) => {
-    // Safety Check
-    if (!data || !data.videoUrl) return null;
-
     const videoRef = useRef<HTMLVideoElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
     const [progress, setProgress] = useState(0);
     const [showPlayIcon, setShowPlayIcon] = useState(false);
-    const [isLiked, setIsLiked] = useState(data.isLiked || false);
-    const [likesCount, setLikesCount] = useState(data.likes || 0);
+    const [isLiked, setIsLiked] = useState(data?.isLiked || false);
+    const [likesCount, setLikesCount] = useState(data?.likes || 0);
+
+    // Safety Check
+    if (!data || !data.videoUrl) return null;
 
     // Playback Logic
     useEffect(() => {

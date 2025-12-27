@@ -1,5 +1,6 @@
 import React from 'react';
 import { ReelPlayer } from './ReelPlayer';
+import { MobileReels } from '../mobile/MobileReels';
 import { useAuthStore } from '../../store/authStore';
 import { api } from '../../services/api';
 
@@ -34,12 +35,20 @@ export const ReelsPage: React.FC = () => {
 
     return (
         <div className="bg-black min-h-screen">
-            <ReelPlayer
-                reels={reels}
-                initialIndex={0}
-                onClose={() => { }} // No-op since it's a page
-                currentUser={user}
-            />
+            {/* Mobile View */}
+            <div className="md:hidden">
+                <MobileReels reels={reels} currentUser={user} />
+            </div>
+
+            {/* Desktop View */}
+            <div className="hidden md:block">
+                <ReelPlayer
+                    reels={reels}
+                    initialIndex={0}
+                    onClose={() => { }} // No-op since it's a page
+                    currentUser={user}
+                />
+            </div>
         </div>
     );
 };

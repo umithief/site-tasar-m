@@ -61,6 +61,7 @@ import { AIAssistantPage } from './components/AIAssistantPage';
 import { ProductDetail } from './components/ProductDetail';
 import { SocketProvider } from './context/SocketContext';
 import { MobileLayout } from './components/mobile/MobileLayout';
+import { MobileExplore } from './components/mobile/MobileExplore';
 import { ReelsPage } from './components/reels/ReelsPage';
 
 export const App: React.FC = () => {
@@ -401,7 +402,7 @@ export const App: React.FC = () => {
             case 'social-hub': return <SocialHub user={user} onNavigate={navigateTo} onLogout={handleLogout} onUpdateUser={setUser} initialData={socialHubData} />;
             case 'riders': return <RidersDirectory onViewProfile={handleViewProfile} onNavigate={navigateTo} />;
             case 'reels': return <ReelsPage />;
-            case 'explore': return <Showcase products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} onToggleMenu={() => setIsMobileMenuOpen(true)} />; // Reuse Showcase for Explore
+            case 'explore': return <MobileExplore onNavigate={navigateTo} />;
             case 'create': return <RideMode route={activeRoute} onNavigate={navigateTo} />; // Placeholder
             case 'garage': return user ? <MyProfile /> : <div className="pt-32 text-center text-gray-500">Lütfen giriş yapın.</div>;
             default: return <Home products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} onToggleMenu={() => setIsMobileMenuOpen(true)} />;

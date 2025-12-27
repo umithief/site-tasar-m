@@ -23,7 +23,7 @@ export const BottomNav: React.FC<SidebarProps> = ({
     user,
     onOpenAuth
 }) => {
-    
+
     // Determine which tab is technically "active" for highlighting
     // If the user is on 'shop' or 'product-detail', we might highlight 'search' (explore) or similar logic if desired.
     // For now, simple mapping.
@@ -40,7 +40,7 @@ export const BottomNav: React.FC<SidebarProps> = ({
 
     const navItems = [
         { id: 'home', icon: Home, label: 'Home', view: 'home' },
-        { id: 'search', icon: Search, label: 'Search', view: 'shop' }, // Mapping 'Search' icon to 'shop' view for now
+        { id: 'search', icon: Search, label: 'Search', view: 'explore' },
         { id: 'create', icon: Plus, label: 'Create', isFab: true },
         { id: 'reels', icon: Film, label: 'Reels', view: 'reels' },
         { id: 'profile', icon: User, label: 'Profile', view: user ? 'profile' : 'auth' },
@@ -94,13 +94,12 @@ export const BottomNav: React.FC<SidebarProps> = ({
                                 className="relative p-2"
                             >
                                 <item.icon
-                                    className={`w-6 h-6 transition-colors duration-300 ${
-                                        isActive 
-                                            ? 'text-moto-accent stroke-[2.5px] drop-shadow-[0_0_8px_var(--moto-accent)]' 
+                                    className={`w-6 h-6 transition-colors duration-300 ${isActive
+                                            ? 'text-moto-accent stroke-[2.5px] drop-shadow-[0_0_8px_var(--moto-accent)]'
                                             : 'text-gray-400'
-                                    }`}
+                                        }`}
                                 />
-                                
+
                                 {isActive && (
                                     <motion.div
                                         layoutId="activeTabDot"

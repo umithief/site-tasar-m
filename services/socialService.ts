@@ -165,5 +165,57 @@ export const socialService = {
             console.error('Get Suggestions Error:', error);
             return [];
         }
+    },
+
+    async search(query: string): Promise<{ users: any[], hashtags: string[] }> {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await fetch(`${CONFIG.API_URL}/social/search?q=${encodeURIComponent(query)}`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!response.ok) throw new Error('Search Failed');
+            const data = await response.json();
+            return {
+                users: data.users || [],
+                hashtags: data.hashtags || []
+            };
+        } catch (error) {
+            console.error('Search Error:', error);
+            return { users: [], hashtags: [] };
+        }
+    },
+
+    async getExploreFeed(cursor: number = 0, category?: string): Promise<SocialPost[]> {
+        const token = localStorage.getItem('token');
+        try {
+            let url = `${CONFIG.API_URL}/social/explore?cursor=${cursor}`;
+            if (category && category !== 'ALL') {
+                url += `&category=${encodeURIComponent(category)}`;
+            }
+
+            const response = await fetch(url, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+
+            if (!response.ok) {
+                // Fallback to regular feed if explore endpoint doesn't exist yet
+                return this.getFeed();
+            }
+
+            const data = await response.json();
+            const posts = Array.isArray(data) ? data : (data.posts || []);
+
+            return posts.map((post: any) => ({
+                ...post,
+                userId: post.user,
+                commentList: post.comments || [],
+                comments: post.commentCount || 0,
+                likes: post.likeCount || 0,
+                isLiked: post.isLiked || false
+            }));
+        } catch (error) {
+            console.error('Explore Feed Error:', error);
+            return this.getFeed(); // Fallback
+        }
     }
 };

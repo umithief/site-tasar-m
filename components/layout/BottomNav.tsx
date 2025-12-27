@@ -1,8 +1,7 @@
-import React from 'react';
-import { Home, Compass, Plus, Film, Warehouse, Menu, User, Zap } from 'lucide-react';
+import React, { useEffect, useState } from 'react';
+import { Home, Search, Plus, Film, User, Zap } from 'lucide-react';
 import { ViewState, User as UserType } from '../../types';
 import { motion, AnimatePresence } from 'framer-motion';
-import { UserAvatar } from '../ui/UserAvatar';
 import { useLanguage } from '../../contexts/LanguageProvider';
 
 interface SidebarProps {
@@ -21,65 +20,98 @@ interface SidebarProps {
 export const BottomNav: React.FC<SidebarProps> = ({
     currentView,
     onNavigate,
-    onToggle
+    user,
+    onOpenAuth
 }) => {
-    const { t } = useLanguage();
+    
+    // Determine which tab is technically "active" for highlighting
+    // If the user is on 'shop' or 'product-detail', we might highlight 'search' (explore) or similar logic if desired.
+    // For now, simple mapping.
+    const getActiveTab = () => {
+        if (currentView === 'home') return 'home';
+        if (currentView === 'shop' || currentView === 'explore') return 'search';
+        if (currentView === 'reels') return 'reels';
+        if (currentView === 'profile' || currentView === 'my-profile' || currentView === 'auth') return 'profile';
+        // 'create' is a modal/action, usually doesn't stay highlighted unless it's a dedicated view
+        return currentView;
+    };
+
+    const activeTab = getActiveTab();
 
     const navItems = [
-        { id: 'home', icon: Home, label: 'Home' },
-        { id: 'explore', icon: Compass, label: 'Explore' }, // Mapped to a suitable view later
-        { id: 'create', icon: Plus, label: 'Add', isFab: true }, // Action to open create menu
-        { id: 'reels', icon: Film, label: 'Reels' },
-        { id: 'garage', icon: Warehouse, label: 'Garage' },
+        { id: 'home', icon: Home, label: 'Home', view: 'home' },
+        { id: 'search', icon: Search, label: 'Search', view: 'shop' }, // Mapping 'Search' icon to 'shop' view for now
+        { id: 'create', icon: Plus, label: 'Create', isFab: true },
+        { id: 'reels', icon: Film, label: 'Reels', view: 'reels' },
+        { id: 'profile', icon: User, label: 'Profile', view: user ? 'profile' : 'auth' },
     ];
 
+    const handleNavClick = (item: any) => {
+        if (item.id === 'create') {
+            onNavigate('ride-mode'); // Or 'create' view if it exists, user mentioned 'Create (Center FAB)'
+        } else if (item.id === 'profile') {
+            if (user) onNavigate('profile');
+            else onOpenAuth();
+        } else {
+            onNavigate(item.view);
+        }
+    };
+
     return (
-        <>
-            {/* --- MOBILE BOTTOM NAV --- */}
-            <div className="md:hidden fixed bottom-0 left-0 right-0 z-[140] pb-safe-bottom">
-                {/* Blurry Background */}
-                <div className="absolute inset-0 bg-black/90 backdrop-blur-lg border-t border-white/10"></div>
+        <div className="md:hidden fixed bottom-0 left-0 right-0 z-[140]">
+            {/* Glassmorphism Background */}
+            <div className="absolute inset-0 bg-black/80 backdrop-blur-xl border-t border-white/10" />
 
-                <div className="relative flex justify-between items-end h-[65px] px-2 pb-1">
-                    {navItems.map((item) => {
-                        const isActive = currentView === item.id;
+            <div className="relative flex justify-between items-end h-16 px-4">
+                {navItems.map((item) => {
+                    const isActive = activeTab === item.id;
 
-                        if (item.isFab) {
-                            return (
-                                <div key={item.id} className="relative -top-5 flex justify-center w-[20%]">
-                                    <motion.button
-                                        whileTap={{ scale: 0.9 }}
-                                        onClick={() => onNavigate('create' as ViewState)} // Toggle create menu
-                                        className="w-14 h-14 rounded-full bg-gradient-to-tr from-moto-accent to-orange-600 text-black flex items-center justify-center shadow-[0_0_20px_rgba(255,87,34,0.4)] border-4 border-black z-10"
-                                    >
-                                        <Plus className="w-8 h-8" strokeWidth={3} />
-                                    </motion.button>
-                                </div>
-                            )
-                        }
-
+                    // FAB (Center Item)
+                    if (item.isFab) {
                         return (
-                            <button
-                                key={item.id}
-                                onClick={() => onNavigate(item.id as ViewState)}
-                                className={`flex-1 flex flex-col items-center justify-center gap-1 h-full w-[20%] transition-colors duration-300 relative group`}
-                            >
-                                <div className={`relative p-1.5 transition-all duration-300 ${isActive ? '-translate-y-1' : ''}`}>
-                                    <item.icon
-                                        className={`w-6 h-6 transition-all duration-300 ${isActive ? 'text-moto-accent stroke-[2.5px]' : 'text-gray-500'}`}
-                                    />
-                                    {isActive && (
-                                        <motion.div
-                                            layoutId="activeTab"
-                                            className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 bg-moto-accent rounded-full shadow-[0_0_10px_currentColor]"
-                                        />
-                                    )}
-                                </div>
-                            </button>
+                            <div key={item.id} className="relative -top-6 flex justify-center w-[20%]">
+                                <motion.button
+                                    whileTap={{ scale: 0.9 }}
+                                    onClick={() => handleNavClick(item)}
+                                    className="w-14 h-14 rounded-full bg-moto-accent text-white flex items-center justify-center shadow-[0_0_20px_var(--moto-accent)] border-4 border-black z-10"
+                                >
+                                    <Plus className="w-8 h-8" strokeWidth={3} />
+                                </motion.button>
+                            </div>
                         )
-                    })}
-                </div>
+                    }
+
+                    // Standard Icon
+                    return (
+                        <button
+                            key={item.id}
+                            onClick={() => handleNavClick(item)}
+                            className="flex-1 flex flex-col items-center justify-center h-full w-[20%] relative group"
+                        >
+                            <motion.div
+                                animate={isActive ? { scale: 1.2, y: -4 } : { scale: 1, y: 0 }}
+                                transition={{ type: 'spring', stiffness: 300, damping: 15 }}
+                                className="relative p-2"
+                            >
+                                <item.icon
+                                    className={`w-6 h-6 transition-colors duration-300 ${
+                                        isActive 
+                                            ? 'text-moto-accent stroke-[2.5px] drop-shadow-[0_0_8px_var(--moto-accent)]' 
+                                            : 'text-gray-400'
+                                    }`}
+                                />
+                                
+                                {isActive && (
+                                    <motion.div
+                                        layoutId="activeTabDot"
+                                        className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 bg-moto-accent rounded-full shadow-[0_0_8px_currentColor]"
+                                    />
+                                )}
+                            </motion.div>
+                        </button>
+                    )
+                })}
             </div>
-        </>
+        </div>
     );
 };

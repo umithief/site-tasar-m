@@ -54,29 +54,27 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
         <div className="min-h-screen bg-black text-white pb-24 md:pb-0">
             {/* --- TOP APP BAR --- */}
             <motion.div
-                className="fixed top-0 left-0 right-0 z-[130] bg-black/80 backdrop-blur-xl border-b border-white/5 px-4 pt-safe-top pb-3 md:hidden"
+                className="fixed top-0 left-0 right-0 z-[130] bg-black/80 backdrop-blur-xl border-b border-white/5 px-4 pt-safe-top pb-3 md:hidden transition-transform duration-300"
                 initial={{ y: 0 }}
                 animate={{ y: showTopBar ? 0 : -100 }}
-                transition={{ duration: 0.3 }}
             >
                 <div className="flex items-center justify-between h-12">
                     {/* Logo */}
-                    <div className="flex items-center gap-2" onClick={() => onNavigate('home')}>
-                        <div className="w-8 h-8 bg-moto-accent rounded-lg flex items-center justify-center">
-                            <Zap className="w-5 h-5 text-black fill-current" />
-                        </div>
-                        <span className="font-display font-black text-lg tracking-tight">
+                    <div className="flex items-center gap-2" onPress={() => onNavigate('home')}>
+                        <span className="font-display font-black text-xl tracking-tighter text-white">
                             MOTO<span className="text-moto-accent">VIBE</span>
                         </span>
                     </div>
 
                     {/* Actions */}
                     <div className="flex items-center gap-3">
-                        <button className="relative w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/5 transition-all active:scale-95">
+                        {/* Notifications */}
+                        <button className="relative w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/10 transition-all active:scale-95">
                             <Bell className="w-5 h-5 text-gray-200" />
-                            <span className="absolute top-2 right-2.5 w-2 h-2 bg-red-500 rounded-full border-2 border-black"></span>
+                            <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-moto-accent rounded-full animate-pulse"></span>
                         </button>
-                        <button onClick={() => onNavigate('forum')} className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center backdrop-blur-sm border border-white/5 transition-all active:scale-95">
+                        {/* Direct Messages */}
+                        <button onClick={() => onNavigate('forum')} className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/10 transition-all active:scale-95">
                             <MessageCircle className="w-5 h-5 text-gray-200" />
                         </button>
                     </div>
@@ -84,7 +82,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
             </motion.div>
 
             {/* --- MAIN CONTENT --- */}
-            <main className="pt-[70px] px-0 md:pt-0">
+            <main className="pt-[80px] px-0 md:pt-0 pb-20 overflow-x-hidden w-full relative">
                 {children}
             </main>
 

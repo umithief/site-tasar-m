@@ -16,6 +16,9 @@ interface ReelItemProps {
 }
 
 const ReelItem: React.FC<ReelItemProps> = ({ data, isActive, isMuted, toggleMute, onToggleLike }) => {
+    // Safety Check
+    if (!data || !data.videoUrl) return null;
+
     const videoRef = useRef<HTMLVideoElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);
     const [isLoading, setIsLoading] = useState(true);
@@ -326,7 +329,7 @@ export const MobileReels: React.FC<MobileReelsProps> = ({ reels = [], onBack }) 
             ref={containerRef}
             className="h-[100dvh] w-full overflow-y-scroll snap-y snap-mandatory scroll-smooth bg-black no-scrollbar"
         >
-            {reels.map((reel, index) => (
+            {reels.filter(r => r && r.videoUrl).map((reel, index) => (
                 <ReelItem
                     key={reel._id || index}
                     data={reel}

@@ -87,7 +87,7 @@ export const VelocityReels: React.FC = () => {
                     <span className="font-bold text-gray-400 group-hover:text-orange-600 uppercase tracking-widest text-xs">Yeni Paylaşım</span>
                 </motion.div>
 
-                {reels.map((reel, index) => (
+                {reels.filter(r => r && r.videoUrl).map((reel, index) => (
                     <motion.div
                         key={reel._id}
                         layoutId={`reel-${reel._id}`}

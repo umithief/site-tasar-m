@@ -44,10 +44,13 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({ reels, initialIndex, onC
         videoRefs.current.forEach((video, index) => {
             if (video) {
                 if (index === currentIndex) {
+                    const currentId = currentReels[currentIndex]?._id;
+                    if (!currentId) return;
+
                     video.currentTime = 0;
                     video.play().catch(e => console.log('Autoplay prevented:', e));
                     // Record view
-                    api.post(`/reels/${currentReels[currentIndex]._id}/interact`, { type: 'view' });
+                    api.post(`/reels/${currentId}/interact`, { type: 'view' });
                 } else {
                     video.pause();
                 }
@@ -56,7 +59,7 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({ reels, initialIndex, onC
 
         // Initial like state
         const currentReel = currentReels[currentIndex];
-        if (currentUser && currentReel.likedBy?.includes(currentUser._id)) {
+        if (currentReel && currentUser && currentReel.likedBy?.includes(currentUser._id)) {
             setLiked(true);
         } else {
             setLiked(false);
@@ -136,7 +139,7 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({ reels, initialIndex, onC
                         >
                             <video
                                 ref={el => videoRefs.current[currentIndex] = el}
-                                src={currentReels[currentIndex].videoUrl}
+                                src={currentReels[currentIndex]?.videoUrl}
                                 className="w-full h-full object-cover"
                                 loop
                                 muted={isMuted}
@@ -157,13 +160,13 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({ reels, initialIndex, onC
                                 <div className="flex items-end justify-between">
                                     <div className="flex-1 mr-4">
                                         <div className="flex items-center gap-3 mb-3">
-                                            <UserAvatar name={currentReels[currentIndex].userName} src={currentReels[currentIndex].userAvatar} size={40} className="border-2 border-orange-500" />
+                                            <UserAvatar name={currentReels[currentIndex]?.userName} src={currentReels[currentIndex]?.userAvatar} size={40} className="border-2 border-orange-500" />
                                             <div>
                                                 <div className="font-bold text-white text-sm flex items-center gap-2">
-                                                    {currentReels[currentIndex].userName}
-                                                    {currentReels[currentIndex].bikeModel && (
+                                                    {currentReels[currentIndex]?.userName}
+                                                    {currentReels[currentIndex]?.bikeModel && (
                                                         <span className="text-[10px] px-1.5 py-0.5 bg-orange-500 text-black font-black rounded uppercase">
-                                                            {currentReels[currentIndex].bikeModel}
+                                                            {currentReels[currentIndex]?.bikeModel}
                                                         </span>
                                                     )}
                                                 </div>
@@ -171,7 +174,7 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({ reels, initialIndex, onC
                                             </div>
                                         </div>
                                         <p className="text-white text-sm leading-relaxed line-clamp-2">
-                                            {currentReels[currentIndex].caption}
+                                            {currentReels[currentIndex]?.caption}
                                         </p>
                                     </div>
 

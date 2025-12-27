@@ -13,7 +13,9 @@ export const ReelsPage: React.FC = () => {
         const fetchReels = async () => {
             try {
                 const res = await api.get('/reels');
-                setReels(res.data);
+                // Handle both array and { data: [...] } formats safely
+                const data = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+                setReels(Array.isArray(data) ? data : []);
             } catch (error) {
                 console.error('Failed to fetch reels:', error);
             } finally {

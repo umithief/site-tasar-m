@@ -317,7 +317,7 @@ export const MobileReels: React.FC<MobileReelsProps> = ({ reels = [], onBack }) 
         return () => container.removeEventListener('scroll', handleScroll);
     }, [activeIndex]);
 
-    if (!reels || reels.length === 0) {
+    if (!reels || !Array.isArray(reels) || reels.length === 0) {
         return <div className="h-[100dvh] bg-black flex items-center justify-center text-white">Reel bulunamadı</div>;
     }
 

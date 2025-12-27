@@ -328,10 +328,6 @@ export const MobileReels: React.FC<MobileReelsProps> = ({ reels = [], onBack, on
         return () => container.removeEventListener('scroll', handleScroll);
     }, [activeIndex]);
 
-    if (!reels || !Array.isArray(reels) || reels.length === 0) {
-        return <div className="h-[100dvh] bg-black flex items-center justify-center text-white">Reel bulunamadı</div>;
-    }
-
     return (
         <div
             ref={containerRef}
@@ -347,15 +343,22 @@ export const MobileReels: React.FC<MobileReelsProps> = ({ reels = [], onBack, on
                 </button>
             </div>
 
-            {reels.filter(r => r && r.videoUrl).map((reel, index) => (
-                <ReelItem
-                    key={reel._id || index}
-                    data={reel}
-                    isActive={index === activeIndex}
-                    isMuted={isMuted}
-                    toggleMute={() => setIsMuted(!isMuted)}
-                />
-            ))}
+            {(!reels || !Array.isArray(reels) || reels.length === 0) ? (
+                <div className="h-full w-full flex flex-col items-center justify-center text-white gap-4">
+                    <p className="text-lg font-medium">Henüz Reel bulunamadı</p>
+                    <p className="text-white/50 text-sm">İlk videoyu sen paylaş!</p>
+                </div>
+            ) : (
+                reels.filter(r => r && r.videoUrl).map((reel, index) => (
+                    <ReelItem
+                        key={reel._id || index}
+                        data={reel}
+                        isActive={index === activeIndex}
+                        isMuted={isMuted}
+                        toggleMute={() => setIsMuted(!isMuted)}
+                    />
+                ))
+            )}
 
             {/* Upload Modal */}
             <ReelUploadModal

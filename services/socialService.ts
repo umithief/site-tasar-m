@@ -12,7 +12,11 @@ export const socialService = {
             });
             if (!response.ok) throw new Error('Failed to fetch feed');
             const data = await response.json();
-            return data.map((post: any) => ({
+
+            // Handle both array and object { data: [], ... } formats
+            const posts = Array.isArray(data) ? data : (data.data || data.posts || []);
+
+            return posts.map((post: any) => ({
                 ...post,
                 userId: post.user,
                 commentList: post.comments || [],
@@ -203,7 +207,7 @@ export const socialService = {
             }
 
             const data = await response.json();
-            const posts = Array.isArray(data) ? data : (data.posts || []);
+            const posts = Array.isArray(data) ? data : (data.data || data.posts || []);
 
             return posts.map((post: any) => ({
                 ...post,

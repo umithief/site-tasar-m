@@ -1,6 +1,7 @@
 import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence, useInView } from 'framer-motion';
-import { Heart, MessageCircle, Share2, Volume2, VolumeX, MoreHorizontal, Music, Play, Pause, Loader2, Sparkles } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Volume2, VolumeX, MoreHorizontal, Music, Play, Pause, Loader2, Sparkles, Camera } from 'lucide-react';
+import { ReelUploadModal } from '../reels/ReelUploadModal';
 import { UserAvatar } from '../ui/UserAvatar';
 import { SocialPost } from '../../types'; // Assuming types align or casting
 // import { useAuthStore } from '../../store/authStore'; // If needed for actions
@@ -296,12 +297,19 @@ const ReelItem: React.FC<ReelItemProps> = ({ data, isActive, isMuted, toggleMute
 interface MobileReelsProps {
     reels: any[]; // Or specific type
     onBack?: () => void;
+    onRefresh?: () => void;
+    currentUser?: any;
 }
 
-export const MobileReels: React.FC<MobileReelsProps> = ({ reels = [], onBack }) => {
+export const MobileReels: React.FC<MobileReelsProps> = ({ reels = [], onBack, onRefresh, currentUser }) => {
     const containerRef = useRef<HTMLDivElement>(null);
     const [activeIndex, setActiveIndex] = useState(0);
     const [isMuted, setIsMuted] = useState(false); // Global mute state
+    const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
+
+    const handleUploadComplete = () => {
+        if (onRefresh) onRefresh();
+    };
 
     // Track active slide
     useEffect(() => {
@@ -327,8 +335,18 @@ export const MobileReels: React.FC<MobileReelsProps> = ({ reels = [], onBack }) 
     return (
         <div
             ref={containerRef}
-            className="h-[100dvh] w-full overflow-y-scroll snap-y snap-mandatory scroll-smooth bg-black no-scrollbar"
+            className="h-[100dvh] w-full overflow-y-scroll snap-y snap-mandatory scroll-smooth bg-black no-scrollbar relative"
         >
+            {/* Header / Upload Button Overlay */}
+            <div className="fixed top-4 right-4 z-50">
+                <button
+                    onClick={() => setIsUploadModalOpen(true)}
+                    className="p-2 bg-white/10 backdrop-blur-md border border-white/20 rounded-full text-white hover:bg-white/20 transition-all active:scale-95"
+                >
+                    <Camera className="w-6 h-6" />
+                </button>
+            </div>
+
             {reels.filter(r => r && r.videoUrl).map((reel, index) => (
                 <ReelItem
                     key={reel._id || index}
@@ -338,6 +356,13 @@ export const MobileReels: React.FC<MobileReelsProps> = ({ reels = [], onBack }) 
                     toggleMute={() => setIsMuted(!isMuted)}
                 />
             ))}
+
+            {/* Upload Modal */}
+            <ReelUploadModal
+                isOpen={isUploadModalOpen}
+                onClose={() => setIsUploadModalOpen(false)}
+                onUploadComplete={handleUploadComplete}
+            />
         </div>
     );
 };

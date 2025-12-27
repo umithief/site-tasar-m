@@ -9,24 +9,25 @@ export const ReelsPage: React.FC = () => {
     const [reels, setReels] = React.useState<any[]>([]);
     const [loading, setLoading] = React.useState(true);
 
-    React.useEffect(() => {
-        const fetchReels = async () => {
-            try {
-                const res = await api.get('/reels');
-                // Handle both array and { data: [...] } formats safely
-                const data = Array.isArray(res.data) ? res.data : (res.data?.data || []);
-                setReels(Array.isArray(data) ? data : []);
-            } catch (error) {
-                console.error('Failed to fetch reels:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const fetchReels = async () => {
+        try {
+            setLoading(true);
+            const res = await api.get('/reels');
+            // Handle both array and { data: [...] } formats safely
+            const data = Array.isArray(res.data) ? res.data : (res.data?.data || []);
+            setReels(Array.isArray(data) ? data : []);
+        } catch (error) {
+            console.error('Failed to fetch reels:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    React.useEffect(() => {
         fetchReels();
     }, []);
 
-    if (loading) {
+    if (loading && reels.length === 0) {
         return <div className="min-h-screen bg-black flex items-center justify-center text-white">Loading...</div>;
     }
 
@@ -39,7 +40,7 @@ export const ReelsPage: React.FC = () => {
         <div className="bg-black min-h-screen">
             {/* Mobile View */}
             <div className="md:hidden">
-                <MobileReels reels={reels} currentUser={user} />
+                <MobileReels reels={reels} currentUser={user} onRefresh={fetchReels} />
             </div>
 
             {/* Desktop View */}

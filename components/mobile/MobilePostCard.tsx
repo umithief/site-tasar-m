@@ -1,4 +1,4 @@
-import React, { useState, memo } from 'react';
+import React, { useState, memo, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Heart, MessageCircle, Share2, MoreHorizontal, Bookmark } from 'lucide-react';
 import { SocialPost } from '../../types';
@@ -6,6 +6,8 @@ import { UserAvatar } from '../ui/UserAvatar';
 import { socialService } from '../../services/socialService';
 
 import { MobileBottomSheet } from './MobileBottomSheet';
+import { useAuthStore } from '../../store/authStore';
+import { useFollow } from '../../hooks/useFollow';
 
 interface MobilePostCardProps {
     post: SocialPost;
@@ -19,6 +21,25 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
     const [lastTap, setLastTap] = useState(0);
     const [showHeartOverlay, setShowHeartOverlay] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
+
+    // Live Follow Logic
+    const { mutate: toggleFollow, isPending } = useFollow();
+    const { user: currentUser } = useAuthStore();
+
+    // Determine follow status from store (single source of truth)
+    const isFollowing = useMemo(() => {
+        if (!currentUser || !currentUser.following) return false;
+
+        const followingList = Array.isArray(currentUser.following)
+            ? currentUser.following
+            : [];
+
+        return followingList.some(f => {
+            const fId = (typeof f === 'object' && f !== null) ? (f._id || f.id) : f;
+            if (!fId || !post.userId) return false;
+            return fId.toString() === post.userId.toString();
+        });
+    }, [currentUser?.following, post.userId]);
 
     // Comment States
     const [showComments, setShowComments] = useState(false);
@@ -93,7 +114,21 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                         <div className="flex items-center gap-2">
                             <span className="text-white font-bold text-sm leading-none">{post.userName}</span>
                             <span className="text-gray-500 text-[10px]">•</span>
-                            <button className="text-moto-accent text-xs font-bold">Takip Et</button>
+
+                            {/* Follow Button - Live Data */}
+                            {currentUserId !== post.userId && (
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        if (!currentUserId) return;
+                                        toggleFollow({ targetUserId: post.userId, isCurrentlyFollowing: isFollowing });
+                                    }}
+                                    disabled={isPending}
+                                    className={`text-xs font-bold transition-colors ${isFollowing ? 'text-gray-500' : 'text-moto-accent'}`}
+                                >
+                                    {isPending ? '...' : (isFollowing ? 'Takip Ediliyor' : 'Takip Et')}
+                                </button>
+                            )}
                         </div>
                         {post.bikeModel && (
                             <span className="text-gray-500 text-[10px] leading-tight">{post.bikeModel}</span>
@@ -112,7 +147,8 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
             >
                 <img
                     src={post.images?.[0] || post.image}
-                    alt="Post"
+                    alt={post.userName}
+                    loading="lazy"
                     className="w-full h-full object-cover"
                 />
 

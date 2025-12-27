@@ -412,7 +412,7 @@ export const App: React.FC = () => {
         return <IntroAnimation onComplete={handleIntroComplete} />;
     }
 
-    const isFullScreenMode = view === 'ride-mode' || view === 'mototool' || view === 'admin' || view === 'meetup' || view === 'valuation' || view === 'qr-generator' || view === 'vlog-map' || view === 'lifesaver';
+    const isFullScreenMode = view === 'ride-mode' || view === 'mototool' || view === 'admin' || view === 'meetup' || view === 'valuation' || view === 'qr-generator' || view === 'vlog-map' || view === 'lifesaver' || view === 'reels';
 
     return (
         <SocketProvider>
@@ -474,7 +474,22 @@ export const App: React.FC = () => {
                     onThemeChange={setColorTheme}
                 />
 
-                {!isFullScreenMode && (
+                {isFullScreenMode ? (
+                    <main className="w-full h-full relative z-10 bg-black">
+                        <AnimatePresence mode="wait">
+                            <motion.div
+                                key={view}
+                                initial={{ opacity: 0 }}
+                                animate={{ opacity: 1 }}
+                                exit={{ opacity: 0 }}
+                                transition={{ duration: 0.3 }}
+                                className="w-full h-full"
+                            >
+                                {renderView()}
+                            </motion.div>
+                        </AnimatePresence>
+                    </main>
+                ) : (
                     <MobileLayout
                         currentView={view}
                         onNavigate={navigateTo}

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Compass, Home, MessageSquare, Calendar, User, Search, Bell, PlusCircle, Grid, Users, Map as MapIcon, Navigation, Flag } from 'lucide-react';
-import { PostCard } from './PostCard';
+import { ResponsivePostCard } from './ResponsivePostCard';
 import { FollowButton } from './FollowButton';
 import { UserProfile } from './UserProfile'; // Can be used when user clicks profile
 import { DirectMessages } from './DirectMessages';
@@ -231,7 +231,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                                 {data?.pages.map((page, i) => (
                                                     <React.Fragment key={i}>
                                                         {page && page.length > 0 ? page.map((post: SocialPost) => (
-                                                            <PostCard key={post._id} post={post} currentUserId={currentUser?._id} />
+                                                            <ResponsivePostCard key={post._id} post={post} currentUserId={currentUser?._id} onNavigate={onNavigate} />
                                                         )) : (
                                                             i === 0 && <div className="text-center py-10 text-gray-500">Henüz gönderi yok. İlk paylaşımı sen yap!</div>
                                                         )}

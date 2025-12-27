@@ -6,25 +6,31 @@ interface MobileBottomSheetProps {
     onClose: () => void;
     children: React.ReactNode;
     title?: string;
+    height?: string; // Optional custom height class (e.g., 'h-[80vh]')
 }
 
 export const MobileBottomSheet: React.FC<MobileBottomSheetProps> = ({
     isOpen,
     onClose,
     children,
-    title
+    title,
+    height = 'max-h-[85vh]'
 }) => {
     // Prevent body scroll when open
     useEffect(() => {
         if (isOpen) {
             document.body.style.overflow = 'hidden';
+            document.body.style.position = 'fixed'; // Lock mobile scroll reliably
+            document.body.style.width = '100%';
         } else {
-            document.body.style.overflow = 'unset';
-            document.body.style.overflowX = 'hidden'; // Keep x hidden
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
         }
         return () => {
-            document.body.style.overflow = 'unset';
-            document.body.style.overflowX = 'hidden';
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
         };
     }, [isOpen]);
 
@@ -49,28 +55,30 @@ export const MobileBottomSheet: React.FC<MobileBottomSheetProps> = ({
 
                     {/* Sheet */}
                     <motion.div
-                        className="fixed bottom-0 left-0 right-0 bg-zinc-900 border-t border-white/10 rounded-t-3xl z-[200] max-h-[85vh] h-auto min-h-[50vh] flex flex-col shadow-2xl"
+                        className={`fixed bottom-0 left-0 right-0 bg-[#0a0a0a] border-t border-white/10 rounded-t-[32px] z-[200] ${height} h-auto min-h-[50vh] flex flex-col shadow-2xl overflow-hidden`}
                         initial={{ y: "100%" }}
                         animate={{ y: 0 }}
                         exit={{ y: "100%" }}
-                        transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                        transition={{ type: "spring", damping: 30, stiffness: 300 }}
                         drag="y"
                         dragConstraints={{ top: 0 }}
                         dragElastic={{ top: 0, bottom: 0.2 }}
                         onDragEnd={handleDragEnd}
                     >
                         {/* Drag Handle */}
-                        <div className="pt-4 pb-2 w-full flex justify-center cursor-grab active:cursor-grabbing touch-none">
-                            <div className="w-12 h-1.5 bg-gray-600/50 rounded-full" />
+                        <div className="pt-3 pb-1 w-full flex justify-center cursor-grab active:cursor-grabbing touch-none shrink-0 bg-[#0a0a0a]">
+                            <div className="w-12 h-1.5 bg-zinc-700 rounded-full" />
                         </div>
 
-                        {/* Content */}
-                        <div className="px-6 pb-8 overflow-y-auto no-scrollbar flex-1">
-                            {title && (
-                                <div className="mb-6 text-center border-b border-white/5 pb-4">
-                                    <h3 className="text-lg font-bold text-white">{title}</h3>
-                                </div>
-                            )}
+                        {/* Title (Optional) */}
+                        {title && (
+                            <div className="text-center pb-4 pt-2 border-b border-white/5 bg-[#0a0a0a] shrink-0">
+                                <h3 className="text-lg font-bold text-white">{title}</h3>
+                            </div>
+                        )}
+
+                        {/* Content Container - Manage internal scroll */}
+                        <div className="flex-1 overflow-y-auto no-scrollbar relative flex flex-col w-full h-full bg-[#0a0a0a]">
                             {children}
                         </div>
                     </motion.div>

@@ -6,6 +6,7 @@ import { UserAvatar } from '../ui/UserAvatar';
 import { socialService } from '../../services/socialService';
 
 import { MobileBottomSheet } from './MobileBottomSheet';
+import { MobileComments } from './MobileComments'; // Import Added
 import { useAuthStore } from '../../store/authStore';
 import { useFollow } from '../../hooks/useFollow';
 
@@ -47,25 +48,26 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
     const [comments, setComments] = useState(post.commentList || []);
     const [commentCount, setCommentCount] = useState(typeof post.comments === 'number' ? post.comments : (Array.isArray(post.comments) ? post.comments.length : 0));
 
-    const handlePostComment = async () => {
-        if (!commentText.trim()) return; // Silent fail if no text/no user
+    const handlePostComment = async (textOverride?: string) => {
+        const textToPost = textOverride || commentText;
+        if (!textToPost.trim()) return;
 
         // Optimistic
         const newComment = {
             _id: Date.now().toString(),
-            authorName: 'Sen', // You might want to grab real user name if available
-            content: commentText,
+            authorName: 'Sen',
+            content: textToPost,
             timestamp: new Date().toISOString()
         };
 
         setComments(prev => [...prev, newComment]);
         setCommentCount(prev => prev + 1);
-        setCommentText('');
+        setCommentText(''); // Clear local state if any
 
         try {
             const response: any = await socialService.commentPost(post._id, {
                 authorId: currentUserId || 'guest',
-                authorName: 'User', // Needs real data
+                authorName: 'User',
                 content: newComment.content
             });
             if (response && response.data && response.data.comments) {
@@ -234,45 +236,16 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                 isOpen={showComments}
                 onClose={() => setShowComments(false)}
                 title="Yorumlar"
+                height="h-[80vh]"
             >
-                <div className="space-y-4">
-                    {comments.map((comment) => (
-                        <div key={comment._id || Math.random().toString()} className="flex gap-3">
-                            <UserAvatar name={typeof comment.authorName === 'string' ? comment.authorName : 'User'} size={32} className="mt-1" />
-                            <div className="flex-1">
-                                <p className="text-sm text-gray-300">
-                                    <span className="text-white font-bold mr-2">{typeof comment.authorName === 'string' ? comment.authorName : 'User'}</span>
-                                    {typeof comment.content === 'string' ? comment.content : ''}
-                                </p>
-                            </div>
-                        </div>
-                    ))}
-                    {comments.length === 0 && (
-                        <p className="text-gray-500 text-center py-8">Henüz yorum yok.</p>
-                    )}
-                </div>
-
-                {/* Comment Input */}
-                <div className="sticky bottom-0 bg-zinc-900 pt-4 mt-4 border-t border-white/5 flex gap-3">
-                    <UserAvatar name="Sen" size={32} />
-                    <div className="flex-1 relative">
-                        <input
-                            type="text"
-                            value={commentText}
-                            onChange={(e) => setCommentText(e.target.value)}
-                            placeholder="Yorum ekle..."
-                            className="w-full bg-white/5 border border-white/10 rounded-full px-4 py-2 text-sm text-white placeholder-gray-500 focus:border-moto-accent focus:ring-0 outline-none"
-                            onKeyDown={(e) => e.key === 'Enter' && handlePostComment()}
-                        />
-                        <button
-                            onClick={handlePostComment}
-                            disabled={!commentText.trim()}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 text-moto-accent font-bold text-xs disabled:opacity-50"
-                        >
-                            GÖNDER
-                        </button>
-                    </div>
-                </div>
+                <MobileComments
+                    postId={post._id}
+                    comments={comments}
+                    currentUserAvatar={currentUser?.avatar} // Assuming user object has avatar
+                    onAddComment={(text) => {
+                        handlePostComment(text);
+                    }}
+                />
             </MobileBottomSheet>
         </div>
     );

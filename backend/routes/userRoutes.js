@@ -21,4 +21,10 @@ router.post('/follow/:id', userController.toggleFollow);
 router.post('/garage', userController.addToGarage);
 router.delete('/garage/:garageId', userController.removeFromGarage);
 
+// Cart
+router.get('/cart', userController.getCart);
+router.post('/cart', userController.addToCart);
+router.delete('/cart/:productId', userController.removeFromCart);
+router.put('/cart/:productId', userController.updateCartItem);
+
 export default router;

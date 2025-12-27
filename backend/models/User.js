@@ -24,6 +24,15 @@ const userSchema = new mongoose.Schema({
         image: String
     }],
 
+    // Shopping Cart
+    cart: [{
+        productId: String,
+        name: String,
+        price: Number,
+        image: String,
+        quantity: { type: Number, default: 1 }
+    }],
+
     // Social Graph
     followers: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],

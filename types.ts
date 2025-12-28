@@ -145,7 +145,6 @@ export interface User {
   // Social Additions
   username?: string;
   location?: string;
-  avatar?: string;
   coverImage?: string;
   followersCount?: number;
   followingCount?: number;

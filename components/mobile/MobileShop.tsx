@@ -6,10 +6,12 @@ import ProductCard from './ProductCard';
 
 const CATEGORIES = ["Tümü", "Performans", "Ekipman", "Bakım", "Aksesuar"];
 
-export const MobileShop = ({ onNavigate }: { onNavigate: (view: any, data?: any) => void }) => {
+import { ProductCategory } from '../../types';
+
+export const MobileShop = ({ onNavigate, initialCategory = 'ALL' }: { onNavigate: (view: any, data?: any) => void, initialCategory?: ProductCategory | 'ALL' }) => {
     const { data: products, isLoading } = useProducts();
     const [searchQuery, setSearchQuery] = useState("");
-    const [activeCategory, setActiveCategory] = useState("Tümü");
+    const [activeCategory, setActiveCategory] = useState<string>(initialCategory === 'ALL' ? "Tümü" : initialCategory);
 
     const filteredProducts = products?.filter((product) => {
         const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());

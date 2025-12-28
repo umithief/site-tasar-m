@@ -69,9 +69,6 @@ import { MobileProductDetail } from './components/mobile/MobileProductDetail';
 import { CartBottomSheet } from './components/mobile/CartBottomSheet';
 import { CheckoutPage } from './components/checkout/CheckoutPage';
 import { OrderTracking } from './components/checkout/OrderTracking';
-import { DesktopLayout } from './components/layout/DesktopLayout';
-import { DesktopShop } from './components/desktop/DesktopShop';
-import { DesktopQuickView } from './components/desktop/DesktopQuickView';
 
 export const App: React.FC = () => {
     const [view, setView] = useState<ViewState>('home');
@@ -400,14 +397,7 @@ export const App: React.FC = () => {
         switch (view) {
             case 'home': return <Home onNavigate={navigateTo} />;
             case 'showcase': return <Showcase products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
-            case 'shop': return isMobile ?
-                <MobileShop initialCategory={initialShopCategory} onNavigate={navigateTo} /> :
-                <DesktopShop
-                    onAddToCart={addToCart}
-                    onQuickView={setQuickViewProduct}
-                    favoriteIds={favoriteIds}
-                    onToggleFavorite={toggleFavorite}
-                />;
+            case 'shop': return isMobileMenuOpen || window.innerWidth < 768 ? <MobileShop initialCategory={initialShopCategory} onNavigate={navigateTo} /> : <Shop products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} initialCategory={initialShopCategory} />;
             case 'auth': return <AuthPage onNavigate={navigateTo} onLoginSuccess={async () => {
                 const u = await authService.getCurrentUser();
                 if (u) {
@@ -573,33 +563,34 @@ export const App: React.FC = () => {
                         onToggleTheme={() => setIsThemeModalOpen(true)}
                     >
                         <div className="hidden md:block">
-                            {/* Standard Navbar is hidden in new Desktop Layout, but kept for < tablet fallback if needed. 
-                            Currently Logic: < 768 is Mobile. > 768 is Desktop Layout. 
-                            Ideally, we should rely on DesktopLayout entirely for desktop.
-                            */}
-                            {/* Removed legacy Navbar for desktop to trust DesktopLayout */}
+                            <Navbar
+                                cartCount={cartItems.reduce((a, b) => a + b.quantity, 0)}
+                                favoritesCount={favoriteIds.length}
+                                onCartClick={() => setIsCartOpen(true)}
+                                onFavoritesClick={() => navigateTo('favorites')}
+                                onSearch={(query) => navigateTo('shop', query)}
+                                onOpenAuth={() => navigateTo('auth')}
+                                onNavigate={navigateTo}
+                                currentView={view}
+                                colorTheme={colorTheme} // Passed to standard Navbar if needed (future proofing)
+                                onToggleMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                            />
                         </div>
 
                         {/* Main Content */}
                         <main className={`relative w-full flex-1 z-10 transition-all duration-300 ${isFullScreenMode ? 'h-full' : 'pb-20 md:pb-0'}`}>
-                            {isMobile ? (
-                                <AnimatePresence mode="wait" onExitComplete={() => window.scrollTo(0, 0)}>
-                                    <motion.div
-                                        key={view}
-                                        initial={{ opacity: 0, filter: 'blur(10px)', scale: 0.98 }}
-                                        animate={{ opacity: 1, filter: 'blur(0px)', scale: 1 }}
-                                        exit={{ opacity: 0, filter: 'blur(10px)', scale: 1.02 }}
-                                        transition={{ duration: 0.3, ease: "easeInOut" }}
-                                        className="w-full h-full"
-                                    >
-                                        {renderView()}
-                                    </motion.div>
-                                </AnimatePresence>
-                            ) : (
-                                <DesktopLayout currentView={view} onNavigate={navigateTo}>
+                            <AnimatePresence mode="wait" onExitComplete={() => window.scrollTo(0, 0)}>
+                                <motion.div
+                                    key={view}
+                                    initial={{ opacity: 0, filter: 'blur(10px)', scale: 0.98 }}
+                                    animate={{ opacity: 1, filter: 'blur(0px)', scale: 1 }}
+                                    exit={{ opacity: 0, filter: 'blur(10px)', scale: 1.02 }}
+                                    transition={{ duration: 0.3, ease: "easeInOut" }}
+                                    className="w-full h-full"
+                                >
                                     {renderView()}
-                                </DesktopLayout>
-                            )}
+                                </motion.div>
+                            </AnimatePresence>
                         </main>
 
                         <AnimatePresence>
@@ -626,23 +617,13 @@ export const App: React.FC = () => {
                             user={user}
                         />
 
-                        {isMobile ? (
-                            <ProductQuickViewModal
-                                isOpen={!!quickViewProduct}
-                                onClose={() => setQuickViewProduct(null)}
-                                product={quickViewProduct}
-                                onAddToCart={(p, e) => { addToCart(p, e); setQuickViewProduct(null); }}
-                                onViewDetail={(p) => { navigateTo('product-detail', p); setQuickViewProduct(null); }}
-                            />
-                        ) : (
-                            <DesktopQuickView
-                                product={quickViewProduct}
-                                onClose={() => setQuickViewProduct(null)}
-                                onAddToCart={(p) => { addToCart(p); setQuickViewProduct(null); }}
-                                onToggleFavorite={toggleFavorite}
-                                isFavorite={quickViewProduct ? favoriteIds.includes(quickViewProduct._id) : false}
-                            />
-                        )}
+                        <ProductQuickViewModal
+                            isOpen={!!quickViewProduct}
+                            onClose={() => setQuickViewProduct(null)}
+                            product={quickViewProduct}
+                            onAddToCart={(p, e) => { addToCart(p, e); setQuickViewProduct(null); }}
+                            onViewDetail={(p) => { navigateTo('product-detail', p); setQuickViewProduct(null); }}
+                        />
 
                         {!isFullScreenMode && (
                             <footer className="bg-white text-gray-900 pt-20 pb-24 md:pb-10 border-t border-gray-200 relative overflow-hidden z-10">

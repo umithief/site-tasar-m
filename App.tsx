@@ -67,6 +67,8 @@ import { MobileExplore } from './components/mobile/MobileExplore';
 import { ReelsPage } from './components/reels/ReelsPage';
 import { MobileProductDetail } from './components/mobile/MobileProductDetail';
 import { CartBottomSheet } from './components/mobile/CartBottomSheet';
+import { CheckoutPage } from './components/checkout/CheckoutPage';
+import { OrderTracking } from './components/checkout/OrderTracking';
 
 export const App: React.FC = () => {
     const [view, setView] = useState<ViewState>('home');
@@ -84,6 +86,7 @@ export const App: React.FC = () => {
 
     const [products, setProducts] = useState<Product[]>([]);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+    const [lastOrderId, setLastOrderId] = useState<string | null>(null);
     const [initialShopCategory, setInitialShopCategory] = useState<ProductCategory | 'ALL'>('ALL');
 
     const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
@@ -338,7 +341,8 @@ export const App: React.FC = () => {
             return;
         }
         setIsCartOpen(false);
-        setIsPaymentOpen(true);
+        // setIsPaymentOpen(true); // Old logic
+        navigateTo('checkout'); // New logic
         statsService.trackEvent('checkout_start', { userId: user._id });
     };
 
@@ -348,7 +352,17 @@ export const App: React.FC = () => {
             total = total * 0.95;
         }
 
-        await orderService.createOrder(user!, cartItems, total);
+        await orderService.createOrder({
+            user: user!,
+            orderItems: cartItems,
+            items: cartItems, // Backward compatibility or specific field? Backend expects 'orderItems' in controller logic I wrote, but service might structure it.
+            // My service implementation just passes orderData to backend.
+            // Backend controller expects: { orderItems, shippingAddress, paymentMethod, itemsPrice, taxPrice, shippingPrice, totalPrice }
+            // Let's pass a structure close to that.
+            totalPrice: total,
+            shippingAddress: { address: 'TBD', city: 'TBD', postalCode: '00000', country: 'Turkey' }, // Placeholder for old flow
+            paymentMethod: 'Credit Card'
+        });
         setCartItems([]);
         setIsPaymentOpen(false);
         playSuccess();
@@ -419,6 +433,28 @@ export const App: React.FC = () => {
             case 'explore': return <MobileExplore onNavigate={navigateTo} />;
             case 'create': return <RideMode route={activeRoute} onNavigate={navigateTo} />; // Placeholder
             case 'garage': return user ? <MyProfile /> : <div className="pt-32 text-center text-gray-500">Lütfen giriş yapın.</div>;
+            case 'checkout':
+                return (
+                    <CheckoutPage
+                        items={cartItems}
+                        total={cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0) * (user?.rank === 'Yol Kaptanı' ? 0.95 : 1)}
+                        onBack={() => navigateTo('cart')}
+                        onSuccess={(orderId) => {
+                            setLastOrderId(orderId);
+                            setCartItems([]);
+                            addToast('success', 'Siparişiniz başarıyla alındı!');
+                            navigateTo('order-tracking');
+                        }}
+                        onToast={addToast}
+                    />
+                );
+            case 'order-tracking':
+                return lastOrderId ? (
+                    <OrderTracking
+                        orderId={lastOrderId}
+                        onClose={() => navigateTo('home')}
+                    />
+                ) : <Home products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
             default: return <Home products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
         }
     };

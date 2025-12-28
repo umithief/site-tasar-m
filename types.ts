@@ -20,7 +20,7 @@ declare global {
 
 export type Language = 'tr' | 'en';
 
-export type ViewState = 'home' | 'shop' | 'routes' | 'blog' | 'forum' | 'riders' | 'favorites' | 'profile' | 'public-profile' | 'cart' | 'checkout' | 'auth' | 'admin' | 'product-detail' | 'ride-mode' | 'mototool' | 'about' | 'ai-assistant' | 'meetup' | 'service-finder' | 'valuation' | 'qr-generator' | 'vlog-map' | 'lifesaver' | 'social-hub' | 'showcase' | 'reels' | 'explore' | 'create' | 'garage' | 'my-profile';
+export type ViewState = 'home' | 'shop' | 'routes' | 'blog' | 'forum' | 'riders' | 'favorites' | 'profile' | 'public-profile' | 'cart' | 'checkout' | 'auth' | 'admin' | 'product-detail' | 'ride-mode' | 'mototool' | 'about' | 'ai-assistant' | 'meetup' | 'service-finder' | 'valuation' | 'qr-generator' | 'vlog-map' | 'lifesaver' | 'social-hub' | 'showcase' | 'reels' | 'explore' | 'create' | 'garage' | 'my-profile' | 'order-tracking';
 
 
 export interface CategoryItem {
@@ -163,9 +163,18 @@ export interface Order {
   _id: string;
   userId: string;
   date: string;
-  status: 'Hazırlanıyor' | 'Kargoda' | 'Teslim Edildi' | 'İptal';
+  status: 'Hazırlanıyor' | 'Kargoda' | 'Teslim Edildi' | 'İptal' | 'Order Placed' | 'Preparing Gear' | 'On the Road' | 'Delivered';
   total: number;
   items: OrderItem[];
+  shippingAddress?: {
+    address: string;
+    city: string;
+    postalCode: string;
+    country: string;
+  };
+  paymentMethod?: string;
+  isPaid?: boolean;
+  isDelivered?: boolean;
 }
 
 export interface ForumComment {

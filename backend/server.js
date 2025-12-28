@@ -40,6 +40,7 @@ import notificationRoutes from './routes/notificationRoutes.js';
 // Import Models to ensure registration
 import './models/User.js';
 import './models/Post.js'; // Registers 'SocialPost'
+import './models/Order.js';
 import './models/Message.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -97,21 +98,7 @@ const productSchema = new mongoose.Schema({
 
 const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
 
-const orderSchema = new mongoose.Schema({
-    userId: { type: String, required: true },
-    date: { type: String, default: () => new Date().toLocaleDateString('tr-TR') },
-    status: { type: String, default: 'Hazırlanıyor' },
-    total: Number,
-    items: [{
-        productId: String,
-        name: String,
-        price: Number,
-        quantity: Number,
-        image: String
-    }]
-}, { versionKey: false });
-
-const Order = mongoose.models.Order || mongoose.model('Order', orderSchema);
+// Order model moved to backend/models/Order.js
 
 const slideSchema = new mongoose.Schema({
     image: { type: String, required: true },

@@ -36,10 +36,63 @@ export const MobileRoutes: React.FC = () => {
     const featuredRoutes = routes.filter(r => r.difficulty === 'Zor' || r.isFeatured);
     const nearbyRoutes = routes;
 
-    const filters = ['All', 'Coastal', 'Mountain', 'Forest', 'Technical', 'Relaxed'];
+    // Vibe/Mood categories with emojis
+    const filters = [
+        { id: 'All', label: 'Tümü', emoji: '🎯' },
+        { id: 'Coastal', label: 'Sahil', emoji: '🌊' },
+        { id: 'Mountain', label: 'Dağ', emoji: '🏔️' },
+        { id: 'City', label: 'Şehir', emoji: '🏙️' },
+        { id: 'Off-road', label: 'Arazi', emoji: '⚡' },
+    ];
+
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const [startY, setStartY] = useState(0);
+
+    const handleRefresh = async () => {
+        setIsRefreshing(true);
+        await loadRoutes();
+        setTimeout(() => setIsRefreshing(false), 1000);
+    };
+
+    const handleTouchStart = (e: React.TouchEvent) => {
+        setStartY(e.touches[0].clientY);
+    };
+
+    const handleTouchMove = (e: React.TouchEvent) => {
+        const currentY = e.touches[0].clientY;
+        const diff = currentY - startY;
+
+        if (diff > 80 && window.scrollY === 0 && !isRefreshing) {
+            handleRefresh();
+        }
+    };
 
     return (
-        <div className="min-h-screen bg-black pb-24">
+        <div
+            className="min-h-screen bg-black pb-24"
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+        >
+            {/* Pull to Refresh Indicator */}
+            <AnimatePresence>
+                {isRefreshing && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -50 }}
+                        className="fixed top-20 left-1/2 -translate-x-1/2 z-50"
+                    >
+                        <div className="bg-[#1A1A17] border border-orange-500/30 rounded-full p-3 shadow-2xl">
+                            <motion.div
+                                animate={{ rotate: 360 }}
+                                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                            >
+                                <Navigation className="w-6 h-6 text-orange-500" />
+                            </motion.div>
+                        </div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             {/* Header */}
             <header className="fixed top-0 left-0 right-0 z-10 bg-gradient-to-b from-black via-black/80 to-transparent pt-12 pb-6 px-6 backdrop-blur-sm">
@@ -57,14 +110,15 @@ export const MobileRoutes: React.FC = () => {
                 <div className="flex gap-2 overflow-x-auto no-scrollbar -mx-6 px-6">
                     {filters.map((filter) => (
                         <button
-                            key={filter}
-                            onClick={() => setActiveFilter(filter)}
-                            className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap border transition-all
-                            ${activeFilter === filter
+                            key={filter.id}
+                            onClick={() => setActiveFilter(filter.id)}
+                            className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider whitespace-nowrap border transition-all flex items-center gap-2
+                            ${activeFilter === filter.id
                                     ? 'bg-white text-black border-white'
                                     : 'bg-transparent text-zinc-500 border-zinc-800 hover:border-zinc-600'}`}
                         >
-                            {filter}
+                            <span>{filter.emoji}</span>
+                            <span>{filter.label}</span>
                         </button>
                     ))}
                 </div>

@@ -314,6 +314,8 @@ export interface Route {
   _id: string;
   title: string;
   description: string;
+  startPoint?: string; // Mobile: Starting location
+  endPoint?: string; // Mobile: Ending location
   image: string;
   images?: string[]; // Gallery
   videoUrl?: string; // Tanıtım videosu (MP4 veya YouTube)
@@ -336,6 +338,7 @@ export interface Route {
   };
   riderCount?: number;
   tags: string[];
+  vibeTags?: string[]; // Mobile: Mood-based tags
   coordinates?: { lat: number; lng: number }[]; // Array of coordinates for drawing
   path?: { lat: number; lng: number }[]; // Legacy support
   tips?: string[]; // Sürüş ipuçları

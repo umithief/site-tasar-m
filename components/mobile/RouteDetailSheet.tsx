@@ -147,19 +147,36 @@ export const RouteDetailSheet: React.FC<RouteDetailSheetProps> = ({
                                 </div>
                             </div>
 
-                            <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest mb-4">The Vibe</h3>
+                            {/* Weather Widget */}
+                            {route.weatherPoint && (
+                                <div className="mb-6 p-4 bg-zinc-900/50 rounded-2xl border border-white/5 flex items-center justify-between">
+                                    <div>
+                                        <div className="text-xs text-zinc-500 uppercase font-bold tracking-wider mb-1">Hava Durumu</div>
+                                        <div className="text-lg font-bold text-white">{route.weatherPoint}</div>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <div className="text-right">
+                                            <div className="text-3xl font-bold text-orange-500">24°</div>
+                                            <div className="text-xs text-zinc-500">Güneşli</div>
+                                        </div>
+                                        <div className="text-4xl">☀️</div>
+                                    </div>
+                                </div>
+                            )}
+
+                            <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest mb-4">Ruh Hali</h3>
                             <div className="flex gap-4 mb-8">
                                 <StatGauge label="Curves" value={route.stats?.curves || 85} icon={Navigation} color="text-orange-500" />
                                 <StatGauge label="Road" value={route.stats?.roadQuality || 90} icon={Check} color="text-green-500" />
                                 <StatGauge label="Traffic" value={route.stats?.traffic || 20} icon={Timer} color="text-red-500" />
                             </div>
 
-                            <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest mb-4">Description</h3>
+                            <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest mb-4">Açıklama</h3>
                             <p className="text-zinc-300 text-sm leading-relaxed mb-6">
                                 {route.description}
                             </p>
 
-                            <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest mb-4">Terrain</h3>
+                            <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest mb-4">Zemin</h3>
                             <div className="flex flex-wrap gap-2 mb-8">
                                 {route.terrain?.map((t: string) => (
                                     <span key={t} className="px-3 py-1 rounded-full bg-zinc-800 text-zinc-300 text-xs font-medium border border-zinc-700">
@@ -180,10 +197,10 @@ export const RouteDetailSheet: React.FC<RouteDetailSheetProps> = ({
                                 </button>
                                 <button
                                     onClick={() => onStartNavigation(route)}
-                                    className="flex-1 h-14 bg-orange-600 rounded-2xl flex items-center justify-center gap-3 text-white font-bold uppercase tracking-wider shadow-[0_0_30px_rgba(234,88,12,0.4)] hover:bg-orange-500 transition-colors"
+                                    className="flex-1 h-14 bg-orange-600 rounded-2xl flex items-center justify-center gap-3 text-white font-bold uppercase tracking-wider shadow-[0_0_30px_rgba(234,88,12,0.4)] hover:bg-orange-500 transition-colors active:scale-95"
                                 >
                                     <Navigation className="w-5 h-5 fill-current" />
-                                    Start Navigation
+                                    SÜRÜŞÜ BAŞLAT
                                 </button>
                             </div>
                         </div>

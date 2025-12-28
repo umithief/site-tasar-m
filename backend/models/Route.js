@@ -3,6 +3,8 @@ import mongoose from 'mongoose';
 const routeSchema = new mongoose.Schema({
     title: { type: String, required: true },
     description: { type: String, required: true },
+    startPoint: { type: String }, // Mobile: Starting location name
+    endPoint: { type: String }, // Mobile: Ending location name
     distance: { type: String, required: true }, // Keeping as String for flexibility e.g., "120 km" or Number if preferred, maintaining String based on types.ts
     estimatedTime: { type: String, required: true },
     location: { type: String, required: true },
@@ -10,6 +12,7 @@ const routeSchema = new mongoose.Schema({
         lat: Number,
         lng: Number
     }],
+    vibeTags: [{ type: String }], // Mobile: Mood-based tags like 'Coastal', 'Mountain', 'City', 'Off-road'
     difficulty: {
         type: String,
         enum: ['Kolay', 'Orta', 'Zor', 'Extreme'],

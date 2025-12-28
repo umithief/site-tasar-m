@@ -35,3 +35,11 @@ export const protect = catchAsync(async (req, res, next) => {
     req.user = currentUser;
     next();
 });
+
+export const admin = (req, res, next) => {
+    if (req.user && req.user.isAdmin) {
+        next();
+    } else {
+        return next(new AppError('Bu işlem için yetkiniz yok (Admin only).', 403));
+    }
+};

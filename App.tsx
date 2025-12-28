@@ -400,14 +400,29 @@ export const App: React.FC = () => {
             case 'home': return <Home onNavigate={navigateTo} />;
             case 'showcase': return <Showcase products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
             case 'shop': return isMobileMenuOpen || window.innerWidth < 768 ? <MobileShop initialCategory={initialShopCategory} onNavigate={navigateTo} /> : <Shop products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} initialCategory={initialShopCategory} />;
-            case 'auth': return <AuthPage onNavigate={navigateTo} onLoginSuccess={async () => {
-                const u = await authService.getCurrentUser();
-                if (u) {
-                    setUser(u);
-                    addToast('success', `Hoş geldin, ${u.name}`);
-                    navigateTo('home');
-                }
-            }} />;
+            case 'auth': return isMobile ? (
+                <MobileAuth
+                    onClose={() => navigateTo('home')}
+                    onSuccess={() => {
+                        authService.getCurrentUser().then(u => {
+                            if (u) {
+                                setUser(u);
+                                addToast('success', `Hoş geldin, ${u.name}`);
+                                navigateTo('home');
+                            }
+                        });
+                    }}
+                />
+            ) : (
+                <AuthPage onNavigate={navigateTo} onLoginSuccess={async () => {
+                    const u = await authService.getCurrentUser();
+                    if (u) {
+                        setUser(u);
+                        addToast('success', `Hoş geldin, ${u.name}`);
+                        navigateTo('home');
+                    }
+                }} />
+            );
             case 'product-detail': return isMobile ?
                 <MobileProductDetail product={selectedProduct} onAddToCart={addToCart} onNavigate={navigateTo} onOpenCart={() => setIsCartOpen(true)} /> :
                 <ProductDetail product={selectedProduct} allProducts={products} onAddToCart={addToCart} onNavigate={navigateTo} onProductClick={(p) => navigateTo('product-detail', p)} onCompare={toggleCompare} isCompared={compareList.some(p => p._id === selectedProduct?._id)} />;
@@ -465,7 +480,7 @@ export const App: React.FC = () => {
         return <IntroAnimation onComplete={handleIntroComplete} />;
     }
 
-    const isFullScreenMode = view === 'ride-mode' || view === 'mototool' || view === 'admin' || view === 'meetup' || view === 'valuation' || view === 'qr-generator' || view === 'vlog-map' || view === 'lifesaver' || view === 'reels';
+    const isFullScreenMode = view === 'ride-mode' || view === 'mototool' || view === 'admin' || view === 'meetup' || view === 'valuation' || view === 'qr-generator' || view === 'vlog-map' || view === 'lifesaver' || view === 'reels' || view === 'auth';
 
     return (
         <SocketProvider>
@@ -578,7 +593,7 @@ export const App: React.FC = () => {
                         onNavigate={navigateTo}
                         user={user}
                         cartCount={cartItems.reduce((a, b) => a + b.quantity, 0)}
-                        onOpenAuth={() => navigateTo('auth')}
+                        onOpenAuth={() => setIsAuthOpen(true)}
                         onOpenFeedback={() => setIsFeedbackOpen(true)}
                         onToggleTheme={() => setIsThemeModalOpen(true)}
                     >
@@ -589,7 +604,7 @@ export const App: React.FC = () => {
                                 onCartClick={() => setIsCartOpen(true)}
                                 onFavoritesClick={() => navigateTo('favorites')}
                                 onSearch={(query) => navigateTo('shop', query)}
-                                onOpenAuth={() => navigateTo('auth')}
+                                onOpenAuth={() => setIsAuthOpen(true)}
                                 onNavigate={navigateTo}
                                 currentView={view}
                                 colorTheme={colorTheme} // Passed to standard Navbar if needed (future proofing)

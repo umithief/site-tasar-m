@@ -321,10 +321,9 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
             // Add CSS for the neon line
             const style = document.createElement('style');
             style.innerHTML = `
-            .neon-polyline { filter: drop-shadow(0 0 10px #F2A619); }
-            .trail-polyline { filter: drop-shadow(0 0 8px #00f3ff); opacity: 0.8 !important; }
-            .leaflet-tile-pane { filter: brightness(0.6) contrast(1.4) grayscale(0.1); }
-            .leaflet-container { background: #000 !important; }
+            .neon-polyline { filter: drop-shadow(0 0 6px #F2A619); }
+            .trail-polyline { filter: drop-shadow(0 0 4px #00f3ff); opacity: 0.8 !important; }
+            .leaflet-container { background: #111 !important; }
           `;
             document.head.appendChild(style);
         }

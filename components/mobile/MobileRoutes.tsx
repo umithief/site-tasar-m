@@ -1,75 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Map, Navigation, Filter, Star, MapPin, ChevronRight, Share2 } from 'lucide-react';
 import { Route } from '../../types';
 import { RouteDetailSheet } from './RouteDetailSheet';
+import { routeService } from '../../services/routeService';
 
 export const MobileRoutes: React.FC = () => {
     const [selectedRoute, setSelectedRoute] = useState<Route | null>(null);
     const [activeFilter, setActiveFilter] = useState('All');
+    const [routes, setRoutes] = useState<Route[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
 
-    // Mock Data (Replace with API)
-    const featuredRoutes: Route[] = [
-        {
-            _id: '1',
-            title: 'Şile Coastal Run',
-            description: 'Experience the breathtaking Black Sea coast with a perfect mix of high-speed straights and technical curves.',
-            distance: '145 km',
-            estimatedTime: '2h 15m', // Updated type
-            difficulty: 'Orta',
-            location: 'Şile, Istanbul',
-            image: 'https://images.unsplash.com/photo-1519003300449-6cb3878b2d18?q=80&w=1000&auto=format&fit=crop',
-            stats: { curves: 75, roadQuality: 90, traffic: 40 },
-            tags: ['Coastal', 'Scenic', 'Fast'],
-            riderCount: 1243,
-            bestSeason: 'Spring, Summer'
-        },
-        {
-            _id: '2',
-            title: 'Uludağ Summit Climb',
-            description: 'A technical mountain pass challenging even the most experienced riders with its hairpin turns.',
-            distance: '42 km',
-            estimatedTime: '1h 10m',
-            difficulty: 'Zor',
-            location: 'Bursa',
-            image: 'https://images.unsplash.com/photo-1625026412613-2287c2b3e8c0?q=80&w=1000&auto=format&fit=crop',
-            stats: { curves: 95, roadQuality: 85, traffic: 30 },
-            tags: ['Mountain', 'Technical', 'Curves'],
-            riderCount: 856,
-            bestSeason: 'Summer, Autumn'
-        }
-    ];
+    useEffect(() => {
+        loadRoutes();
+    }, [activeFilter]);
 
-    const nearbyRoutes: Route[] = [
-        {
-            _id: '3',
-            title: 'Belgrad Forest Loop',
-            description: 'A quick escape from the city into nature. Watch out for damp leaves in autumn.',
-            distance: '28 km',
-            estimatedTime: '45m',
-            difficulty: 'Kolay',
-            location: 'Sarıyer, Istanbul',
-            image: 'https://images.unsplash.com/photo-1448375240586-dfd8d3cd6052?q=80&w=1000&auto=format&fit=crop',
-            stats: { curves: 60, roadQuality: 80, traffic: 60 },
-            tags: ['Forest', 'Relaxed'],
-            riderCount: 2100,
-            bestSeason: 'All Year'
-        },
-        {
-            _id: '4',
-            title: 'Riva Curves',
-            description: 'Short but intense curvy road leading to the sea.',
-            distance: '35 km',
-            estimatedTime: '50m',
-            difficulty: 'Orta',
-            location: 'Beykoz, Istanbul',
-            image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?q=80&w=1000&auto=format&fit=crop',
-            stats: { curves: 80, roadQuality: 70, traffic: 45 },
-            tags: ['Curves', 'Short'],
-            riderCount: 1540,
-            bestSeason: 'Spring, Summer'
+    const loadRoutes = async () => {
+        setIsLoading(true);
+        try {
+            const data = await routeService.getRoutes(activeFilter);
+            if (data.length === 0) {
+                // Auto-seed if empty (for demo)
+                const seeded = await routeService.seedRoutes();
+                setRoutes(seeded);
+            } else {
+                setRoutes(data);
+            }
+        } catch (error) {
+            console.error('Failed to load routes', error);
+        } finally {
+            setIsLoading(false);
         }
-    ];
+    };
+
+    const featuredRoutes = routes.filter(r => r.difficulty === 'Zor' || r.isFeatured);
+    const nearbyRoutes = routes;
 
     const filters = ['All', 'Coastal', 'Mountain', 'Forest', 'Technical', 'Relaxed'];
 

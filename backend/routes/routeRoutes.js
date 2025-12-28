@@ -1,40 +1,17 @@
 import express from 'express';
-import mongoose from 'mongoose';
+import { getRoutes, getRouteById, createRoute, seedRoutes } from '../controllers/routeController.js';
+import { protect, admin } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
-// GET /api/routes
-router.get('/', async (req, res) => {
-    try {
-        const Route = mongoose.model('Route');
-        const routes = await Route.find();
-        res.json(routes);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
+router.route('/')
+    .get(getRoutes)
+    .post(protect, admin, createRoute);
 
-// POST /api/routes
-router.post('/', async (req, res) => {
-    try {
-        const Route = mongoose.model('Route');
-        const newRoute = new Route(req.body);
-        await newRoute.save();
-        res.status(201).json(newRoute);
-    } catch (error) {
-        res.status(400).json({ message: error.message });
-    }
-});
+router.route('/seed')
+    .post(seedRoutes); // Public for dev/demo purposes, restrict in prod
 
-// DELETE /api/routes/:id
-router.delete('/:id', async (req, res) => {
-    try {
-        const Route = mongoose.model('Route');
-        await Route.findByIdAndDelete(req.params.id);
-        res.json({ message: 'Rota silindi' });
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-});
+router.route('/:id')
+    .get(getRouteById);
 
 export default router;

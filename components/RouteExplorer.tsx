@@ -115,8 +115,10 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                     let latlngs: any[] = [];
 
                     if (route.path && route.path.length > 0) {
-                        latlngs = route.path.map(p => [p.lat, p.lng]);
-                    } else if (route.coordinates) {
+                        latlngs = route.path
+                            .filter(p => p && typeof p.lat === 'number' && typeof p.lng === 'number')
+                            .map(p => [p.lat, p.lng]);
+                    } else if (route.coordinates && typeof (route.coordinates as any).lat === 'number' && typeof (route.coordinates as any).lng === 'number') {
                         latlngs = [[(route.coordinates as any).lat, (route.coordinates as any).lng]];
                     }
 
@@ -124,9 +126,13 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                         const glowLine = L.polyline(latlngs, { color: '#F2A619', weight: 12, opacity: 0.3, lineCap: 'round', lineJoin: 'round' }).addTo(map);
                         const mainLine = L.polyline(latlngs, { color: '#fff', weight: 4, opacity: 1, lineCap: 'round' }).addTo(map);
                         layersRef.current.push(glowLine, mainLine);
-                        map.fitBounds(glowLine.getBounds(), { padding: [100, 100], maxZoom: 14 });
+                        try {
+                            map.fitBounds(glowLine.getBounds(), { padding: [100, 100], maxZoom: 14 });
+                        } catch (e) { console.warn("Cannot fit bounds", e); }
                     } else if (latlngs.length === 1) {
-                        map.setView(latlngs[0], 14, { animate: true });
+                        try {
+                            map.setView(latlngs[0], 14, { animate: true });
+                        } catch (e) { console.warn("Cannot set view", e); }
                     }
 
                     if (latlngs.length > 0) {
@@ -140,7 +146,8 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                 }
             } else {
                 routes.forEach(route => {
-                    if (route.coordinates) {
+                    const coords = route.coordinates as any;
+                    if (coords && typeof coords.lat === 'number' && typeof coords.lng === 'number') {
                         const icon = L.divIcon({
                             className: 'custom-map-pin',
                             html: `<div class="group relative flex flex-col items-center cursor-pointer transition-transform hover:scale-110 hover:-translate-y-2"><div class="w-10 h-10 bg-[#1A1A17] rounded-xl border-2 border-[#F2A619] shadow-[0_0_15px_rgba(242,166,25,0.5)] flex items-center justify-center overflow-hidden"><img src="${route.image}" class="w-full h-full object-cover opacity-80 group-hover:opacity-100" /></div><div class="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[8px] border-t-[#F2A619] -mt-[1px]"></div></div>`,
@@ -149,7 +156,7 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                             popupAnchor: [0, -50]
                         });
 
-                        const marker = L.marker([(route.coordinates as any).lat, (route.coordinates as any).lng], { icon })
+                        const marker = L.marker([coords.lat, coords.lng], { icon })
                             .addTo(map)
                             .bindPopup(`<div class="font-sans text-center"><h3 class="font-bold text-base mb-1">${route.title}</h3><div class="text-xs text-gray-500 mb-2">${route.location}</div><span class="inline-block px-2 py-1 bg-[#F2A619] text-black text-[10px] font-bold rounded uppercase">${route.difficulty}</span><div class="mt-2 text-xs font-mono">${route.distance}</div></div>`, { closeButton: false, className: 'custom-popup-dark' })
                             .on('click', () => setFocusedRouteId(route._id));
@@ -157,9 +164,11 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                     }
                 });
 
-                if (routes.length > 0) {
+                if (routes.length > 0 && layersRef.current.length > 0) {
                     const group = new L.featureGroup(layersRef.current);
-                    map.fitBounds(group.getBounds().pad(0.2));
+                    try {
+                        map.fitBounds(group.getBounds().pad(0.2));
+                    } catch (e) { console.warn("Cannot fit bounds", e); }
                 }
             }
         }

@@ -29,7 +29,7 @@ const createSendToken = (user, statusCode, res) => {
 // --- AUTH CONTROLLERS ---
 
 export const registerUser = catchAsync(async (req, res, next) => {
-    const { name, email, password, username } = req.body;
+    const { name, email, password, username, bikeModel } = req.body;
 
     // Basic validation
     if (!name || !email || !password) {
@@ -59,7 +59,8 @@ export const registerUser = catchAsync(async (req, res, next) => {
         name,
         email,
         username,
-        password: hashedPassword
+        password: hashedPassword,
+        bikeModel
     });
 
     createSendToken(newUser, 201, res);

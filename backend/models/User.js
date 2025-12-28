@@ -15,6 +15,7 @@ const userSchema = new mongoose.Schema({
     address: String,
     points: { type: Number, default: 0 },
     rank: { type: String, default: 'Scooter Çırağı' },
+    bikeModel: { type: String }, // User's primary bike model
 
     // Premium Moto Data
     garage: [{

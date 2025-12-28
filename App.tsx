@@ -19,6 +19,7 @@ import { RideMode } from './components/RideMode';
 import { MotoTool } from './components/MotoTool';
 import { RouteExplorer } from './components/RouteExplorer';
 import { MobileRoutes } from './components/mobile/MobileRoutes';
+import { MobileAuth } from './components/mobile/MobileAuth';
 import { MotoMeetup } from './components/MotoMeetup';
 import { FlyToCart } from './components/FlyToCart';
 import { Blog } from './components/Blog';
@@ -493,12 +494,30 @@ export const App: React.FC = () => {
                     {showTour && <OnboardingTour onComplete={handleTourComplete} />}
                 </AnimatePresence>
 
-                <AuthModal
-                    isOpen={isAuthOpen}
-                    onClose={() => setIsAuthOpen(false)}
-                    initialMode={authMode}
-                    onLogin={(u) => { setUser(u); setIsAuthOpen(false); addToast('success', `Hoş geldin, ${u.name}`); }}
-                />
+                {isMobile ? (
+                    isAuthOpen && (
+                        <MobileAuth
+                            onClose={() => setIsAuthOpen(false)}
+                            onSuccess={() => {
+                                setIsAuthOpen(false);
+                                authService.getCurrentUser().then(u => {
+                                    if (u) {
+                                        setUser(u);
+                                        addToast('success', `Hoş geldin, ${u.name}`);
+                                        navigateTo('home');
+                                    }
+                                });
+                            }}
+                        />
+                    )
+                ) : (
+                    <AuthModal
+                        isOpen={isAuthOpen}
+                        onClose={() => setIsAuthOpen(false)}
+                        initialMode={authMode}
+                        onLogin={(u) => { setUser(u); setIsAuthOpen(false); addToast('success', `Hoş geldin, ${u.name}`); }}
+                    />
+                )}
 
                 {isMobile ? (
                     <CartBottomSheet

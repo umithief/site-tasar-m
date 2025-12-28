@@ -1,5 +1,5 @@
 import express from 'express';
-import { protect } from '../middlewares/authMiddleware.js'; // Assuming you have this
+import { protect } from '../middleware/authMiddleware.js';
 import {
     getNotifications,
     markAsRead,

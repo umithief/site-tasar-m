@@ -141,3 +141,13 @@ body {
 .slant {
     transform: skewX(-20deg);
 }
+
+/* Utilities */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+}

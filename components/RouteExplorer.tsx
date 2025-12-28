@@ -34,6 +34,8 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
     const [aiAnalysis, setAiAnalysis] = useState<string | null>(null);
     const [isLoadingAI, setIsLoadingAI] = useState(false);
     const [viewMode, setViewMode] = useState<'grid' | 'map'>('grid');
+    const [isLoadingData, setIsLoadingData] = useState(true);
+    const [dataError, setDataError] = useState<string | null>(null);
 
     const [navChoiceRoute, setNavChoiceRoute] = useState<Route | null>(null);
 
@@ -56,10 +58,26 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
     const routingControlRef = useRef<any>(null);
 
     useEffect(() => {
-        routeService.getRoutes().then(data => {
-            setRoutes(data);
-            setFilteredRoutes(data);
-        });
+        setIsLoadingData(true);
+        console.log("Fetching routes...");
+        routeService.getRoutes()
+            .then(data => {
+                console.log("Routes fetched:", data);
+                if (Array.isArray(data)) {
+                    setRoutes(data);
+                    setFilteredRoutes(data);
+                } else {
+                    console.error("Data is not an array:", data);
+                    setDataError("Veri formatı hatalı.");
+                }
+            })
+            .catch(err => {
+                console.error("Error fetching routes:", err);
+                setDataError("Rotalar yüklenirken bir hata oluştu.");
+            })
+            .finally(() => {
+                setIsLoadingData(false);
+            });
     }, []);
 
     useEffect(() => {
@@ -493,53 +511,69 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                     </div>
                 </div>
 
-                {viewMode === 'grid' ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-10">
-                        {filteredRoutes.map(route => (
-                            <div key={route._id} className="group cursor-pointer bg-zinc-900/40 border border-white/5 rounded-3xl overflow-hidden hover:border-orange-500/30 transition-all hover:bg-zinc-900/60 hover:-translate-y-1 duration-300" onClick={() => handleAnalyzeRoute(route)}>
-                                {/* Image Container */}
-                                <div className="aspect-[16/10] overflow-hidden bg-zinc-900 relative">
-                                    <img src={route.image} className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" />
-
-                                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent opacity-90"></div>
-
-                                    {/* Badges */}
-                                    <div className="absolute top-4 left-4 flex gap-2">
-                                        <div className="px-3 py-1.5 bg-black/60 backdrop-blur-md rounded-lg text-[10px] font-bold text-white border border-white/10 uppercase tracking-wider shadow-lg">
-                                            {route.difficulty}
-                                        </div>
-                                    </div>
-
-                                    {/* Title Overlay */}
-                                    <div className="absolute bottom-4 left-4 right-4 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-                                        <h3 className="text-lg font-bold text-white mb-1 leading-tight group-hover:text-orange-500 transition-colors line-clamp-1">{route.title}</h3>
-                                        <div className="flex items-center gap-3 text-xs text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75">
-                                            <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {route.location}</span>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Content Details */}
-                                <div className="p-5 flex justify-between items-center border-t border-white/5">
-                                    <div className="flex gap-4">
-                                        <div>
-                                            <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Mesafe</div>
-                                            <div className="text-sm font-mono font-bold text-white">{route.distance.replace(' km', '')}</div>
-                                        </div>
-                                        <div>
-                                            <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Süre</div>
-                                            <div className="text-sm font-mono font-bold text-white">{(route as any).duration?.replace(' Saat', 'sa')}</div>
-                                        </div>
-                                    </div>
-
-                                    <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-zinc-400 group-hover:bg-orange-500 group-hover:text-black transition-all">
-                                        <ArrowRight className="w-4 h-4" />
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                {isLoadingData ? (
+                    <div className="flex items-center justify-center h-64">
+                        <div className="w-10 h-10 border-2 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
                     </div>
-                ) : (
+                ) : dataError ? (
+                    <div className="text-center p-10 bg-red-900/20 border border-red-500/20 rounded-2xl">
+                        <p className="text-red-400 font-bold mb-2">{dataError}</p>
+                        <button onClick={() => window.location.reload()} className="text-white hover:underline">Tekrar Dene</button>
+                    </div>
+                ) : viewMode === 'grid' ? (
+                    filteredRoutes.length === 0 ? (
+                        <div className="text-center py-20">
+                            <MapIcon className="w-16 h-16 text-zinc-700 mx-auto mb-4" />
+                            <h3 className="text-xl font-bold text-white mb-2">Henüz rota bulunmuyor.</h3>
+                            <p className="text-zinc-500">Yeni bir rota oluşturarak başlayın.</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-10">
+                            {filteredRoutes.map(route => (
+                                <div key={route._id} className="group cursor-pointer bg-zinc-900/40 border border-white/5 rounded-3xl overflow-hidden hover:border-orange-500/30 transition-all hover:bg-zinc-900/60 hover:-translate-y-1 duration-300" onClick={() => handleAnalyzeRoute(route)}>
+                                    {/* Image Container */}
+                                    <div className="aspect-[16/10] overflow-hidden bg-zinc-900 relative">
+                                        <img src={route.image} className="w-full h-full object-cover grayscale-[0.2] group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" />
+
+                                        <div className="absolute inset-0 bg-gradient-to-t from-zinc-900 via-transparent to-transparent opacity-90"></div>
+
+                                        {/* Badges */}
+                                        <div className="absolute top-4 left-4 flex gap-2">
+                                            <div className="px-3 py-1.5 bg-black/60 backdrop-blur-md rounded-lg text-[10px] font-bold text-white border border-white/10 uppercase tracking-wider shadow-lg">
+                                                {route.difficulty}
+                                            </div>
+                                        </div>
+
+                                        {/* Title Overlay */}
+                                        <div className="absolute bottom-4 left-4 right-4 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+                                            <h3 className="text-lg font-bold text-white mb-1 leading-tight group-hover:text-orange-500 transition-colors line-clamp-1">{route.title}</h3>
+                                            <div className="flex items-center gap-3 text-xs text-zinc-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 delay-75">
+                                                <span className="flex items-center gap-1"><MapPin className="w-3 h-3" /> {route.location}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Content Details */}
+                                    <div className="p-5 flex justify-between items-center border-t border-white/5">
+                                        <div className="flex gap-4">
+                                            <div>
+                                                <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Mesafe</div>
+                                                <div className="text-sm font-mono font-bold text-white">{route.distance.replace(' km', '')}</div>
+                                            </div>
+                                            <div>
+                                                <div className="text-[10px] text-zinc-500 font-bold uppercase tracking-wider">Süre</div>
+                                                <div className="text-sm font-mono font-bold text-white">{(route as any).duration?.replace(' Saat', 'sa')}</div>
+                                            </div>
+                                        </div>
+
+                                        <div className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-zinc-400 group-hover:bg-orange-500 group-hover:text-black transition-all">
+                                            <ArrowRight className="w-4 h-4" />
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    )) : (
                     <div className="bg-zinc-900 border border-zinc-800 rounded-2xl h-[calc(100vh-200px)] relative overflow-hidden">
                         <div ref={mapContainerRef} className="w-full h-full z-0" />
                         {focusedRouteId ? (

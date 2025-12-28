@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Home, Search, Plus, Film, User, Zap } from 'lucide-react';
+import { Home, Search, Plus, Film, User, Zap, ShoppingBag } from 'lucide-react';
 import { ViewState, User as UserType } from '../../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageProvider';
@@ -29,7 +29,7 @@ export const BottomNav: React.FC<SidebarProps> = ({
     // For now, simple mapping.
     const getActiveTab = () => {
         if (currentView === 'home') return 'home';
-        if (currentView === 'shop' || currentView === 'explore') return 'search';
+        if (currentView === 'shop' || currentView === 'explore') return 'shop';
         if (currentView === 'reels') return 'reels';
         if (currentView === 'profile' || currentView === 'my-profile' || currentView === 'auth') return 'profile';
         // 'create' is a modal/action, usually doesn't stay highlighted unless it's a dedicated view
@@ -40,7 +40,7 @@ export const BottomNav: React.FC<SidebarProps> = ({
 
     const navItems = [
         { id: 'home', icon: Home, label: 'Home', view: 'home' },
-        { id: 'search', icon: Search, label: 'Search', view: 'explore' },
+        { id: 'shop', icon: ShoppingBag, label: 'Shop', view: 'shop' },
         { id: 'create', icon: Plus, label: 'Create', isFab: true },
         { id: 'reels', icon: Film, label: 'Reels', view: 'reels' },
         { id: 'profile', icon: User, label: 'Profile', view: user ? 'profile' : 'auth' },
@@ -95,8 +95,8 @@ export const BottomNav: React.FC<SidebarProps> = ({
                             >
                                 <item.icon
                                     className={`w-6 h-6 transition-colors duration-300 ${isActive
-                                            ? 'text-moto-accent stroke-[2.5px] drop-shadow-[0_0_8px_var(--moto-accent)]'
-                                            : 'text-gray-400'
+                                        ? 'text-moto-accent stroke-[2.5px] drop-shadow-[0_0_8px_var(--moto-accent)]'
+                                        : 'text-gray-400'
                                         }`}
                                 />
 

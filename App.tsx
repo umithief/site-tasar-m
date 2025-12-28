@@ -593,7 +593,7 @@ export const App: React.FC = () => {
                         onNavigate={navigateTo}
                         user={user}
                         cartCount={cartItems.reduce((a, b) => a + b.quantity, 0)}
-                        onOpenAuth={() => setIsAuthOpen(true)}
+                        onOpenAuth={() => navigateTo('auth')}
                         onOpenFeedback={() => setIsFeedbackOpen(true)}
                         onToggleTheme={() => setIsThemeModalOpen(true)}
                     >
@@ -604,7 +604,7 @@ export const App: React.FC = () => {
                                 onCartClick={() => setIsCartOpen(true)}
                                 onFavoritesClick={() => navigateTo('favorites')}
                                 onSearch={(query) => navigateTo('shop', query)}
-                                onOpenAuth={() => setIsAuthOpen(true)}
+                                onOpenAuth={() => navigateTo('auth')}
                                 onNavigate={navigateTo}
                                 currentView={view}
                                 colorTheme={colorTheme} // Passed to standard Navbar if needed (future proofing)

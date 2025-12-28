@@ -152,12 +152,15 @@ body {
 
 @layer components {
     .btn-primary {
-        @apply relative overflow-hidden bg-moto-accent text-black font-bold uppercase tracking-widest px-6 py-3 rounded-xl transition-all duration-300;
+        @apply relative overflow-hidden text-black font-bold uppercase tracking-widest px-6 py-3 rounded-xl transition-all duration-300;
+        background-color: var(--moto-accent);
         box-shadow: 0 0 20px rgba(242, 166, 25, 0.4);
     }
 
     .btn-primary:hover {
-        @apply bg-[#ffb733] scale-105;
+        @apply scale-105;
+        background-color: #ffb733;
+        /* Fallback or specific hover hex */
         box-shadow: 0 0 30px rgba(242, 166, 25, 0.6);
     }
 
@@ -184,7 +187,8 @@ body {
     }
 
     .btn-glass:hover {
-        @apply bg-white/10 border-white/30 text-moto-accent scale-105;
+        @apply bg-white/10 border-white/30 scale-105;
+        color: var(--moto-accent);
         box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
     }
 
@@ -197,7 +201,8 @@ body {
     }
 
     .btn-icon-glass:hover {
-        @apply bg-white/20 border-white/40 text-moto-accent scale-110 rotate-3;
+        @apply bg-white/20 border-white/40 scale-110 rotate-3;
+        color: var(--moto-accent);
         box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
     }
 

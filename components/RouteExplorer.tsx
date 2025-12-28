@@ -383,33 +383,31 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
 
             <aside className={`w-full lg:w-80 flex-shrink-0 flex flex-col gap-6 ${isEmbedded ? 'overflow-y-auto no-scrollbar h-full pb-20' : ''}`}>
 
-                <div className="bg-[#1A1A17] border border-white/10 rounded-2xl p-6 sticky top-28 shadow-xl shadow-black/50">
-                    <h2 className="text-2xl font-display font-black text-white mb-6 flex items-center gap-2">
-                        <MapIcon className="w-6 h-6 text-moto-accent" />
-                        ROTALAR
-                    </h2>
+                <div className="p-2 space-y-8 sticky top-24">
+                    {/* Header & Search */}
+                    <div>
+                        <h2 className="text-xl font-bold text-white mb-6 tracking-tight">Rotalar</h2>
 
-                    <div className="relative mb-6 group">
-                        <div className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-moto-accent transition-colors"><Search className="w-full h-full" /></div>
-                        <input
-                            type="text"
-                            placeholder="Rota veya konum ara..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white focus:border-moto-accent outline-none transition-all placeholder:text-gray-600"
-                        />
-                    </div>
+                        <div className="relative group mb-6">
+                            <Search className="absolute left-0 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors" />
+                            <input
+                                type="text"
+                                placeholder="Rota ara..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full bg-transparent border-b border-zinc-800 py-2 pl-6 text-sm text-white focus:border-white outline-none transition-all placeholder:text-zinc-600"
+                            />
+                        </div>
 
-                    <div className="mb-6">
-                        <label className="text-xs font-bold text-gray-500 uppercase mb-3 block tracking-wider">ZORLUK SEVİYESİ</label>
-                        <div className="flex flex-wrap gap-2">
+                        {/* Minimal Filters */}
+                        <div className="flex flex-wrap gap-x-4 gap-y-2">
                             {['All', 'Kolay', 'Orta', 'Zor', 'Extreme'].map(lvl => (
                                 <button
                                     key={lvl}
                                     onClick={() => setDifficultyFilter(lvl)}
-                                    className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${difficultyFilter === lvl
-                                        ? 'bg-moto-accent border-moto-accent text-black scale-105 shadow-lg shadow-moto-accent/20'
-                                        : 'bg-transparent border-white/10 text-gray-400 hover:text-white hover:border-white/30'
+                                    className={`text-xs font-medium transition-colors ${difficultyFilter === lvl
+                                        ? 'text-white'
+                                        : 'text-zinc-500 hover:text-zinc-300'
                                         }`}
                                 >
                                     {lvl === 'All' ? 'Tümü' : lvl}
@@ -418,149 +416,132 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                         </div>
                     </div>
 
-                    <div className="flex flex-col gap-3">
+                    {/* Actions */}
+                    <div className="space-y-3">
                         <Button
                             onClick={() => { if (onStartRide) onStartRide(null); }}
-                            className="w-full bg-white text-black hover:bg-gray-200 justify-center font-bold py-4 text-sm tracking-wide"
+                            className="w-full bg-white text-black hover:bg-zinc-200 justify-start px-4 py-3 font-bold text-sm tracking-wide rounded-lg flex items-center gap-3 transition-all"
                         >
-                            <Navigation className="w-4 h-4 mr-2" /> SERBEST SÜRÜŞ BAŞLAT
+                            <Navigation className="w-4 h-4" /> Serbest Sürüş
                         </Button>
 
                         {user ? (
-                            <Button onClick={() => setIsCreating(true)} className="w-full bg-[#1A1A17] text-white border border-dashed border-white/20 hover:border-moto-accent hover:text-moto-accent justify-center transition-all">
-                                <Plus className="w-4 h-4 mr-2" /> YENİ ROTA OLUŞTUR
+                            <Button onClick={() => setIsCreating(true)} className="w-full bg-zinc-900 text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-700 justify-start px-4 py-3 rounded-lg flex items-center gap-3 transition-all">
+                                <Plus className="w-4 h-4" /> Rota Oluştur
                             </Button>
                         ) : (
-                            <Button variant="outline" onClick={onOpenAuth} className="w-full border-white/20 text-gray-400 hover:text-white justify-center">
-                                <User className="w-4 h-4 mr-2" /> ROTA EKLEMEK İÇİN GİRİŞ YAP
+                            <Button variant="outline" onClick={onOpenAuth} className="w-full border-zinc-800 text-zinc-500 hover:text-white hover:border-zinc-700 justify-start px-4 py-3 rounded-lg flex items-center gap-3">
+                                <User className="w-4 h-4" /> Giriş Yap
                             </Button>
                         )}
                     </div>
                 </div>
 
                 <div
-                    className="bg-gradient-to-br from-[#1A1A17] to-[#0f0f0f] border-2 border-[#F2A619]/20 rounded-2xl p-6 relative overflow-hidden group hover:border-[#F2A619] transition-all duration-500 shadow-lg cursor-pointer transform hover:-translate-y-1"
+                    className="group relative overflow-hidden rounded-xl bg-zinc-900/50 border border-zinc-800 p-5 cursor-pointer hover:border-orange-500/50 transition-colors"
                     onClick={() => {
                         const challengeRoute = routes.find(r => r.difficulty === 'Zor' || r.difficulty === 'Extreme') || routes[0];
                         if (challengeRoute) handleAnalyzeRoute(challengeRoute);
                     }}
                 >
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-moto-accent/10 rounded-full blur-3xl group-hover:bg-moto-accent/20 transition-colors"></div>
-                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-10 pointer-events-none"></div>
+                    <div className="flex justify-between items-start mb-4">
+                        <div className="text-[10px] font-bold uppercase tracking-wider text-orange-500">Haftanın Rotası</div>
+                        <span className="text-[10px] font-bold text-zinc-500">+500 XP</span>
+                    </div>
 
-                    <div className="relative z-10">
-                        <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center gap-2 text-moto-accent font-bold text-[10px] uppercase tracking-widest bg-moto-accent/10 px-2 py-1 rounded border border-moto-accent/20 animate-pulse">
-                                <Trophy className="w-3 h-3" /> HAFTANIN MEYDAN OKUMASI
-                            </div>
-                            <span className="text-white text-xs font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">+500 XP</span>
-                        </div>
+                    <h3 className="text-lg font-bold text-white mb-2 leading-tight group-hover:text-orange-500 transition-colors">
+                        Trans Toros Geçişi
+                    </h3>
 
-                        <h3 className="text-xl font-display font-bold text-white mb-1 leading-tight group-hover:text-moto-accent transition-colors">
-                            Trans Toros Geçişi
-                        </h3>
-                        <p className="text-gray-400 text-xs mb-6 leading-relaxed">
-                            Bu hafta en çok tamamlanan zorlu dağ parkuru. Rozeti kapmak için şimdi sür!
-                        </p>
-
-                        <button className="w-full py-3 bg-white/5 hover:bg-moto-accent hover:text-black border border-white/10 rounded-xl text-white font-bold text-xs transition-all flex items-center justify-center gap-2 group/btn">
-                            GÖREVİ İNCELE <ArrowRight className="w-4 h-4 group-hover/btn:translate-x-1 transition-transform" />
-                        </button>
+                    <div className="flex items-center gap-2 text-xs text-zinc-500 font-medium group-hover:text-white transition-colors">
+                        <span>Görevi İncele</span>
+                        <ArrowRight className="w-3 h-3 transition-transform group-hover:translate-x-1" />
                     </div>
                 </div>
 
-                <div className="bg-[#1A1A17] border border-white/10 rounded-2xl p-5 flex flex-col gap-4">
-                    <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-green-500/10 flex items-center justify-center text-green-500">
-                            <Target className="w-5 h-5" />
-                        </div>
-                        <div>
-                            <div className="text-lg font-bold text-white font-mono">1,240</div>
-                            <div className="text-[10px] text-gray-500 font-bold uppercase">Bugün Tamamlanan Rota</div>
-                        </div>
+                <div className="flex flex-col gap-2 p-2">
+                    <div className="flex justify-between items-center text-xs">
+                        <span className="text-zinc-500">Bugün Tamamlanan</span>
+                        <span className="text-white font-bold font-mono">1,240</span>
                     </div>
-                    <div className="h-[1px] bg-white/5 w-full"></div>
-                    <div className="flex items-center gap-4">
-                        <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center text-blue-500">
-                            <Users className="w-5 h-5" />
-                        </div>
-                        <div>
-                            <div className="text-lg font-bold text-white font-mono">428</div>
-                            <div className="text-[10px] text-gray-500 font-bold uppercase">Aktif Sürücü</div>
-                        </div>
+                    <div className="flex justify-between items-center text-xs">
+                        <span className="text-zinc-500">Aktif Sürücü</span>
+                        <span className="text-white font-bold font-mono">428</span>
                     </div>
                 </div>
 
             </aside>
 
             <main className={`flex-1 min-w-0 ${isEmbedded && viewMode === 'grid' ? 'overflow-y-auto no-scrollbar h-full pb-20' : 'relative'}`}>
-                <div className="flex items-center justify-between mb-6 bg-[#1A1A17] border border-white/10 p-2 rounded-xl sticky top-28 z-40 shadow-lg">
-                    <div className="px-2">
-                        <span className="text-gray-400 text-sm font-bold flex items-center gap-2">
-                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-                            {filteredRoutes.length} Rota Bulundu
-                        </span>
-                    </div>
-                    <div className="flex bg-black/40 rounded-lg p-1">
-                        <button onClick={() => setViewMode('grid')} className={`px-4 py-2 rounded-md text-xs font-bold flex items-center gap-2 transition-all ${viewMode === 'grid' ? 'bg-moto-accent text-black shadow-md' : 'text-gray-400 hover:text-white'}`}>
-                            <List className="w-4 h-4" /> <span className="hidden sm:inline">Liste Görünümü</span>
+                {/* Minimal Header */}
+                <div className="flex items-center justify-between mb-8 pt-2">
+                    <span className="text-zinc-500 text-sm font-medium">
+                        {filteredRoutes.length} Rota
+                    </span>
+                    <div className="flex gap-4">
+                        <button onClick={() => setViewMode('grid')} className={`text-xs font-bold transition-colors ${viewMode === 'grid' ? 'text-white' : 'text-zinc-600 hover:text-white'}`}>
+                            LİSTE
                         </button>
-                        <button onClick={() => setViewMode('map')} className={`px-4 py-2 rounded-md text-xs font-bold flex items-center gap-2 transition-all ${viewMode === 'map' ? 'bg-moto-accent text-black shadow-md' : 'text-gray-400 hover:text-white'}`}>
-                            <MapIcon className="w-4 h-4" /> <span className="hidden sm:inline">Harita Görünümü</span>
+                        <button onClick={() => setViewMode('map')} className={`text-xs font-bold transition-colors ${viewMode === 'map' ? 'text-white' : 'text-zinc-600 hover:text-white'}`}>
+                            HARİTA
                         </button>
                     </div>
                 </div>
 
                 {viewMode === 'grid' ? (
-                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-x-6 gap-y-10">
                         {filteredRoutes.map(route => (
-                            <div key={route._id} className="group bg-[#242421] border border-white/5 rounded-3xl overflow-hidden hover:border-[#F2A619]/30 transition-all hover:-translate-y-1">
-                                <div className="h-48 relative cursor-pointer" onClick={() => handleAnalyzeRoute(route)}>
-                                    <img src={route.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-[#242421] via-transparent to-transparent"></div>
-                                    <div className="absolute top-3 left-3 bg-black/60 backdrop-blur px-2 py-1 rounded text-[#F2A619] text-[10px] font-bold uppercase border border-[#F2A619]/20">{route.difficulty}</div>
-                                    {route.videoUrl && (
-                                        <div className="absolute top-3 right-3 bg-black/60 backdrop-blur p-1.5 rounded-full border border-white/20 text-white animate-pulse">
-                                            <Film className="w-3 h-3" />
+                            <div key={route._id} className="group cursor-pointer" onClick={() => handleAnalyzeRoute(route)}>
+                                {/* Image Container */}
+                                <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-zinc-900 mb-4 relative">
+                                    <img src={route.image} className="w-full h-full object-cover grayscale-[0.3] group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105" />
+
+                                    {/* Minimal Badge */}
+                                    <div className="absolute top-3 left-3 px-2 py-1 bg-black/50 backdrop-blur rounded text-[10px] font-bold text-white border border-white/10 uppercase tracking-wider">
+                                        {route.difficulty}
+                                    </div>
+
+                                    {/* Action Hover */}
+                                    <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
+                                        <div className="bg-white text-black px-4 py-2 rounded-full font-bold text-xs transform translate-y-2 group-hover:translate-y-0 transition-transform">
+                                            Rotayı İncele
                                         </div>
-                                    )}
-                                    <div className="absolute bottom-3 left-4 right-4">
-                                        <h3 className="text-lg font-bold text-white truncate">{route.title}</h3>
-                                        <p className="text-xs text-gray-400 flex items-center gap-1 mt-0.5"><MapPin className="w-3 h-3" /> {route.location}</p>
                                     </div>
                                 </div>
-                                <div className="p-4">
-                                    <div className="grid grid-cols-3 gap-2 border-b border-white/5 pb-3 mb-3 text-center">
-                                        <div><div className="text-[9px] text-gray-500 uppercase font-bold">KM</div><div className="text-white font-mono text-sm">{route.distance.replace(' km', '')}</div></div>
-                                        <div><div className="text-[9px] text-gray-500 uppercase font-bold">Süre</div><div className="text-white font-mono text-sm">{(route as any).duration?.replace(' Saat', 'sa')}</div></div>
-                                        <div><div className="text-[9px] text-gray-500 uppercase font-bold">Sezon</div><div className="text-white font-mono text-sm truncate">{route.bestSeason.split('-')[0]}</div></div>
+
+                                {/* Content */}
+                                <div>
+                                    <div className="flex justify-between items-start mb-1">
+                                        <h3 className="text-base font-bold text-white group-hover:text-orange-500 transition-colors line-clamp-1">{route.title}</h3>
+                                        <span className="text-xs font-mono text-zinc-500">{route.distance}</span>
                                     </div>
-                                    <div className="flex gap-2">
-                                        <button onClick={() => handleRouteSelection(route)} className="flex-1 bg-[#F2A619] text-[#1A1A17] py-2 rounded-lg text-xs font-bold uppercase hover:bg-white transition-colors flex items-center justify-center gap-1"><Play className="w-3 h-3 fill-current" /> Sür</button>
-                                        <button onClick={() => handleAnalyzeRoute(route)} className="flex-1 bg-white/5 text-white py-2 rounded-lg text-xs font-bold uppercase hover:bg-white/10 transition-colors flex items-center justify-center gap-1 border border-white/10">{t('common.details')}</button>
+                                    <div className="flex items-center gap-2 text-xs text-zinc-500">
+                                        <span>{route.location}</span>
+                                        <span className="w-1 h-1 rounded-full bg-zinc-800"></span>
+                                        <span>{(route as any).duration?.replace(' Saat', 'sa')}</span>
                                     </div>
                                 </div>
                             </div>
                         ))}
                     </div>
                 ) : (
-                    <div className="bg-[#242421] border border-white/10 rounded-3xl h-[calc(100vh-240px)] relative overflow-hidden shadow-2xl">
+                    <div className="bg-zinc-900 border border-zinc-800 rounded-2xl h-[calc(100vh-200px)] relative overflow-hidden">
                         <div ref={mapContainerRef} className="w-full h-full z-0" />
                         {focusedRouteId ? (
                             <div className="absolute top-4 left-4 z-[400] flex flex-col gap-2">
-                                <button onClick={() => setFocusedRouteId(null)} className="bg-[#1A1A17]/90 backdrop-blur text-[#F2A619] px-4 py-2 rounded-xl font-bold text-xs shadow-lg border border-[#F2A619]/20 flex items-center gap-2 hover:bg-black transition-colors">
+                                <button onClick={() => setFocusedRouteId(null)} className="bg-zinc-900/90 backdrop-blur text-orange-500 px-4 py-2 rounded-lg font-bold text-xs shadow-lg border border-zinc-700 flex items-center gap-2 hover:bg-black transition-colors">
                                     <RotateCcw className="w-3 h-3" /> TÜM ROTALAR
                                 </button>
-                                <div className="bg-[#1A1A17]/90 backdrop-blur p-4 rounded-xl border border-white/10 w-64 animate-in slide-in-from-left">
+                                <div className="bg-zinc-900/90 backdrop-blur p-4 rounded-xl border border-zinc-700 w-64 animate-in slide-in-from-left">
                                     {(() => {
                                         const r = routes.find(ro => ro._id === focusedRouteId);
                                         return r ? (
                                             <>
                                                 <h3 className="font-bold text-white text-lg leading-tight mb-1">{r.title}</h3>
-                                                <div className="flex items-center gap-2 text-xs text-gray-400 mb-3"><MapPin className="w-3 h-3" /> {r.location}</div>
+                                                <div className="flex items-center gap-2 text-xs text-zinc-400 mb-3"><MapPin className="w-3 h-3" /> {r.location}</div>
                                                 <div className="flex justify-between items-center">
-                                                    <span className="text-[#F2A619] font-mono font-bold">{r.distance}</span>
-                                                    <button onClick={() => handleAnalyzeRoute(r)} className="text-white hover:text-[#F2A619] text-xs font-bold uppercase">Detaylar &rarr;</button>
+                                                    <span className="text-orange-500 font-mono font-bold">{r.distance}</span>
+                                                    <button onClick={() => handleAnalyzeRoute(r)} className="text-white hover:text-orange-500 text-xs font-bold uppercase transition-colors">Detaylar &rarr;</button>
                                                 </div>
                                             </>
                                         ) : null;
@@ -568,7 +549,7 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                                 </div>
                             </div>
                         ) : (
-                            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur px-6 py-2 rounded-full border border-white/10 text-white text-xs font-bold pointer-events-none animate-bounce">
+                            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur px-6 py-2 rounded-full border border-white/10 text-white text-xs font-bold pointer-events-none opacity-0 animate-fadeIn">
                                 Detaylar için rotaya tıklayın
                             </div>
                         )}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Home, Search, Plus, Film, User, Zap, ShoppingBag } from 'lucide-react';
+import { Home, Search, Plus, Film, User, Zap, ShoppingBag, Map as MapIcon } from 'lucide-react';
 import { ViewState, User as UserType } from '../../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageProvider';
@@ -29,8 +29,8 @@ export const BottomNav: React.FC<SidebarProps> = ({
     // For now, simple mapping.
     const getActiveTab = () => {
         if (currentView === 'home') return 'home';
-        if (currentView === 'shop' || currentView === 'explore') return 'shop';
-        if (currentView === 'reels') return 'reels';
+        if (currentView === 'shop' || currentView === 'explore' || currentView === 'product-detail') return 'shop';
+        if (currentView === 'routes' || currentView === 'ride-mode') return 'routes';
         if (currentView === 'profile' || currentView === 'my-profile' || currentView === 'auth') return 'profile';
         // 'create' is a modal/action, usually doesn't stay highlighted unless it's a dedicated view
         return currentView;
@@ -42,23 +42,73 @@ export const BottomNav: React.FC<SidebarProps> = ({
         { id: 'home', icon: Home, label: 'Home', view: 'home' },
         { id: 'shop', icon: ShoppingBag, label: 'Shop', view: 'shop' },
         { id: 'create', icon: Plus, label: 'Create', isFab: true },
-        { id: 'reels', icon: Film, label: 'Reels', view: 'reels' },
+        { id: 'routes', icon: MapIcon, label: 'Routes', view: 'routes' },
         { id: 'profile', icon: User, label: 'Profile', view: user ? 'profile' : 'auth' },
     ];
 
+    const [isFabOpen, setIsFabOpen] = useState(false);
+
     const handleNavClick = (item: any) => {
         if (item.id === 'create') {
-            onNavigate('ride-mode'); // Or 'create' view if it exists, user mentioned 'Create (Center FAB)'
+            setIsFabOpen(!isFabOpen);
         } else if (item.id === 'profile') {
             if (user) onNavigate('profile');
             else onOpenAuth();
+            setIsFabOpen(false);
         } else {
             onNavigate(item.view);
+            setIsFabOpen(false);
         }
     };
 
+    const fabItems = [
+        { id: 'ride', label: 'Sürüş Modu', icon: MapIcon, color: 'bg-green-500', view: 'ride-mode' },
+        { id: 'reels', label: 'Reels', icon: Film, color: 'bg-pink-500', view: 'reels' },
+        { id: 'post', label: 'Yeni Gönderi', icon: Plus, color: 'bg-blue-500', view: 'social-hub' },
+    ];
+
     return (
         <div className="md:hidden fixed bottom-0 left-0 right-0 z-[140]">
+            {/* Create Menu Backdrop */}
+            <AnimatePresence>
+                {isFabOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        onClick={() => setIsFabOpen(false)}
+                        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[-1]"
+                    />
+                )}
+            </AnimatePresence>
+
+            {/* Create Menu Items */}
+            <AnimatePresence>
+                {isFabOpen && (
+                    <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex flex-col gap-4 items-center z-[150]">
+                        {fabItems.map((item, index) => (
+                            <motion.button
+                                key={item.id}
+                                initial={{ opacity: 0, y: 20, scale: 0.8 }}
+                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                exit={{ opacity: 0, y: 20, scale: 0.8 }}
+                                transition={{ delay: index * 0.05 }}
+                                onClick={() => {
+                                    onNavigate(item.view as any);
+                                    setIsFabOpen(false);
+                                }}
+                                className="flex items-center gap-4 bg-[#1A1A17] pl-4 pr-1 py-1 rounded-full border border-white/10 shadow-xl"
+                            >
+                                <span className="font-bold text-white text-sm whitespace-nowrap">{item.label}</span>
+                                <div className={`w-10 h-10 rounded-full ${item.color} flex items-center justify-center text-white shadow-lg`}>
+                                    <item.icon className="w-5 h-5" />
+                                </div>
+                            </motion.button>
+                        ))}
+                    </div>
+                )}
+            </AnimatePresence>
+
             {/* Glassmorphism Background */}
             <div className="absolute inset-0 bg-black/80 backdrop-blur-xl border-t border-white/10" />
 
@@ -73,7 +123,8 @@ export const BottomNav: React.FC<SidebarProps> = ({
                                 <motion.button
                                     whileTap={{ scale: 0.9 }}
                                     onClick={() => handleNavClick(item)}
-                                    className="w-14 h-14 rounded-full bg-moto-accent text-white flex items-center justify-center shadow-[0_0_20px_var(--moto-accent)] border-4 border-black z-10"
+                                    animate={{ rotate: isFabOpen ? 45 : 0 }}
+                                    className={`w-14 h-14 rounded-full ${isFabOpen ? 'bg-red-500 border-red-900' : 'bg-moto-accent border-black'} text-white flex items-center justify-center shadow-[0_0_20px_rgba(0,0,0,0.5)] border-4 z-50 transition-colors duration-300`}
                                 >
                                     <Plus className="w-8 h-8" strokeWidth={3} />
                                 </motion.button>

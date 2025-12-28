@@ -56,6 +56,7 @@ export interface Model3DItem {
 export interface Product {
   _id: string;
   name: string;
+  brand?: string;
   description: string;
   price: number;
   category: ProductCategory;

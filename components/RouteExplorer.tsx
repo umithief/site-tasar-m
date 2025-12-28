@@ -44,7 +44,7 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
     const [mapSearchQuery, setMapSearchQuery] = useState('');
     const [newRouteForm, setNewRouteForm] = useState<Partial<Route>>({
         title: '', description: '', difficulty: 'Orta', distance: '', duration: '', location: '', bestSeason: 'Yaz', image: '', tags: [], path: [], coordinates: { lat: 0, lng: 0 }
-    });
+    } as any);
 
     const mapRef = useRef<any>(null);
     const mapContainerRef = useRef<HTMLDivElement>(null);
@@ -92,14 +92,14 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
             const map = mapRef.current;
 
             if (focusedRouteId) {
-                const route = routes.find(r => r.id === focusedRouteId);
+                const route = routes.find(r => r._id === focusedRouteId);
                 if (route) {
                     let latlngs: any[] = [];
 
                     if (route.path && route.path.length > 0) {
                         latlngs = route.path.map(p => [p.lat, p.lng]);
                     } else if (route.coordinates) {
-                        latlngs = [[route.coordinates.lat, route.coordinates.lng]];
+                        latlngs = [[(route.coordinates as any).lat, (route.coordinates as any).lng]];
                     }
 
                     if (latlngs.length > 1) {
@@ -131,10 +131,10 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                             popupAnchor: [0, -50]
                         });
 
-                        const marker = L.marker([route.coordinates.lat, route.coordinates.lng], { icon })
+                        const marker = L.marker([(route.coordinates as any).lat, (route.coordinates as any).lng], { icon })
                             .addTo(map)
                             .bindPopup(`<div class="font-sans text-center"><h3 class="font-bold text-base mb-1">${route.title}</h3><div class="text-xs text-gray-500 mb-2">${route.location}</div><span class="inline-block px-2 py-1 bg-[#F2A619] text-black text-[10px] font-bold rounded uppercase">${route.difficulty}</span><div class="mt-2 text-xs font-mono">${route.distance}</div></div>`, { closeButton: false, className: 'custom-popup-dark' })
-                            .on('click', () => setFocusedRouteId(route.id));
+                            .on('click', () => setFocusedRouteId(route._id));
                         layersRef.current.push(marker);
                     }
                 });
@@ -204,7 +204,7 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                     distance: `${(r.summary.totalDistance / 1000).toFixed(1)} km`,
                     duration: `${Math.round(r.summary.totalTime / 60)} dk`,
                     path: r.coordinates.map((c: any) => ({ lat: c.lat, lng: c.lng })),
-                    coordinates: { lat: waypointsRef.current[0].lat, lng: waypointsRef.current[0].lng },
+                    coordinates: { lat: waypointsRef.current[0].lat, lng: waypointsRef.current[0].lng } as any,
                 }));
                 notify.success("Rota başarıyla hesaplandı!");
             });
@@ -310,7 +310,7 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                 } catch (e) { }
                 routingControlRef.current = null;
             }
-            setNewRouteForm(prev => ({ ...prev, distance: '', duration: '', path: [], coordinates: { lat: 0, lng: 0 } }));
+            setNewRouteForm(prev => ({ ...prev, distance: '', duration: '', path: [], coordinates: { lat: 0, lng: 0 } as any }));
         }
     };
 
@@ -332,16 +332,22 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
         }
 
         try {
-            const added = await routeService.addRoute({
+            const token = localStorage.getItem('token');
+            if (!token) {
+                notify.error("Oturum süresi dolmuş.");
+                return;
+            }
+
+            const added = await routeService.createRoute({
                 ...newRouteForm,
-                authorId: user.id,
+                authorId: user._id,
                 authorName: user.name,
                 image: newRouteForm.image || 'https://images.unsplash.com/photo-1605152276897-4f618f831968?q=80&w=1200'
-            } as any);
+            } as any, token);
 
             setRoutes([added, ...routes]);
             setIsCreating(false);
-            setNewRouteForm({ title: '', description: '', difficulty: 'Orta', distance: '', duration: '', location: '', bestSeason: 'Yaz', image: '', tags: [], path: [], coordinates: { lat: 0, lng: 0 } });
+            setNewRouteForm({ title: '', description: '', difficulty: 'Orta', distance: '', duration: '', location: '', bestSeason: 'Yaz', image: '', tags: [], path: [], coordinates: { lat: 0, lng: 0 } } as any);
             notify.success("Rota başarıyla oluşturuldu!");
         } catch (e) {
             console.error(e);
@@ -355,7 +361,7 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
 
     const handleNavigateGoogle = () => {
         if (!navChoiceRoute?.coordinates) return;
-        const { lat, lng } = navChoiceRoute.coordinates;
+        const { lat, lng } = navChoiceRoute.coordinates as any;
         const url = `https://www.google.com/maps/dir/?api=1&destination=${lat},${lng}`;
         window.open(url, '_blank');
         setNavChoiceRoute(null);
@@ -377,33 +383,36 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
 
             <aside className={`w-full lg:w-80 flex-shrink-0 flex flex-col gap-6 ${isEmbedded ? 'overflow-y-auto no-scrollbar h-full pb-20' : ''}`}>
 
-                <div className="bg-[#1A1A17] border border-white/10 rounded-2xl p-6 sticky top-28">
-                    <h2 className="text-2xl font-display font-black text-white mb-6">{t('routes.title')}</h2>
+                <div className="bg-[#1A1A17] border border-white/10 rounded-2xl p-6 sticky top-28 shadow-xl shadow-black/50">
+                    <h2 className="text-2xl font-display font-black text-white mb-6 flex items-center gap-2">
+                        <MapIcon className="w-6 h-6 text-moto-accent" />
+                        ROTALAR
+                    </h2>
 
-                    <div className="relative mb-6">
-                        <div className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500"><Search className="w-full h-full" /></div>
+                    <div className="relative mb-6 group">
+                        <div className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500 group-focus-within:text-moto-accent transition-colors"><Search className="w-full h-full" /></div>
                         <input
                             type="text"
-                            placeholder={t('routes.search_placeholder')}
+                            placeholder="Rota veya konum ara..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white focus:border-moto-accent outline-none"
+                            className="w-full bg-black/40 border border-white/10 rounded-xl pl-10 pr-4 py-3 text-sm text-white focus:border-moto-accent outline-none transition-all placeholder:text-gray-600"
                         />
                     </div>
 
                     <div className="mb-6">
-                        <label className="text-xs font-bold text-gray-500 uppercase mb-3 block">{t('routes.difficulty')}</label>
+                        <label className="text-xs font-bold text-gray-500 uppercase mb-3 block tracking-wider">ZORLUK SEVİYESİ</label>
                         <div className="flex flex-wrap gap-2">
                             {['All', 'Kolay', 'Orta', 'Zor', 'Extreme'].map(lvl => (
                                 <button
                                     key={lvl}
                                     onClick={() => setDifficultyFilter(lvl)}
                                     className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${difficultyFilter === lvl
-                                        ? 'bg-moto-accent border-moto-accent text-black'
-                                        : 'bg-transparent border-white/10 text-gray-400 hover:text-white'
+                                        ? 'bg-moto-accent border-moto-accent text-black scale-105 shadow-lg shadow-moto-accent/20'
+                                        : 'bg-transparent border-white/10 text-gray-400 hover:text-white hover:border-white/30'
                                         }`}
                                 >
-                                    {lvl === 'All' ? t('shop.all') : lvl}
+                                    {lvl === 'All' ? 'Tümü' : lvl}
                                 </button>
                             ))}
                         </div>
@@ -412,25 +421,25 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                     <div className="flex flex-col gap-3">
                         <Button
                             onClick={() => { if (onStartRide) onStartRide(null); }}
-                            className="w-full bg-white text-black hover:bg-gray-200 justify-center font-bold"
+                            className="w-full bg-white text-black hover:bg-gray-200 justify-center font-bold py-4 text-sm tracking-wide"
                         >
-                            <Navigation className="w-4 h-4 mr-2" /> {t('routes.free_ride')}
+                            <Navigation className="w-4 h-4 mr-2" /> SERBEST SÜRÜŞ BAŞLAT
                         </Button>
 
                         {user ? (
-                            <Button onClick={() => setIsCreating(true)} className="w-full bg-moto-accent text-black hover:bg-moto-accent-hover justify-center shadow-lg">
-                                <Plus className="w-4 h-4 mr-2" /> {t('routes.add_route')}
+                            <Button onClick={() => setIsCreating(true)} className="w-full bg-[#1A1A17] text-white border border-dashed border-white/20 hover:border-moto-accent hover:text-moto-accent justify-center transition-all">
+                                <Plus className="w-4 h-4 mr-2" /> YENİ ROTA OLUŞTUR
                             </Button>
                         ) : (
                             <Button variant="outline" onClick={onOpenAuth} className="w-full border-white/20 text-gray-400 hover:text-white justify-center">
-                                <User className="w-4 h-4 mr-2" /> {t('routes.login_to_add')}
+                                <User className="w-4 h-4 mr-2" /> ROTA EKLEMEK İÇİN GİRİŞ YAP
                             </Button>
                         )}
                     </div>
                 </div>
 
                 <div
-                    className="bg-gradient-to-br from-[#1A1A17] to-[#0f0f0f] border border-moto-accent/30 rounded-2xl p-6 relative overflow-hidden group hover:border-moto-accent/50 transition-all shadow-lg cursor-pointer"
+                    className="bg-gradient-to-br from-[#1A1A17] to-[#0f0f0f] border-2 border-[#F2A619]/20 rounded-2xl p-6 relative overflow-hidden group hover:border-[#F2A619] transition-all duration-500 shadow-lg cursor-pointer transform hover:-translate-y-1"
                     onClick={() => {
                         const challengeRoute = routes.find(r => r.difficulty === 'Zor' || r.difficulty === 'Extreme') || routes[0];
                         if (challengeRoute) handleAnalyzeRoute(challengeRoute);
@@ -441,10 +450,10 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
 
                     <div className="relative z-10">
                         <div className="flex items-center justify-between mb-4">
-                            <div className="flex items-center gap-2 text-moto-accent font-bold text-[10px] uppercase tracking-widest bg-moto-accent/10 px-2 py-1 rounded border border-moto-accent/20">
-                                <Trophy className="w-3 h-3" /> {t('routes.weekly_challenge')}
+                            <div className="flex items-center gap-2 text-moto-accent font-bold text-[10px] uppercase tracking-widest bg-moto-accent/10 px-2 py-1 rounded border border-moto-accent/20 animate-pulse">
+                                <Trophy className="w-3 h-3" /> HAFTANIN MEYDAN OKUMASI
                             </div>
-                            <span className="text-white text-xs font-bold animate-pulse">+500 XP</span>
+                            <span className="text-white text-xs font-bold bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent">+500 XP</span>
                         </div>
 
                         <h3 className="text-xl font-display font-bold text-white mb-1 leading-tight group-hover:text-moto-accent transition-colors">
@@ -485,16 +494,19 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
             </aside>
 
             <main className={`flex-1 min-w-0 ${isEmbedded && viewMode === 'grid' ? 'overflow-y-auto no-scrollbar h-full pb-20' : 'relative'}`}>
-                <div className="flex items-center justify-between mb-6 bg-[#1A1A17] border border-white/10 p-2 rounded-xl">
+                <div className="flex items-center justify-between mb-6 bg-[#1A1A17] border border-white/10 p-2 rounded-xl sticky top-28 z-40 shadow-lg">
                     <div className="px-2">
-                        <span className="text-gray-400 text-sm font-bold">{t('routes.routes_found').replace('{count}', filteredRoutes.length.toString())}</span>
+                        <span className="text-gray-400 text-sm font-bold flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                            {filteredRoutes.length} Rota Bulundu
+                        </span>
                     </div>
                     <div className="flex bg-black/40 rounded-lg p-1">
-                        <button onClick={() => setViewMode('grid')} className={`px-4 py-2 rounded-md text-xs font-bold flex items-center gap-2 transition-all ${viewMode === 'grid' ? 'bg-moto-accent text-black' : 'text-gray-400 hover:text-white'}`}>
-                            <List className="w-4 h-4" /> <span className="hidden sm:inline">{t('routes.list_view')}</span>
+                        <button onClick={() => setViewMode('grid')} className={`px-4 py-2 rounded-md text-xs font-bold flex items-center gap-2 transition-all ${viewMode === 'grid' ? 'bg-moto-accent text-black shadow-md' : 'text-gray-400 hover:text-white'}`}>
+                            <List className="w-4 h-4" /> <span className="hidden sm:inline">Liste Görünümü</span>
                         </button>
-                        <button onClick={() => setViewMode('map')} className={`px-4 py-2 rounded-md text-xs font-bold flex items-center gap-2 transition-all ${viewMode === 'map' ? 'bg-moto-accent text-black' : 'text-gray-400 hover:text-white'}`}>
-                            <MapIcon className="w-4 h-4" /> <span className="hidden sm:inline">{t('routes.map_view')}</span>
+                        <button onClick={() => setViewMode('map')} className={`px-4 py-2 rounded-md text-xs font-bold flex items-center gap-2 transition-all ${viewMode === 'map' ? 'bg-moto-accent text-black shadow-md' : 'text-gray-400 hover:text-white'}`}>
+                            <MapIcon className="w-4 h-4" /> <span className="hidden sm:inline">Harita Görünümü</span>
                         </button>
                     </div>
                 </div>
@@ -502,7 +514,7 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                 {viewMode === 'grid' ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
                         {filteredRoutes.map(route => (
-                            <div key={route.id} className="group bg-[#242421] border border-white/5 rounded-3xl overflow-hidden hover:border-[#F2A619]/30 transition-all hover:-translate-y-1">
+                            <div key={route._id} className="group bg-[#242421] border border-white/5 rounded-3xl overflow-hidden hover:border-[#F2A619]/30 transition-all hover:-translate-y-1">
                                 <div className="h-48 relative cursor-pointer" onClick={() => handleAnalyzeRoute(route)}>
                                     <img src={route.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-[#242421] via-transparent to-transparent"></div>
@@ -520,7 +532,7 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                                 <div className="p-4">
                                     <div className="grid grid-cols-3 gap-2 border-b border-white/5 pb-3 mb-3 text-center">
                                         <div><div className="text-[9px] text-gray-500 uppercase font-bold">KM</div><div className="text-white font-mono text-sm">{route.distance.replace(' km', '')}</div></div>
-                                        <div><div className="text-[9px] text-gray-500 uppercase font-bold">Süre</div><div className="text-white font-mono text-sm">{route.duration.replace(' Saat', 'sa')}</div></div>
+                                        <div><div className="text-[9px] text-gray-500 uppercase font-bold">Süre</div><div className="text-white font-mono text-sm">{(route as any).duration?.replace(' Saat', 'sa')}</div></div>
                                         <div><div className="text-[9px] text-gray-500 uppercase font-bold">Sezon</div><div className="text-white font-mono text-sm truncate">{route.bestSeason.split('-')[0]}</div></div>
                                     </div>
                                     <div className="flex gap-2">
@@ -541,7 +553,7 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                                 </button>
                                 <div className="bg-[#1A1A17]/90 backdrop-blur p-4 rounded-xl border border-white/10 w-64 animate-in slide-in-from-left">
                                     {(() => {
-                                        const r = routes.find(ro => ro.id === focusedRouteId);
+                                        const r = routes.find(ro => ro._id === focusedRouteId);
                                         return r ? (
                                             <>
                                                 <h3 className="font-bold text-white text-lg leading-tight mb-1">{r.title}</h3>
@@ -600,7 +612,7 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                                 <div className="absolute bottom-4 left-4 z-[400] bg-[#1A1A17]/90 backdrop-blur border-l-4 border-moto-accent p-4 rounded-r-xl shadow-2xl min-w-[200px] animate-in slide-in-from-left">
                                     <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">ROTA ÖZETİ</div>
                                     <div className="text-2xl font-mono font-bold text-white">{newRouteForm.distance}</div>
-                                    <div className="text-sm font-bold text-gray-300">{newRouteForm.duration}</div>
+                                    <div className="text-sm font-bold text-gray-300">{(newRouteForm as any).duration}</div>
                                 </div>
                             )}
 
@@ -675,7 +687,7 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                                     </div>
                                     <div className="flex-1 bg-[#1A1A17] p-3 rounded-xl border border-white/10">
                                         <div className="text-[10px] text-gray-500 uppercase font-bold flex items-center gap-1"><Calendar className="w-3 h-3" /> Süre</div>
-                                        <div className="text-[#F2A619] font-bold text-sm mt-1">{newRouteForm.duration || '--'}</div>
+                                        <div className="text-[#F2A619] font-bold text-sm mt-1">{(newRouteForm as any).duration || '--'}</div>
                                     </div>
                                 </div>
 
@@ -804,7 +816,7 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                             </div>
 
                             <Button variant="primary" className="w-full justify-center py-4 text-base font-bold shadow-lg shadow-moto-accent/20" onClick={() => handleRouteSelection(selectedRoute)}>
-                                {t('routes.start_ride')}
+                                SÜRÜŞÜ BAŞLAT
                             </Button>
                         </div>
                     </div>

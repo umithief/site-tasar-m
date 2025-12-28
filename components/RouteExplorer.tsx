@@ -431,13 +431,13 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                         {/* Filters */}
                         <div className="mb-6">
                             <div className="flex flex-wrap gap-2">
-                                {['All', 'Kolay', 'Orta', 'Zor', 'Extreme'].map(lvl => (
+                                {['All', 'Kolay', 'Orta', 'Zor', 'Extreme'].map((lvl) => (
                                     <button
                                         key={lvl}
                                         onClick={() => setDifficultyFilter(lvl)}
-                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${difficultyFilter === lvl
-                                            ? 'bg-orange-500 text-black border-orange-500 shadow-lg shadow-orange-500/20'
-                                            : 'bg-zinc-800/50 border-white/5 text-zinc-400 hover:text-white hover:bg-zinc-800'
+                                        className={`flex-1 py-3 rounded-xl text-sm font-bold transition-all border ${difficultyFilter === lvl
+                                            ? 'bg-moto-accent text-black border-moto-accent shadow-[0_0_15px_rgba(242,166,25,0.4)]'
+                                            : 'btn-glass text-gray-400 hover:text-white'
                                             }`}
                                     >
                                         {lvl === 'All' ? 'Tümü' : lvl}

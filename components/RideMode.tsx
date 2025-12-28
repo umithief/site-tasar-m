@@ -665,16 +665,12 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                 <div className="pointer-events-auto mt-2">
                     <button
                         onClick={toggleGps}
-                        className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md shadow-lg transition-all active:scale-95 ${isGpsEnabled
-                            ? 'bg-[#1A1A17]/80 text-green-500 border border-green-500/30'
-                            : 'bg-red-900/60 text-white border border-red-500/50 animate-pulse'
+                        className={`w-10 h-10 btn-icon-glass ${isGpsEnabled
+                            ? 'bg-[#1A1A17]/80 text-green-500 border-green-500/30'
+                            : 'bg-red-900/60 text-white border-red-500/50 animate-pulse'
                             }`}
                     >
-                        {isGpsEnabled ? (
-                            <Crosshair className={`w-5 h-5`} />
-                        ) : (
-                            <Power className="w-5 h-5" />
-                        )}
+                        {isGpsEnabled ? <Crosshair className="w-5 h-5" /> : <Power className="w-5 h-5" />}
                     </button>
                 </div>
 
@@ -687,7 +683,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                 <div className="pointer-events-auto mt-2">
                     <button
                         onClick={() => onNavigate('home')}
-                        className="w-10 h-10 flex items-center justify-center rounded-full bg-[#1A1A17]/80 border border-white/10 text-white/70 hover:bg-red-600 hover:text-white hover:border-red-500 transition-colors shadow-lg active:scale-95"
+                        className="w-10 h-10 btn-icon-glass text-white/70 hover:bg-red-600 hover:text-white hover:border-red-500"
                     >
                         <X className="w-5 h-5" />
                     </button>
@@ -736,7 +732,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                 )}
                 <button
                     onClick={() => setShowTelemetry(!showTelemetry)}
-                    className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-lg backdrop-blur-md border active:scale-95 ${showTelemetry ? 'bg-white text-black border-white' : 'bg-[#1A1A17]/60 border-white/10 text-gray-400'}`}
+                    className={`w-10 h-10 btn-icon-glass ${showTelemetry ? 'bg-white text-black border-white' : 'text-gray-400'}`}
                 >
                     <Activity className="w-5 h-5" />
                 </button>
@@ -800,10 +796,10 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                         </div>
 
                         <div className="flex items-center gap-1">
-                            <button onClick={togglePlay} className="w-12 h-12 bg-white text-black rounded-full flex items-center justify-center active:scale-95 shadow-lg">
+                            <button onClick={togglePlay} className="w-12 h-12 btn-primary rounded-full flex items-center justify-center p-0">
                                 {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <PlayCircle className="w-5 h-5 fill-current ml-0.5" />}
                             </button>
-                            <button onClick={handleNextSong} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 text-gray-400 active:scale-95">
+                            <button onClick={handleNextSong} className="w-10 h-10 btn-icon-glass text-gray-400 !border-0 bg-transparent hover:bg-white/10">
                                 <SkipForward className="w-5 h-5" />
                             </button>
                         </div>
@@ -811,7 +807,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
 
                     {/* 3. QUICK ACTIONS (Far Right) */}
                     <div className="pl-2 border-l border-white/5">
-                        <button onClick={() => setShowNav(true)} className="w-14 h-14 bg-[#222] rounded-[1.25rem] flex flex-col items-center justify-center gap-0.5 border border-white/5 active:scale-95 text-gray-400 hover:text-white">
+                        <button onClick={() => setShowNav(true)} className="w-14 h-14 btn-glass p-0 flex flex-col items-center justify-center gap-0.5 text-gray-400 hover:text-moto-accent !bg-[#222]">
                             <Navigation className="w-5 h-5" />
                             <span className="text-[8px] font-bold uppercase">ROTA</span>
                         </button>

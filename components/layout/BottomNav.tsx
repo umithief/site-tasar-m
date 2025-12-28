@@ -85,27 +85,32 @@ export const BottomNav: React.FC<SidebarProps> = ({
             {/* Create Menu Items */}
             <AnimatePresence>
                 {isFabOpen && (
-                    <div className="absolute bottom-24 left-1/2 -translate-x-1/2 flex flex-col gap-4 items-center z-[150]">
-                        {fabItems.map((item, index) => (
-                            <motion.button
+                    <motion.div
+                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
+                        className="absolute bottom-24 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 z-50 w-full max-w-[200px]"
+                    >
+                        {[
+                            { id: 'ride-mode', label: 'Sürüş Modu', icon: MapIcon, color: 'text-moto-accent', view: 'ride-mode' },
+                            { id: 'reels', label: 'Reels', icon: Film, color: 'text-pink-500', view: 'reels' },
+                            { id: 'post', label: 'Yeni Gönderi', icon: Plus, color: 'text-blue-400', view: 'social-hub' }
+                        ].map((item, index) => (
+                            <button
                                 key={item.id}
-                                initial={{ opacity: 0, y: 20, scale: 0.8 }}
-                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                exit={{ opacity: 0, y: 20, scale: 0.8 }}
-                                transition={{ delay: index * 0.05 }}
                                 onClick={() => {
                                     onNavigate(item.view as any);
                                     setIsFabOpen(false);
                                 }}
-                                className="flex items-center gap-4 bg-[#1A1A17] pl-4 pr-1 py-1 rounded-full border border-white/10 shadow-xl"
+                                className="w-full bg-[#1A1A17]/90 backdrop-blur-md border border-white/10 p-4 rounded-2xl flex items-center gap-4 shadow-xl active:scale-95 transition-transform"
                             >
-                                <span className="font-bold text-white text-sm whitespace-nowrap">{item.label}</span>
-                                <div className={`w-10 h-10 rounded-full ${item.color} flex items-center justify-center text-white shadow-lg`}>
+                                <div className={`w-10 h-10 rounded-full bg-white/5 flex items-center justify-center ${item.color}`}>
                                     <item.icon className="w-5 h-5" />
                                 </div>
-                            </motion.button>
+                                <span className="text-white font-bold text-lg">{item.label}</span>
+                            </button>
                         ))}
-                    </div>
+                    </motion.div>
                 )}
             </AnimatePresence>
 

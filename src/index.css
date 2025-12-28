@@ -147,7 +147,67 @@ body {
     display: none;
 }
 
-.no-scrollbar {
-    -ms-overflow-style: none; /* IE and Edge */
-    scrollbar-width: none; /* Firefox */
+
+/* --- PREMIUM BUTTON SYSTEM --- */
+
+@layer components {
+    .btn-primary {
+        @apply relative overflow-hidden bg-moto-accent text-black font-bold uppercase tracking-widest px-6 py-3 rounded-xl transition-all duration-300;
+        box-shadow: 0 0 20px rgba(242, 166, 25, 0.4);
+    }
+
+    .btn-primary:hover {
+        @apply bg-[#ffb733] scale-105;
+        box-shadow: 0 0 30px rgba(242, 166, 25, 0.6);
+    }
+
+    .btn-primary:active {
+        @apply scale-95;
+    }
+
+    /* Shine effect for primary buttons */
+    .btn-primary::after {
+        content: '';
+        @apply absolute inset-0 -translate-x-full;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+        transform: skewX(-20deg) translateX(-150%);
+        transition: transform 0.5s;
+    }
+
+    .btn-primary:hover::after {
+        transform: skewX(-20deg) translateX(150%);
+        transition: transform 0.7s ease-in-out;
+    }
+
+    .btn-glass {
+        @apply bg-white/5 backdrop-blur-md border border-white/10 text-white font-bold rounded-xl px-6 py-3 transition-all duration-300;
+    }
+
+    .btn-glass:hover {
+        @apply bg-white/10 border-white/30 text-moto-accent scale-105;
+        box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+    }
+
+    .btn-glass:active {
+        @apply scale-95 bg-white/5;
+    }
+
+    .btn-icon-glass {
+        @apply p-3 rounded-xl bg-white/5 border border-white/10 text-white transition-all duration-300 flex items-center justify-center;
+    }
+
+    .btn-icon-glass:hover {
+        @apply bg-white/20 border-white/40 text-moto-accent scale-110 rotate-3;
+        box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+    }
+
+    .btn-icon-glass:active {
+        @apply scale-90 rotate-0;
+    }
+}
+
+/* Global Button Reset for Feel */
+button {
+    @apply cursor-pointer select-none touch-manipulation;
+    -webkit-tap-highlight-color: transparent;
 }

@@ -101,7 +101,7 @@ export const MobileRoutes: React.FC = () => {
                         <h1 className="text-3xl font-display font-bold text-white tracking-tighter italic">MOTIV <span className="text-orange-500">ROTA</span></h1>
                         <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">Keşfet • Sür • Paylaş</p>
                     </div>
-                    <button className="w-10 h-10 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-white shadow-lg active:scale-95 transition-transform">
+                    <button className="w-10 h-10 btn-icon-glass bg-zinc-900 border-zinc-800 text-white shadow-lg active:scale-95">
                         <Map className="w-5 h-5" />
                     </button>
                 </div>

@@ -1,10 +1,10 @@
 import Route from '../models/Route.js';
-import asyncHandler from 'express-async-handler';
+import catchAsync from '../utils/catchAsync.js';
 
 // @desc    Get all routes
 // @route   GET /api/routes
 // @access  Public
-const getRoutes = asyncHandler(async (req, res) => {
+const getRoutes = catchAsync(async (req, res) => {
     const { filter } = req.query;
 
     let query = {};
@@ -22,7 +22,7 @@ const getRoutes = asyncHandler(async (req, res) => {
 // @desc    Get route by ID
 // @route   GET /api/routes/:id
 // @access  Public
-const getRouteById = asyncHandler(async (req, res) => {
+const getRouteById = catchAsync(async (req, res) => {
     const route = await Route.findById(req.params.id).populate('author', 'name avatar');
     if (route) {
         res.json(route);
@@ -35,7 +35,7 @@ const getRouteById = asyncHandler(async (req, res) => {
 // @desc    Create a route
 // @route   POST /api/routes
 // @access  Private/Admin (or User)
-const createRoute = asyncHandler(async (req, res) => {
+const createRoute = catchAsync(async (req, res) => {
     const route = new Route({
         ...req.body,
         author: req.user._id
@@ -48,7 +48,7 @@ const createRoute = asyncHandler(async (req, res) => {
 // @desc    Seed Routes (Temporary for verification)
 // @route   POST /api/routes/seed
 // @access  Public
-const seedRoutes = asyncHandler(async (req, res) => {
+const seedRoutes = catchAsync(async (req, res) => {
     await Route.deleteMany({});
 
     const sampleRoutes = [

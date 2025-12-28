@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { Route } from '../types';
 
-const API_URL = 'http://localhost:5000/api/routes'; // Adjust base URL if needed
+const API_URL = import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api/routes` : (window.location.hostname === 'localhost' ? 'http://localhost:5000/api/routes' : '/api/routes');
 
 export const routeService = {
   getRoutes: async (filter?: string): Promise<Route[]> => {

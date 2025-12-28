@@ -1,6 +1,7 @@
 
 import React, { useState } from 'react';
 import { Heart, ShoppingBag, Check, Eye, Share2 } from 'lucide-react';
+import { Button } from './ui/Button';
 import { Product } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { StarRating } from './ui/StarRating';
@@ -97,12 +98,13 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                         </span>
                     </div>
 
-                    <button
+                    <Button
                         onClick={handleAddToCart}
-                        className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 shadow-md flex-shrink-0 ${isAdded
-                            ? 'bg-green-500 text-white'
-                            : 'bg-gray-900 text-white hover:bg-moto-accent hover:scale-110 active:scale-95'
+                        className={`w-10 h-10 rounded-xl shadow-md flex-shrink-0 !p-0 ${isAdded
+                            ? 'bg-green-500 text-white hover:bg-green-600'
+                            : 'bg-gray-900 text-white hover:bg-moto-accent'
                             }`}
+                        variant="ghost" // Using ghost to allow full custom class override without conflict, or I could use 'primary' if it matches
                     >
                         <AnimatePresence mode="wait">
                             {isAdded ? (
@@ -125,7 +127,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                                 </motion.div>
                             )}
                         </AnimatePresence>
-                    </button>
+                    </Button>
                 </div>
             </div>
 
@@ -142,26 +144,29 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 {/* Actions (Floating on Right side of Image) */}
                 <div className="absolute top-3 right-3 z-20 flex flex-col gap-2">
                     {onToggleFavorite && (
-                        <button
+                        <Button
                             onClick={(e) => { e.stopPropagation(); onToggleFavorite(product); }}
-                            className="w-8 h-8 flex items-center justify-center bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full hover:bg-moto-accent hover:text-white hover:border-moto-accent transition-all hover:scale-110 active:scale-95 text-gray-500 shadow-sm mb-2"
+                            className="w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm border border-gray-200 text-gray-500 hover:bg-moto-accent hover:text-white hover:border-moto-accent shadow-sm !p-0"
+                            variant="ghost"
                         >
                             <Heart className={`w-3.5 h-3.5 ${isFavorite ? 'fill-red-500 text-red-500 hover:text-white' : ''}`} />
-                        </button>
+                        </Button>
                     )}
-                    <button
+                    <Button
                         onClick={handleShare}
-                        className="w-8 h-8 flex items-center justify-center bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full hover:bg-blue-500 hover:text-white hover:border-blue-500 transition-all hover:scale-110 active:scale-95 text-gray-500 shadow-sm md:flex hidden"
+                        className="w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm border border-gray-200 text-gray-500 hover:bg-blue-500 hover:text-white hover:border-blue-500 shadow-sm md:flex hidden !p-0"
+                        variant="ghost"
                     >
                         <Share2 className="w-3.5 h-3.5" />
-                    </button>
+                    </Button>
                     {onQuickView && (
-                        <button
+                        <Button
                             onClick={handleQuickView}
-                            className="w-8 h-8 flex items-center justify-center bg-white/90 backdrop-blur-sm border border-gray-200 rounded-full hover:bg-gray-900 hover:text-white transition-all hover:scale-110 active:scale-95 text-gray-500 shadow-sm md:flex hidden"
+                            className="w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm border border-gray-200 text-gray-500 hover:bg-gray-900 hover:text-white shadow-sm md:flex hidden !p-0"
+                            variant="ghost"
                         >
                             <Eye className="w-3.5 h-3.5" />
-                        </button>
+                        </Button>
                     )}
                 </div>
 

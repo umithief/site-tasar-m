@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Upload, Bike, FileText, CheckCircle, AlertCircle } from 'lucide-react';
+import { Button } from '../ui/Button';
 import { useAuthStore } from '../../store/authStore';
 import { api } from '../../services/api';
 
@@ -130,9 +131,9 @@ export const ReelUploadModal: React.FC<ReelUploadModalProps> = ({ isOpen, onClos
                             <h3 className="text-xl font-display font-black text-white italic tracking-wider">
                                 SHARE VIBE
                             </h3>
-                            <button onClick={onClose} className="text-white/40 hover:text-white transition-colors">
+                            <Button onClick={onClose} variant="ghost" size="icon" className="text-white/40 hover:text-white transition-colors h-auto w-auto p-2">
                                 <X className="w-6 h-6" />
-                            </button>
+                            </Button>
                         </div>
 
                         {/* Content */}
@@ -238,13 +239,15 @@ export const ReelUploadModal: React.FC<ReelUploadModalProps> = ({ isOpen, onClos
                                     )}
 
                                     {/* Action Button */}
-                                    <button
+                                    <Button
                                         onClick={handleUpload}
                                         disabled={!file || uploading}
-                                        className="w-full py-4 bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed text-white font-black uppercase tracking-widest rounded-xl shadow-lg shadow-orange-500/20 transition-all active:scale-95"
+                                        isLoading={uploading}
+                                        variant="primary"
+                                        className="w-full py-4 text-white font-black uppercase tracking-widest rounded-xl shadow-lg shadow-orange-500/20 transition-all active:scale-95 bg-orange-500 hover:bg-orange-600"
                                     >
-                                        {uploading ? 'YÜKLENİYOR...' : 'PAYLAŞ'}
-                                    </button>
+                                        PAYLAŞ
+                                    </Button>
                                 </>
                             ) : (
                                 <div className="flex flex-col items-center justify-center py-10 space-y-4">

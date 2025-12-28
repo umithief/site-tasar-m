@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Heart, MessageCircle, Share2, Volume2, VolumeX, ChevronDown, ChevronUp } from 'lucide-react';
 import { UserAvatar } from '../ui/UserAvatar';
+import { Button } from '../ui/Button';
 import { api } from '../../services/api';
 
 interface Reel {
@@ -126,9 +127,9 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({ reels, initialIndex, onC
                             Velocity Reels
                         </div>
                     </div>
-                    <button onClick={onClose} className="p-2 bg-black/40 backdrop-blur-xl rounded-full text-white hover:bg-white/20 transition-colors border border-white/10">
-                        <X className="w-6 h-6" />
-                    </button>
+                    <Button onClick={onClose} variant="icon-glass" size="icon" className="group rounded-full bg-black/40 border-white/10 text-white hover:bg-white/20">
+                        <X className="w-6 h-6 group-hover:rotate-90 transition-transform" />
+                    </Button>
                 </div>
 
                 {/* Main Video Slider (Vertical) */}
@@ -143,7 +144,7 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({ reels, initialIndex, onC
                             transition={{ type: "spring", bounce: 0, duration: 0.3 }}
                         >
                             <video
-                                ref={el => videoRefs.current[currentIndex] = el}
+                                ref={el => { if (el) videoRefs.current[currentIndex] = el; }}
                                 src={currentReel.videoUrl}
                                 className="w-full h-full object-cover"
                                 loop
@@ -213,12 +214,12 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({ reels, initialIndex, onC
 
                     {/* Navigation Arrows */}
                     <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-10">
-                        <button onClick={handlePrev} disabled={currentIndex === 0} className="p-3 rounded-full bg-black/40 hover:bg-white/20 text-white disabled:opacity-30 backdrop-blur-md transition-all border border-white/10">
+                        <Button onClick={handlePrev} disabled={currentIndex === 0} variant="icon-glass" size="icon" className="rounded-full bg-black/40 hover:bg-white/20 text-white disabled:opacity-30 backdrop-blur-md border border-white/10">
                             <ChevronUp className="w-6 h-6" />
-                        </button>
-                        <button onClick={handleNext} disabled={currentIndex === currentReels.length - 1} className="p-3 rounded-full bg-black/40 hover:bg-white/20 text-white disabled:opacity-30 backdrop-blur-md transition-all border border-white/10">
+                        </Button>
+                        <Button onClick={handleNext} disabled={currentIndex === currentReels.length - 1} variant="icon-glass" size="icon" className="rounded-full bg-black/40 hover:bg-white/20 text-white disabled:opacity-30 backdrop-blur-md border border-white/10">
                             <ChevronDown className="w-6 h-6" />
-                        </button>
+                        </Button>
                     </div>
                 </div>
             </div>

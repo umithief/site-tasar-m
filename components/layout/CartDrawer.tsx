@@ -86,9 +86,9 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                                     <p className="text-xs text-gray-500">{t('cart.items_count').replace('{count}', items.length.toString())}</p>
                                 </div>
                             </div>
-                            <button onClick={onClose} className="p-2 bg-white/5 rounded-full text-gray-400 hover:text-white">
+                            <Button onClick={onClose} variant="ghost" size="icon" className="text-gray-400 hover:text-white hover:bg-white/5 rounded-full">
                                 <X className="w-5 h-5" />
-                            </button>
+                            </Button>
                         </div>
 
                         <div className="px-6 py-4 bg-white/5 border-b border-white/5">
@@ -120,13 +120,13 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                                         <div className="flex-1 flex flex-col justify-between">
                                             <div className="flex justify-between items-start">
                                                 <h3 className="text-sm font-bold text-white line-clamp-2">{item.name}</h3>
-                                                <button onClick={() => onRemoveItem(item._id)} className="text-gray-500 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
+                                                <Button onClick={() => onRemoveItem(item._id)} variant="ghost" size="icon" className="w-8 h-8 text-gray-500 hover:text-red-500 hover:bg-red-500/10"><Trash2 className="w-4 h-4" /></Button>
                                             </div>
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center bg-black border border-white/10 rounded-lg h-8">
-                                                    <button onClick={() => onUpdateQuantity(item._id, -1)} className="px-2 text-gray-400 hover:text-white" disabled={item.quantity <= 1}><Minus className="w-3 h-3" /></button>
-                                                    <span className="text-xs font-bold text-white px-2">{item.quantity}</span>
-                                                    <button onClick={() => onUpdateQuantity(item._id, 1)} className="px-2 text-gray-400 hover:text-white"><Plus className="w-3 h-3" /></button>
+                                                    <Button onClick={() => onUpdateQuantity(item._id, -1)} variant="ghost" size="icon" className="w-8 h-8 text-gray-400 hover:text-white rounded-none border-r border-white/5" disabled={item.quantity <= 1}><Minus className="w-3 h-3" /></Button>
+                                                    <span className="text-xs font-bold text-white px-2 min-w-[20px] text-center">{item.quantity}</span>
+                                                    <Button onClick={() => onUpdateQuantity(item._id, 1)} variant="ghost" size="icon" className="w-8 h-8 text-gray-400 hover:text-white rounded-none border-l border-white/5"><Plus className="w-3 h-3" /></Button>
                                                 </div>
                                                 <span className="text-sm font-mono font-bold text-moto-accent">₺{(item.price * item.quantity).toLocaleString('tr-TR')}</span>
                                             </div>

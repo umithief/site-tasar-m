@@ -4,6 +4,7 @@ import { Search, ShoppingBag, Zap, Menu, X, User as UserIcon } from 'lucide-reac
 import { ViewState, User as UserType, ColorTheme } from '../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserAvatar } from './ui/UserAvatar';
+import { Button } from './ui/Button';
 
 interface NavbarProps {
     cartCount: number;
@@ -84,19 +85,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </div>
 
                     {/* 2. CENTER NAVIGATION (Hidden on Mobile) */}
-                    <div className="hidden lg:flex items-center gap-8">
+                    <div className="hidden lg:flex items-center gap-2">
                         {navItems.map((item) => (
-                            <button
+                            <Button
                                 key={item.id}
                                 onClick={() => onNavigate(item.id as ViewState)}
-                                className={`relative px-4 py-2 text-sm font-bold transition-all duration-300 group overflow-hidden rounded-full ${currentView === item.id ? 'text-black bg-white shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'text-gray-400 hover:text-white hover:bg-white/5'
-                                    }`}
+                                variant={currentView === item.id ? 'glass' : 'ghost'}
+                                className={currentView === item.id ? '!bg-white !text-black shadow-[0_0_20px_rgba(255,255,255,0.3)]' : 'text-gray-400 hover:text-white'}
+                                size="sm"
                             >
-                                <span className="relative z-10">{item.label}</span>
-                                {currentView !== item.id && (
-                                    <span className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out z-0"></span>
-                                )}
-                            </button>
+                                {item.label}
+                            </Button>
                         ))}
                     </div>
 
@@ -106,7 +105,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         {/* Search Input (Desktop) */}
                         <form
                             onSubmit={handleSearchSubmit}
-                            className="hidden md:flex items-center bg-white/5 border border-white/10 rounded-full px-4 py-2.5 w-64 focus-within:border-moto-accent/50 focus-within:bg-white/10 transition-all"
+                            className="hidden md:flex items-center bg-white/5 border border-white/10 rounded-xl px-4 py-2 w-64 focus-within:border-moto-accent/50 focus-within:bg-white/10 transition-all"
                         >
                             <Search className="w-4 h-4 text-gray-400 mr-3" />
                             <input
@@ -124,26 +123,32 @@ export const Navbar: React.FC<NavbarProps> = ({
                         </form>
 
                         {/* Search Icon (Mobile) */}
-                        <button
-                            onClick={() => onNavigate('shop')}
-                            className="md:hidden w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white hover:bg-white/20 transition-all backdrop-blur-md"
-                        >
-                            <Search className="w-5 h-5" />
-                        </button>
+                        <div className="md:hidden">
+                            <Button
+                                onClick={() => onNavigate('shop')}
+                                variant="icon-glass"
+                                size="icon"
+                            >
+                                <Search className="w-5 h-5" />
+                            </Button>
+                        </div>
 
                         {/* Circular Cart Button */}
-                        <button
-                            id="tour-cart"
-                            onClick={onCartClick}
-                            className="relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-white text-black hover:scale-105 active:scale-95 transition-all shadow-lg group"
-                        >
-                            <ShoppingBag className="w-5 h-5" fill="currentColor" />
+                        <div className="relative">
+                            <Button
+                                id="tour-cart"
+                                onClick={onCartClick}
+                                variant="primary"
+                                className="rounded-full !p-0 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center bg-white text-black hover:bg-gray-200 shadow-lg"
+                            >
+                                <ShoppingBag className="w-5 h-5" fill="currentColor" />
+                            </Button>
                             {cartCount > 0 && (
-                                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-600 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-[#121212]">
+                                <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-600 text-white text-[10px] font-bold flex items-center justify-center rounded-full border-2 border-[#121212] z-20 pointer-events-none">
                                     {cartCount}
                                 </span>
                             )}
-                        </button>
+                        </div>
 
                         {/* User Profile */}
                         {user ? (
@@ -154,24 +159,26 @@ export const Navbar: React.FC<NavbarProps> = ({
                                 <UserAvatar name={user.name} size={40} />
                             </button>
                         ) : (
-                            <button
+                            <Button
                                 onClick={onOpenAuth}
-                                className="hidden md:flex items-center gap-2 px-6 py-2.5 bg-white text-black rounded-full font-bold text-xs uppercase tracking-wider hover:bg-moto-accent hover:text-white transition-all duration-300 shadow-lg hover:shadow-moto-accent/40 active:scale-95 group"
+                                variant="primary"
+                                className="hidden md:flex gap-2"
+                                size="sm"
+                                leftIcon={<div className="p-0.5 bg-black rounded-full text-white"><UserIcon className="w-3 h-3" /></div>}
                             >
-                                <div className="p-1 bg-black rounded-full text-white group-hover:bg-white group-hover:text-moto-accent transition-colors">
-                                    <UserIcon className="w-3 h-3" />
-                                </div>
                                 Giriş Yap
-                            </button>
+                            </Button>
                         )}
 
                         {/* Mobile Menu Toggle */}
-                        <button
+                        <Button
                             onClick={onToggleMenu}
-                            className="lg:hidden w-10 h-10 flex items-center justify-center rounded-full bg-white/10 text-white active:scale-95 transition-transform"
+                            variant="icon-glass"
+                            size="icon"
+                            className="lg:hidden"
                         >
                             <Menu className="w-5 h-5" />
-                        </button>
+                        </Button>
                     </div>
                 </div>
             </div>

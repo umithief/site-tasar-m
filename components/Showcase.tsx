@@ -10,6 +10,7 @@ import { Product, ProductCategory, ViewState, User } from '../types';
 import { Award, Sparkles, ArrowRight, Search, Bell, Calculator, Film, Sun, Moon, Menu, X, HeartPulse, Siren } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserAvatar } from './ui/UserAvatar';
+import { Button } from './ui/Button';
 import { authService } from '../services/auth';
 import { useLivingTime } from '../hooks/useLivingTime';
 import { WeatherWidget } from './WeatherWidget';
@@ -114,26 +115,32 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <button
+                        <Button
                             onClick={() => onNavigate('lifesaver')}
-                            className="w-11 h-11 rounded-full flex items-center justify-center bg-red-600 text-white animate-pulse active:scale-95 shadow-lg shadow-red-600/30 border-2 border-white"
+                            className="bg-red-600 text-white animate-pulse shadow-lg shadow-red-600/30 border-2 border-white rounded-full hover:bg-red-700"
+                            variant="icon-glass"
+                            size="icon"
                         >
                             <Siren className="w-6 h-6" />
-                        </button>
+                        </Button>
 
-                        <button
+                        <Button
                             onClick={() => setIsSearchOpen(!isSearchOpen)}
-                            className={`w-11 h-11 rounded-full flex items-center justify-center transition-all border-2 border-transparent ${isSearchOpen ? 'bg-moto-accent text-black shadow-lg' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                            className={`transition-all border-2 border-transparent rounded-full ${isSearchOpen ? 'bg-moto-accent text-black shadow-lg' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
+                            variant="ghost" // Using ghost to allow bg override
+                            size="icon"
                         >
                             {isSearchOpen ? <X className="w-5 h-5" /> : <Search className="w-5 h-5" />}
-                        </button>
+                        </Button>
 
-                        <button
+                        <Button
                             onClick={onToggleMenu}
-                            className="w-11 h-11 rounded-full bg-[#121212] text-white flex items-center justify-center shadow-lg active:scale-95 transition-transform"
+                            className="bg-[#121212] text-white shadow-lg rounded-full hover:bg-black"
+                            variant="icon-glass"
+                            size="icon"
                         >
                             <Menu className="w-5 h-5" strokeWidth={2.5} />
-                        </button>
+                        </Button>
                     </div>
                 </div>
 
@@ -155,9 +162,9 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                                         onChange={(e) => setSearchText(e.target.value)}
                                         className="w-full h-14 bg-gray-100 rounded-2xl border-2 border-transparent focus:border-moto-accent pl-5 pr-14 text-base font-bold outline-none transition-all text-gray-900 placeholder-gray-500"
                                     />
-                                    <button type="submit" className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-gray-500 hover:text-moto-accent">
+                                    <Button type="submit" variant="ghost" className="absolute right-0 top-0 h-full w-14 text-gray-500 hover:text-moto-accent rounded-r-2xl">
                                         <ArrowRight className="w-6 h-6" />
-                                    </button>
+                                    </Button>
                                 </div>
                             </form>
                         </motion.div>
@@ -221,13 +228,17 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                                 {t('home.vlog_desc')}
                             </p>
 
-                            <button className="relative overflow-hidden bg-red-600 text-white px-8 py-4 rounded-xl font-bold text-sm flex items-center gap-2 shadow-lg shadow-red-600/30 w-fit group-hover:scale-105 transition-transform duration-300 uppercase tracking-wider hover:shadow-red-500/50">
+                            <Button
+                                onClick={() => onNavigate('vlog-map')}
+                                className="relative overflow-hidden bg-red-600 text-white px-8 py-4 rounded-xl font-bold text-sm shadow-lg shadow-red-600/30 w-fit uppercase tracking-wider hover:shadow-red-500/50 hover:scale-105"
+                                variant="danger"
+                            >
                                 <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shine" />
                                 <span className="relative z-10 flex items-center gap-2">
                                     {t('home.open_map')}
                                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                                 </span>
-                            </button>
+                            </Button>
                         </div>
 
                         <div className="h-48 md:h-auto md:w-1/2 relative overflow-hidden bg-gray-100">
@@ -261,11 +272,15 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                             </p>
                         </div>
 
-                        <button className="bg-black text-white px-6 py-3 rounded-xl font-bold text-sm flex items-center gap-2 shadow-xl group-hover:scale-105 transition-transform hover:bg-moto-accent hover:text-black duration-300 border border-transparent hover:border-black/10">
+                        <Button
+                            onClick={() => onNavigate('valuation')}
+                            className="bg-black text-white px-6 py-3 rounded-xl font-bold text-sm shadow-xl hover:bg-moto-accent hover:text-black border border-transparent hover:border-black/10 gap-2"
+                            variant="secondary"
+                        >
                             <Calculator className="w-4 h-4" />
                             {t('home.calculate')}
                             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                        </button>
+                        </Button>
                     </div>
                 </motion.div>
             </div>
@@ -293,14 +308,15 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                             </h2>
                         </motion.div>
 
-                        <button
+                        <Button
                             onClick={() => onNavigate('shop')}
-                            className="group flex items-center gap-3 text-gray-900 text-xs font-bold uppercase tracking-widest w-fit hover:text-moto-accent transition-colors"
+                            className="group flex items-center gap-3 text-gray-900 text-xs font-bold uppercase tracking-widest w-fit hover:text-moto-accent hover:bg-transparent"
+                            variant="ghost"
                         >
                             {t('common.view_all')}
                             <div className="w-8 h-[2px] bg-black group-hover:bg-moto-accent transition-colors"></div>
                             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                        </button>
+                        </Button>
                     </div>
 
                     <div className="flex overflow-x-auto gap-3 pb-4 -mx-4 px-4 md:mx-0 md:px-0 md:pb-0 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-8 snap-x snap-mandatory no-scrollbar">

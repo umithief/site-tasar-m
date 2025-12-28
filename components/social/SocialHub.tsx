@@ -7,6 +7,7 @@ import { UserProfile } from './UserProfile'; // Can be used when user clicks pro
 import { DirectMessages } from './DirectMessages';
 import { SocialPost, SocialProfile, ForumComment } from '../../types';
 import { UserAvatar } from '../ui/UserAvatar';
+import { Button } from '../ui/Button';
 
 import { ViewState } from '../../types';
 
@@ -133,24 +134,25 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                             { id: 'discover', icon: Compass, label: 'Keşfet', action: () => onNavigate && onNavigate('riders') },
                             { id: 'messages', icon: MessageSquare, label: 'Mesajlar', action: () => setIsDMOpen(true) },
                         ].map((item: any) => (
-                            <button
+                            <Button
                                 key={item.id}
                                 onClick={item.action ? item.action : () => setView(item.id as HubView)}
-                                className={`relative w-full flex items-center justify-between px-6 py-4 rounded-2xl transition-all duration-300 group border overflow-hidden ${view === item.id
-                                    ? 'bg-gradient-to-r from-moto-accent to-yellow-500 text-black font-bold shadow-[0_0_25px_rgba(242,166,25,0.6)] border-yellow-300/50 scale-[1.02] ring-2 ring-yellow-400/20'
+                                variant={view === item.id ? 'cyber' : 'ghost'}
+                                className={`w-full justify-start px-6 py-4 rounded-2xl border transition-all duration-300 group overflow-hidden ${view === item.id
+                                    ? 'font-bold shadow-[0_0_25px_rgba(242,166,25,0.6)] border-yellow-300/50 scale-[1.02] ring-2 ring-yellow-400/20'
                                     : 'bg-white/5 border-transparent hover:bg-white/10 hover:border-white/10 text-gray-400 hover:text-white hover:shadow-lg hover:shadow-white/5 hover:translate-x-1'}`}
                             >
                                 {view === item.id && (
                                     <div className="absolute inset-0 bg-white/20 animate-pulse pointer-events-none mix-blend-overlay"></div>
                                 )}
-                                <div className="flex items-center gap-4 relative z-10">
+                                <div className="flex items-center gap-4 relative z-10 w-full">
                                     <item.icon className={`w-5 h-5 ${view === item.id ? 'stroke-[2.5]' : 'group-hover:scale-110 transition-transform duration-300'}`} />
-                                    <span>{item.label}</span>
+                                    <span className="flex-1 text-left">{item.label}</span>
+                                    {item.badge && (
+                                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full relative z-10 ml-auto ${view === item.id ? 'bg-black text-moto-accent' : 'bg-red-500 text-white shadow-red-500/50 shadow-lg'}`}>{item.badge}</span>
+                                    )}
                                 </div>
-                                {item.badge && (
-                                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full relative z-10 ${view === item.id ? 'bg-black text-moto-accent' : 'bg-red-500 text-white shadow-red-500/50 shadow-lg'}`}>{item.badge}</span>
-                                )}
-                            </button>
+                            </Button>
                         ))}
                     </nav>
 
@@ -183,12 +185,13 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                         <h2 className="text-3xl font-display font-bold text-white">Topluluğa Katıl</h2>
                                         <p className="text-gray-400">Diğer sürücüleri takip etmek, gönderi paylaşmak ve etkinliklere katılmak için giriş yap.</p>
                                     </div>
-                                    <button
+                                    <Button
                                         onClick={() => onNavigate && onNavigate('auth')}
-                                        className="bg-moto-accent text-black px-8 py-4 rounded-xl font-bold hover:bg-white transition-all transform hover:scale-105 shadow-xl shadow-moto-accent/20"
+                                        variant="primary"
+                                        className="px-8 py-4 rounded-xl font-bold hover:bg-white transition-all transform hover:scale-105 shadow-xl shadow-moto-accent/20"
                                     >
                                         Giriş Yap / Kayıt Ol
-                                    </button>
+                                    </Button>
                                 </div>
                             ) : (
                                 <>
@@ -206,9 +209,15 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                                     rows={1}
                                                 />
                                             </div>
-                                            <button onClick={handleCreatePost} disabled={!newPostContent.trim() && !mediaUrl} className="bg-moto-accent text-black p-3 rounded-xl hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+                                            <Button
+                                                onClick={handleCreatePost}
+                                                disabled={!newPostContent.trim() && !mediaUrl}
+                                                variant="primary"
+                                                size="icon"
+                                                className="p-3 rounded-xl hover:bg-white transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                            >
                                                 <PlusCircle className="w-5 h-5" />
-                                            </button>
+                                            </Button>
                                         </div>
 
                                         <div className="pl-14">
@@ -239,13 +248,14 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                                 ))}
 
                                                 {hasNextPage && (
-                                                    <button
+                                                    <Button
                                                         onClick={() => fetchNextPage()}
                                                         disabled={isFetchingNextPage}
+                                                        variant="ghost"
                                                         className="w-full py-4 text-sm text-moto-accent font-bold hover:bg-white/5 rounded-xl transition-colors disabled:opacity-50"
                                                     >
                                                         {isFetchingNextPage ? 'Yükleniyor...' : 'Daha Fazla Yükle'}
-                                                    </button>
+                                                    </Button>
                                                 )}
                                             </>
                                         )}
@@ -290,7 +300,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                             <div className="bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl p-6">
                                 <div className="flex justify-between items-center mb-6">
                                     <h3 className="font-bold text-white text-sm uppercase">Önerilen Sürücüler</h3>
-                                    <button className="text-xs text-moto-accent hover:underline" onClick={() => onNavigate && onNavigate('riders')}>Tümünü Gör</button>
+                                    <Button variant="ghost" className="text-xs text-moto-accent hover:underline hover:bg-transparent h-auto p-0" onClick={() => onNavigate && onNavigate('riders')}>Tümünü Gör</Button>
                                 </div>
                                 <div className="space-y-4">
                                     {suggestedRiders.length > 0 ? suggestedRiders.map(rider => (

@@ -9,6 +9,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { NegotiationModal } from './NegotiationModal';
 import { notify } from '../services/notificationService';
 import { Model3D } from './Model3D';
+import { Button } from './ui/Button';
 import { StarRating } from './ui/StarRating';
 import { useLanguage } from '../contexts/LanguageProvider';
 
@@ -55,12 +56,12 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
                 statsService.trackEvent('view_product', {
                     productId: product._id,
                     productName: product.name,
-                    userId: user?._id || user?.id,
+                    userId: user?._id,
                     userName: user?.name
                 });
 
                 if (user && product.isNegotiable) {
-                    const offer = await negotiationService.checkUserOffer(user._id || user.id, product._id);
+                    const offer = await negotiationService.checkUserOffer(user._id, product._id);
                     if (offer) setActiveOffer(offer);
                 }
             };
@@ -106,12 +107,15 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
                 <div className="relative w-full lg:w-1/2 h-[45vh] lg:h-full bg-gray-50 flex items-center justify-center overflow-hidden group order-1">
 
                     {/* Navigation Back Button (Floating) */}
-                    <button
+                    {/* Navigation Back Button (Floating) */}
+                    <Button
                         onClick={() => onNavigate('shop')}
-                        className="absolute top-safe-top left-6 z-50 w-10 h-10 lg:w-12 lg:h-12 rounded-full bg-white/80 backdrop-blur-md border border-gray-200 flex items-center justify-center text-gray-900 hover:bg-black hover:text-white transition-all duration-300 shadow-sm"
+                        className="absolute top-safe-top left-6 z-50 rounded-full bg-white/80 backdrop-blur-md border border-gray-200 text-gray-900 hover:bg-black hover:text-white shadow-sm"
+                        variant="ghost"
+                        size="icon"
                     >
                         <ArrowLeft className="w-5 h-5" />
-                    </button>
+                    </Button>
 
                     {/* Main Visual Content */}
                     <div className="relative w-full h-full p-8 lg:p-20 flex items-center justify-center z-10">
@@ -145,16 +149,17 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
                     <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-4 px-6 z-40 pointer-events-none">
                         <div className="pointer-events-auto flex gap-4">
                             {product.model3d && (
-                                <button
+                                <Button
                                     onClick={() => setViewMode(prev => prev === 'image' ? '3d' : 'image')}
-                                    className="flex items-center gap-2 px-5 py-2.5 bg-white/80 backdrop-blur-md border border-gray-200 rounded-full text-gray-900 font-bold text-xs uppercase tracking-wider hover:bg-moto-accent hover:text-white hover:border-moto-accent transition-all active:scale-95 shadow-lg"
+                                    className="px-5 py-2.5 bg-white/80 backdrop-blur-md border border-gray-200 rounded-full text-gray-900 font-bold text-xs uppercase tracking-wider hover:bg-moto-accent hover:text-white hover:border-moto-accent shadow-lg gap-2"
+                                    variant="ghost"
                                 >
                                     {viewMode === 'image' ? (
                                         <><Box className="w-4 h-4" /> 360° İncele</>
                                     ) : (
                                         <><ImageIcon className="w-4 h-4" /> Görsel</>
                                     )}
-                                </button>
+                                </Button>
                             )}
 
                             {/* Gallery Thumbnails */}
@@ -186,12 +191,12 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
                             <div className="flex items-center justify-between mb-4">
                                 <span className="text-moto-accent text-xs font-bold uppercase tracking-[0.2em]">{product.category}</span>
                                 <div className="flex gap-2">
-                                    <button onClick={() => setIsFavorite(!isFavorite)} className={`p-2 rounded-full border transition-all ${isFavorite ? 'bg-red-500/10 border-red-500 text-red-500' : 'bg-gray-50 border-gray-200 text-gray-400 hover:text-gray-900 hover:bg-gray-100 hover:border-gray-300'}`}>
+                                    <Button onClick={() => setIsFavorite(!isFavorite)} size="icon" variant="ghost" className={`rounded-full border transition-all ${isFavorite ? 'bg-red-500/10 border-red-500 text-red-500 hover:bg-red-500/20' : 'bg-gray-50 border-gray-200 text-gray-400 hover:text-gray-900 hover:bg-gray-100 hover:border-gray-300'}`}>
                                         <Heart className={`w-4 h-4 ${isFavorite ? 'fill-current' : ''}`} />
-                                    </button>
-                                    <button onClick={handleShare} className="p-2 rounded-full border border-gray-200 bg-gray-50 text-gray-400 hover:text-gray-900 hover:bg-gray-100 hover:border-gray-300 transition-all">
+                                    </Button>
+                                    <Button onClick={handleShare} size="icon" variant="ghost" className="rounded-full border border-gray-200 bg-gray-50 text-gray-400 hover:text-gray-900 hover:bg-gray-100 hover:border-gray-300">
                                         <Share2 className="w-4 h-4" />
-                                    </button>
+                                    </Button>
                                 </div>
                             </div>
 
@@ -224,13 +229,14 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
                                             ₺{currentPrice.toLocaleString('tr-TR')}
                                         </span>
                                         {product.isNegotiable && (
-                                            <button
+                                            <Button
                                                 onClick={() => setIsNegotiationOpen(true)}
-                                                className={`px-3 py-1.5 rounded-lg text-[10px] font-bold uppercase tracking-wider border flex items-center gap-1.5 transition-all ${activeOffer ? 'bg-green-500/10 border-green-500 text-green-500' : 'bg-gray-50 border-gray-200 text-gray-500 hover:border-moto-accent hover:text-moto-accent'}`}
+                                                variant="ghost"
+                                                className={`px-3 py-1.5 h-auto rounded-lg text-[10px] font-bold uppercase tracking-wider border gap-1.5 ${activeOffer ? 'bg-green-500/10 border-green-500 text-green-500 hover:bg-green-500/20' : 'bg-gray-50 border-gray-200 text-gray-500 hover:border-moto-accent hover:text-moto-accent'}`}
                                             >
                                                 {activeOffer ? <Check className="w-3 h-3" /> : <MessageCircle className="w-3 h-3" />}
                                                 {activeOffer ? 'Teklif Onaylı' : 'Teklif Ver'}
-                                            </button>
+                                            </Button>
                                         )}
                                     </div>
                                 </div>
@@ -408,13 +414,11 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
                             </div>
 
                             {/* Main Button */}
-                            <button
+                            <Button
                                 onClick={handleAddToCart}
                                 disabled={isAdded}
-                                className={`flex-1 h-14 lg:h-16 rounded-xl font-bold text-sm lg:text-base uppercase tracking-widest flex items-center justify-center gap-3 shadow-lg transition-all active:scale-[0.98] ${isAdded
-                                    ? 'bg-green-600 text-white cursor-default'
-                                    : 'bg-moto-accent text-white hover:bg-black hover:text-white'
-                                    }`}
+                                variant="primary"
+                                className={`flex-1 h-14 lg:h-16 rounded-xl font-bold text-sm lg:text-base uppercase tracking-widest justify-center gap-3 shadow-lg ${isAdded ? 'bg-green-600 text-white hover:bg-green-700' : ''}`}
                             >
                                 {isAdded ? (
                                     <><Check className="w-5 h-5" /> {t('product.added')}</>
@@ -425,7 +429,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
                                         <span>₺{(currentPrice * quantity).toLocaleString()}</span>
                                     </>
                                 )}
-                            </button>
+                            </Button>
                         </div>
                     </div>
 

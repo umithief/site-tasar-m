@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { Product, ProductCategory, ViewState } from '../types';
 import { ProductCard } from './ProductCard';
 import { Search, Filter, X, ChevronDown, Sliders, Zap, Tag, Star, ArrowRight, TrendingUp } from 'lucide-react';
+import { Button } from './ui/Button';
 import { motion, AnimatePresence } from 'framer-motion';
 import { BottomSheet } from './MobileUI';
 import { useLanguage } from '../contexts/LanguageProvider';
@@ -89,13 +90,14 @@ export const Shop: React.FC<ShopProps> = ({
                         />
                     </div>
 
-                    <button
+                    <Button
                         onClick={() => setIsMobileFilterOpen(true)}
-                        className={`flex items-center gap-2 px-4 py-3 rounded-xl text-xs font-bold transition-all border whitespace-nowrap ${activeFiltersCount > 0 ? 'bg-moto-accent text-white border-moto-accent' : 'bg-white border-gray-200 text-gray-700'}`}
+                        className={`flex items-center gap-2 px-4 py-3 rounded-xl text-xs font-bold whitespace-nowrap ${activeFiltersCount > 0 ? 'bg-moto-accent text-white border-moto-accent' : 'bg-white border-gray-200 text-gray-700'}`}
+                        variant="ghost"
                     >
                         <Sliders className="w-4 h-4" />
                         {activeFiltersCount > 0 && <span className="bg-white text-black w-4 h-4 rounded-full flex items-center justify-center text-[9px]">{activeFiltersCount}</span>}
-                    </button>
+                    </Button>
                 </div>
             </div>
 
@@ -116,13 +118,15 @@ export const Shop: React.FC<ShopProps> = ({
                         <h4 className="text-sm font-bold text-gray-500 uppercase mb-3">{t('shop.categories')}</h4>
                         <div className="flex flex-wrap gap-2">
                             {allCategories.map((cat) => (
-                                <button
+                                <Button
                                     key={cat}
                                     onClick={() => setSelectedCategory(cat as any)}
-                                    className={`px-4 py-2 rounded-lg text-xs font-bold border transition-all ${selectedCategory === cat ? 'bg-moto-accent border-moto-accent text-white' : 'bg-transparent border-gray-200 text-gray-500'}`}
+                                    className={`px-4 py-2 rounded-lg text-xs font-bold border ${selectedCategory === cat ? 'bg-moto-accent border-moto-accent text-white' : 'bg-transparent border-gray-200 text-gray-500'}`}
+                                    variant="ghost"
+                                    size="sm"
                                 >
                                     {cat === 'ALL' ? t('shop.all') : cat}
-                                </button>
+                                </Button>
                             ))}
                         </div>
                     </div>
@@ -147,9 +151,9 @@ export const Shop: React.FC<ShopProps> = ({
                         </div>
                     </div>
 
-                    <button onClick={() => setIsMobileFilterOpen(false)} className="w-full bg-moto-accent text-white font-bold py-4 rounded-xl shadow-lg mt-4">
+                    <Button onClick={() => setIsMobileFilterOpen(false)} variant="primary" className="w-full py-4 shadow-lg mt-4">
                         {t('shop.show_results')} ({filteredProducts.length})
-                    </button>
+                    </Button>
                 </div>
             </BottomSheet>
 
@@ -216,8 +220,8 @@ export const Shop: React.FC<ShopProps> = ({
                         </h1>
                         {(searchQuery || priceRange !== 'all') && (
                             <div className="flex gap-2">
-                                {searchQuery && <button onClick={() => setSearchQuery('')} className="flex items-center gap-1 bg-red-500/10 text-red-500 px-3 py-1 rounded-lg text-xs font-bold hover:bg-red-500 hover:text-white transition-colors">{t('shop.search_results').replace('{query}', searchQuery)} <X className="w-3 h-3" /></button>}
-                                {priceRange !== 'all' && <button onClick={() => setPriceRange('all')} className="flex items-center gap-1 bg-blue-500/10 text-blue-500 px-3 py-1 rounded-lg text-xs font-bold hover:bg-blue-500 hover:text-white transition-colors">{t('shop.price_filter_active')} <X className="w-3 h-3" /></button>}
+                                {searchQuery && <Button onClick={() => setSearchQuery('')} variant="ghost" size="sm" className="flex items-center gap-1 bg-red-500/10 text-red-500 px-3 py-1 rounded-lg text-xs font-bold hover:bg-red-500 hover:text-white !h-auto !min-h-0">{t('shop.search_results').replace('{query}', searchQuery)} <X className="w-3 h-3" /></Button>}
+                                {priceRange !== 'all' && <Button onClick={() => setPriceRange('all')} variant="ghost" size="sm" className="flex items-center gap-1 bg-blue-500/10 text-blue-500 px-3 py-1 rounded-lg text-xs font-bold hover:bg-blue-500 hover:text-white !h-auto !min-h-0">{t('shop.price_filter_active')} <X className="w-3 h-3" /></Button>}
                             </div>
                         )}
                     </div>
@@ -226,7 +230,9 @@ export const Shop: React.FC<ShopProps> = ({
                         <div className="flex flex-col items-center justify-center py-32 text-center bg-white rounded-3xl border border-dashed border-gray-300">
                             <Search className="w-16 h-16 text-gray-300 mb-4" />
                             <h3 className="text-xl font-bold text-gray-900 mb-2">{t('shop.no_results')}</h3>
-                            <button onClick={() => { setSearchQuery(''); setPriceRange('all'); setSelectedCategory('ALL'); }} className="mt-6 text-moto-accent font-bold hover:underline">{t('shop.clear_filters')}</button>
+                            <Button onClick={() => { setSearchQuery(''); setPriceRange('all'); setSelectedCategory('ALL'); }} variant="ghost" className="mt-6 text-moto-accent font-bold hover:underline hover:bg-transparent">
+                                {t('shop.clear_filters')}
+                            </Button>
                         </div>
                     ) : (
                         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-3 md:gap-4">
@@ -263,7 +269,9 @@ export const Shop: React.FC<ShopProps> = ({
                                         <div className="text-gray-400 text-xs line-through">₺{(dealProduct.price * 1.2).toLocaleString('tr-TR')}</div>
                                         <div className="text-gray-900 font-mono font-bold text-xl">₺{dealProduct.price.toLocaleString('tr-TR')}</div>
                                     </div>
-                                    <button className="bg-gray-100 text-black p-2 rounded-lg hover:bg-moto-accent hover:text-white transition-colors"><ArrowRight className="w-4 h-4" /></button>
+                                    <Button className="bg-gray-100 text-black p-2 rounded-lg hover:bg-moto-accent hover:text-white shadow-none" variant="ghost" size="icon">
+                                        <ArrowRight className="w-4 h-4" />
+                                    </Button>
                                 </div>
                             </div>
                         </div>
@@ -272,7 +280,15 @@ export const Shop: React.FC<ShopProps> = ({
                         <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider mb-4 flex items-center gap-2"><TrendingUp className="w-3 h-3" /> Popüler Aramalar</h3>
                         <div className="flex flex-wrap gap-2">
                             {trendingTags.map(tag => (
-                                <button key={tag} onClick={() => setSearchQuery(tag.replace('#', ''))} className="px-3 py-1.5 bg-gray-100 hover:bg-moto-accent hover:text-white rounded-lg text-xs text-gray-600 transition-colors">{tag}</button>
+                                <Button
+                                    key={tag}
+                                    onClick={() => setSearchQuery(tag.replace('#', ''))}
+                                    variant="ghost"
+                                    className="px-3 py-1.5 bg-gray-100 hover:bg-moto-accent hover:text-white rounded-lg text-xs text-gray-600 !h-auto !min-h-0"
+                                    size="sm"
+                                >
+                                    {tag}
+                                </Button>
                             ))}
                         </div>
                     </div>

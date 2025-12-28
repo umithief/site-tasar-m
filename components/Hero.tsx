@@ -6,6 +6,7 @@ import { DEFAULT_SLIDES } from '../constants';
 import { sliderService } from '../services/sliderService';
 import { useLanguage } from '../contexts/LanguageProvider';
 import { ChevronRight, ArrowRight, Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { Button } from './ui/Button';
 
 interface HeroProps {
     onNavigate: (view: ViewState) => void;
@@ -81,7 +82,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
             {/* 2. BACKGROUND LAYER (Parallax) */}
             <AnimatePresence mode='wait'>
                 <motion.div
-                    key={current.id}
+                    key={current._id}
                     className="absolute inset-0 w-full h-full"
                     initial={{ scale: 1.1, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
@@ -123,7 +124,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
                 <div className="w-full lg:w-3/5 xl:w-1/2">
                     <AnimatePresence mode="wait">
                         <motion.div
-                            key={current.id + "-content"}
+                            key={current._id + "-content"}
                             style={{ x: mousePosition.x * -1, y: mousePosition.y * -1 }} // Parallax text
                             initial={{ opacity: 0, x: -50 }}
                             animate={{ opacity: 1, x: 0 }}
@@ -181,24 +182,24 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
                                 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.8 }}
                                 className="flex items-center gap-6"
                             >
-                                <button
+                                <Button
                                     onClick={() => onNavigate(current.action as ViewState)}
-                                    className="group relative px-10 py-5 bg-white text-black font-black text-sm uppercase tracking-widest rounded-full overflow-hidden hover:scale-105 transition-transform shadow-[0_0_30px_rgba(255,255,255,0.3)]"
+                                    variant="premium"
+                                    className="rounded-full px-10 py-5 text-sm"
                                 >
-                                    <span className="relative z-10 flex items-center gap-3">
-                                        {current.cta}
-                                        <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                                    </span>
-                                    <div className="absolute inset-0 bg-moto-accent translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-out"></div>
-                                </button>
+                                    {current.cta}
+                                    <ArrowRight className="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform" />
+                                </Button>
 
                                 {current.type === 'video' && (
-                                    <button
+                                    <Button
                                         onClick={() => setIsMuted(!isMuted)}
-                                        className="w-14 h-14 flex items-center justify-center rounded-full border border-white/20 text-white hover:bg-white hover:text-black hover:border-white transition-all backdrop-blur-sm bg-white/5"
+                                        variant="icon-glass"
+                                        size="icon"
+                                        className="w-14 h-14 rounded-full"
                                     >
                                         {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
-                                    </button>
+                                    </Button>
                                 )}
                             </motion.div>
                         </motion.div>
@@ -226,12 +227,14 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
                 </div>
 
                 <div className="flex gap-4">
-                    <button
+                    <Button
                         onClick={() => setIsAutoPlay(!isAutoPlay)}
-                        className="w-12 h-12 rounded-full border border-white/10 bg-black/20 backdrop-blur-sm flex items-center justify-center text-white hover:bg-moto-accent hover:border-moto-accent hover:text-black transition-all"
+                        variant="icon-glass"
+                        size="icon"
+                        className="rounded-full bg-black/20"
                     >
                         {isAutoPlay ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
-                    </button>
+                    </Button>
                 </div>
 
             </div>

@@ -321,8 +321,9 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
             // Add CSS for the neon line
             const style = document.createElement('style');
             style.innerHTML = `
-            .neon-polyline { filter: drop-shadow(0 0 8px #F2A619); }
-            .trail-polyline { filter: drop-shadow(0 0 5px #00f3ff); }
+            .neon-polyline { filter: drop-shadow(0 0 10px #F2A619); }
+            .trail-polyline { filter: drop-shadow(0 0 8px #00f3ff); opacity: 0.8 !important; }
+            .leaflet-tile-pane { filter: brightness(0.6) contrast(1.4) grayscale(0.1); }
             .leaflet-container { background: #000 !important; }
           `;
             document.head.appendChild(style);
@@ -702,7 +703,6 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                         <h3 className="text-xl font-bold text-white">GPS Gerekli</h3>
                         <div className="flex flex-col gap-3 w-full">
                             <button onClick={toggleGps} className="w-full py-3 bg-moto-accent text-black font-bold rounded-xl active:scale-95">GPS AÇ</button>
-                            <button onClick={() => setIsDemoMode(true)} className="w-full py-3 bg-white/10 text-white font-bold rounded-xl active:scale-95">SİMÜLASYON</button>
                         </div>
                     </div>
                 </div>
@@ -733,9 +733,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
             {/* --- RIGHT: TELEMETRY ICONS (Compact) --- */}
             <div className="absolute top-32 right-4 z-40 flex flex-col gap-3 pointer-events-auto">
                 {!isDemoMode && (route || activeTarget) && (
-                    <button onClick={() => setIsDemoMode(true)} className="w-10 h-10 bg-moto-accent text-[#1A1A17] rounded-xl flex items-center justify-center shadow-lg active:scale-95">
-                        <PlayCircle className="w-6 h-6 fill-current" />
-                    </button>
+                    null
                 )}
                 <button
                     onClick={() => setShowTelemetry(!showTelemetry)}

@@ -6,7 +6,7 @@ import ProductCard from './ProductCard';
 
 const CATEGORIES = ["Tümü", "Performans", "Ekipman", "Bakım", "Aksesuar"];
 
-const MobileShop = () => {
+export const MobileShop = () => {
     const { data: products, isLoading } = useProducts();
     const [searchQuery, setSearchQuery] = useState("");
     const [activeCategory, setActiveCategory] = useState("Tümü");
@@ -48,8 +48,8 @@ const MobileShop = () => {
                             key={cat}
                             onClick={() => setActiveCategory(cat)}
                             className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all ${activeCategory === cat
-                                    ? 'bg-orange-600 text-white shadow-[0_0_15px_-5px_orange]'
-                                    : 'bg-zinc-900 text-zinc-500 border border-zinc-800'
+                                ? 'bg-orange-600 text-white shadow-[0_0_15px_-5px_orange]'
+                                : 'bg-zinc-900 text-zinc-500 border border-zinc-800'
                                 }`}
                         >
                             {cat}
@@ -82,4 +82,4 @@ const MobileShop = () => {
     );
 };
 
-export default MobileShop;
+

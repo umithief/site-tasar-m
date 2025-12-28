@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowLeft, Check, Search, Banknote, Gauge, AlertCircle, TrendingUp, BarChart3, Loader2, Bike, Calendar, Info } from 'lucide-react';
 import { getValuationAnalysis } from '../services/geminiService';
-import { Button } from './Button';
+import { Button } from './ui/Button';
 import { ViewState } from '../types';
 
 interface MotoValuationProps {
@@ -79,11 +79,11 @@ export const MotoValuation: React.FC<MotoValuationProps> = ({ onNavigate }) => {
         const steps = ['brand', 'model', 'year', 'km', 'condition', 'result'];
         const currentIdx = steps.indexOf(step);
         const progress = ((currentIdx) / (steps.length - 1)) * 100;
-        
+
         return (
             <div className="w-full bg-gray-800 h-1 mt-0">
-                <motion.div 
-                    className="h-full bg-moto-accent shadow-[0_0_10px_#F2A619]" 
+                <motion.div
+                    className="h-full bg-moto-accent shadow-[0_0_10px_#F2A619]"
                     initial={{ width: 0 }}
                     animate={{ width: `${progress}%` }}
                     transition={{ duration: 0.5 }}
@@ -114,7 +114,7 @@ export const MotoValuation: React.FC<MotoValuationProps> = ({ onNavigate }) => {
             {/* Content */}
             <div className="flex-1 flex flex-col p-6 max-w-lg mx-auto w-full justify-center">
                 <AnimatePresence mode="wait">
-                    
+
                     {/* STEP 1: BRAND */}
                     {step === 'brand' && (
                         <motion.div key="brand" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="flex-1 flex flex-col">
@@ -127,7 +127,7 @@ export const MotoValuation: React.FC<MotoValuationProps> = ({ onNavigate }) => {
                                 {brands.map(brand => (
                                     <button
                                         key={brand}
-                                        onClick={() => { setFormData({...formData, brand}); setStep('model'); }}
+                                        onClick={() => { setFormData({ ...formData, brand }); setStep('model'); }}
                                         className="p-4 bg-[#1A1A17] border border-white/10 rounded-xl text-center hover:border-moto-accent hover:bg-white/5 transition-all text-white font-bold text-sm group"
                                     >
                                         <span className="group-hover:scale-105 inline-block transition-transform">{brand}</span>
@@ -144,16 +144,16 @@ export const MotoValuation: React.FC<MotoValuationProps> = ({ onNavigate }) => {
                                 <h2 className="text-3xl font-display font-bold text-white mb-2">Model Bilgisi</h2>
                                 <p className="text-gray-400 text-sm">{formData.brand} markasının hangi modelini kullanıyorsunuz?</p>
                             </div>
-                            
+
                             <div className="relative group">
                                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 w-5 h-5 group-focus-within:text-moto-accent transition-colors" />
-                                <input 
+                                <input
                                     autoFocus
-                                    type="text" 
-                                    placeholder="Örn: MT-07, CBR 650R, R 1250 GS..." 
+                                    type="text"
+                                    placeholder="Örn: MT-07, CBR 650R, R 1250 GS..."
                                     className="w-full bg-[#1A1A17] border border-white/10 rounded-xl pl-12 pr-4 py-5 text-white focus:border-moto-accent outline-none text-lg font-medium transition-all"
                                     value={formData.model}
-                                    onChange={(e) => setFormData({...formData, model: e.target.value})}
+                                    onChange={(e) => setFormData({ ...formData, model: e.target.value })}
                                     onKeyDown={(e) => e.key === 'Enter' && formData.model && handleNext()}
                                 />
                             </div>
@@ -176,7 +176,7 @@ export const MotoValuation: React.FC<MotoValuationProps> = ({ onNavigate }) => {
                                 {years.map(year => (
                                     <button
                                         key={year}
-                                        onClick={() => { setFormData({...formData, year}); setStep('km'); }}
+                                        onClick={() => { setFormData({ ...formData, year }); setStep('km'); }}
                                         className="py-3 bg-[#1A1A17] border border-white/10 rounded-xl hover:border-moto-accent hover:bg-white/5 transition-all text-white font-bold text-lg"
                                     >
                                         {year}
@@ -193,16 +193,16 @@ export const MotoValuation: React.FC<MotoValuationProps> = ({ onNavigate }) => {
                                 <h2 className="text-3xl font-display font-bold text-white mb-2">Kilometre</h2>
                                 <p className="text-gray-400 text-sm">Motosikletin güncel odometre değeri nedir?</p>
                             </div>
-                            
+
                             <div className="relative group">
                                 <Gauge className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 w-6 h-6 group-focus-within:text-moto-accent transition-colors" />
-                                <input 
+                                <input
                                     autoFocus
-                                    type="number" 
-                                    placeholder="Örn: 12500" 
+                                    type="number"
+                                    placeholder="Örn: 12500"
                                     className="w-full bg-[#1A1A17] border border-white/10 rounded-xl pl-14 pr-4 py-5 text-white focus:border-moto-accent outline-none text-2xl font-mono tracking-widest transition-all"
                                     value={formData.km}
-                                    onChange={(e) => setFormData({...formData, km: e.target.value})}
+                                    onChange={(e) => setFormData({ ...formData, km: e.target.value })}
                                     onKeyDown={(e) => e.key === 'Enter' && formData.km && handleNext()}
                                 />
                                 <span className="absolute right-6 top-1/2 -translate-y-1/2 text-gray-500 font-bold">KM</span>
@@ -222,8 +222,8 @@ export const MotoValuation: React.FC<MotoValuationProps> = ({ onNavigate }) => {
                                 {conditions.map((cond, idx) => (
                                     <button
                                         key={idx}
-                                        onClick={() => { 
-                                            setFormData({...formData, condition: cond.label}); 
+                                        onClick={() => {
+                                            setFormData({ ...formData, condition: cond.label });
                                             // Trigger analysis
                                             setTimeout(() => handleNext(), 100);
                                         }}
@@ -257,7 +257,7 @@ export const MotoValuation: React.FC<MotoValuationProps> = ({ onNavigate }) => {
                     {/* STEP 6: RESULT */}
                     {step === 'result' && result && (
                         <motion.div key="result" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="flex-1 flex flex-col pb-10">
-                            
+
                             <div className="text-center mb-8">
                                 <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-green-500/10 text-green-500 text-xs font-bold uppercase rounded-full mb-4 border border-green-500/20 shadow-[0_0_15px_rgba(34,197,94,0.2)]">
                                     <Check className="w-3 h-3" /> Analiz Tamamlandı
@@ -269,13 +269,13 @@ export const MotoValuation: React.FC<MotoValuationProps> = ({ onNavigate }) => {
                             {/* Main Price Card */}
                             <div className="bg-gradient-to-b from-[#1A1A17] to-black border border-white/10 rounded-3xl p-8 relative overflow-hidden mb-6 shadow-2xl group">
                                 <div className="absolute top-0 right-0 w-48 h-48 bg-moto-accent/10 rounded-full blur-[60px] pointer-events-none group-hover:bg-moto-accent/20 transition-colors duration-700"></div>
-                                
+
                                 <div className="relative z-10 text-center">
                                     <p className="text-xs text-gray-400 font-bold uppercase tracking-[0.2em] mb-3">Ortalama Piyasa Değeri</p>
                                     <div className="text-5xl md:text-6xl font-mono font-bold text-white drop-shadow-[0_4px_4px_rgba(0,0,0,0.5)] mb-6">
                                         ₺{(result.avgPrice).toLocaleString('tr-TR')}
                                     </div>
-                                    
+
                                     {/* Range Slider Visual */}
                                     <div className="relative h-2 bg-gray-800 rounded-full w-full mb-8">
                                         <div className="absolute top-0 left-[10%] right-[10%] h-full bg-gradient-to-r from-green-500 via-yellow-500 to-red-500 opacity-30 rounded-full"></div>
@@ -301,10 +301,9 @@ export const MotoValuation: React.FC<MotoValuationProps> = ({ onNavigate }) => {
                                     <div className="flex items-center gap-2 text-gray-400 mb-2 text-xs font-bold uppercase tracking-wider">
                                         <TrendingUp className="w-4 h-4" /> Satış Hızı
                                     </div>
-                                    <div className={`text-xl font-bold ${
-                                        result.liquidity === 'Hızlı' ? 'text-green-500' : 
-                                        result.liquidity === 'Orta' ? 'text-yellow-500' : 'text-red-500'
-                                    }`}>
+                                    <div className={`text-xl font-bold ${result.liquidity === 'Hızlı' ? 'text-green-500' :
+                                            result.liquidity === 'Orta' ? 'text-yellow-500' : 'text-red-500'
+                                        }`}>
                                         {result.liquidity}
                                     </div>
                                 </div>

@@ -1,7 +1,7 @@
 
 import React, { useState, useRef } from 'react';
 import { ArrowLeft, Printer, Download, RefreshCw, AlertTriangle, User, Droplets, Phone, FileText } from 'lucide-react';
-import { Button } from './Button';
+import { Button } from './ui/Button';
 import { ViewState } from '../types';
 import { motion } from 'framer-motion';
 
@@ -67,7 +67,7 @@ Not: ${formData.medicalNotes}`;
     return (
         <div className="pt-24 pb-20 min-h-screen bg-[#09090b] text-white">
             <div className="max-w-4xl mx-auto px-4 sm:px-6">
-                
+
                 {/* Header */}
                 <div className="flex items-center gap-4 mb-8">
                     <button onClick={() => onNavigate('mototool')} className="p-2 hover:bg-white/10 rounded-full transition-colors">
@@ -80,32 +80,32 @@ Not: ${formData.medicalNotes}`;
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    
+
                     {/* Form Section */}
                     <div className="bg-[#1A1A17] border border-white/10 rounded-3xl p-6 shadow-xl">
                         <h2 className="text-lg font-bold mb-6 flex items-center gap-2">
                             <User className="w-5 h-5 text-moto-accent" /> Sürücü Bilgileri
                         </h2>
-                        
+
                         <div className="space-y-4">
                             <div>
                                 <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Ad Soyad</label>
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-moto-accent outline-none"
                                     value={formData.name}
-                                    onChange={(e) => setFormData({...formData, name: e.target.value})}
+                                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                     placeholder="Adınız Soyadınız"
                                 />
                             </div>
 
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1 flex items-center gap-1"><Droplets className="w-3 h-3"/> Kan Grubu</label>
-                                    <select 
+                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1 flex items-center gap-1"><Droplets className="w-3 h-3" /> Kan Grubu</label>
+                                    <select
                                         className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-moto-accent outline-none appearance-none"
                                         value={formData.bloodType}
-                                        onChange={(e) => setFormData({...formData, bloodType: e.target.value})}
+                                        onChange={(e) => setFormData({ ...formData, bloodType: e.target.value })}
                                     >
                                         {['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].map(type => (
                                             <option key={type} value={type}>{type}</option>
@@ -113,12 +113,12 @@ Not: ${formData.medicalNotes}`;
                                     </select>
                                 </div>
                                 <div>
-                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1 flex items-center gap-1"><Phone className="w-3 h-3"/> Acil No</label>
-                                    <input 
-                                        type="tel" 
+                                    <label className="block text-xs font-bold text-gray-500 uppercase mb-1 flex items-center gap-1"><Phone className="w-3 h-3" /> Acil No</label>
+                                    <input
+                                        type="tel"
                                         className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-moto-accent outline-none"
                                         value={formData.emergencyPhone}
-                                        onChange={(e) => setFormData({...formData, emergencyPhone: e.target.value})}
+                                        onChange={(e) => setFormData({ ...formData, emergencyPhone: e.target.value })}
                                         placeholder="05XX..."
                                     />
                                 </div>
@@ -126,21 +126,21 @@ Not: ${formData.medicalNotes}`;
 
                             <div>
                                 <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Acil Durum Kişisi</label>
-                                <input 
-                                    type="text" 
+                                <input
+                                    type="text"
                                     className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-moto-accent outline-none"
                                     value={formData.emergencyContact}
-                                    onChange={(e) => setFormData({...formData, emergencyContact: e.target.value})}
+                                    onChange={(e) => setFormData({ ...formData, emergencyContact: e.target.value })}
                                     placeholder="Yakınlık Derecesi / İsim"
                                 />
                             </div>
 
                             <div>
-                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1 flex items-center gap-1"><FileText className="w-3 h-3"/> Tıbbi Notlar</label>
-                                <textarea 
+                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1 flex items-center gap-1"><FileText className="w-3 h-3" /> Tıbbi Notlar</label>
+                                <textarea
                                     className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-moto-accent outline-none h-24 resize-none"
                                     value={formData.medicalNotes}
-                                    onChange={(e) => setFormData({...formData, medicalNotes: e.target.value})}
+                                    onChange={(e) => setFormData({ ...formData, medicalNotes: e.target.value })}
                                     placeholder="Alerjiler, Kronik Rahatsızlıklar vb."
                                 />
                             </div>
@@ -159,7 +159,7 @@ Not: ${formData.medicalNotes}`;
                                 <div className="header bg-red-600 text-white font-black text-xl py-2 rounded mb-4 uppercase tracking-wider flex items-center justify-center gap-2">
                                     <AlertTriangle className="w-6 h-6 fill-white text-red-600" /> ACİL DURUM
                                 </div>
-                                
+
                                 {qrUrl ? (
                                     <img src={qrUrl} alt="QR Code" className="mx-auto w-40 h-40 border-2 border-black p-1 rounded" />
                                 ) : (
@@ -179,7 +179,7 @@ Not: ${formData.medicalNotes}`;
                                         </p>
                                     )}
                                 </div>
-                                
+
                                 <div className="text-[8px] text-gray-400 mt-2 font-mono uppercase tracking-widest">Powered by MotoVibe Life Saver</div>
                             </div>
                         </div>

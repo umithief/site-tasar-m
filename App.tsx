@@ -411,7 +411,7 @@ export const App: React.FC = () => {
                 <MobileProductDetail product={selectedProduct} onAddToCart={addToCart} onNavigate={navigateTo} onOpenCart={() => setIsCartOpen(true)} /> :
                 <ProductDetail product={selectedProduct} allProducts={products} onAddToCart={addToCart} onNavigate={navigateTo} onProductClick={(p) => navigateTo('product-detail', p)} onCompare={toggleCompare} isCompared={compareList.some(p => p._id === selectedProduct?._id)} />;
             case 'favorites': return <Favorites products={products} favoriteIds={favoriteIds} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onNavigate={navigateTo} />;
-            case 'routes': return <MobileRoutes />;
+            case 'routes': return isMobile ? <MobileRoutes /> : <RouteExplorer user={user} onOpenAuth={() => navigateTo('auth')} onStartRide={handleStartRide} />;
             case 'meetup': return <MotoMeetup user={user} onOpenAuth={() => navigateTo('auth')} onNavigate={navigateTo} />;
             case 'service-finder': return <ServiceFinder onNavigate={navigateTo} />;
             case 'ride-mode': return <RideMode route={activeRoute} onNavigate={navigateTo} />;

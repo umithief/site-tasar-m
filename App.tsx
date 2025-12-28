@@ -383,7 +383,7 @@ export const App: React.FC = () => {
         switch (view) {
             case 'home': return <Home onNavigate={navigateTo} />;
             case 'showcase': return <Showcase products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
-            case 'shop': return isMobileMenuOpen || window.innerWidth < 768 ? <MobileShop /> : <Shop products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} initialCategory={initialShopCategory} />;
+            case 'shop': return isMobileMenuOpen || window.innerWidth < 768 ? <MobileShop onNavigate={navigateTo} /> : <Shop products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} initialCategory={initialShopCategory} />;
             case 'auth': return <AuthPage onNavigate={navigateTo} onLoginSuccess={async () => {
                 const u = await authService.getCurrentUser();
                 if (u) {

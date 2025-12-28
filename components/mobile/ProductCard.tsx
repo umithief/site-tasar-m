@@ -7,9 +7,10 @@ import { notify } from '../../services/notificationService';
 
 interface ProductCardProps {
     product: Product;
+    onClick?: () => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
+const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
     const addToCart = useCartStore((state) => state.addToCart);
 
     const handleAddToCart = async (e: React.MouseEvent) => {
@@ -29,6 +30,7 @@ const ProductCard: React.FC<ProductCardProps> = ({ product }) => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             whileTap={{ scale: 0.98 }}
+            onClick={onClick}
             className="group relative bg-zinc-900 rounded-2xl overflow-hidden border border-zinc-800"
         >
             {/* Image Area */}

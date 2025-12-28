@@ -6,7 +6,7 @@ import ProductCard from './ProductCard';
 
 const CATEGORIES = ["Tümü", "Performans", "Ekipman", "Bakım", "Aksesuar"];
 
-export const MobileShop = () => {
+export const MobileShop = ({ onNavigate }: { onNavigate: (view: any, data?: any) => void }) => {
     const { data: products, isLoading } = useProducts();
     const [searchQuery, setSearchQuery] = useState("");
     const [activeCategory, setActiveCategory] = useState("Tümü");
@@ -67,7 +67,11 @@ export const MobileShop = () => {
                 ) : (
                     <div className="grid grid-cols-2 gap-4">
                         {filteredProducts.map((product) => (
-                            <ProductCard key={product._id} product={product} />
+                            <ProductCard
+                                key={product._id}
+                                product={product}
+                                onClick={() => onNavigate('product-detail', product)}
+                            />
                         ))}
                     </div>
                 )}

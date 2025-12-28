@@ -18,6 +18,7 @@ import { ToastType, ToastContainer, ToastMessage } from './components/Toast';
 import { RideMode } from './components/RideMode';
 import { MotoTool } from './components/MotoTool';
 import { RouteExplorer } from './components/RouteExplorer';
+import { MobileRoutes } from './components/mobile/MobileRoutes';
 import { MotoMeetup } from './components/MotoMeetup';
 import { FlyToCart } from './components/FlyToCart';
 import { Blog } from './components/Blog';
@@ -410,7 +411,7 @@ export const App: React.FC = () => {
                 <MobileProductDetail product={selectedProduct} onAddToCart={addToCart} onNavigate={navigateTo} onOpenCart={() => setIsCartOpen(true)} /> :
                 <ProductDetail product={selectedProduct} allProducts={products} onAddToCart={addToCart} onNavigate={navigateTo} onProductClick={(p) => navigateTo('product-detail', p)} onCompare={toggleCompare} isCompared={compareList.some(p => p._id === selectedProduct?._id)} />;
             case 'favorites': return <Favorites products={products} favoriteIds={favoriteIds} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onNavigate={navigateTo} />;
-            case 'routes': return <RouteExplorer user={user} onOpenAuth={() => navigateTo('auth')} onStartRide={handleStartRide} />;
+            case 'routes': return <MobileRoutes />;
             case 'meetup': return <MotoMeetup user={user} onOpenAuth={() => navigateTo('auth')} onNavigate={navigateTo} />;
             case 'service-finder': return <ServiceFinder onNavigate={navigateTo} />;
             case 'ride-mode': return <RideMode route={activeRoute} onNavigate={navigateTo} />;

@@ -315,18 +315,33 @@ export interface Route {
   title: string;
   description: string;
   image: string;
+  images?: string[]; // Gallery
   videoUrl?: string; // Tanıtım videosu (MP4 veya YouTube)
   difficulty: 'Kolay' | 'Orta' | 'Zor' | 'Extreme';
+  difficultyMetrics?: {
+    technical: number;
+    scenery: number;
+    speed: number;
+  };
   distance: string;
-  duration: string;
+  estimatedTime: string;
   location: string;
+  weatherPoint?: string;
   bestSeason: string;
+  terrain?: string[];
+  stats?: {
+    curves: number;
+    roadQuality: number;
+    traffic: number;
+  };
+  riderCount?: number;
   tags: string[];
-  coordinates?: { lat: number; lng: number }; // Başlangıç noktası veya merkez
-  path?: { lat: number; lng: number }[]; // Rota çizimi için koordinat dizisi
+  coordinates?: { lat: number; lng: number }[]; // Array of coordinates for drawing
+  path?: { lat: number; lng: number }[]; // Legacy support
   tips?: string[]; // Sürüş ipuçları
   authorId?: string;
   authorName?: string;
+  isFeatured?: boolean;
 }
 
 export interface MusicTrack {

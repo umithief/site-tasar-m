@@ -640,258 +640,184 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
     const MAX_RPM = 13000;
     const REDLINE_RPM = 11000;
     const rpmPercentage = Math.min(rpm / MAX_RPM, 1);
-    const radius = 120;
-    const circumference = 2 * Math.PI * radius;
-    const offset = circumference - (rpmPercentage * circumference * 0.75);
+
+    // Bottom Dashboard Gauge
+    const dashRadius = 36;
+    const dashCircumference = 2 * Math.PI * dashRadius;
+    const dashOffset = dashCircumference - (rpmPercentage * dashCircumference);
 
     return (
         <div className="fixed inset-0 z-[100] bg-black text-white flex flex-col font-sans select-none overflow-hidden h-[100dvh]">
 
-            {/* --- MAP BACKGROUND (With HUD Overlay) --- */}
+            {/* --- MAP BACKGROUND (Clean & Full) --- */}
             <div className="absolute inset-0 z-0 overflow-hidden">
-                {/* Dark Map Layer */}
-                <div ref={mapContainerRef} className="w-full h-full brightness-[0.7] contrast-125 grayscale-[0.2]" />
-
-                {/* TECH GRID OVERLAY */}
-                <div className="absolute inset-0 z-10 pointer-events-none opacity-20"
-                    style={{
-                        backgroundImage: `linear-gradient(rgba(0, 243, 255, 0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 243, 255, 0.2) 1px, transparent 1px)`,
-                        backgroundSize: '40px 40px',
-                        maskImage: 'radial-gradient(circle, black 30%, transparent 80%)'
-                    }}>
-                </div>
-
-                {/* VIGNETTE & SCANLINE */}
-                <div className="absolute inset-0 z-10 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_40%,#000000_100%)]"></div>
-                <div className="absolute inset-0 z-10 pointer-events-none bg-[linear-gradient(to_bottom,rgba(0,243,255,0.03)_50%,rgba(0,0,0,0)_50%)] bg-[length:100%_4px]"></div>
+                <div ref={mapContainerRef} className="w-full h-full brightness-[0.8] contrast-110" />
+                {/* Subtle vignette for UI readability */}
+                <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/90 to-transparent pointer-events-none z-10"></div>
+                <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/95 via-black/80 to-transparent pointer-events-none z-10"></div>
             </div>
 
             {/* --- HIDDEN YOUTUBE --- */}
             <div id="youtube-player" className="absolute top-0 left-0 opacity-0 pointer-events-none" style={{ width: 1, height: 1 }}></div>
 
-            {/* --- TOP HUD BAR --- */}
-            <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-b from-black via-black/80 to-transparent z-50 flex justify-between items-start px-6 pt-safe-top pointer-events-none">
-                {/* Left: GPS Status */}
-                <div className="pointer-events-auto">
+            {/* --- COMPACT TOP BAR (Transparent) --- */}
+            <div className="absolute top-0 left-0 right-0 h-20 z-50 flex justify-between items-start px-6 pt-safe-top pointer-events-none">
+                <div className="pointer-events-auto mt-2">
                     <button
                         onClick={toggleGps}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-full backdrop-blur-md border shadow-lg transition-all active:scale-95 ${isGpsEnabled
-                            ? 'bg-[#1A1A17]/80 border-green-500/30'
-                            : 'bg-red-900/40 border-red-500/50'
+                        className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md shadow-lg transition-all active:scale-95 ${isGpsEnabled
+                            ? 'bg-[#1A1A17]/80 text-green-500 border border-green-500/30'
+                            : 'bg-red-900/60 text-white border border-red-500/50 animate-pulse'
                             }`}
                     >
                         {isGpsEnabled ? (
-                            <Crosshair className={`w-5 h-5 ${gpsStatus === 'active' ? 'text-green-500' : 'text-yellow-500 animate-pulse'}`} />
+                            <Crosshair className={`w-5 h-5`} />
                         ) : (
-                            <Power className="w-5 h-5 text-red-500" />
+                            <Power className="w-5 h-5" />
                         )}
-                        <span className="text-xs font-bold font-mono tracking-widest text-white/80">
-                            {isGpsEnabled ? (gpsStatus === 'active' ? 'GPS AKTİF' : 'ARANIYOR') : 'GPS KAPALI'}
-                        </span>
                     </button>
                 </div>
 
-                {/* Center: Clock */}
-                <div className="absolute left-1/2 -translate-x-1/2 top-safe-top mt-1">
-                    <div className="bg-[#1A1A17]/90 px-6 py-2 rounded-2xl border border-white/10 shadow-2xl backdrop-blur-xl">
-                        <span className="text-3xl font-display font-bold text-white tracking-widest drop-shadow-[0_0_10px_rgba(255,255,255,0.2)]">
-                            {time.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
-                        </span>
-                    </div>
+                <div className="absolute left-1/2 -translate-x-1/2 top-safe-top mt-3">
+                    <span className="text-xl font-display font-bold text-white tracking-widest drop-shadow-md opacity-90">
+                        {time.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+                    </span>
                 </div>
 
-                {/* Right: Exit */}
-                <div className="pointer-events-auto">
+                <div className="pointer-events-auto mt-2">
                     <button
                         onClick={() => onNavigate('home')}
-                        className="w-12 h-12 flex items-center justify-center rounded-full bg-[#1A1A17]/80 border border-white/10 text-white/70 hover:bg-red-600 hover:text-white hover:border-red-500 transition-colors shadow-lg active:scale-95"
+                        className="w-10 h-10 flex items-center justify-center rounded-full bg-[#1A1A17]/80 border border-white/10 text-white/70 hover:bg-red-600 hover:text-white hover:border-red-500 transition-colors shadow-lg active:scale-95"
                     >
-                        <X className="w-6 h-6" />
+                        <X className="w-5 h-5" />
                     </button>
                 </div>
             </div>
 
-            {/* --- GPS ACTIVATION OVERLAY --- */}
+            {/* --- GPS OVERLAY --- */}
             {!isGpsEnabled && !isDemoMode && (
                 <div className="absolute inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md">
-                    <div className="flex flex-col items-center gap-6 p-8 bg-[#1A1A17] border border-moto-accent/30 rounded-3xl shadow-[0_0_50px_rgba(0,0,0,0.8)] text-center max-w-sm mx-4">
-                        <div className="w-24 h-24 bg-black rounded-full flex items-center justify-center border-2 border-white/10 relative shadow-2xl">
-                            <div className="absolute inset-0 rounded-full border-2 border-moto-accent/50 opacity-20 animate-ping"></div>
-                            <Navigation className="w-10 h-10 text-moto-accent" />
-                        </div>
-
-                        <div>
-                            <h3 className="text-2xl font-display font-bold text-white mb-2">SÜRÜŞ MODU</h3>
-                            <p className="text-gray-400 text-sm leading-relaxed">Hız, konum ve rota takibi için GPS bağlantısı gereklidir.</p>
-                        </div>
-
+                    <div className="flex flex-col items-center gap-6 p-8 bg-[#1A1A17] border border-moto-accent/30 rounded-3xl shadow-2xl text-center max-w-xs mx-4">
+                        <Navigation className="w-12 h-12 text-moto-accent animate-bounce" />
+                        <h3 className="text-xl font-bold text-white">GPS Gerekli</h3>
                         <div className="flex flex-col gap-3 w-full">
-                            <button
-                                onClick={toggleGps}
-                                className="w-full py-4 bg-moto-accent hover:bg-moto-accent-hover text-black font-bold rounded-2xl shadow-[0_0_20px_rgba(242,166,25,0.3)] transition-all active:scale-95 flex items-center justify-center gap-2"
-                            >
-                                <Crosshair className="w-5 h-5" />
-                                GPS'İ AÇ
-                            </button>
-
-                            <button
-                                onClick={() => setIsDemoMode(true)}
-                                className="w-full py-4 bg-white/5 hover:bg-white/10 text-gray-400 hover:text-white font-bold rounded-2xl border border-white/10 transition-all active:scale-95 text-xs uppercase tracking-widest"
-                            >
-                                SİMÜLASYON MODU
-                            </button>
+                            <button onClick={toggleGps} className="w-full py-3 bg-moto-accent text-black font-bold rounded-xl active:scale-95">GPS AÇ</button>
+                            <button onClick={() => setIsDemoMode(true)} className="w-full py-3 bg-white/10 text-white font-bold rounded-xl active:scale-95">SİMÜLASYON</button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* --- NAV MESSAGE BANNER --- */}
+            {/* --- NAV MESSAGE (Compact Pill) --- */}
             {navMessage && (
-                <div className="absolute top-28 left-1/2 -translate-x-1/2 z-40 pointer-events-none w-full px-4 flex justify-center">
-                    <div className="bg-[#1A1A17]/90 backdrop-blur-xl border border-moto-accent/30 px-6 py-2 rounded-full shadow-[0_0_30px_rgba(242,166,25,0.2)] flex items-center gap-3 animate-in slide-in-from-top-4 duration-500">
-                        <div className="w-2 h-2 bg-moto-accent rounded-full animate-pulse shadow-[0_0_10px_#F2A619]"></div>
-                        <span className="text-xs font-bold uppercase tracking-widest text-white/90 truncate max-w-[200px]">{navMessage}</span>
+                <div className="absolute top-20 left-1/2 -translate-x-1/2 z-40 pointer-events-none w-full px-4 flex justify-center">
+                    <div className="bg-[#1A1A17]/90 backdrop-blur-md border border-moto-accent/30 px-4 py-1.5 rounded-full shadow-lg flex items-center gap-2 animate-in slide-in-from-top-2">
+                        <div className="w-1.5 h-1.5 bg-moto-accent rounded-full animate-pulse"></div>
+                        <span className="text-[10px] font-bold uppercase tracking-wider text-white/90 truncate max-w-[200px]">{navMessage}</span>
                     </div>
                 </div>
             )}
 
-            {/* --- MAIN DASHBOARD (PRO HUD) --- */}
-            <div className="absolute bottom-36 left-0 right-0 z-30 flex flex-col items-center justify-center pointer-events-none">
-                <div className="relative w-[320px] aspect-square flex items-center justify-center">
-
-                    {/* BG GLOW */}
-                    <div className="absolute inset-0 bg-moto-accent/5 blur-[100px] rounded-full"></div>
-
-                    {/* SVG GAUGE */}
-                    <svg className="absolute inset-0 w-full h-full transform rotate-[135deg] drop-shadow-2xl" viewBox="0 0 260 260">
-                        {/* Background & Ticks */}
-                        <circle cx="130" cy="130" r={radius} fill="none" stroke="#111" strokeWidth="16" strokeDasharray={circumference * 0.75 + " " + circumference} strokeLinecap="round" />
-
-                        {/* Active RPM Arc */}
-                        <circle
-                            cx="130" cy="130" r={radius} fill="none"
-                            stroke={rpm > REDLINE_RPM ? '#ef4444' : '#F2A619'}
-                            strokeWidth="16"
-                            strokeDasharray={circumference}
-                            strokeDashoffset={offset}
-                            strokeLinecap="round"
-                            className={`transition-all ease-linear duration-100 ${rpm > REDLINE_RPM ? 'drop-shadow-[0_0_15px_rgba(239,68,68,0.8)]' : 'drop-shadow-[0_0_15px_rgba(242,166,25,0.6)]'}`}
-                        />
-                        {/* Ticks */}
-                        {Array.from({ length: 40 }).map((_, i) => {
-                            const angle = (i / 39) * 270;
-                            const isMajor = i % 5 === 0;
-                            return (
-                                <line
-                                    key={i}
-                                    x1="130" y1="12" x2="130" y2={isMajor ? "28" : "20"}
-                                    stroke={i > 32 ? '#ef4444' : 'rgba(255,255,255,0.3)'}
-                                    strokeWidth={isMajor ? "3" : "1"}
-                                    transform={`rotate(${angle} 130 130)`}
-                                />
-                            )
-                        })}
-                    </svg>
-
-                    {/* CENTRAL DATA CLUSTER */}
-                    <div className="relative z-50 text-center flex flex-col items-center justify-center mt-6">
-                        <div className="relative">
-                            <div className="text-[9rem] font-display font-black text-white leading-[0.8] tracking-tighter tabular-nums drop-shadow-2xl filter contrast-125">
-                                {Math.floor(speed)}
-                            </div>
-                            <div className="text-xl font-bold text-moto-accent tracking-[0.3em] opacity-90 mt-2">KM/H</div>
-                        </div>
-
-                        {/* GEAR INDICATOR */}
-                        <div className={`mt-6 w-20 h-20 border-2 ${gear === 'N' ? 'border-green-500 bg-green-500/10 text-green-500 shadow-[0_0_30px_rgba(34,197,94,0.4)]' : 'border-white/20 bg-[#1A1A17]/50 text-white shadow-xl'} rounded-2xl skew-x-[-6deg] flex items-center justify-center backdrop-blur-md`}>
-                            <span className="skew-x-[6deg] text-5xl font-display font-bold">{gear}</span>
-                        </div>
+            {/* --- LEFT: TURN INSTRUCTION (Compact) --- */}
+            {nextTurn && (
+                <div className="absolute top-32 left-4 z-40 bg-[#1A1A17]/90 backdrop-blur-lg border-l-4 border-moto-accent rounded-r-xl p-4 shadow-xl max-w-[160px] animate-in slide-in-from-left-4">
+                    <div className="text-3xl font-display font-bold text-white leading-none">
+                        {nextTurn.distance > 1000 ? (nextTurn.distance / 1000).toFixed(1) : Math.round(nextTurn.distance)}
+                        <span className="text-sm text-gray-400 ml-1 font-sans">{nextTurn.distance > 1000 ? 'km' : 'm'}</span>
                     </div>
+                    <div className="text-xs text-gray-300 font-bold mt-1 uppercase leading-tight line-clamp-2">{nextTurn.text}</div>
+                    <Navigation className="w-8 h-8 text-white/10 absolute top-2 right-2" />
                 </div>
-            </div>
+            )}
 
-            {/* --- LEFT SIDE: TURN-BY-TURN NAV --- */}
-            <div className={`absolute z-40 transition-all duration-500 ${nextTurn ? 'translate-x-0 opacity-100' : '-translate-x-20 opacity-0 pointer-events-none'} top-36 left-4 max-w-[200px]`}>
-                {nextTurn && (
-                    <div className="bg-[#1A1A17]/90 backdrop-blur-xl border-l-4 border-moto-accent rounded-r-2xl p-5 shadow-2xl relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity"><Navigation className="w-16 h-16 text-white" /></div>
-                        <div className="flex flex-col gap-1 relative z-10">
-                            <div className="text-5xl font-display font-bold text-white leading-none tracking-tight">
-                                {nextTurn.distance > 1000 ? (nextTurn.distance / 1000).toFixed(1) : Math.round(nextTurn.distance)}
-                                <span className="text-lg text-gray-400 ml-1 font-sans font-bold">{nextTurn.distance > 1000 ? 'KM' : 'M'}</span>
-                            </div>
-                            <div className="text-sm text-gray-400 font-bold leading-tight mt-2 uppercase tracking-wide line-clamp-2">{nextTurn.text}</div>
-                        </div>
-                    </div>
-                )}
-            </div>
-
-            {/* --- RIGHT SIDE: TELEMETRY ICONS --- */}
-            <div className="absolute top-36 right-4 z-40 flex flex-col gap-4 items-end pointer-events-auto">
+            {/* --- RIGHT: TELEMETRY ICONS (Compact) --- */}
+            <div className="absolute top-32 right-4 z-40 flex flex-col gap-3 pointer-events-auto">
                 {!isDemoMode && (route || activeTarget) && (
-                    <button onClick={() => setIsDemoMode(true)} className="w-14 h-14 bg-moto-accent text-[#1A1A17] rounded-2xl flex items-center justify-center shadow-[0_0_20px_rgba(242,166,25,0.4)] transition-all hover:scale-110 active:scale-95 border-2 border-white/20">
-                        <PlayCircle className="w-8 h-8 fill-current" />
+                    <button onClick={() => setIsDemoMode(true)} className="w-10 h-10 bg-moto-accent text-[#1A1A17] rounded-xl flex items-center justify-center shadow-lg active:scale-95">
+                        <PlayCircle className="w-6 h-6 fill-current" />
                     </button>
                 )}
-
-                {/* Telemetry Toggle */}
                 <button
                     onClick={() => setShowTelemetry(!showTelemetry)}
-                    className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-all shadow-xl backdrop-blur-md border ${showTelemetry ? 'bg-white text-black border-white' : 'bg-[#1A1A17]/60 border-white/10 text-gray-400'}`}
+                    className={`w-10 h-10 rounded-xl flex items-center justify-center shadow-lg backdrop-blur-md border active:scale-95 ${showTelemetry ? 'bg-white text-black border-white' : 'bg-[#1A1A17]/60 border-white/10 text-gray-400'}`}
                 >
-                    <Activity className="w-6 h-6" />
+                    <Activity className="w-5 h-5" />
                 </button>
             </div>
 
-            {/* --- TELEMETRY DRAWER (Right) --- */}
-            <div className={`absolute top-60 right-4 w-40 z-40 transition-all duration-500 transform ${showTelemetry ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0 pointer-events-none'}`}>
-                <div className="flex flex-col gap-3">
+            {/* --- TELEMETRY DATA (Right Side) --- */}
+            <div className={`absolute top-56 right-4 w-32 z-40 transition-all duration-300 transform ${showTelemetry ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0 pointer-events-none'}`}>
+                <div className="flex flex-col gap-2">
                     {[
                         { label: 'G-Force', val: telemetry.gForce.toFixed(1), unit: 'G', icon: Move, color: 'text-moto-accent', border: 'border-moto-accent' },
                         { label: 'Rakım', val: Math.round(telemetry.altitude), unit: 'm', icon: Mountain, color: 'text-blue-500', border: 'border-blue-500' },
-                        { label: 'Eğim', val: telemetry.slope, unit: '%', icon: TrendingUp, color: 'text-yellow-500', border: 'border-yellow-500' }
                     ].map((item, i) => (
-                        <div key={i} className={`bg-[#1A1A17]/80 backdrop-blur-xl border-l-4 ${item.border} rounded-r-xl p-3 flex flex-col items-center justify-center shadow-lg`}>
-                            <item.icon className={`w-4 h-4 ${item.color} mb-1`} />
-                            <span className="text-xl font-mono font-bold text-white">{item.val}<span className="text-[10px] text-gray-500 ml-1">{item.unit}</span></span>
-                            <span className="text-[8px] text-gray-500 uppercase font-bold tracking-widest">{item.label}</span>
+                        <div key={i} className={`bg-[#1A1A17]/80 backdrop-blur-md border-l-2 ${item.border} rounded-r-lg p-2 shadow-lg`}>
+                            <div className="flex items-center gap-2">
+                                <item.icon className={`w-3 h-3 ${item.color}`} />
+                                <span className="text-sm font-mono font-bold text-white">{item.val}<span className="text-[9px] text-gray-500 ml-0.5">{item.unit}</span></span>
+                            </div>
                         </div>
                     ))}
                 </div>
             </div>
 
-            {/* --- BOTTOM CONTROL DECK --- */}
+            {/* --- CONSOLIDATED BOTTOM DASHBOARD --- */}
             <div className="absolute bottom-6 left-4 right-4 z-50 pointer-events-auto">
-                <div className="bg-[#1A1A17]/90 backdrop-blur-2xl border border-white/10 rounded-[2rem] p-2 flex items-center gap-2 shadow-[0_0_40px_rgba(0,0,0,0.6)]">
+                <div className="bg-[#111]/95 backdrop-blur-xl border border-white/10 rounded-[2rem] p-1.5 shadow-[0_0_50px_rgba(0,0,0,0.8)] flex items-center justify-between min-h-[5.5rem]">
 
-                    {/* Quick Nav Button */}
-                    <button
-                        onClick={() => setShowNav(true)}
-                        className="w-20 h-20 rounded-[1.5rem] bg-[#222] border border-white/5 flex flex-col items-center justify-center gap-1 hover:bg-[#2a2a2a] active:scale-95 transition-all text-gray-400 hover:text-white"
-                    >
-                        <Navigation className="w-8 h-8 mb-1" />
-                        <span className="text-[9px] font-bold uppercase tracking-wider">Rota</span>
-                    </button>
-
-                    {/* Music Control Island */}
-                    <div className="flex-1 bg-black/40 rounded-[1.5rem] p-3 flex items-center justify-between border border-white/5 relative overflow-hidden">
-                        {/* Artwork / Info */}
-                        <div className="flex-1 min-w-0 px-2">
-                            <div className="flex items-center gap-3 mb-1">
-                                <div className={`w-2 h-2 rounded-full ${isPlaying ? 'bg-green-500 animate-pulse' : 'bg-gray-700'}`}></div>
-                                <div className="text-xs font-bold text-moto-accent uppercase tracking-widest truncate">{playlist.length > 0 ? playlist[currentTrackIndex].artist : 'MOTOVIBE'}</div>
+                    {/* 1. SPEED & RPM CLUSTER (Left) */}
+                    <div className="flex items-center gap-1 pl-2 pr-4 border-r border-white/5">
+                        <div className="relative w-20 h-20 flex items-center justify-center">
+                            {/* RPM Ring */}
+                            <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 80 80">
+                                <circle cx="40" cy="40" r={dashRadius} fill="none" stroke="#222" strokeWidth="6" />
+                                <circle
+                                    cx="40" cy="40" r={dashRadius} fill="none"
+                                    stroke={rpm > REDLINE_RPM ? '#ef4444' : '#F2A619'}
+                                    strokeWidth="6"
+                                    strokeDasharray={dashCircumference}
+                                    strokeDashoffset={dashOffset}
+                                    strokeLinecap="round"
+                                    className="transition-all duration-100 ease-linear"
+                                />
+                            </svg>
+                            {/* Speed Value */}
+                            <div className="flex flex-col items-center">
+                                <span className="text-3xl font-display font-black text-white leading-none tracking-tighter">{Math.floor(speed)}</span>
+                                <span className="text-[8px] font-bold text-gray-500">KMH</span>
                             </div>
-                            <div className="text-lg font-bold text-white truncate leading-tight w-full">{playlist.length > 0 ? playlist[currentTrackIndex].title : 'Hazır...'}</div>
                         </div>
 
-                        {/* Large Controls */}
-                        <div className="flex items-center gap-2">
-                            <button onClick={handlePrevSong} className="w-12 h-12 flex items-center justify-center rounded-full hover:bg-white/10 active:scale-95 transition-all text-white"><SkipBack className="w-6 h-6 fill-current" /></button>
-                            <button onClick={togglePlay} className="w-14 h-14 bg-white text-black rounded-full flex items-center justify-center active:scale-95 shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all transform hover:scale-105">
-                                {isPlaying ? <Pause className="w-6 h-6 fill-current" /> : <PlayCircle className="w-7 h-7 fill-current ml-0.5" />}
-                            </button>
-                            <button onClick={handleNextSong} className="w-12 h-12 flex items-center justify-center rounded-full hover:bg-white/10 active:scale-95 transition-all text-white"><SkipForward className="w-6 h-6 fill-current" /></button>
+                        {/* Gear */}
+                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-xl font-black font-display border overflow-hidden ${gear === 'N' ? 'bg-green-900/40 text-green-400 border-green-500/30' : 'bg-white/5 text-white border-white/10'}`}>
+                            {gear}
                         </div>
+                    </div>
+
+                    {/* 2. MUSIC CONTROL (Center-Right Expansive) */}
+                    <div className="flex-1 flex items-center justify-between px-3 min-w-0">
+                        <div className="flex flex-col min-w-0 mr-2">
+                            <span className="text-xs font-bold text-white truncate leading-tight">{playlist.length > 0 ? playlist[currentTrackIndex].title : 'MOTOVIBE'}</span>
+                            <span className="text-[10px] font-medium text-moto-accent truncate">{playlist.length > 0 ? playlist[currentTrackIndex].artist : 'Ready'}</span>
+                        </div>
+
+                        <div className="flex items-center gap-1">
+                            <button onClick={togglePlay} className="w-12 h-12 bg-white text-black rounded-full flex items-center justify-center active:scale-95 shadow-lg">
+                                {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <PlayCircle className="w-5 h-5 fill-current ml-0.5" />}
+                            </button>
+                            <button onClick={handleNextSong} className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 text-gray-400 active:scale-95">
+                                <SkipForward className="w-5 h-5" />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* 3. QUICK ACTIONS (Far Right) */}
+                    <div className="pl-2 border-l border-white/5">
+                        <button onClick={() => setShowNav(true)} className="w-14 h-14 bg-[#222] rounded-[1.25rem] flex flex-col items-center justify-center gap-0.5 border border-white/5 active:scale-95 text-gray-400 hover:text-white">
+                            <Navigation className="w-5 h-5" />
+                            <span className="text-[8px] font-bold uppercase">ROTA</span>
+                        </button>
                     </div>
 
                 </div>
@@ -942,7 +868,6 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                     </div>
                 </div>
             )}
-
         </div>
     );
 };

@@ -41,8 +41,8 @@ export const CompareModal: React.FC<CompareModalProps> = ({ isOpen, onClose, pro
                 {/* Comparison Grid */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-7xl mx-auto pb-20">
                     {displayProducts.map((product, idx) => (
-                        <div key={product.id} className="relative bg-[#0f0f0f] border border-white/10 rounded-3xl overflow-hidden flex flex-col">
-                            
+                        <div key={product._id} className="relative bg-[#0f0f0f] border border-white/10 rounded-3xl overflow-hidden flex flex-col">
+
                             {/* VS Badge for aesthetics */}
                             {idx < displayProducts.length - 1 && (
                                 <div className="hidden md:flex absolute top-1/2 -right-9 z-10 w-12 h-12 bg-black border border-white/20 rounded-full items-center justify-center text-moto-accent font-display font-bold text-xl shadow-xl">
@@ -77,9 +77,9 @@ export const CompareModal: React.FC<CompareModalProps> = ({ isOpen, onClose, pro
                                         <span className="text-yellow-500 font-bold flex items-center gap-1"><StarRating rating={product.rating} size={14} /> {product.rating}</span>
                                     </div>
                                     <div className="h-1.5 w-full bg-gray-800 rounded-full overflow-hidden">
-                                        <motion.div 
-                                            initial={{ width: 0 }} 
-                                            animate={{ width: `${(product.rating / 5) * 100}%` }} 
+                                        <motion.div
+                                            initial={{ width: 0 }}
+                                            animate={{ width: `${(product.rating / 5) * 100}%` }}
                                             transition={{ duration: 1, delay: 0.2 }}
                                             className="h-full bg-yellow-500"
                                         ></motion.div>

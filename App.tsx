@@ -63,13 +63,24 @@ import { ProductDetail } from './components/ProductDetail';
 import { SocketProvider } from './context/SocketContext';
 import { MobileLayout } from './components/mobile/MobileLayout';
 import { MobileExplore } from './components/mobile/MobileExplore';
+
 import { ReelsPage } from './components/reels/ReelsPage';
+import { MobileProductDetail } from './components/mobile/MobileProductDetail';
+import { CartBottomSheet } from './components/mobile/CartBottomSheet';
 
 export const App: React.FC = () => {
     const [view, setView] = useState<ViewState>('home');
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const handleResize = () => setIsMobile(window.innerWidth < 768);
+        handleResize(); // Check init
+        window.addEventListener('resize', handleResize);
+        return () => window.removeEventListener('resize', handleResize);
+    }, []);
 
     const [products, setProducts] = useState<Product[]>([]);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -381,7 +392,9 @@ export const App: React.FC = () => {
                     navigateTo('home');
                 }
             }} />;
-            case 'product-detail': return <ProductDetail product={selectedProduct} allProducts={products} onAddToCart={addToCart} onNavigate={navigateTo} onProductClick={(p) => navigateTo('product-detail', p)} onCompare={toggleCompare} isCompared={compareList.some(p => p._id === selectedProduct?._id)} />;
+            case 'product-detail': return isMobile ?
+                <MobileProductDetail product={selectedProduct} onAddToCart={addToCart} onNavigate={navigateTo} onOpenCart={() => setIsCartOpen(true)} /> :
+                <ProductDetail product={selectedProduct} allProducts={products} onAddToCart={addToCart} onNavigate={navigateTo} onProductClick={(p) => navigateTo('product-detail', p)} onCompare={toggleCompare} isCompared={compareList.some(p => p._id === selectedProduct?._id)} />;
             case 'favorites': return <Favorites products={products} favoriteIds={favoriteIds} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onNavigate={navigateTo} />;
             case 'routes': return <RouteExplorer user={user} onOpenAuth={() => navigateTo('auth')} onStartRide={handleStartRide} />;
             case 'meetup': return <MotoMeetup user={user} onOpenAuth={() => navigateTo('auth')} onNavigate={navigateTo} />;
@@ -450,15 +463,27 @@ export const App: React.FC = () => {
                     onLogin={(u) => { setUser(u); setIsAuthOpen(false); addToast('success', `Hoş geldin, ${u.name}`); }}
                 />
 
-                <CartDrawer
-                    isOpen={isCartOpen}
-                    onClose={() => setIsCartOpen(false)}
-                    items={cartItems}
-                    onUpdateQuantity={updateQuantity}
-                    onRemoveItem={(id) => setCartItems(prev => prev.filter(item => item._id !== id))}
-                    onCheckout={handleCheckout}
-                    user={user}
-                />
+                {isMobile ? (
+                    <CartBottomSheet
+                        isOpen={isCartOpen}
+                        onClose={() => setIsCartOpen(false)}
+                        items={cartItems}
+                        onUpdateQuantity={updateQuantity}
+                        onRemoveItem={(id) => setCartItems(prev => prev.filter(item => item._id !== id))}
+                        onCheckout={handleCheckout}
+                        user={user}
+                    />
+                ) : (
+                    <CartDrawer
+                        isOpen={isCartOpen}
+                        onClose={() => setIsCartOpen(false)}
+                        items={cartItems}
+                        onUpdateQuantity={updateQuantity}
+                        onRemoveItem={(id) => setCartItems(prev => prev.filter(item => item._id !== id))}
+                        onCheckout={handleCheckout}
+                        user={user}
+                    />
+                )}
 
                 <PaymentModal
                     isOpen={isPaymentOpen}
@@ -507,14 +532,11 @@ export const App: React.FC = () => {
                                 favoritesCount={favoriteIds.length}
                                 onCartClick={() => setIsCartOpen(true)}
                                 onFavoritesClick={() => navigateTo('favorites')}
-                                onSearch={() => navigateTo('shop')}
-                                user={user}
+                                onSearch={(query) => navigateTo('shop', query)}
                                 onOpenAuth={() => navigateTo('auth')}
-                                onLogout={() => { authService.logout(); setUser(null); }}
                                 onNavigate={navigateTo}
                                 currentView={view}
-                                colorTheme={colorTheme}
-                                onColorChange={setColorTheme}
+                                colorTheme={colorTheme} // Passed to standard Navbar if needed (future proofing)
                                 onToggleMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                             />
                         </div>

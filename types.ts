@@ -20,7 +20,7 @@ declare global {
 
 export type Language = 'tr' | 'en';
 
-export type ViewState = 'home' | 'shop' | 'routes' | 'blog' | 'forum' | 'riders' | 'favorites' | 'profile' | 'public-profile' | 'cart' | 'checkout' | 'auth' | 'admin' | 'product-detail' | 'ride-mode' | 'mototool' | 'about' | 'ai-assistant' | 'meetup' | 'service-finder' | 'valuation' | 'qr-generator' | 'vlog-map' | 'lifesaver' | 'social-hub' | 'showcase' | 'reels' | 'explore' | 'create' | 'garage';
+export type ViewState = 'home' | 'shop' | 'routes' | 'blog' | 'forum' | 'riders' | 'favorites' | 'profile' | 'public-profile' | 'cart' | 'checkout' | 'auth' | 'admin' | 'product-detail' | 'ride-mode' | 'mototool' | 'about' | 'ai-assistant' | 'meetup' | 'service-finder' | 'valuation' | 'qr-generator' | 'vlog-map' | 'lifesaver' | 'social-hub' | 'showcase' | 'reels' | 'explore' | 'create' | 'garage' | 'my-profile';
 
 
 export interface CategoryItem {
@@ -68,6 +68,7 @@ export interface Product {
   model3d?: string; // 3D Model URL (.glb)
   isEditorsChoice?: boolean; // Yeni: Editörün Seçimi
   isDealOfTheDay?: boolean; // Yeni: Günün Fırsatı
+  compatibleBikes?: string[]; // List of compatible bike models
 }
 
 export interface MotoVlog {
@@ -146,6 +147,7 @@ export interface User {
   coverImage?: string;
   followersCount?: number;
   followingCount?: number;
+  primaryBike?: string; // The user's primary bike model for compatibility checks
 }
 
 export interface OrderItem {
@@ -399,7 +401,7 @@ export interface NegotiationResult {
 
 export interface NegotiationOffer {
   _id: string;
-  productId: number;
+  productId: string;
   productName: string;
   productImage: string;
   originalPrice: number;

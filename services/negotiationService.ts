@@ -25,7 +25,7 @@ export const negotiationService = {
     async submitOffer(product: Product, offerPrice: number, user: User): Promise<NegotiationOffer> {
         const newOffer: NegotiationOffer = {
             _id: `neg_${Date.now()}`,
-            productId: Number(product._id) || 0, // Fallback if conversion fails
+            productId: product._id,
             productName: product.name,
             productImage: product.image,
             originalPrice: product.price,
@@ -80,7 +80,7 @@ export const negotiationService = {
     },
 
     // Kullanıcının belirli bir ürün için onaylanmış teklifi var mı kontrol et
-    async checkUserOffer(userId: string, productId: number): Promise<NegotiationOffer | null> {
+    async checkUserOffer(userId: string, productId: string): Promise<NegotiationOffer | null> {
         if (CONFIG.USE_MOCK_API) {
             await delay(300);
             const offers = getStorage<NegotiationOffer[]>(DB.NEGOTIATIONS, []);

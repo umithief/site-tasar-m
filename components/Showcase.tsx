@@ -24,7 +24,7 @@ interface ShowcaseProps {
     products: Product[];
     onAddToCart: (product: Product, event?: React.MouseEvent) => void;
     onProductClick: (product: Product) => void;
-    favoriteIds: number[];
+    favoriteIds: string[];
     onToggleFavorite: (product: Product) => void;
     onQuickView: (product: Product) => void;
     onCompare: (product: Product) => void;
@@ -195,7 +195,7 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                 onToggleFavorite={onToggleFavorite}
                 onQuickView={onQuickView}
                 onCompare={onCompare}
-                isCompared={(id) => compareList.some(p => p.id === id)}
+                isCompared={(id) => compareList.some(p => p._id === id)}
                 onViewAll={() => onNavigate('shop')}
             />
 
@@ -306,7 +306,7 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                     <div className="flex overflow-x-auto gap-3 pb-4 -mx-4 px-4 md:mx-0 md:px-0 md:pb-0 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-8 snap-x snap-mandatory no-scrollbar">
                         {displayProducts.map((product, idx) => (
                             <motion.div
-                                key={product.id}
+                                key={product._id}
                                 initial={{ opacity: 0, y: 30 }}
                                 whileInView={{ opacity: 1, y: 0 }}
                                 viewport={{ once: true }}
@@ -324,10 +324,10 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                                     onAddToCart={onAddToCart}
                                     onClick={() => onProductClick(product)}
                                     onQuickView={onQuickView}
-                                    isFavorite={favoriteIds.includes(product.id)}
+                                    isFavorite={favoriteIds.includes(product._id)}
                                     onToggleFavorite={onToggleFavorite}
                                     onCompare={onCompare}
-                                    isCompared={compareList.some(p => p.id === product.id)}
+                                    isCompared={compareList.some(p => p._id === product._id)}
                                 />
                             </motion.div>
                         ))}

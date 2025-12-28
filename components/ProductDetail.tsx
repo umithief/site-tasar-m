@@ -53,20 +53,20 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
             const trackView = async () => {
                 const user = await authService.getCurrentUser();
                 statsService.trackEvent('view_product', {
-                    productId: product.id,
+                    productId: product._id,
                     productName: product.name,
                     userId: user?._id || user?.id,
                     userName: user?.name
                 });
 
                 if (user && product.isNegotiable) {
-                    const offer = await negotiationService.checkUserOffer(user._id || user.id, product.id);
+                    const offer = await negotiationService.checkUserOffer(user._id || user.id, product._id);
                     if (offer) setActiveOffer(offer);
                 }
             };
             trackView();
         }
-    }, [product?.id]);
+    }, [product?._id]);
 
     const handleAddToCart = () => {
         if (!product) return;

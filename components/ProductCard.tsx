@@ -42,7 +42,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
     const handleShare = (e: React.MouseEvent) => {
         e.stopPropagation();
-        navigator.clipboard.writeText(`${window.location.origin}/product/${product.id}`);
+        navigator.clipboard.writeText(`${window.location.origin}/product/${product._id}`);
         // Assuming we can't easily access toast here without prop, but button feedback is enough or we could add local state
     };
 
@@ -100,8 +100,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                     <button
                         onClick={handleAddToCart}
                         className={`w-10 h-10 flex items-center justify-center rounded-xl transition-all duration-300 shadow-md flex-shrink-0 ${isAdded
-                                ? 'bg-green-500 text-white'
-                                : 'bg-gray-900 text-white hover:bg-moto-accent hover:scale-110 active:scale-95'
+                            ? 'bg-green-500 text-white'
+                            : 'bg-gray-900 text-white hover:bg-moto-accent hover:scale-110 active:scale-95'
                             }`}
                     >
                         <AnimatePresence mode="wait">

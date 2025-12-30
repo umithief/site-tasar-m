@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -11,13 +12,13 @@ import { useAuthStore } from '../../store/authStore';
 import { socialService } from '../../services/socialService';
 import { UserAvatar } from '../ui/UserAvatar';
 import { FollowButton } from './FollowButton';
-import { SocialPost } from '../../types';
+import { User, SocialPost, ViewState } from '../../types';
 import { useSocket } from '../../context/SocketContext';
 
 // --- Types & Interfaces ---
 interface ProfilePageProps {
     userId: string;
-    onNavigate?: (view: string, data?: any) => void;
+    onNavigate: (view: ViewState, data?: any) => void;
     onBack?: () => void;
 }
 
@@ -87,7 +88,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userId, onNavigate, on
 
     const handleMessage = () => {
         if (onNavigate) {
-            onNavigate('social-hub', { openChat: userId });
+            onNavigate('social-hub' as ViewState, { openChat: userId });
         }
     };
 
@@ -404,4 +405,3 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userId, onNavigate, on
         </div>
     );
 };
-

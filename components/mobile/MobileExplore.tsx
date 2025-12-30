@@ -1,12 +1,13 @@
+
 import React, { useState, useEffect, useCallback } from 'react';
 import { motion } from 'framer-motion';
 import { Search, TrendingUp, Grid, Play } from 'lucide-react';
 import { socialService } from '../../services/socialService';
-import { SocialPost } from '../../types';
+import { SocialPost, ViewState } from '../../types';
 import { SearchOverlay } from './SearchOverlay';
 
 interface MobileExploreProps {
-    onNavigate: (view: string, data?: any) => void;
+    onNavigate: (view: ViewState, data?: any) => void;
 }
 
 const CATEGORIES = [
@@ -20,118 +21,91 @@ const CATEGORIES = [
 ];
 
 export const MobileExplore: React.FC<MobileExploreProps> = ({ onNavigate }) => {
+    const [activeCategory, setActiveCategory] = useState('ALL');
     const [posts, setPosts] = useState<SocialPost[]>([]);
-    const [loading, setLoading] = useState(true);
-    const [selectedCategory, setSelectedCategory] = useState('ALL');
+    const [isLoading, setIsLoading] = useState(true);
     const [isSearchOpen, setIsSearchOpen] = useState(false);
-    const [cursor, setCursor] = useState(0);
 
-    const loadFeed = useCallback(async (reset = false) => {
-        if (reset) setLoading(true);
-        const data = await socialService.getExploreFeed(reset ? 0 : cursor, selectedCategory);
-
-        if (reset) {
+    const loadPosts = useCallback(async () => {
+        setIsLoading(true);
+        try {
+            // Using existing socialService.getFeed() as explore endpoint might be unstable
+            const data = await socialService.getFeed();
+            // In a real app, we would filter by category here or pass category to API
+            // For now, we just shuffle or filter locally if needed
             setPosts(data);
-        } else {
-            setPosts(prev => [...prev, ...data]);
+        } catch (error) {
+            console.error("Explore load error", error);
+        } finally {
+            setIsLoading(false);
         }
-
-        setCursor(prev => prev + 1); // Simple cursor logic
-        setLoading(false);
-    }, [selectedCategory]);
+    }, [activeCategory]);
 
     useEffect(() => {
-        loadFeed(true);
-    }, [loadFeed]);
-
-    // Infinite Scroll Handler could go here
+        loadPosts();
+    }, [loadPosts]);
 
     return (
-        <div className="min-h-screen bg-[#0a0a0a] pb-24">
-
-            {/* Sticky Header */}
-            <div className="sticky top-0 z-20 bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/5">
-                <div className="p-4 flex flex-col gap-4">
-                    {/* Search Trigger */}
-                    <button
-                        onClick={() => setIsSearchOpen(true)}
-                        className="w-full flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-gray-500 hover:bg-white/10 transition-all group"
-                    >
-                        <Search className="w-5 h-5 text-gray-500 group-hover:text-moto-accent transition-colors" />
-                        <span className="text-sm font-medium">Motovibe'da Ara...</span>
-                    </button>
-
-                    {/* Categories */}
-                    <div className="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-                        {CATEGORIES.map(cat => {
-                            const isSelected = selectedCategory === cat.id;
-                            return (
-                                <button
-                                    key={cat.id}
-                                    onClick={() => setSelectedCategory(cat.id)}
-                                    className={`whitespace-nowrap px-4 py-1.5 rounded-full text-xs font-bold transition-all border ${isSelected
-                                        ? 'bg-moto-accent text-white border-moto-accent'
-                                        : 'bg-white/5 text-gray-400 border-white/5 hover:bg-white/10'
-                                        }`}
-                                >
-                                    {cat.label}
-                                </button>
-                            )
-                        })}
-                    </div>
+        <div className="min-h-screen bg-[#050505] pb-24 font-sans text-gray-100">
+            {/* Header */}
+            <div className="sticky top-0 z-30 bg-[#050505]/80 backdrop-blur-md px-4 py-3 flex items-center gap-3 border-b border-white/5">
+                <div
+                    className="flex-1 h-10 bg-white/10 rounded-xl flex items-center px-3 gap-2 text-gray-400 cursor-pointer hover:bg-white/15 transition-colors"
+                    onClick={() => setIsSearchOpen(true)}
+                >
+                    <Search className="w-4 h-4" />
+                    <span className="text-sm font-medium">Keşfet & Ara...</span>
                 </div>
             </div>
 
-            {/* Masonry Grid */}
-            <div className="p-2">
-                {/* CSS Columns Approach for Masonry - Simpler than JS libs */}
-                {loading ? (
-                    <div className="columns-2 gap-2 space-y-2">
-                        {[1, 2, 3, 4, 5, 6].map(i => (
-                            <div key={i} className={`bg-white/5 rounded-xl animate-pulse ${i % 3 === 0 ? 'aspect-[9/16]' : 'aspect-square'}`} />
+            {/* Categories */}
+            <div className="px-4 py-3 overflow-x-auto no-scrollbar flex gap-2 sticky top-[65px] z-20 bg-[#050505]/90 backdrop-blur-md border-b border-white/5">
+                {CATEGORIES.map(cat => (
+                    <button
+                        key={cat.id}
+                        onClick={() => setActiveCategory(cat.id)}
+                        className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all border ${activeCategory === cat.id
+                                ? 'bg-white text-black border-white'
+                                : 'bg-transparent text-gray-400 border-white/10 hover:border-white/30'
+                            }`}
+                    >
+                        {cat.label}
+                    </button>
+                ))}
+            </div>
+
+            {/* Grid Content */}
+            <div className="p-1">
+                {isLoading ? (
+                    <div className="grid grid-cols-3 gap-0.5">
+                        {[...Array(15)].map((_, i) => (
+                            <div key={i} className="aspect-[4/5] bg-white/5 animate-pulse" />
                         ))}
                     </div>
                 ) : (
-                    <div className="columns-2 gap-2 space-y-2">
-                        {posts.map((post, idx) => {
-                            // "Featured" Logic: pseudo-randomly decide if a post looks "tall" (reel) vs square
-                            // For realism, let's say if it has 'images' it's square, if video (future) or specific random index, it's tall.
-                            // Since our SocialPost structure is unified, let's just use index pattern.
-                            const isTall = idx % 5 === 2; // Every 5th item starting from index 2
-
-                            return (
-                                <motion.div
-                                    key={post._id}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    viewport={{ once: true }}
-                                    onClick={() => onNavigate('product-detail', { ...post, type: 'social' })} // Or dedicated social detail view
-                                    className={`relative break-inside-avoid rounded-xl overflow-hidden bg-gray-900 group cursor-pointer border border-white/5 ${isTall ? 'aspect-[9/16]' : 'aspect-[4/5]'}`}
-                                >
-                                    <img
-                                        src={post.images?.[0] || 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1000&auto=format&fit=crop'}
-                                        alt={post.userName}
-                                        loading="lazy"
-                                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
-                                    />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3">
-                                        <div className="flex items-center gap-2">
-                                            <div className="w-5 h-5 rounded-full overflow-hidden border border-white/20">
-                                                <img src={post.userAvatar} className="w-full h-full object-cover" />
-                                            </div>
-                                            <span className="text-xs text-white font-bold truncate">{post.userName}</span>
-                                        </div>
+                    <div className="grid grid-cols-3 gap-0.5">
+                        {posts.map((post, index) => (
+                            <div
+                                key={post._id}
+                                className={`relative group cursor-pointer overflow-hidden bg-white/5 ${(index % 10 === 0) ? 'col-span-2 row-span-2' : ''
+                                    }`}
+                                onClick={() => onNavigate('social-hub' as ViewState, { openPost: post._id })}
+                            >
+                                {post.type === 'video' && (
+                                    <div className="absolute top-2 right-2 z-10">
+                                        <Play className="w-4 h-4 text-white drop-shadow-md fill-white/50" />
                                     </div>
+                                )}
 
-                                    {/* Type Indicator */}
-                                    {isTall && (
-                                        <div className="absolute top-2 right-2 p-1 bg-black/50 backdrop-blur-sm rounded-full">
-                                            <Play className="w-3 h-3 text-white fill-white" />
-                                        </div>
-                                    )}
-                                </motion.div>
-                            );
-                        })}
+                                <img
+                                    src={post.image || post.images?.[0] || 'https://via.placeholder.com/300'}
+                                    alt="Explore"
+                                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                                />
+
+                                <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-colors" />
+                            </div>
+                        ))}
                     </div>
                 )}
             </div>

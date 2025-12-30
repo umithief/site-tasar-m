@@ -535,20 +535,24 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
 
         // 3. PRIORITY: Pre-defined Route (Turn-by-Turn Navigation)
         if (route) {
-            const points = route.coordinates || route.path;
+            // Prioritize path (array) over coordinates (which might be a single object)
+            // Also ensure we handle the case where coordinates IS the array (legacy)
+            let points: any[] = [];
+            if (route.path && Array.isArray(route.path) && route.path.length > 0) {
+                points = route.path;
+            } else if (route.coordinates && Array.isArray(route.coordinates) && route.coordinates.length > 0) {
+                points = route.coordinates;
+            }
 
-            if (points && points.length > 0) {
-                // If it's a single point (marker only), just show marker? 
-                // But for "Ride Mode", we assume a path.
-                // If we want actual NAVIGATION, we need to pass these points to the router.
+            if (points.length > 0) {
+                // For OSRM navigation, we only need the key waypoints (Start and End), 
+                // effectively recalculating the route to get turn-by-turn instructions.
+                // We do NOT pass every point in the path as a waypoint, or OSRM will fail/choke.
+                const start = points[0];
+                const end = points[points.length - 1];
+                const waypoints = [L.latLng(start.lat, start.lng), L.latLng(end.lat, end.lng)];
 
-                const waypoints = points.map(p => L.latLng(p.lat, p.lng));
-
-                // If user is at a different location, maybe add current location as start?
-                // For now, let's navigate the specific route path itself.
-                // Or, if currentLoc exists, route FROM currentLoc TO start of route, then along route?
-                // Complex. Let's stick to: "Navigate along this route". 
-                // OSRM can take multiple waypoints.
+                console.log("Starting navigation with waypoints:", waypoints);
 
                 try {
                     const control = L.Routing.control({
@@ -557,7 +561,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                         lineOptions: {
                             styles: [{ color: '#F2A619', opacity: 0.8, weight: 8, className: 'neon-polyline' }]
                         },
-                        show: false, // Turn off default panel to use our custom UI
+                        show: false,
                         addWaypoints: false,
                         routeWhileDragging: false,
                         fitSelectedRoutes: true,
@@ -576,8 +580,20 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                         }
                     });
 
+                    control.on('routingerror', (e: any) => {
+                        console.error("OSRM Routing Error:", e);
+                        // Fallback: Just draw the polyline if OSRM fails
+                        const polyline = L.polyline(points.map((p: any) => [p.lat, p.lng]), { color: '#F2A619', opacity: 0.8, weight: 8 }).addTo(mapRef.current);
+                        mapRef.current.fitBounds(polyline.getBounds());
+                    });
+
                     routingControlRef.current = control;
-                } catch (e) { console.error("Static Route Error", e); }
+                } catch (e) {
+                    console.error("Static Route Error", e);
+                    // Fallback in catch
+                    const polyline = L.polyline(points.map((p: any) => [p.lat, p.lng]), { color: '#F2A619', opacity: 0.8, weight: 8 }).addTo(mapRef.current);
+                    try { mapRef.current.fitBounds(polyline.getBounds()); } catch (ex) { }
+                }
             }
         }
 

@@ -476,6 +476,43 @@ app.use('/api/stolen-items', stolenRoutes);
 app.use('/api/negotiations', negotiationRoutes);
 app.use('/api/feedback', feedbackRoutes);
 
+// --- GLOBAL ERROR HANDLER ---
+app.use((err, req, res, next) => {
+    console.error('🔥 HATA (Global Handler):', err);
+
+    // Mongoose Validation Error
+    if (err.name === 'ValidationError') {
+        return res.status(400).json({
+            status: 'error',
+            message: Object.values(err.errors).map(val => val.message).join(', ')
+        });
+    }
+
+    // Duplicate Key Error
+    if (err.code === 11000) {
+        const field = Object.keys(err.keyValue)[0];
+        return res.status(400).json({
+            status: 'error',
+            message: `${field} zaten kullanımda.`
+        });
+    }
+
+    // JWT Error
+    if (err.name === 'JsonWebTokenError') {
+        return res.status(401).json({
+            status: 'error',
+            message: 'Geçersiz token. Lütfen tekrar giriş yapın.'
+        });
+    }
+
+    const statusCode = err.statusCode || 500;
+    res.status(statusCode).json({
+        status: 'error',
+        message: err.message || 'Sunucu Hatası',
+        stack: process.env.NODE_ENV === 'development' ? err.stack : undefined
+    });
+});
+
 // --- FRONTEND STATIK DOSYALARINI SERVIS ET (PROD) ---
 const frontendPath = path.join(__dirname, '../dist');
 if (process.env.NODE_ENV === 'production' || process.env.SERVE_FRONTEND === 'true') {

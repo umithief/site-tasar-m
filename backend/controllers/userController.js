@@ -182,7 +182,7 @@ export const getProfile = catchAsync(async (req, res, next) => {
 });
 
 export const getAllUsers = catchAsync(async (req, res, next) => {
-    const users = await User.find().select('-password');
+    const users = await User.find().select('-password').lean();
     res.status(200).json(users);
 });
 

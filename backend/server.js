@@ -339,7 +339,7 @@ const seedDatabase = async () => {
         if (routeCount === 0) {
             console.log('📦 Rotalar veritabanına ekleniyor...');
             await Route.insertMany([
-                { title: 'Trans Toros Geçişi', description: 'Akdeniz\'in zirvelerinde virajlı ve manzaralı bir sürüş.', image: 'https://images.unsplash.com/photo-1605152276897-4f618f831968?q=80&w=1200', difficulty: 'Zor', distance: '320 km', duration: '6 Saat', location: 'Antalya', bestSeason: 'İlkbahar', tags: ['Dağ', 'Viraj'] }
+                { title: 'Trans Toros Geçişi', description: 'Akdeniz\'in zirvelerinde virajlı ve manzaralı bir sürüş.', image: 'https://images.unsplash.com/photo-1605152276897-4f618f831968?q=80&w=1200', difficulty: 'Zor', distance: '320 km', estimatedTime: '6 Saat', location: 'Antalya', bestSeason: 'İlkbahar', tags: ['Dağ', 'Viraj'] }
             ]);
         }
 

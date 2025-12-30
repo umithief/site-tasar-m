@@ -358,6 +358,22 @@ const seedDatabase = async () => {
                     ]
                 }
             ]);
+        } else {
+            // FIX: Ensure Trans Toros has coordinates if they are missing (Migration)
+            await Route.updateOne(
+                { title: 'Trans Toros Geçişi' },
+                {
+                    $set: {
+                        coordinates: [
+                            { lat: 36.8841, lng: 30.7056 },
+                            { lat: 37.0000, lng: 30.8000 },
+                            { lat: 37.1500, lng: 31.0000 },
+                            { lat: 37.3000, lng: 31.2000 },
+                            { lat: 37.5000, lng: 31.4000 }
+                        ]
+                    }
+                }
+            );
         }
 
         const prodCount = await Product.countDocuments();

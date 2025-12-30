@@ -531,41 +531,52 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
             return; // Exit if using dynamic routing
         }
 
-        // 3. PRIORITY: Pre-defined Route Path (Static Polyline)
-        if (route && route.path && route.path.length > 1) {
-            const latlngs = route.path
-                .filter(p => p && typeof p.lat === 'number' && typeof p.lng === 'number')
-                .map(p => [p.lat, p.lng]);
+        // 3. PRIORITY: Pre-defined Route (Turn-by-Turn Navigation)
+        if (route) {
+            const points = route.coordinates || route.path;
 
-            // Draw Line
-            routeLineRef.current = L.polyline(latlngs, {
-                color: '#F2A619', // Orange for static routes
-                weight: 8,
-                opacity: 0.9,
-                lineCap: 'round',
-                className: 'neon-polyline'
-            }).addTo(mapRef.current);
+            if (points && points.length > 0) {
+                // If it's a single point (marker only), just show marker? 
+                // But for "Ride Mode", we assume a path.
+                // If we want actual NAVIGATION, we need to pass these points to the router.
 
-            // Add Start/End Markers
-            const startIcon = L.divIcon({
-                className: 'map-marker-start',
-                html: `<div class="w-4 h-4 bg-green-500 rounded-full border-2 border-white shadow-lg animate-pulse"></div>`
-            });
-            const endIcon = L.divIcon({
-                className: 'map-marker-end',
-                html: `<div class="w-4 h-4 bg-red-600 rounded-full border-2 border-white shadow-lg"></div>`
-            });
+                const waypoints = points.map(p => L.latLng(p.lat, p.lng));
 
-            const startMarker = L.marker(latlngs[0], { icon: startIcon }).addTo(mapRef.current);
-            const endMarker = L.marker(latlngs[latlngs.length - 1], { icon: endIcon }).addTo(mapRef.current);
-            routeMarkersRef.current.push(startMarker, endMarker);
+                // If user is at a different location, maybe add current location as start?
+                // For now, let's navigate the specific route path itself.
+                // Or, if currentLoc exists, route FROM currentLoc TO start of route, then along route?
+                // Complex. Let's stick to: "Navigate along this route". 
+                // OSRM can take multiple waypoints.
 
-            // Set demo points for simulation
-            setDemoRoutePoints(route.path);
+                try {
+                    const control = L.Routing.control({
+                        waypoints: waypoints,
+                        router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1', profile: 'driving' }),
+                        lineOptions: {
+                            styles: [{ color: '#F2A619', opacity: 0.8, weight: 8, className: 'neon-polyline' }]
+                        },
+                        show: false, // Turn off default panel to use our custom UI
+                        addWaypoints: false,
+                        routeWhileDragging: false,
+                        fitSelectedRoutes: true,
+                        containerClassName: 'hidden-routing-container'
+                    }).addTo(mapRef.current);
 
-            // Force map to fit route
-            const bounds = routeLineRef.current.getBounds();
-            mapRef.current.fitBounds(bounds, { padding: [50, 50] });
+                    control.on('routesfound', (e: any) => {
+                        const r = e.routes[0];
+                        if (r.instructions && r.instructions.length > 0) {
+                            setNextTurn({
+                                text: r.instructions[0].text,
+                                distance: r.instructions[0].distance,
+                                type: r.instructions[0].type,
+                                modifier: r.instructions[0].modifier
+                            });
+                        }
+                    });
+
+                    routingControlRef.current = control;
+                } catch (e) { console.error("Static Route Error", e); }
+            }
         }
 
     }, [route, activeTarget]); // Removed currentLoc dependency to prevent redraw loops

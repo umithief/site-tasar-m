@@ -66,7 +66,12 @@ const seedRoutes = catchAsync(async (req, res) => {
             bestSeason: 'Spring, Summer',
             difficultyMetrics: { technical: 3, scenery: 5, speed: 4 },
             terrain: ['Asphalt'],
-            coordinates: [{ lat: 41.1744, lng: 29.6116 }] // Şile approx
+            coordinates: [
+                { lat: 41.1744, lng: 29.6116 }, // Start
+                { lat: 41.1780, lng: 29.6200 }, // Waypoint
+                { lat: 41.1850, lng: 29.6300 }, // Waypoint
+                { lat: 41.1900, lng: 29.6400 }  // End
+            ] // Şile Coastal Path
         },
         {
             title: 'Uludağ Summit Climb',
@@ -82,7 +87,12 @@ const seedRoutes = catchAsync(async (req, res) => {
             bestSeason: 'Summer, Autumn',
             difficultyMetrics: { technical: 5, scenery: 5, speed: 2 },
             terrain: ['Asphalt'],
-            coordinates: [{ lat: 40.1828, lng: 29.0669 }] // Uludağ approx
+            coordinates: [
+                { lat: 40.1828, lng: 29.0669 }, // Start (Bursa Center)
+                { lat: 40.1500, lng: 29.0800 }, // Waypoint
+                { lat: 40.1200, lng: 29.1000 }, // Waypoint
+                { lat: 40.0900, lng: 29.1300 }  // End (Summit approx)
+            ] // Uludağ Path
         }
     ];
 

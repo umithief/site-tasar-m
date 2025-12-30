@@ -30,7 +30,7 @@ export const BottomNav: React.FC<SidebarProps> = ({
     const getActiveTab = () => {
         if (currentView === 'home') return 'home';
         if (currentView === 'shop' || currentView === 'explore' || currentView === 'product-detail') return 'shop';
-        if (currentView === 'routes' || currentView === 'ride-mode') return 'routes';
+        if (currentView === 'ride-mode') return 'ride-mode';
         if (currentView === 'profile' || currentView === 'my-profile' || currentView === 'auth') return 'profile';
         // 'create' is a modal/action, usually doesn't stay highlighted unless it's a dedicated view
         return currentView;
@@ -42,7 +42,7 @@ export const BottomNav: React.FC<SidebarProps> = ({
         { id: 'home', icon: Home, label: 'Home', view: 'home' },
         { id: 'shop', icon: ShoppingBag, label: 'Shop', view: 'shop' },
         { id: 'create', icon: Plus, label: 'Create', isFab: true },
-        { id: 'routes', icon: MapIcon, label: 'Routes', view: 'routes' },
+
         { id: 'profile', icon: User, label: 'Profile', view: user ? 'profile' : 'auth' },
     ];
 

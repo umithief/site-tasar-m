@@ -754,7 +754,7 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                                     variant="primary"
                                     className="w-full py-4 text-base font-bold shadow-lg shadow-moto-accent/20"
                                     onClick={handleCreateRoute}
-                                    disabled={!newRouteForm.path?.length || !newRouteForm.title}
+                                    disabled={!newRouteForm.path?.length || !newRouteForm.title || !newRouteForm.description}
                                 >
                                     <Save className="w-4 h-4 mr-2" /> ROTA KAYDET
                                 </Button>

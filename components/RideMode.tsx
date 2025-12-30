@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { X, Navigation, PlayCircle, Pause, SkipForward, SkipBack, MapPin, Thermometer, Gauge, Mountain, Activity, TrendingUp, Move, ExternalLink, ArrowRight, Crosshair, Power } from 'lucide-react';
+import { X, Navigation, PlayCircle, Pause, SkipForward, SkipBack, MapPin, Thermometer, Gauge, Mountain, Activity, TrendingUp, Move, ExternalLink, ArrowRight, Crosshair, Power, Zap, Play } from 'lucide-react';
 import { musicService } from '../services/musicService';
 import { MusicTrack, Route, ViewState } from '../types';
 
@@ -683,192 +683,267 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
 
             {/* --- MAP BACKGROUND (Clean & Full) --- */}
             <div className="absolute inset-0 z-0 overflow-hidden">
-                <div ref={mapContainerRef} className="w-full h-full brightness-[0.8] contrast-110" />
-                {/* Subtle vignette for UI readability */}
-                <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/90 to-transparent pointer-events-none z-10"></div>
-                <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black/95 via-black/80 to-transparent pointer-events-none z-10"></div>
+                <div ref={mapContainerRef} className="w-full h-full brightness-[0.85] contrast-110 saturate-0" />
+                {/* Tech Vignette */}
+                <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_70%,rgba(0,0,0,0.9)_100%)] z-10"></div>
+
+                {/* HUD Grid Overlay */}
+                <div className="absolute inset-0 pointer-events-none opacity-[0.03] z-10" style={{
+                    backgroundImage: `linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)`,
+                    backgroundSize: '100px 100px'
+                }}></div>
             </div>
 
             {/* --- HIDDEN YOUTUBE --- */}
             <div id="youtube-player" className="absolute top-0 left-0 opacity-0 pointer-events-none" style={{ width: 1, height: 1 }}></div>
 
-            {/* --- COMPACT TOP BAR (Transparent) --- */}
-            <div className="absolute top-0 left-0 right-0 h-20 z-50 flex justify-between items-start px-6 pt-safe-top pointer-events-none">
-                <div className="pointer-events-auto mt-2">
+            {/* --- TOP HUD BAR --- */}
+            <div className="absolute top-0 left-0 right-0 h-24 z-50 flex justify-between items-start px-8 pt-6 pointer-events-none bg-gradient-to-b from-black/90 to-transparent">
+                <div className="pointer-events-auto flex items-center gap-4">
                     <button
                         onClick={toggleGps}
-                        className={`w-10 h-10 btn-icon-glass ${isGpsEnabled
-                            ? 'bg-[#1A1A17]/80 text-green-500 border-green-500/30'
-                            : 'bg-red-900/60 text-white border-red-500/50 animate-pulse'
+                        className={`w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md border transition-all ${isGpsEnabled
+                            ? 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30 shadow-[0_0_15px_rgba(16,185,129,0.2)]'
+                            : 'bg-red-500/10 text-red-500 border-red-500/30 animate-pulse shadow-[0_0_15px_rgba(239,68,68,0.2)]'
                             }`}
                     >
                         {isGpsEnabled ? <Crosshair className="w-5 h-5" /> : <Power className="w-5 h-5" />}
                     </button>
+
+                    <button
+                        onClick={() => setIsLowPowerMode(!isLowPowerMode)}
+                        className={`w-12 h-12 rounded-full flex items-center justify-center backdrop-blur-md border border-white/10 transition-all ${isLowPowerMode ? 'bg-blue-500/20 text-blue-400' : 'bg-black/30 text-zinc-400'}`}
+                    >
+                        <Zap className="w-5 h-5" />
+                    </button>
                 </div>
 
-                <div className="absolute left-1/2 -translate-x-1/2 top-safe-top mt-3">
-                    <span className="text-xl font-display font-bold text-white tracking-widest drop-shadow-md opacity-90">
-                        {time.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
-                    </span>
+                <div className="absolute left-1/2 -translate-x-1/2 top-6 flex flex-col items-center">
+                    <div className="flex items-baseline gap-1">
+                        <span className="text-3xl font-display font-black text-white/90 tracking-wider">
+                            {time.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })}
+                        </span>
+                    </div>
                 </div>
 
-                <div className="pointer-events-auto mt-2">
+                <div className="pointer-events-auto">
                     <button
                         onClick={() => onNavigate('home')}
-                        className="w-10 h-10 btn-icon-glass text-white/70 hover:bg-red-600 hover:text-white hover:border-red-500"
+                        className="w-12 h-12 rounded-full bg-red-600/10 border border-red-500/30 text-red-500 hover:bg-red-600 hover:text-white transition-all backdrop-blur-md flex items-center justify-center"
                     >
-                        <X className="w-5 h-5" />
+                        <X className="w-6 h-6" />
                     </button>
                 </div>
             </div>
 
-            {/* --- GPS OVERLAY --- */}
+            {/* --- GPS ALERT --- */}
             {!isGpsEnabled && !isDemoMode && (
                 <div className="absolute inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-md">
-                    <div className="flex flex-col items-center gap-6 p-8 bg-[#1A1A17] border border-moto-accent/30 rounded-3xl shadow-2xl text-center max-w-xs mx-4">
-                        <Navigation className="w-12 h-12 text-moto-accent animate-bounce" />
-                        <h3 className="text-xl font-bold text-white">GPS Gerekli</h3>
-                        <div className="flex flex-col gap-3 w-full">
-                            <button onClick={toggleGps} className="w-full py-3 bg-moto-accent text-black font-bold rounded-xl active:scale-95">GPS AÇ</button>
+                    <div className="relative overflow-hidden flex flex-col items-center gap-6 p-10 bg-zinc-900 border border-white/10 rounded-3xl shadow-2xl text-center max-w-sm mx-4">
+                        <div className="absolute inset-0 bg-moto-accent/5 pointer-events-none"></div>
+                        <div className="w-20 h-20 bg-moto-accent/10 rounded-full flex items-center justify-center animate-bounce">
+                            <Navigation className="w-10 h-10 text-moto-accent" />
+                        </div>
+                        <div>
+                            <h3 className="text-2xl font-black text-white mb-2 uppercase italic tracking-wide">Sinyal Yok</h3>
+                            <p className="text-zinc-400 text-sm">Sürüş takibi ve hız verileri için GPS erişimine izin verin.</p>
+                        </div>
+                        <button onClick={toggleGps} className="w-full py-4 bg-moto-accent text-black font-black uppercase tracking-wider rounded-xl hover:bg-white transition-colors">GPS Aktifleştir</button>
+                    </div>
+                </div>
+            )}
+
+            {/* --- NAV INSTRUCTIONS --- */}
+            {navMessage && (
+                <div className="absolute top-28 left-1/2 -translate-x-1/2 z-40 pointer-events-none w-full max-w-md px-6 flex justify-center">
+                    <div className="bg-black/80 backdrop-blur-xl border border-white/10 px-6 py-2 rounded-full shadow-2xl flex items-center gap-3">
+                        <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse shadow-[0_0_10px_#10b981]"></div>
+                        <span className="text-xs font-bold uppercase tracking-widest text-white/80 truncate">{navMessage}</span>
+                    </div>
+                </div>
+            )}
+
+            {/* --- TURN BY TURN --- */}
+            {nextTurn && (
+                <div className="absolute top-40 left-6 z-40">
+                    <div className="bg-black/80 backdrop-blur-xl border-l-[6px] border-moto-accent rounded-r-2xl p-6 shadow-2xl min-w-[200px] relative overflow-hidden group">
+                        <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                            <Navigation className="w-24 h-24 text-white" />
+                        </div>
+                        <div className="relative z-10">
+                            <div className="flex items-baseline gap-1">
+                                <span className="text-5xl font-black text-white tracking-tighter">
+                                    {nextTurn.distance > 1000 ? (nextTurn.distance / 1000).toFixed(1) : Math.round(nextTurn.distance)}
+                                </span>
+                                <span className="text-lg font-bold text-zinc-400">{nextTurn.distance > 1000 ? 'KM' : 'M'}</span>
+                            </div>
+                            <div className="mt-2 text-sm font-bold text-white/90 uppercase tracking-wider max-w-[160px] leading-tight">
+                                {nextTurn.text}
+                            </div>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* --- NAV MESSAGE (Compact Pill) --- */}
-            {navMessage && (
-                <div className="absolute top-20 left-1/2 -translate-x-1/2 z-40 pointer-events-none w-full px-4 flex justify-center">
-                    <div className="bg-[#1A1A17]/90 backdrop-blur-md border border-moto-accent/30 px-4 py-1.5 rounded-full shadow-lg flex items-center gap-2 animate-in slide-in-from-top-2">
-                        <div className="w-1.5 h-1.5 bg-moto-accent rounded-full animate-pulse"></div>
-                        <span className="text-[10px] font-bold uppercase tracking-wider text-white/90 truncate max-w-[200px]">{navMessage}</span>
-                    </div>
-                </div>
-            )}
-
-            {/* --- LEFT: TURN INSTRUCTION (Compact) --- */}
-            {nextTurn && (
-                <div className="absolute top-32 left-4 z-40 bg-[#1A1A17]/90 backdrop-blur-lg border-l-4 border-moto-accent rounded-r-xl p-4 shadow-xl max-w-[160px] animate-in slide-in-from-left-4">
-                    <div className="text-3xl font-display font-bold text-white leading-none">
-                        {nextTurn.distance > 1000 ? (nextTurn.distance / 1000).toFixed(1) : Math.round(nextTurn.distance)}
-                        <span className="text-sm text-gray-400 ml-1 font-sans">{nextTurn.distance > 1000 ? 'km' : 'm'}</span>
-                    </div>
-                    <div className="text-xs text-gray-300 font-bold mt-1 uppercase leading-tight line-clamp-2">{nextTurn.text}</div>
-                    <Navigation className="w-8 h-8 text-white/10 absolute top-2 right-2" />
-                </div>
-            )}
-
-            {/* --- RIGHT: TELEMETRY ICONS (Compact) --- */}
-            <div className="absolute top-32 right-4 z-40 flex flex-col gap-3 pointer-events-auto">
-                {!isDemoMode && (route || activeTarget) && (
-                    null
-                )}
+            {/* --- TELEMETRY TOGGLE --- */}
+            <div className="absolute top-40 right-6 z-40 pointer-events-auto text-right space-y-4">
                 <button
                     onClick={() => setShowTelemetry(!showTelemetry)}
-                    className={`w-10 h-10 btn-icon-glass ${showTelemetry ? 'bg-white text-black border-white' : 'text-gray-400'}`}
+                    className={`w-12 h-12 rounded-2xl flex items-center justify-center backdrop-blur-md border transition-all shadow-lg ${showTelemetry ? 'bg-white text-black border-white' : 'bg-black/40 text-white/50 border-white/5 hover:bg-black/60 hover:text-white'}`}
                 >
-                    <Activity className="w-5 h-5" />
+                    <Activity className="w-6 h-6" />
                 </button>
             </div>
 
-            {/* --- TELEMETRY DATA (Right Side) --- */}
-            <div className={`absolute top-56 right-4 w-32 z-40 transition-all duration-300 transform ${showTelemetry ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0 pointer-events-none'}`}>
-                <div className="flex flex-col gap-2">
-                    {[
-                        { label: 'G-Force', val: telemetry.gForce.toFixed(1), unit: 'G', icon: Move, color: 'text-moto-accent', border: 'border-moto-accent' },
-                        { label: 'Rakım', val: Math.round(telemetry.altitude), unit: 'm', icon: Mountain, color: 'text-blue-500', border: 'border-blue-500' },
-                    ].map((item, i) => (
-                        <div key={i} className={`bg-[#1A1A17]/80 backdrop-blur-md border-l-2 ${item.border} rounded-r-lg p-2 shadow-lg`}>
-                            <div className="flex items-center gap-2">
-                                <item.icon className={`w-3 h-3 ${item.color}`} />
-                                <span className="text-sm font-mono font-bold text-white">{item.val}<span className="text-[9px] text-gray-500 ml-0.5">{item.unit}</span></span>
-                            </div>
+            {/* --- TELEMETRY PANEL --- */}
+            <div className={`absolute top-56 right-6 w-40 z-40 transition-all duration-500 ease-out transform ${showTelemetry ? 'translate-x-0 opacity-100' : 'translate-x-12 opacity-0 pointer-events-none'}`}>
+                <div className="flex flex-col gap-3">
+                    <div className="bg-black/80 backdrop-blur-md border-l-2 border-moto-accent rounded-r-xl p-3 shadow-lg">
+                        <div className="flex justify-between items-center mb-1">
+                            <span className="text-[10px] text-zinc-500 font-bold uppercase">G-Force</span>
+                            <Move className="w-3 h-3 text-moto-accent" />
                         </div>
-                    ))}
+                        <div className="text-xl font-mono font-bold text-white">{telemetry.gForce.toFixed(1)} <span className="text-xs text-zinc-500">G</span></div>
+                    </div>
+
+                    <div className="bg-black/80 backdrop-blur-md border-l-2 border-blue-500 rounded-r-xl p-3 shadow-lg">
+                        <div className="flex justify-between items-center mb-1">
+                            <span className="text-[10px] text-zinc-500 font-bold uppercase">Rakım</span>
+                            <Mountain className="w-3 h-3 text-blue-500" />
+                        </div>
+                        <div className="text-xl font-mono font-bold text-white">{Math.round(telemetry.altitude)} <span className="text-xs text-zinc-500">M</span></div>
+                    </div>
+
+                    <div className="bg-black/80 backdrop-blur-md border-l-2 border-purple-500 rounded-r-xl p-3 shadow-lg">
+                        <div className="flex justify-between items-center mb-1">
+                            <span className="text-[10px] text-zinc-500 font-bold uppercase">Eğim</span>
+                            <TrendingUp className="w-3 h-3 text-purple-500" />
+                        </div>
+                        <div className="text-xl font-mono font-bold text-white">{isLowPowerMode ? '0' : Math.round(leanAngle)}°</div>
+                    </div>
                 </div>
             </div>
 
-            {/* --- CONSOLIDATED BOTTOM DASHBOARD --- */}
-            <div className="absolute bottom-6 left-4 right-4 z-50 pointer-events-auto">
-                <div className="bg-[#111]/95 backdrop-blur-xl border border-white/10 rounded-[2rem] p-1.5 shadow-[0_0_50px_rgba(0,0,0,0.8)] flex items-center justify-between min-h-[5.5rem]">
+            {/* --- TFT DASHBOARD (Bottom) --- */}
+            <div className="absolute bottom-8 left-6 right-6 z-50 pointer-events-auto">
+                <div className="relative bg-[#0a0a0a]/90 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] p-2 shadow-[0_0_50px_rgba(0,0,0,0.9)] overflow-hidden">
 
-                    {/* 1. SPEED & RPM CLUSTER (Left) */}
-                    <div className="flex items-center gap-1 pl-2 pr-4 border-r border-white/5">
-                        <div className="relative w-20 h-20 flex items-center justify-center">
-                            {/* RPM Ring */}
-                            <svg className="absolute inset-0 w-full h-full transform -rotate-90" viewBox="0 0 80 80">
-                                <circle cx="40" cy="40" r={dashRadius} fill="none" stroke="#222" strokeWidth="6" />
-                                <circle
-                                    cx="40" cy="40" r={dashRadius} fill="none"
-                                    stroke={rpm > REDLINE_RPM ? '#ef4444' : '#F2A619'}
-                                    strokeWidth="6"
-                                    strokeDasharray={dashCircumference}
-                                    strokeDashoffset={dashOffset}
-                                    strokeLinecap="round"
-                                    className="transition-all duration-100 ease-linear"
-                                />
-                            </svg>
-                            {/* Speed Value */}
-                            <div className="flex flex-col items-center">
-                                <span className="text-3xl font-display font-black text-white leading-none tracking-tighter">{Math.floor(speed)}</span>
-                                <span className="text-[8px] font-bold text-gray-500">KMH</span>
+                    {/* Gloss Effect */}
+                    <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent pointer-events-none"></div>
+
+                    <div className="flex items-center gap-2 relative z-10">
+
+                        {/* 1. SPEED & RPM (Digital Cluster) */}
+                        <div className="bg-black/60 rounded-[2rem] p-4 pr-8 border border-white/5 flex items-center gap-6 min-w-[280px]">
+                            {/* RPM Circle with Shader-like gradient */}
+                            <div className="relative w-24 h-24 flex items-center justify-center">
+                                <svg className="absolute inset-0 w-full h-full transform -rotate-90 drop-shadow-[0_0_10px_rgba(242,166,25,0.3)]" viewBox="0 0 100 100">
+                                    {/* Track */}
+                                    <circle cx="50" cy="50" r="42" fill="none" stroke="#222" strokeWidth="8" />
+                                    {/* Fill */}
+                                    <circle
+                                        cx="50" cy="50" r="42" fill="none"
+                                        stroke="url(#rpmGradient)"
+                                        strokeWidth="8"
+                                        strokeDasharray={2 * Math.PI * 42}
+                                        strokeDashoffset={(2 * Math.PI * 42) * (1 - rpmPercentage)}
+                                        strokeLinecap="round"
+                                        className="transition-all duration-100 ease-linear"
+                                    />
+                                    <defs>
+                                        <linearGradient id="rpmGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                            <stop offset="0%" stopColor="#F2A619" />
+                                            <stop offset="80%" stopColor="#F2A619" />
+                                            <stop offset="100%" stopColor="#ef4444" />
+                                        </linearGradient>
+                                    </defs>
+                                </svg>
+
+                                <div className="absolute flex flex-col items-center">
+                                    <span className="text-4xl font-display font-black text-white tracking-tighter leading-none">{Math.floor(speed)}</span>
+                                    <span className="text-[9px] font-bold text-zinc-500 uppercase tracking-widest mt-0.5">KM/H</span>
+                                </div>
+                            </div>
+
+                            {/* Gear & Stats */}
+                            <div className="flex flex-col gap-2">
+                                <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl font-black font-display border shadow-inner ${gear === 'N' ? 'bg-emerald-900/40 text-emerald-400 border-emerald-500/30 shadow-emerald-900/20' : 'bg-zinc-800 text-white border-white/10'}`}>
+                                    {gear}
+                                </div>
+                                <div className="text-[10px] font-mono text-zinc-500">
+                                    {rpm} <span className="text-zinc-700">RPM</span>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Gear */}
-                        <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-xl font-black font-display border overflow-hidden ${gear === 'N' ? 'bg-green-900/40 text-green-400 border-green-500/30' : 'bg-white/5 text-white border-white/10'}`}>
-                            {gear}
-                        </div>
-                    </div>
+                        {/* 2. MEDIA & INFO CENTER */}
+                        <div className="flex-1 bg-black/40 rounded-[2rem] border border-white/5 h-32 flex items-center px-6 justify-between relative overflow-hidden group">
+                            {/* BG Visualizer */}
+                            <div className="absolute inset-x-0 bottom-0 h-10 bg-gradient-to-t from-moto-accent/10 to-transparent opacity-30"></div>
 
-                    {/* 2. MUSIC CONTROL (Center-Right Expansive) */}
-                    <div className="flex-1 flex items-center justify-between px-3 min-w-0">
-                        <div className="flex flex-col min-w-0 mr-2">
-                            <span className="text-xs font-bold text-white truncate leading-tight">{playlist.length > 0 ? playlist[currentTrackIndex].title : 'MOTOVIBE'}</span>
-                            <span className="text-[10px] font-medium text-moto-accent truncate">{playlist.length > 0 ? playlist[currentTrackIndex].artist : 'Ready'}</span>
+                            <div className="flex items-center gap-4 z-10 w-full">
+                                <div className="w-12 h-12 rounded-2xl bg-zinc-900 flex items-center justify-center border border-white/10 shrink-0">
+                                    {isPlaying ? (
+                                        <div className="flex gap-1 items-end h-5">
+                                            <span className="w-1 bg-moto-accent/80 animate-[bounce_1s_infinite] h-3 rounded-full"></span>
+                                            <span className="w-1 bg-moto-accent animate-[bounce_1.2s_infinite] h-5 rounded-full"></span>
+                                            <span className="w-1 bg-moto-accent/80 animate-[bounce_0.8s_infinite] h-2 rounded-full"></span>
+                                        </div>
+                                    ) : (
+                                        <PlayCircle className="w-6 h-6 text-zinc-600" />
+                                    )}
+                                </div>
+                                <div className="flex-1 min-w-0">
+                                    <h4 className="text-white font-bold truncate text-base">{playlist[currentTrackIndex]?.title || 'MotoVibe Player'}</h4>
+                                    <p className="text-zinc-500 text-xs truncate">{playlist[currentTrackIndex]?.artist || 'Sürüş için hazır'}</p>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                    <button onClick={togglePlay} className="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center hover:scale-105 transition-transform active:scale-95">
+                                        {isPlaying ? <Pause className="w-4 h-4 fill-current" /> : <Play className="w-4 h-4 fill-current ml-0.5" />}
+                                    </button>
+                                    <button onClick={handleNextSong} className="w-10 h-10 rounded-full bg-zinc-800 text-white flex items-center justify-center hover:bg-zinc-700 transition-colors">
+                                        <SkipForward className="w-4 h-4" />
+                                    </button>
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="flex items-center gap-1">
-                            <button onClick={togglePlay} className="w-12 h-12 btn-primary rounded-full flex items-center justify-center p-0">
-                                {isPlaying ? <Pause className="w-5 h-5 fill-current" /> : <PlayCircle className="w-5 h-5 fill-current ml-0.5" />}
-                            </button>
-                            <button onClick={handleNextSong} className="w-10 h-10 btn-icon-glass text-gray-400 !border-0 bg-transparent hover:bg-white/10">
-                                <SkipForward className="w-5 h-5" />
-                            </button>
-                        </div>
-                    </div>
-
-                    {/* 3. QUICK ACTIONS (Far Right) */}
-                    <div className="pl-2 border-l border-white/5">
-                        <button onClick={() => setShowNav(true)} className="w-14 h-14 btn-glass p-0 flex flex-col items-center justify-center gap-0.5 text-gray-400 hover:text-moto-accent !bg-[#222]">
-                            <Navigation className="w-5 h-5" />
-                            <span className="text-[8px] font-bold uppercase">ROTA</span>
+                        {/* 3. QUICK NAV BTN */}
+                        <button
+                            onClick={() => setShowNav(true)}
+                            className="h-32 w-20 bg-zinc-900/80 rounded-[2rem] border border-white/5 hover:border-moto-accent/50 flex flex-col items-center justify-center gap-2 hover:bg-zinc-800 transition-all hover:-translate-y-1 active:scale-95"
+                        >
+                            <Navigation className="w-6 h-6 text-white" />
+                            <span className="text-[9px] font-bold text-zinc-500 uppercase rotate-[-90deg]">ROTA</span>
                         </button>
                     </div>
-
                 </div>
             </div>
 
-            {/* --- NAV MODAL (Quick Actions) --- */}
+            {/* --- NAV MODAL (Full Screen Overlay) --- */}
             {showNav && (
-                <div className="absolute inset-0 z-[200] bg-black/95 backdrop-blur-2xl flex flex-col items-center justify-center p-6 animate-in zoom-in-95 duration-300 pointer-events-auto">
-                    <h2 className="text-4xl font-display font-black text-white mb-10 tracking-tight italic">HIZLI <span className="text-moto-accent">ROTA</span></h2>
-                    <div className="grid grid-cols-2 gap-4 w-full max-w-lg">
+                <div className="absolute inset-0 z-[200] bg-black/95 backdrop-blur-3xl flex flex-col items-center justify-center p-8 animate-in zoom-in-95 duration-300 pointer-events-auto">
+                    <h2 className="text-5xl font-display font-black text-white mb-16 tracking-tighter italic">HIZLI <span className="text-moto-accent">ROTA</span></h2>
+
+                    <div className="grid grid-cols-2 gap-6 w-full max-w-2xl">
                         {[
-                            { icon: MapPin, label: 'Benzinlik', dist: '2.4km' },
-                            { icon: Thermometer, label: 'Mola Yeri', dist: '12km' },
-                            { icon: Gauge, label: 'Servis', dist: '8km' },
-                            { icon: Navigation, label: 'Eve Dön', dist: '45km' },
+                            { icon: MapPin, label: 'En Yakın Benzinlik', dist: '2.4 KM' },
+                            { icon: Thermometer, label: 'Mola Yeri', dist: '12 KM' },
+                            { icon: Gauge, label: 'Tamirhane', dist: '8 KM' },
+                            { icon: Navigation, label: 'Eve Dön', dist: '45 KM' },
                         ].map((item, i) => (
-                            <button key={i} onClick={() => handleQuickNavClick(item)} className="bg-[#1A1A17] border border-white/10 hover:border-moto-accent p-6 rounded-3xl flex flex-col items-center gap-3 transition-all active:scale-95 group">
-                                <item.icon className="w-10 h-10 text-gray-500 group-hover:text-moto-accent transition-colors" />
-                                <div className="text-center">
-                                    <span className="block font-bold text-white text-lg">{item.label}</span>
-                                    <span className="text-sm text-gray-500 font-mono">{item.dist}</span>
+                            <button key={i} onClick={() => handleQuickNavClick({ label: item.label, dist: item.dist })} className="group relative overflow-hidden bg-zinc-900 border border-white/5 p-8 rounded-3xl flex flex-col items-center gap-4 transition-all hover:border-moto-accent/50 active:scale-95">
+                                <div className="absolute inset-0 bg-moto-accent/5 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                                <item.icon className="w-12 h-12 text-zinc-500 group-hover:text-moto-accent transition-colors relative z-10" />
+                                <div className="text-center relative z-10">
+                                    <span className="block font-bold text-white text-xl mb-1">{item.label}</span>
+                                    <span className="text-sm text-zinc-500 font-mono group-hover:text-white/60 transition-colors">{item.dist}</span>
                                 </div>
                             </button>
                         ))}
                     </div>
-                    <button onClick={() => setShowNav(false)} className="mt-12 w-20 h-20 rounded-full bg-white/5 border border-white/10 text-gray-400 hover:text-white flex items-center justify-center transition-all active:scale-95">
+
+                    <button onClick={() => setShowNav(false)} className="mt-16 w-20 h-20 rounded-full bg-zinc-900 border border-white/10 text-zinc-400 hover:text-white hover:border-white hover:scale-110 flex items-center justify-center transition-all">
                         <X className="w-8 h-8" />
                     </button>
                 </div>
@@ -876,18 +951,18 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
 
             {/* --- CONFIRMATION DIALOGS --- */}
             {pendingNavChoice && (
-                <div className="absolute inset-0 z-[250] bg-black/80 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in zoom-in-95 duration-200 pointer-events-auto">
-                    <div className="bg-[#1A1A17] border border-moto-accent/30 rounded-[2rem] p-8 max-w-sm w-full shadow-2xl relative text-center">
-                        <button onClick={() => setPendingNavChoice(null)} className="absolute top-4 right-4 text-gray-400 hover:text-white"><X className="w-6 h-6" /></button>
-                        <h3 className="text-2xl font-display font-bold text-white mb-2">{pendingNavChoice.label}</h3>
-                        <p className="text-gray-400 text-sm mb-8">Nasıl gitmek istersin?</p>
+                <div className="absolute inset-0 z-[250] bg-black/90 backdrop-blur-xl flex items-center justify-center p-6 animate-in fade-in zoom-in-95 duration-200 pointer-events-auto">
+                    <div className="bg-zinc-900 border border-moto-accent/30 rounded-[2.5rem] p-10 max-w-sm w-full shadow-[0_0_50px_rgba(242,166,25,0.1)] relative text-center">
+                        <button onClick={() => setPendingNavChoice(null)} className="absolute top-6 right-6 text-zinc-500 hover:text-white"><X className="w-6 h-6" /></button>
+                        <h3 className="text-3xl font-display font-black text-white mb-2 italic tracking-tight">{pendingNavChoice.label}</h3>
+                        <p className="text-zinc-400 text-sm mb-10">Rotayı nasıl başlatmak istersin?</p>
 
-                        <div className="flex flex-col gap-3">
-                            <button onClick={handleGoogleNav} className="w-full py-4 bg-white text-black font-bold rounded-xl flex items-center justify-center gap-3 active:scale-95 transition-transform">
-                                <MapPin className="w-5 h-5" /> Google Maps
-                            </button>
-                            <button onClick={handleInternalNav} className="w-full py-4 bg-moto-accent text-black font-bold rounded-xl flex items-center justify-center gap-3 active:scale-95 transition-transform">
+                        <div className="flex flex-col gap-4">
+                            <button onClick={handleInternalNav} className="w-full py-5 bg-moto-accent hover:bg-white text-black font-black uppercase tracking-wider rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-all shadow-lg shadow-moto-accent/20">
                                 <Navigation className="w-5 h-5" /> MotoVibe Nav
+                            </button>
+                            <button onClick={handleGoogleNav} className="w-full py-5 bg-zinc-800 hover:bg-zinc-700 text-white font-bold rounded-2xl flex items-center justify-center gap-3 active:scale-95 transition-all">
+                                <MapPin className="w-5 h-5 text-zinc-400" /> Google Maps
                             </button>
                         </div>
                     </div>

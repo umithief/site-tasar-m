@@ -70,8 +70,8 @@ export const RouteList: React.FC<RouteListProps> = ({
                             key={lvl}
                             onClick={() => setDifficultyFilter(lvl)}
                             className={`px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${difficultyFilter === lvl
-                                    ? 'bg-zinc-800 text-white shadow-md border border-white/10'
-                                    : 'text-zinc-500 hover:text-white hover:bg-white/5'
+                                ? 'bg-zinc-800 text-white shadow-md border border-white/10'
+                                : 'text-zinc-500 hover:text-white hover:bg-white/5'
                                 }`}
                         >
                             {lvl === 'All' ? 'TÜMÜ' : lvl.toUpperCase()}
@@ -88,7 +88,7 @@ export const RouteList: React.FC<RouteListProps> = ({
                     <p className="text-zinc-500">Arama kriterlerinize uygun rota yok.</p>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 animate-in fade-in zoom-in-95 duration-500">
                     {filteredRoutes.map(route => (
                         <RouteCard
                             key={route._id}

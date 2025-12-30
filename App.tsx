@@ -409,7 +409,11 @@ export const App: React.FC = () => {
                             if (u) {
                                 setUser(u);
                                 addToast('success', `Hoş geldin, ${u.name}`);
-                                navigateTo('home');
+                                if (!u.garage || u.garage.length === 0) {
+                                    navigateTo('onboarding');
+                                } else {
+                                    navigateTo('home');
+                                }
                             }
                         });
                     }}

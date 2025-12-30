@@ -44,6 +44,7 @@ export const BottomNav: React.FC<SidebarProps> = ({
         { id: 'create', icon: Plus, label: 'Create', isFab: true },
 
         { id: 'profile', icon: User, label: 'Profile', view: user ? 'profile' : 'auth' },
+        { id: 'onboarding', icon: Zap, label: 'Onboard', view: 'onboarding' },
     ];
 
     const [isFabOpen, setIsFabOpen] = useState(false);

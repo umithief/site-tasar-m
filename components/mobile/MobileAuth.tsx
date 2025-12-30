@@ -44,6 +44,7 @@ export const MobileAuth: React.FC<MobileAuthProps> = ({ onClose, onSuccess }) =>
             }
 
             if (onSuccess) onSuccess();
+            // User garage check will be handled in onSuccess prop callback in App.tsx
             if (onClose) onClose();
         } catch (error: any) {
             console.error(error);

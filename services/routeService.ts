@@ -35,6 +35,17 @@ export const routeService = {
               ]
             };
           }
+          if (r.title.includes('Toros') || r.location?.includes('Antalya')) {
+            return {
+              ...r, coordinates: [
+                { lat: 36.8841, lng: 30.7056 }, // Antalya Merkez
+                { lat: 37.0000, lng: 30.8000 },
+                { lat: 37.1500, lng: 31.0000 },
+                { lat: 37.3000, lng: 31.2000 }, // Toros Dağları Yolu
+                { lat: 37.5000, lng: 31.4000 }
+              ]
+            };
+          }
         }
         return r;
       });

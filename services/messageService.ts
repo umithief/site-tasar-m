@@ -18,7 +18,7 @@ export const messageService = {
             // Backend: sender (ID), receiver (ID), content, timestamp
             // Frontend: id, senderId, text, timestamp (string), isRead, type
             return data.data.map((msg: any) => ({
-                id: msg._id,
+                _id: msg._id,
                 senderId: msg.sender,
                 text: msg.content,
                 timestamp: new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),

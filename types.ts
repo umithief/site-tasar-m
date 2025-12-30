@@ -216,7 +216,7 @@ export interface SocialProfile extends User {
 }
 
 export interface SocialChatMessage {
-  id: string;
+  _id: string; // Changed from id to _id
   senderId: string;
   text: string;
   timestamp: string;
@@ -399,7 +399,7 @@ export interface NegotiationResult {
 
 export interface NegotiationOffer {
   _id: string;
-  productId: number;
+  productId: string; // Fixed: Changed from number to string to match Product._id
   productName: string;
   productImage: string;
   originalPrice: number;

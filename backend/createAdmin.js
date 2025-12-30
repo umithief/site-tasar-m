@@ -32,14 +32,16 @@ const createAdmin = async () => {
         // Check if admin exists
         const existingAdmin = await User.findOne({ email: adminEmail });
         if (existingAdmin) {
-            console.log('⚠️ Admin user already exists.');
+            console.log('⚠️ Admin user already exists. Updating credentials...');
 
-            // Optional: Update password if you want to force reset
-            // const salt = await bcrypt.genSalt(10);
-            // existingAdmin.password = await bcrypt.hash(adminPassword, salt);
-            // existingAdmin.isAdmin = true;
-            // await existingAdmin.save();
-            // console.log('✅ Admin password/status updated.');
+            // Force update credentials
+            const salt = await bcrypt.genSalt(10);
+            existingAdmin.password = await bcrypt.hash(adminPassword, salt);
+            existingAdmin.isAdmin = true;
+            existingAdmin.rank = 'Yol Kaptanı'; // Ensure high rank
+            await existingAdmin.save();
+            console.log('✅ Admin password and privileges updated successfully.');
+            console.log(`🔑 New Password: ${adminPassword}`);
 
             process.exit(0);
         }

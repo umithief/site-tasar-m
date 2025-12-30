@@ -99,7 +99,7 @@ export const DirectMessages: React.FC<DirectMessagesProps> = ({ isOpen, onClose,
         const handleReceiveMessage = (payload: any) => {
             // Payload: { message: MessageObject, sender: UserObject }
             const newMsg: SocialChatMessage = {
-                id: payload.message._id,
+                _id: payload.message._id,
                 senderId: payload.sender._id,
                 text: payload.message.content,
                 timestamp: new Date(payload.message.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -152,7 +152,7 @@ export const DirectMessages: React.FC<DirectMessagesProps> = ({ isOpen, onClose,
 
         // Optimistic UI
         const optimisticMsg: SocialChatMessage = {
-            id: tempId,
+            _id: tempId,
             senderId: currentUser?._id || 'me',
             text: content,
             timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
@@ -292,7 +292,7 @@ export const DirectMessages: React.FC<DirectMessagesProps> = ({ isOpen, onClose,
                                         )}
                                         {messages.map((msg, index) => (
                                             <div
-                                                key={msg.id || index}
+                                                key={msg._id || index}
                                                 className={`flex ${msg.senderId === currentUser?._id ? 'justify-end' : 'justify-start'}`}
                                             >
                                                 <div className={`max-w-[80%] rounded-2xl p-3 ${msg.senderId === currentUser?._id ? 'bg-moto-accent text-black font-medium rounded-tr-none' : 'bg-white/5 text-gray-200 border border-white/10 rounded-tl-none'}`}>

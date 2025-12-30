@@ -621,7 +621,10 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
     };
 
     const handleGoogleNav = () => {
-        if (!currentLoc) return;
+        if (!currentLoc) {
+            alert("Konum bilgisi alınıyor... Lütfen GPS'in açık olduğundan emin olun.");
+            return;
+        }
         const targetLat = currentLoc.lat + 0.005;
         const targetLng = currentLoc.lng + 0.005;
         const url = `https://www.google.com/maps/dir/?api=1&destination=${targetLat},${targetLng}`;

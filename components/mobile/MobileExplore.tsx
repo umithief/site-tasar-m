@@ -65,8 +65,8 @@ export const MobileExplore: React.FC<MobileExploreProps> = ({ onNavigate }) => {
                         key={cat.id}
                         onClick={() => setActiveCategory(cat.id)}
                         className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all border ${activeCategory === cat.id
-                                ? 'bg-white text-black border-white'
-                                : 'bg-transparent text-gray-400 border-white/10 hover:border-white/30'
+                            ? 'bg-white text-black border-white'
+                            : 'bg-transparent text-gray-400 border-white/10 hover:border-white/30'
                             }`}
                     >
                         {cat.label}
@@ -91,14 +91,10 @@ export const MobileExplore: React.FC<MobileExploreProps> = ({ onNavigate }) => {
                                     }`}
                                 onClick={() => onNavigate('social-hub' as ViewState, { openPost: post._id })}
                             >
-                                {post.type === 'video' && (
-                                    <div className="absolute top-2 right-2 z-10">
-                                        <Play className="w-4 h-4 text-white drop-shadow-md fill-white/50" />
-                                    </div>
-                                )}
+                                {/* Video icon logic removed or needs 'type' in SocialPost */}
 
                                 <img
-                                    src={post.image || post.images?.[0] || 'https://via.placeholder.com/300'}
+                                    src={post.images?.[0] || 'https://via.placeholder.com/300'}
                                     alt="Explore"
                                     className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                                 />

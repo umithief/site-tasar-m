@@ -5,12 +5,12 @@ import { socialService } from '../../services/socialService';
 import { UserAvatar } from '../ui/UserAvatar';
 import { useAuthStore } from '../../store/authStore';
 
-import { SocialProfile } from '../../types';
+import { SocialProfile, ViewState } from '../../types';
 
 interface SearchOverlayProps {
     isOpen: boolean;
     onClose: () => void;
-    onNavigate: (view: string, data?: any) => void;
+    onNavigate: (view: ViewState, data?: any) => void;
 }
 
 export const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose, onNavigate }) => {

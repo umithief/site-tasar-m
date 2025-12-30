@@ -1,8 +1,8 @@
 import React from 'react';
 import { LayoutDashboard, Package, ShoppingCart, Users, Grid, Map, Circle, MessageSquare, Image as ImageIcon, Box, Zap, Globe, LogOut, Calendar, Activity, Film } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { AdminTab } from '../../types';
 
-type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'slider' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community' | 'paddock' | 'showcase' | 'vlogs';
 
 interface AdminSidebarProps {
     activeTab: AdminTab;

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Search, Bell, RotateCcw, Plus, Edit2, X, MoreVertical, Zap, Check, Loader2, Image as ImageIcon } from 'lucide-react';
-import { Order, Product, ProductCategory, User, Slide, CategoryItem, Route, Story, NegotiationOffer, Model3DItem, MeetupEvent, ForumTopic, SocialPost } from '../types';
+import { Order, Product, ProductCategory, User, Slide, CategoryItem, Route, Story, NegotiationOffer, Model3DItem, MeetupEvent, ForumTopic, SocialPost, AdminTab } from '../types';
 import { Button } from './ui/Button';
 import { AdminSidebar } from './admin/AdminSidebar';
 import { AdminDashboard } from './admin/AdminDashboard';
@@ -66,7 +66,6 @@ interface AdminPanelProps {
     onNavigate: (view: any) => void;
 }
 
-type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'slider' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community' | 'paddock' | 'showcase' | 'vlogs' | 'reels';
 
 
 
@@ -328,7 +327,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
     };
 
     return (
-        <div className="h-screen bg-[#09090b] text-white font-sans flex overflow-hidden selection:bg-[#F2A619] selection:text-black">
+        <div className="h-screen bg-[#121212] text-white font-sans flex overflow-hidden selection:bg-[#F2A619] selection:text-black">
 
             {/* --- SIDEBAR --- */}
             <AdminSidebar
@@ -340,10 +339,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
             />
 
             {/* --- MAIN CONTENT --- */}
-            <div className="flex-1 flex flex-col min-w-0 bg-[#09090b]">
+            <div className="flex-1 flex flex-col min-w-0 bg-[#0c0c0e]">
 
                 {/* Top Bar */}
-                <header className="h-20 border-b border-white/5 bg-[#09090b]/80 backdrop-blur-md sticky top-0 z-10 px-8 flex items-center justify-between">
+                <header className="h-20 border-b border-white/5 bg-[#0c0c0e]/80 backdrop-blur-md sticky top-0 z-10 px-8 flex items-center justify-between">
                     <div className="flex items-center gap-4">
                         <Button onClick={() => setIsSidebarOpen(!isSidebarOpen)} className="lg:hidden p-2 text-gray-400 hover:text-white">
                             <MoreVertical className="w-6 h-6" />

@@ -92,7 +92,7 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
             const map = mapRef.current;
 
             if (focusedRouteId) {
-                const route = routes.find(r => r.id === focusedRouteId);
+                const route = routes.find(r => r._id === focusedRouteId);
                 if (route) {
                     let latlngs: any[] = [];
 
@@ -134,7 +134,7 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                         const marker = L.marker([route.coordinates.lat, route.coordinates.lng], { icon })
                             .addTo(map)
                             .bindPopup(`<div class="font-sans text-center"><h3 class="font-bold text-base mb-1">${route.title}</h3><div class="text-xs text-gray-500 mb-2">${route.location}</div><span class="inline-block px-2 py-1 bg-[#F2A619] text-black text-[10px] font-bold rounded uppercase">${route.difficulty}</span><div class="mt-2 text-xs font-mono">${route.distance}</div></div>`, { closeButton: false, className: 'custom-popup-dark' })
-                            .on('click', () => setFocusedRouteId(route.id));
+                            .on('click', () => setFocusedRouteId(route._id));
                         layersRef.current.push(marker);
                     }
                 });
@@ -334,7 +334,7 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
         try {
             const added = await routeService.addRoute({
                 ...newRouteForm,
-                authorId: user.id,
+                authorId: user._id,
                 authorName: user.name,
                 image: newRouteForm.image || 'https://images.unsplash.com/photo-1605152276897-4f618f831968?q=80&w=1200'
             } as any);
@@ -502,7 +502,7 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                 {viewMode === 'grid' ? (
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
                         {filteredRoutes.map(route => (
-                            <div key={route.id} className="group bg-[#242421] border border-white/5 rounded-3xl overflow-hidden hover:border-[#F2A619]/30 transition-all hover:-translate-y-1">
+                            <div key={route._id} className="group bg-[#242421] border border-white/5 rounded-3xl overflow-hidden hover:border-[#F2A619]/30 transition-all hover:-translate-y-1">
                                 <div className="h-48 relative cursor-pointer" onClick={() => handleAnalyzeRoute(route)}>
                                     <img src={route.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-[#242421] via-transparent to-transparent"></div>
@@ -541,7 +541,7 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                                 </button>
                                 <div className="bg-[#1A1A17]/90 backdrop-blur p-4 rounded-xl border border-white/10 w-64 animate-in slide-in-from-left">
                                     {(() => {
-                                        const r = routes.find(ro => ro.id === focusedRouteId);
+                                        const r = routes.find(ro => ro._id === focusedRouteId);
                                         return r ? (
                                             <>
                                                 <h3 className="font-bold text-white text-lg leading-tight mb-1">{r.title}</h3>

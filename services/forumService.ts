@@ -165,7 +165,35 @@ export const forumService = {
 
     // --- SOCIAL FEED METHODS (New) ---
 
-    // Paddock methods removed
+    async getFeed(): Promise<any[]> {
+        if (CONFIG.USE_MOCK_API) {
+            await delay(500);
+            return []; // Mock empty feed
+        } else {
+            try {
+                const response = await fetch(`${CONFIG.API_URL}/social/feed`);
+                if (!response.ok) return [];
+                const data = await response.json();
+                return data.data || [];
+            } catch {
+                return [];
+            }
+        }
+    },
+
+    async deleteSocialPost(id: string): Promise<void> {
+        if (CONFIG.USE_MOCK_API) {
+            await delay(300);
+            // Mock delete
+        } else {
+            await fetch(`${CONFIG.API_URL}/social/posts/${id}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                }
+            });
+        }
+    },
 
     async followUser(userId: string): Promise<void> {
         if (CONFIG.USE_MOCK_API) {

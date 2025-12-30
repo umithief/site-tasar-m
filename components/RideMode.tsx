@@ -303,11 +303,11 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
             mapRef.current = map;
 
             // Initial Rider Marker
-            updateMarkerIcon();
             markerRef.current = L.marker(initialCenter, {
                 icon: L.divIcon({ className: 'dummy' }), // Placeholder
                 zIndexOffset: 1000
             }).addTo(map);
+            updateMarkerIcon(); // Call AFTER creation
 
             // GLOWING TRAIL Polyline (History)
             trailPolylineRef.current = L.polyline([], {
@@ -415,6 +415,8 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
         markerRef.current.setIcon(icon);
     };
 
+    const hasInitialPanRef = useRef(false);
+
     // --- OPTIMIZED POSITION UPDATE ---
     const updatePosition = (lat: number, lng: number, newSpeed: number, newHeading: number) => {
         const now = Date.now();
@@ -423,10 +425,10 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
         // Map Update
         if (now - lastMapUpdateRef.current > 50) {
             if (mapRef.current) {
-                // Only auto-pan if NOT exploring a route (user dragging)
-                // For simplicity, we pan if speed > 5 km/h or demo mode
-                if (newSpeed > 5 || isDemoMode) {
+                // Auto-pan if speed > 5 km/h OR if it's the first location update (initial center) OR demo mode
+                if (newSpeed > 5 || isDemoMode || !hasInitialPanRef.current) {
                     mapRef.current.setView([lat, lng], mapRef.current.getZoom(), { animate: true, duration: 0.5 });
+                    hasInitialPanRef.current = true;
                 }
             }
 

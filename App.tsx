@@ -593,7 +593,7 @@ export const App: React.FC = () => {
                         onNavigate={navigateTo}
                         user={user}
                         cartCount={cartItems.reduce((a, b) => a + b.quantity, 0)}
-                        onOpenAuth={() => navigateTo('auth')}
+                        onOpenAuth={() => setIsAuthOpen(true)}
                         onOpenFeedback={() => setIsFeedbackOpen(true)}
                         onToggleTheme={() => setIsThemeModalOpen(true)}
                     >

@@ -24,15 +24,22 @@ export const MobileAuth: React.FC<MobileAuthProps> = ({ onClose, onSuccess }) =>
         setIsLoading(true);
         setServerError(null);
 
+        // Sanitize Input (Crucial for Mobile)
+        const email = data.email.trim().toLowerCase();
+        const password = data.password; // Do not trim password, but maybe check for accidental spaces if desired (risky)
+
+        // Debug Log
+        console.log('Mobile Auth Attempt:', { email, passwordLength: password.length });
+
         try {
             if (isLogin) {
-                await login(data.email, data.password);
+                await login(email, password);
             } else {
                 await useAuthStore.getState().register({
-                    name: data.name,
-                    email: data.email,
-                    password: data.password,
-                    bikeModel: data.bikeModel
+                    name: data.name.trim(),
+                    email: email,
+                    password: password,
+                    bikeModel: data.bikeModel?.trim()
                 });
             }
 
@@ -45,6 +52,17 @@ export const MobileAuth: React.FC<MobileAuthProps> = ({ onClose, onSuccess }) =>
             setIsLoading(false);
         }
     };
+    // ... (rest of file)
+
+    <input
+        {...register('email', { required: true })}
+        type="email"
+        autoCapitalize="none"
+        autoComplete="email"
+        autoCorrect="off"
+        className="w-full bg-transparent border-none py-4 px-4 text-xl text-white placeholder-white/10 focus:ring-0 focus:outline-none font-medium"
+        placeholder="ornek@email.com"
+    />
 
     const toggleMode = () => {
         setIsLogin(!isLogin);
@@ -141,6 +159,9 @@ export const MobileAuth: React.FC<MobileAuthProps> = ({ onClose, onSuccess }) =>
                                     <input
                                         {...register('email', { required: true })}
                                         type="email"
+                                        autoCapitalize="none"
+                                        autoComplete="email"
+                                        autoCorrect="off"
                                         className="w-full bg-transparent border-none py-4 px-4 text-xl text-white placeholder-white/10 focus:ring-0 focus:outline-none font-medium"
                                         placeholder="ornek@email.com"
                                     />

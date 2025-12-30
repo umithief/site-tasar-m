@@ -18,6 +18,7 @@ import { ToastType, ToastContainer, ToastMessage } from './components/Toast';
 import { RideMode } from './components/RideMode';
 import { MotoTool } from './components/MotoTool';
 import { RouteExplorer } from './components/RouteExplorer';
+import { MobileOnboarding } from './components/mobile/MobileOnboarding';
 import { MobileRoutes } from './components/mobile/MobileRoutes';
 import { MobileAuth } from './components/mobile/MobileAuth';
 import { MotoMeetup } from './components/MotoMeetup';
@@ -440,6 +441,7 @@ export const App: React.FC = () => {
             case 'my-profile': return user ? <MyProfile /> : <div className="pt-32 text-center text-gray-500">Lütfen giriş yapın.</div>;
             case 'public-profile': return viewingUser ? <ProfilePage userId={viewingUser._id} onNavigate={navigateTo} onBack={() => navigateTo('riders')} /> : <div className="pt-32 text-center text-gray-500">Kullanıcı yüklenemedi.</div>;
             case 'admin': return user?.isAdmin ? <AdminPanel onLogout={() => { authService.logout(); setUser(null); navigateTo('home'); }} onShowToast={addToast} onNavigate={navigateTo} /> : <div className="pt-32 text-center text-gray-500">Yetkisiz erişim.</div>;
+            case 'onboarding': return <MobileOnboarding onNavigate={navigateTo} />;
             case 'blog': return <Blog onNavigate={navigateTo} />;
             case 'about': return <About onNavigate={navigateTo} />;
             case 'ai-assistant': return <AIAssistantPage />;

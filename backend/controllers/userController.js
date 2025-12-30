@@ -195,19 +195,32 @@ export const addToGarage = catchAsync(async (req, res, next) => {
         return next(new AppError('Marka ve model gereklidir.', 400));
     }
 
-    const user = await User.findByIdAndUpdate(
-        req.user.id,
-        {
-            $push: {
-                garage: { brand, model, year, image: image || 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=800' }
-            }
-        },
-        { new: true, runValidators: true }
-    );
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+        return next(new AppError('Kullanıcı bulunamadı.', 404));
+    }
+
+    const newBike = {
+        brand,
+        model,
+        year: year || new Date().getFullYear(),
+        image: image || 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=800',
+        _id: new mongoose.Types.ObjectId()
+    };
+
+    user.garage.push(newBike);
+
+    // If this is the first bike, set as primary
+    if (user.garage.length === 1) {
+        user.primaryBike = `${brand} ${model}`;
+    }
+
+    await user.save();
 
     res.status(200).json({
         status: 'success',
-        data: { garage: user.garage }
+        data: { garage: user.garage, primaryBike: user.primaryBike }
     });
 });
 

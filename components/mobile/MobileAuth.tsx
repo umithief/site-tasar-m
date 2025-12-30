@@ -26,26 +26,21 @@ export const MobileAuth: React.FC<MobileAuthProps> = ({ onClose, onSuccess }) =>
 
         try {
             if (isLogin) {
-                const response = await api.post('/users/login', {
-                    email: data.email,
-                    password: data.password
-                });
-                login(response.data.data.user, response.data.token);
+                await login(data.email, data.password);
             } else {
-                const response = await api.post('/users/register', {
+                await useAuthStore.getState().register({
                     name: data.name,
                     email: data.email,
                     password: data.password,
                     bikeModel: data.bikeModel
                 });
-                login(response.data.data.user, response.data.token);
             }
 
             if (onSuccess) onSuccess();
             if (onClose) onClose();
         } catch (error: any) {
             console.error(error);
-            setServerError(error.response?.data?.message || 'Bir hata oluştu. Lütfen tekrar deneyin.');
+            setServerError(error.message || 'Bir hata oluştu. Lütfen tekrar deneyin.');
         } finally {
             setIsLoading(false);
         }

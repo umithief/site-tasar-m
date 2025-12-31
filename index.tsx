@@ -23,6 +23,11 @@ async function enableMocking() {
   // AND we are in development mode.
   // This allows MSW to simulate the backend when USE_MOCK_API is false (Live Mode)
   // but the real backend isn't running.
+
+  // FIXED: We want to use the REAL backend (MongoDB), so we disable MSW.
+  return Promise.resolve();
+
+  /*
   if (!CONFIG.USE_MOCK_API && process.env.NODE_ENV === 'development') {
     const { worker } = await import('./mocks/browser');
 
@@ -33,6 +38,7 @@ async function enableMocking() {
       console.warn('MSW worker failed to start. Standard backend connection will be used.', err);
     });
   }
+  */
 }
 
 const rootElement = document.getElementById('root');

@@ -1,5 +1,3 @@
-<<<<<<< HEAD
-
 import React, { useState, useEffect } from 'react';
 import { Plus } from 'lucide-react';
 =======
@@ -138,74 +136,74 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                         </Button>
 =======
         routeService.getRoutes().then(data => {
-            setRoutes(data);
-            setFilteredRoutes(data);
+                            setRoutes(data);
+                        setFilteredRoutes(data);
         }).catch(err => {
-            console.error('Failed to load routes:', err);
-            setRoutes([]); setFilteredRoutes([]);
+                            console.error('Failed to load routes:', err);
+                        setRoutes([]); setFilteredRoutes([]);
         });
     }, []);
 
     useEffect(() => {
-        let res = routes;
+                            let res = routes;
         if (searchQuery) res = res.filter(r => r.title.toLowerCase().includes(searchQuery.toLowerCase()) || r.location.toLowerCase().includes(searchQuery.toLowerCase()));
         if (difficultyFilter !== 'All') res = res.filter(r => r.difficulty === difficultyFilter);
-        setFilteredRoutes(res);
+                        setFilteredRoutes(res);
     }, [routes, searchQuery, difficultyFilter]);
 
     // --- Map Initialization (View Mode) ---
     useEffect(() => {
         if (viewMode === 'map' && mapContainerRef.current && !mapRef.current && typeof L !== 'undefined') {
-            const map = L.map(mapContainerRef.current, { zoomControl: false, attributionControl: false }).setView([39.9, 32.8], 6);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap',
-                maxZoom: 19
+            const map = L.map(mapContainerRef.current, {zoomControl: false, attributionControl: false }).setView([39.9, 32.8], 6);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                            attribution: '&copy; OpenStreetMap',
+                        maxZoom: 19
             }).addTo(map);
-            // Dark Mode Filter for Map
-            if (mapContainerRef.current) {
+                        // Dark Mode Filter for Map
+                        if (mapContainerRef.current) {
                 const tiles = mapContainerRef.current.querySelectorAll('.leaflet-tile-pane');
                 tiles.forEach((t: any) => t.style.filter = 'grayscale(100%) invert(100%) brightness(0.7) contrast(1.2)');
             }
-            mapRef.current = map;
+                        mapRef.current = map;
         }
     }, [viewMode]);
 
     // --- Map Layers & Markers ---
     useEffect(() => {
         if (viewMode === 'map' && mapRef.current) {
-            layersRef.current.forEach(l => l.remove());
-            layersRef.current = [];
-            const map = mapRef.current;
+                            layersRef.current.forEach(l => l.remove());
+                        layersRef.current = [];
+                        const map = mapRef.current;
 
-            if (focusedRouteId) {
+                        if (focusedRouteId) {
                 const route = routes.find(r => r._id === focusedRouteId);
-                if (route) {
-                    let latlngs: any[] = [];
+                        if (route) {
+                            let latlngs: any[] = [];
                     if (route.path?.length > 0) latlngs = route.path.map(p => [p.lat, p.lng]);
-                    else if (route.coordinates) latlngs = [[route.coordinates.lat, route.coordinates.lng]];
+                        else if (route.coordinates) latlngs = [[route.coordinates.lat, route.coordinates.lng]];
 
                     if (latlngs.length > 1) {
-                        const poly = L.polyline(latlngs, { color: '#F2A619', weight: 6, opacity: 0.9 }).addTo(map);
+                        const poly = L.polyline(latlngs, {color: '#F2A619', weight: 6, opacity: 0.9 }).addTo(map);
                         layersRef.current.push(poly);
-                        map.fitBounds(poly.getBounds(), { padding: [50, 50] });
+                        map.fitBounds(poly.getBounds(), {padding: [50, 50] });
                     } else if (latlngs.length === 1) {
-                        map.setView(latlngs[0], 13);
+                            map.setView(latlngs[0], 13);
                     }
                 }
             } else {
-                routes.forEach(route => {
-                    if (route.coordinates) {
-                        const icon = L.divIcon({
-                            className: 'custom-pin',
-                            html: `<div class="w-8 h-8 bg-moto-accent rounded-full border-2 border-black flex items-center justify-center shadow-lg transform hover:scale-125 transition-transform"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-black"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>`,
-                            iconSize: [32, 32], iconAnchor: [16, 32]
-                        });
-                        const marker = L.marker([route.coordinates.lat, route.coordinates.lng], { icon })
-                            .addTo(map)
-                            .on('click', () => setFocusedRouteId(route._id));
-                        layersRef.current.push(marker);
-                    }
-                });
+                            routes.forEach(route => {
+                                if (route.coordinates) {
+                                    const icon = L.divIcon({
+                                        className: 'custom-pin',
+                                        html: `<div class="w-8 h-8 bg-moto-accent rounded-full border-2 border-black flex items-center justify-center shadow-lg transform hover:scale-125 transition-transform"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" class="text-black"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></svg></div>`,
+                                        iconSize: [32, 32], iconAnchor: [16, 32]
+                                    });
+                                    const marker = L.marker([route.coordinates.lat, route.coordinates.lng], { icon })
+                                        .addTo(map)
+                                        .on('click', () => setFocusedRouteId(route._id));
+                                    layersRef.current.push(marker);
+                                }
+                            });
             }
         }
     }, [viewMode, routes, focusedRouteId]);
@@ -215,163 +213,165 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
     // (Keeping logic mostly same but updating UI wrappers)
     const handleCreateMapClick = (e: any) => {
         const map = createMapRef.current;
-        if (!map) return;
-        if (waypointsRef.current.length >= 2) { notify.info("Önce 'Temizle' deyin."); return; }
-        waypointsRef.current.push(e.latlng);
-        L.marker(e.latlng).addTo(map); // Simplified marker for brevity
-        if (waypointsRef.current.length === 2) {
+                        if (!map) return;
+        if (waypointsRef.current.length >= 2) {notify.info("Önce 'Temizle' deyin."); return; }
+                        waypointsRef.current.push(e.latlng);
+                        L.marker(e.latlng).addTo(map); // Simplified marker for brevity
+                        if (waypointsRef.current.length === 2) {
             const control = L.Routing.control({
-                waypoints: waypointsRef.current,
-                router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1', profile: 'driving' }),
-                lineOptions: { styles: [{ color: '#F2A619', opacity: 0.8, weight: 6 }] },
+                            waypoints: waypointsRef.current,
+                        router: L.Routing.osrmv1({serviceUrl: 'https://router.project-osrm.org/route/v1', profile: 'driving' }),
+                        lineOptions: {styles: [{color: '#F2A619', opacity: 0.8, weight: 6 }] },
                 addWaypoints: false, show: false, fitSelectedRoutes: true, createMarker: () => null
             }).addTo(map);
             control.on('routesfound', (e: any) => {
                 const r = e.routes[0];
-                setNewRouteForm(prev => ({ ...prev, distance: `${(r.summary.totalDistance / 1000).toFixed(1)} km`, duration: `${Math.round(r.summary.totalTime / 60)} dk`, path: r.coordinates.map((c: any) => ({ lat: c.lat, lng: c.lng })), coordinates: { lat: waypointsRef.current[0].lat, lng: waypointsRef.current[0].lng } }));
+                setNewRouteForm(prev => ({...prev, distance: `${(r.summary.totalDistance / 1000).toFixed(1)} km`, duration: `${Math.round(r.summary.totalTime / 60)} dk`, path: r.coordinates.map((c: any) => ({lat: c.lat, lng: c.lng })), coordinates: {lat: waypointsRef.current[0].lat, lng: waypointsRef.current[0].lng } }));
             });
-            routingControlRef.current = control;
+                        routingControlRef.current = control;
         }
     };
 
     useEffect(() => {
         if (!isCreating || !createMapContainerRef.current || createMapRef.current) return;
-        if (typeof L === 'undefined') return;
+                        if (typeof L === 'undefined') return;
         setTimeout(() => {
-            const map = L.map(createMapContainerRef.current, { zoomControl: false }).setView([39.0, 35.0], 6);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
-            if (createMapContainerRef.current) {
+            const map = L.map(createMapContainerRef.current, {zoomControl: false }).setView([39.0, 35.0], 6);
+                        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+                        if (createMapContainerRef.current) {
                 const tiles = createMapContainerRef.current.querySelectorAll('.leaflet-tile-pane');
                 tiles.forEach((t: any) => t.style.filter = 'grayscale(100%) invert(100%) brightness(0.7) contrast(1.2)');
             }
-            map.on('click', handleCreateMapClick);
-            createMapRef.current = map;
+                        map.on('click', handleCreateMapClick);
+                        createMapRef.current = map;
         }, 100);
     }, [isCreating]);
 
     // --- Handlers ---
     const handleNavigation = (route: Route) => setNavChoiceRoute(route);
     const handleAnalyzeRoute = async (route: Route) => {
-        setSelectedRoute(route); setAiAnalysis(null); setIsLoadingAI(true);
-        try {
+                            setSelectedRoute(route); setAiAnalysis(null); setIsLoadingAI(true);
+                        try {
             const prompt = `Analiz et: ${route.title} (${route.location}), Zorluk: ${route.difficulty}. Türkçe.`;
-            const response = await sendMessageToGemini(prompt);
-            setAiAnalysis(response);
-        } catch { setAiAnalysis("Hata."); } finally { setIsLoadingAI(false); }
+                        const response = await sendMessageToGemini(prompt);
+                        setAiAnalysis(response);
+        } catch {setAiAnalysis("Hata."); } finally {setIsLoadingAI(false); }
     };
     const handleSaveRoute = async () => {
         if (!user || !newRouteForm.title) return;
-        await routeService.addRoute({ ...newRouteForm, authorId: user._id, authorName: user.name, image: newRouteForm.image || 'https://images.unsplash.com/photo-1605152276897-4f618f831968?q=80&w=1200' } as any);
-        setIsCreating(false); notify.success("Rota eklendi!");
-        // Refresh routes...
-        const data = await routeService.getRoutes(); setRoutes(data);
+                        await routeService.addRoute({...newRouteForm, authorId: user._id, authorName: user.name, image: newRouteForm.image || 'https://images.unsplash.com/photo-1605152276897-4f618f831968?q=80&w=1200' } as any);
+                        setIsCreating(false); notify.success("Rota eklendi!");
+                        // Refresh routes...
+                        const data = await routeService.getRoutes(); setRoutes(data);
     };
 
-    return (
-        <div className={`bg-[#09090b] min-h-screen text-white font-sans selection:bg-moto-accent/30 ${isEmbedded ? '' : 'pt-24 pb-20 lg:pb-0'}`}>
-            {!isEmbedded && <div className="fixed top-0 left-0 w-full h-[50vh] bg-gradient-to-b from-blue-900/10 to-transparent pointer-events-none" />}
+                        return (
+                        <div className={`bg-[#09090b] min-h-screen text-white font-sans selection:bg-moto-accent/30 ${isEmbedded ? '' : 'pt-24 pb-20 lg:pb-0'}`}>
+                            {!isEmbedded && <div className="fixed top-0 left-0 w-full h-[50vh] bg-gradient-to-b from-blue-900/10 to-transparent pointer-events-none" />}
 
-            <div className={`max-w-[1600px] mx-auto px-4 lg:px-8 grid grid-cols-1 ${isEmbedded ? 'lg:grid-cols-[320px_1fr] h-full gap-6' : 'lg:grid-cols-[360px_1fr] gap-8'} relative items-start`}>
+                            <div className={`max-w-[1600px] mx-auto px-4 lg:px-8 grid grid-cols-1 ${isEmbedded ? 'lg:grid-cols-[320px_1fr] h-full gap-6' : 'lg:grid-cols-[360px_1fr] gap-8'} relative items-start`}>
 
-                {/* --- LEFT SIDEBAR (Controls) --- */}
-                <div className={`flex flex-col gap-6 ${isEmbedded ? 'h-full overflow-hidden' : 'sticky top-28'}`}>
+                                {/* --- LEFT SIDEBAR (Controls) --- */}
+                                <div className={`flex flex-col gap-6 ${isEmbedded ? 'h-full overflow-hidden' : 'sticky top-28'}`}>
 
-                    {/* Search & Filter Card */}
-                    <div className="bg-[#111] border border-white/5 rounded-[2rem] p-6 shadow-2xl backdrop-blur-xl relative overflow-hidden group">
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-moto-accent/5 rounded-full blur-[50px] pointer-events-none" />
+                                    {/* Search & Filter Card */}
+                                    <div className="bg-[#111] border border-white/5 rounded-[2rem] p-6 shadow-2xl backdrop-blur-xl relative overflow-hidden group">
+                                        <div className="absolute top-0 right-0 w-32 h-32 bg-moto-accent/5 rounded-full blur-[50px] pointer-events-none" />
 
-                        <h2 className="text-2xl font-black font-display text-white mb-6 uppercase tracking-tight italic">
-                            Rota <span className="text-moto-accent">Keşfi</span>
-                        </h2>
+                                        <h2 className="text-2xl font-black font-display text-white mb-6 uppercase tracking-tight italic">
+                                            Rota <span className="text-moto-accent">Keşfi</span>
+                                        </h2>
 
-                        <div className="relative mb-5 group/search">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within/search:text-moto-accent transition-colors" />
-                            <input
-                                type="text"
-                                value={searchQuery}
-                                onChange={e => setSearchQuery(e.target.value)}
-                                placeholder="Şehir veya rota ara..."
-                                className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-moto-accent/50 transition-all font-medium"
-                            />
-                        </div>
+                                        <div className="relative mb-5 group/search">
+                                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within/search:text-moto-accent transition-colors" />
+                                            <input
+                                                type="text"
+                                                value={searchQuery}
+                                                onChange={e => setSearchQuery(e.target.value)}
+                                                placeholder="Şehir veya rota ara..."
+                                                className="w-full bg-black/40 border border-white/10 rounded-2xl py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-moto-accent/50 transition-all font-medium"
+                                            />
+                                        </div>
 
-                        <div className="space-y-3">
-                            <div className="flex justify-between items-center text-xs font-bold text-gray-500 uppercase px-1">
-                                <span>Zorluk Seviyesi</span>
-                                <Filter className="w-3 h-3" />
-                            </div>
-                            <div className="flex flex-wrap gap-2">
-                                {['All', 'Kolay', 'Orta', 'Zor', 'Extreme'].map(lvl => (
-                                    <button
-                                        key={lvl}
-                                        onClick={() => setDifficultyFilter(lvl)}
-                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${difficultyFilter === lvl ? 'bg-moto-accent text-black border-moto-accent' : 'bg-white/5 text-gray-400 border-white/10 hover:border-white/20'}`}
-                                    >
-                                        {lvl === 'All' ? 'Tümü' : lvl}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
+                                        <div className="space-y-3">
+                                            <div className="flex justify-between items-center text-xs font-bold text-gray-500 uppercase px-1">
+                                                <span>Zorluk Seviyesi</span>
+                                                <Filter className="w-3 h-3" />
+                                            </div>
+                                            <div className="flex flex-wrap gap-2">
+                                                {['All', 'Kolay', 'Orta', 'Zor', 'Extreme'].map(lvl => (
+                                                    <button
+                                                        key={lvl}
+                                                        onClick={() => setDifficultyFilter(lvl)}
+                                                        className={`px-3 py-1.5 rounded-lg text-xs font-bold border transition-all ${difficultyFilter === lvl ? 'bg-moto-accent text-black border-moto-accent' : 'bg-white/5 text-gray-400 border-white/10 hover:border-white/20'}`}
+                                                    >
+                                                        {lvl === 'All' ? 'Tümü' : lvl}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
 
-                        <div className="h-[1px] bg-white/5 w-full my-6"></div>
+                                        <div className="h-[1px] bg-white/5 w-full my-6"></div>
 
-                        <div className="grid grid-cols-2 gap-3">
-                            <Button onClick={onOpenAuth} disabled={!!user} className="w-full py-3 bg-white/5 hover:bg-white hover:text-black border border-white/10 text-white justify-center font-bold text-xs rounded-xl transition-all">
-                                <User className="w-4 h-4 mr-2" /> {user ? 'Giriş Yapıldı' : 'Giriş Yap'}
-                            </Button>
-                            <Button onClick={() => user ? setIsCreating(true) : onOpenAuth && onOpenAuth()} className="w-full py-3 bg-moto-accent text-black hover:bg-white justify-center font-bold text-xs rounded-xl shadow-lg shadow-moto-accent/10 transition-all">
-                                <Plus className="w-4 h-4 mr-2" /> Rota Oluştur
-                            </Button>
-                        </div>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            <Button onClick={onOpenAuth} disabled={!!user} className="w-full py-3 bg-white/5 hover:bg-white hover:text-black border border-white/10 text-white justify-center font-bold text-xs rounded-xl transition-all">
+                                                <User className="w-4 h-4 mr-2" /> {user ? 'Giriş Yapıldı' : 'Giriş Yap'}
+                                            </Button>
+                                            <Button onClick={() => user ? setIsCreating(true) : onOpenAuth && onOpenAuth()} className="w-full py-3 bg-moto-accent text-black hover:bg-white justify-center font-bold text-xs rounded-xl shadow-lg shadow-moto-accent/10 transition-all">
+                                                <Plus className="w-4 h-4 mr-2" /> Rota Oluştur
+                                            </Button>
+                                        </div>
 >>>>>>> restore-2025-12-25
-                    </div>
+                                    </div>
 
-                    {/* Stats / Challenge Card */}
-                    <div className="bg-gradient-to-br from-[#111] to-black border border-white/5 rounded-[2rem] p-6 relative overflow-hidden group hover:border-moto-accent/30 transition-all cursor-pointer">
-                        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none"></div>
-                        <div className="relative z-10">
-                            <div className="flex items-center gap-2 mb-3">
-                                <div className="p-1.5 bg-yellow-500/10 rounded-lg text-yellow-500"><Trophy className="w-4 h-4" /></div>
-                                <span className="text-[10px] font-bold text-yellow-500 uppercase tracking-widest">Haftanın Rotası</span>
-                            </div>
-                            <h3 className="text-lg font-bold text-white leading-tight mb-4">Marmaris - Datça Virajları</h3>
-                            <div className="flex items-center justify-between">
-                                <div className="flex -space-x-2">
-                                    {[1, 2, 3].map(i => <div key={i} className="w-8 h-8 rounded-full border-2 border-[#111] bg-gray-800" />)}
+                                    {/* Stats / Challenge Card */}
+                                    <div className="bg-gradient-to-br from-[#111] to-black border border-white/5 rounded-[2rem] p-6 relative overflow-hidden group hover:border-moto-accent/30 transition-all cursor-pointer">
+                                        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none"></div>
+                                        <div className="relative z-10">
+                                            <div className="flex items-center gap-2 mb-3">
+                                                <div className="p-1.5 bg-yellow-500/10 rounded-lg text-yellow-500"><Trophy className="w-4 h-4" /></div>
+                                                <span className="text-[10px] font-bold text-yellow-500 uppercase tracking-widest">Haftanın Rotası</span>
+                                            </div>
+                                            <h3 className="text-lg font-bold text-white leading-tight mb-4">Marmaris - Datça Virajları</h3>
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex -space-x-2">
+                                                    {[1, 2, 3].map(i => <div key={i} className="w-8 h-8 rounded-full border-2 border-[#111] bg-gray-800" />)}
+                                                </div>
+                                                <span className="text-xs font-bold text-gray-500">234 kişi sürdü</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
-                                <span className="text-xs font-bold text-gray-500">234 kişi sürdü</span>
-                            </div>
-                        </div>
-                    </div>
-
-                </div>
 <<<<<<< HEAD
             )}
 
-            {/* Main Content Area */}
-            {viewMode === 'create' ? (
-                <RouteCreator
-                    onSave={handleCreateRoute}
-                    onCancel={() => setViewMode('list')}
-                />
-            ) : (
-                <RouteList
-                    routes={routes}
-                    isLoading={isLoading}
-                    onSelectRoute={setSelectedRoute}
-                    searchQuery={searchQuery}
-                    setSearchQuery={setSearchQuery}
-                    difficultyFilter={difficultyFilter}
-                    setDifficultyFilter={setDifficultyFilter}
-                />
-            )}
+{/* Main Content Area */ }
+{
+    viewMode === 'create' ? (
+        <RouteCreator
+            onSave={handleCreateRoute}
+            onCancel={() => setViewMode('list')}
+        />
+    ) : (
+    <RouteList
+        routes={routes}
+        isLoading={isLoading}
+        onSelectRoute={setSelectedRoute}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        difficultyFilter={difficultyFilter}
+        setDifficultyFilter={setDifficultyFilter}
+    />
+)
+}
 
-            {/* Detail Modal */}
-            <RouteDetailModal
-                route={selectedRoute}
-                onClose={() => setSelectedRoute(null)}
-                onStartRide={handleStartRide}
-            />
+{/* Detail Modal */ }
+<RouteDetailModal
+    route={selectedRoute}
+    onClose={() => setSelectedRoute(null)}
+    onStartRide={handleStartRide}
+/>
 =======
 
                 {/* --- MAIN CONTENT (Grid or Map) --- */}
@@ -532,6 +532,6 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
 
             <RouteDetailModal route={selectedRoute} isOpen={!!selectedRoute} onClose={() => setSelectedRoute(null)} onStartRide={handleNavigation} />
 >>>>>>> restore-2025-12-25
-        </div>
+        </div >
     );
 };

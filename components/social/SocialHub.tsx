@@ -174,8 +174,8 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                 </div>
                             </div>
 
-                            {/* Community CTA (if not logged in or specific condition) */}
-                            {!currentUser && ( // Assuming currentUser being null/undefined means not logged in
+                            {/* Community CTA (if not logged in) */}
+                            {!currentUser && (
                                 <div className="flex flex-col items-center justify-center py-10 px-4 text-center bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl mb-8">
                                     <div className="max-w-md space-y-2 mb-6">
                                         <h2 className="text-3xl font-display font-bold text-white">Topluluğa Katıl</h2>
@@ -190,157 +190,158 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                     </Button>
                                 </div>
                             )}
-                            <motion.div
-                                initial={{ height: 0, opacity: 0 }}
-                                animate={{ height: 'auto', opacity: 1 }}
-                                exit={{ height: 0, opacity: 0 }}
-                                className="mb-8"
-                            >
-                                <div className="bg-[#111] border border-white/10 rounded-3xl p-6 shadow-2xl relative overflow-hidden">
-                                    <div className="flex gap-4">
-                                        <UserAvatar src={currentUser?.profileImage} name={currentUser?.name} size={48} />
-                                        <div className="flex-1">
-                                            <textarea
-                                                value={newPostContent}
-                                                onChange={(e) => setNewPostContent(e.target.value)}
-                                                className="w-full bg-transparent text-xl font-light placeholder-gray-600 outline-none resize-none min-h-[100px]"
-                                                placeholder="Sürüş nasıl geçti?"
-                                            />
-                                            {mediaUrl && (
-                                                <div className="relative mt-4 w-full h-64 rounded-xl overflow-hidden group">
-                                                    <img src={mediaUrl} className="w-full h-full object-cover" />
-                                                    <button onClick={() => setMediaUrl(null)} className="absolute top-2 right-2 bg-black/50 p-2 rounded-full text-white hover:bg-black transition-colors"><Plus className="rotate-45" /></button>
+
+                            {/* Create Post Area */}
+                            <AnimatePresence>
+                                {isCreateOpen && (
+                                    <motion.div
+                                        initial={{ height: 0, opacity: 0 }}
+                                        animate={{ height: 'auto', opacity: 1 }}
+                                        exit={{ height: 0, opacity: 0 }}
+                                        className="mb-8 overflow-hidden"
+                                    >
+                                        <div className="bg-[#111] border border-white/10 rounded-3xl p-6 shadow-2xl relative">
+                                            <div className="flex gap-4">
+                                                <UserAvatar src={currentUser?.profileImage} name={currentUser?.name} size={48} />
+                                                <div className="flex-1">
+                                                    <textarea
+                                                        value={newPostContent}
+                                                        onChange={(e) => setNewPostContent(e.target.value)}
+                                                        className="w-full bg-transparent text-xl font-light placeholder-gray-600 outline-none resize-none min-h-[100px]"
+                                                        placeholder="Sürüş nasıl geçti?"
+                                                    />
+                                                    {mediaUrl && (
+                                                        <div className="relative mt-4 w-full h-64 rounded-xl overflow-hidden group">
+                                                            <img src={mediaUrl} className="w-full h-full object-cover" />
+                                                            <button onClick={() => setMediaUrl(null)} className="absolute top-2 right-2 bg-black/50 p-2 rounded-full text-white hover:bg-black transition-colors"><Plus className="rotate-45" /></button>
+                                                        </div>
+                                                    )}
+                                                    <div className="flex justify-between items-center mt-6 pt-4 border-t border-white/5">
+                                                        <div className="flex gap-4 text-moto-accent">
+                                                            <MediaUploader onUploadComplete={setMediaUrl} onUploadError={(e) => alert(e)} />
+                                                            <MapIcon className="w-5 h-5 cursor-pointer hover:text-white transition-colors" />
+                                                        </div>
+                                                        <button
+                                                            onClick={handleCreatePost}
+                                                            disabled={!newPostContent && !mediaUrl}
+                                                            className="bg-white text-black px-8 py-2.5 rounded-xl font-bold hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:scale-100"
+                                                        >
+                                                            PAYLAŞ
+                                                        </button>
+                                                    </div>
                                                 </div>
-                                            )}
-                                            <div className="flex justify-between items-center mt-6 pt-4 border-t border-white/5">
-                                                <div className="flex gap-4 text-moto-accent">
-                                                    <MediaUploader onUploadComplete={setMediaUrl} onUploadError={(e) => alert(e)} />
-                                                    <MapIcon className="w-5 h-5 cursor-pointer hover:text-white transition-colors" />
-                                                </div>
-                                                <button
-                                                    onClick={handleCreatePost}
-                                                    disabled={!newPostContent && !mediaUrl}
-                                                    className="bg-white text-black px-8 py-2.5 rounded-xl font-bold hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:scale-100"
-                                                >
-                                                    PAYLAŞ
-                                                </button>
                                             </div>
                                         </div>
-                                    </div>
-                                </div>
-                            </motion.div>
-    )}
-                        </AnimatePresence>
-
-                    {/* Feed Stream */}
-                    <div className="space-y-12">
-                        {data?.pages.map((page, i) => (
-                            <React.Fragment key={i}>
-                                {page?.map((post: SocialPost) => (
-                                    <motion.div
-                                        initial={{ opacity: 0, y: 50 }}
-                                        whileInView={{ opacity: 1, y: 0 }}
-                                        viewport={{ once: true, margin: "-10%" }}
-                                        className="group"
-                                    >
-                                        {/* Re-using PostCard component but wrapping it slightly differently if needed for new style, 
-                                                    or we can trust PostCard's internal style. 
-                                                    For this radical redesign, let's assume PostCard is flexible enough, 
-                                                    or we style a wrapper around it. */}
-                                        <div className="relative">
-                                            <div className="absolute -left-4 top-0 bottom-0 w-[1px] bg-white/5 group-hover:bg-white/10 transition-colors hidden xl:block" />
-                                            <PostCard post={post} currentUserId={currentUser?._id} />
-                                        </div>
                                     </motion.div>
+                                )}
+                            </AnimatePresence>
+
+                            {/* Feed Stream */}
+                            <div className="space-y-12">
+                                {data?.pages.map((page, i) => (
+                                    <React.Fragment key={i}>
+                                        {page?.map((post: SocialPost) => (
+                                            <motion.div
+                                                key={post._id}
+                                                initial={{ opacity: 0, y: 50 }}
+                                                whileInView={{ opacity: 1, y: 0 }}
+                                                viewport={{ once: true, margin: "-10%" }}
+                                                className="group"
+                                            >
+                                                <div className="relative">
+                                                    <div className="absolute -left-4 top-0 bottom-0 w-[1px] bg-white/5 group-hover:bg-white/10 transition-colors hidden xl:block" />
+                                                    <ResponsivePostCard post={post} currentUserId={currentUser?._id} onNavigate={onNavigate} />
+                                                </div>
+                                            </motion.div>
+                                        ))}
+                                    </React.Fragment>
                                 ))}
-                            </React.Fragment>
-                        ))}
-                        {isFetchingNextPage && <div className="flex justify-center py-8"><div className="w-8 h-8 border-2 border-moto-accent border-t-transparent rounded-full animate-spin" /></div>}
-                        {hasNextPage && (
-                            <div className="flex justify-center pt-8">
-                                <button onClick={() => fetchNextPage()} className="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-white transition-colors">Daha Fazla Yükle</button>
+                                {isFetchingNextPage && <div className="flex justify-center py-8"><div className="w-8 h-8 border-2 border-moto-accent border-t-transparent rounded-full animate-spin" /></div>}
+                                {hasNextPage && (
+                                    <div className="flex justify-center pt-8">
+                                        <button onClick={() => fetchNextPage()} className="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-white transition-colors">Daha Fazla Yükle</button>
+                                    </div>
+                                )}
                             </div>
-                        )}
-                    </div>
-                </>
-                ) : (
-                /* WIDE VIEW AREA (Map/Routes/Events) */
-                <div className="h-[calc(100vh-140px)] sticky top-28 bg-[#111] rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl">
-                    {view === 'vlog' && <MotoVlogMap user={currentUser} isEmbedded />}
-                    {view === 'routes' && <RouteExplorer user={currentUser} isEmbedded />}
-                    {view === 'events' && <MotoMeetup user={currentUser} isEmbedded />}
-                </div>
-)}
-            </div >
-
-            {/* --- RIGHT SIDEBAR (Context) --- */}
-            < div className="hidden lg:block sticky top-28 h-fit space-y-8" >
-
-                {/* Search Field */}
-                < div className="relative group" >
-                    <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-moto-accent transition-colors" />
-                    <input
-                        type="text"
-                        placeholder="Sürücü, rota veya etkinlik ara..."
-                        className="w-full bg-[#111] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-moto-accent/50 transition-colors shadow-lg"
-                    />
+                        </>
+                    ) : (
+                        /* WIDE VIEW AREA (Map/Routes/Events) */
+                        <div className="h-[calc(100vh-140px)] sticky top-28 bg-[#111] rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl">
+                            {view === 'vlog' && <MotoVlogMap user={currentUser} isEmbedded onNavigate={() => { }} onAddToCart={() => { }} onProductClick={() => { }} />}
+                            {view === 'routes' && <RouteExplorer user={currentUser} isEmbedded />}
+                            {view === 'events' && <MotoMeetup user={currentUser} isEmbedded />}
+                        </div>
+                    )}
                 </div >
 
-                {/* Active Squads (Chats) */}
-                < div className="bg-[#111] rounded-3xl p-6 border border-white/5 shadow-xl" >
-                    <div className="flex items-center justify-between mb-6">
-                        <h3 className="font-bold text-white tracking-wide text-sm">AKTİF SOHBETLER</h3>
-                        <span className="bg-green-500/20 text-green-500 text-[10px] px-2 py-1 rounded-full font-bold">{activeThreads.length}</span>
-                    </div>
-                    <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-                        {activeThreads.map(thread => (
-                            <div key={thread.id} onClick={() => { setInitialChatId(thread.userId); setIsDMOpen(true); }} className="flex items-center gap-3 cursor-pointer hover:bg-white/5 p-2 rounded-xl transition-colors">
-                                <div className="relative">
-                                    <UserAvatar src={thread.userAvatar} name={thread.userName} size={40} />
-                                    {thread.unreadCount > 0 && <div className="absolute -top-1 -right-1 w-4 h-4 bg-moto-accent rounded-full border-2 border-[#111]" />}
-                                </div>
-                                <div>
-                                    <div className="font-bold text-sm text-gray-200">{thread.userName}</div>
-                                    <div className="text-[10px] text-gray-500 truncate max-w-[120px]">{thread.lastMessage || 'Fotoğraf gönderdi'}</div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div >
+                {/* --- RIGHT SIDEBAR (Context) --- */}
+                < div className="hidden lg:block sticky top-28 h-fit space-y-8" >
 
-                {/* Trending Riders */}
-                < div className="bg-[#111] rounded-3xl p-6 border border-white/5 shadow-xl relative overflow-hidden" >
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 blur-[60px] rounded-full pointer-events-none" />
-                    <h3 className="font-bold text-white tracking-wide text-sm mb-6 relative z-10">ÖNERİLEN SÜRÜCÜLER</h3>
-                    <div className="space-y-5 relative z-10">
-                        {suggestedRiders.slice(0, 4).map(rider => (
-                            <div key={rider._id} className="flex items-center justify-between">
-                                <div className="flex items-center gap-3 cursor-pointer" onClick={() => onNavigate && onNavigate('public-profile', { _id: rider._id })}>
-                                    <UserAvatar src={rider.avatar} name={rider.name} size={36} />
+                    {/* Search Field */}
+                    < div className="relative group" >
+                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-moto-accent transition-colors" />
+                        <input
+                            type="text"
+                            placeholder="Sürücü, rota veya etkinlik ara..."
+                            className="w-full bg-[#111] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-moto-accent/50 transition-colors shadow-lg"
+                        />
+                    </div >
+
+                    {/* Active Squads (Chats) */}
+                    < div className="bg-[#111] rounded-3xl p-6 border border-white/5 shadow-xl" >
+                        <div className="flex items-center justify-between mb-6">
+                            <h3 className="font-bold text-white tracking-wide text-sm">AKTİF SOHBETLER</h3>
+                            <span className="bg-green-500/20 text-green-500 text-[10px] px-2 py-1 rounded-full font-bold">{activeThreads.length}</span>
+                        </div>
+                        <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                            {activeThreads.map(thread => (
+                                <div key={thread.id} onClick={() => { setInitialChatId(thread.userId); setIsDMOpen(true); }} className="flex items-center gap-3 cursor-pointer hover:bg-white/5 p-2 rounded-xl transition-colors">
+                                    <div className="relative">
+                                        <UserAvatar src={thread.userAvatar} name={thread.userName} size={40} />
+                                        {thread.unreadCount > 0 && <div className="absolute -top-1 -right-1 w-4 h-4 bg-moto-accent rounded-full border-2 border-[#111]" />}
+                                    </div>
                                     <div>
-                                        <div className="font-bold text-xs text-white">{rider.name}</div>
-                                        <div className="text-[10px] text-gray-400">{rider.bike || 'Rider'}</div>
+                                        <div className="font-bold text-sm text-gray-200">{thread.userName}</div>
+                                        <div className="text-[10px] text-gray-500 truncate max-w-[120px]">{thread.lastMessage || 'Fotoğraf gönderdi'}</div>
                                     </div>
                                 </div>
-                                <FollowButton targetUserId={rider._id} className="!w-6 !h-6 !p-0 rounded-full !min-w-0" />
-                            </div>
-                        ))}
-                    </div>
+                            ))}
+                        </div>
+                    </div >
+
+                    {/* Trending Riders */}
+                    < div className="bg-[#111] rounded-3xl p-6 border border-white/5 shadow-xl relative overflow-hidden" >
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 blur-[60px] rounded-full pointer-events-none" />
+                        <h3 className="font-bold text-white tracking-wide text-sm mb-6 relative z-10">ÖNERİLEN SÜRÜCÜLER</h3>
+                        <div className="space-y-5 relative z-10">
+                            {suggestedRiders.slice(0, 4).map(rider => (
+                                <div key={rider._id} className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3 cursor-pointer" onClick={() => onNavigate && onNavigate('public-profile', { _id: rider._id })}>
+                                        <UserAvatar src={rider.avatar} name={rider.name} size={36} />
+                                        <div>
+                                            <div className="font-bold text-xs text-white">{rider.name}</div>
+                                            <div className="text-[10px] text-gray-400">{rider.bike || 'Rider'}</div>
+                                        </div>
+                                    </div>
+                                    <FollowButton targetUserId={rider._id} className="!w-6 !h-6 !p-0 rounded-full !min-w-0" />
+                                </div>
+                            ))}
+                        </div>
+                    </div >
+
+                    {/* Footer */}
+                    < div className="flex flex-wrap gap-x-4 gap-y-2 text-[10px] text-gray-600 px-2 justify-center" >
+                        <a href="#" className="hover:text-gray-400">Gizlilik</a>
+                        <a href="#" className="hover:text-gray-400">Kurallar</a>
+                        <a href="#" className="hover:text-gray-400">Reklam</a>
+                        <a href="#" className="hover:text-gray-400">MotoVibe © 2025</a>
+                    </div >
                 </div >
 
-                {/* Footer */}
-                < div className="flex flex-wrap gap-x-4 gap-y-2 text-[10px] text-gray-600 px-2 justify-center" >
-                    <a href="#" className="hover:text-gray-400">Gizlilik</a>
-                    <a href="#" className="hover:text-gray-400">Kurallar</a>
-                    <a href="#" className="hover:text-gray-400">Reklam</a>
-                    <a href="#" className="hover:text-gray-400">MotoVibe © 2025</a>
-                </div >
             </div >
 
-        </div >
-
-    {/* Direct Messages Overlay */ }
-    < DirectMessages isOpen={isDMOpen} onClose={() => { setIsDMOpen(false); setInitialChatId(null); }} initialChatUserId={initialChatId || undefined} />
+            {/* Direct Messages Overlay */}
+            < DirectMessages isOpen={isDMOpen} onClose={() => { setIsDMOpen(false); setInitialChatId(null); }} initialChatUserId={initialChatId || undefined} />
         </div >
     );
 };

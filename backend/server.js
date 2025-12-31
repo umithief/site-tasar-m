@@ -73,6 +73,7 @@ app.use(cors({
             'https://motovibe-frontend.onrender.com',
             'https://motovibe-api.onrender.com',
             'https://site-tasar-m.onrender.com'
+        ];
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
 

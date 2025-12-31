@@ -1,16 +1,28 @@
 /// <reference types="vite/client" />
-export const API_URL = import.meta.env.VITE_API_URL ||
-    ((typeof window !== 'undefined')
-        ? `http://${window.location.hostname}:5000/api`
-        : 'http://localhost:5000/api');
+// Dynamic API URL determination
+const getApiUrl = () => {
+    // If running on server side (SSR) or test
+    if (typeof window === 'undefined') return 'http://localhost:5000/api';
+
+    const hostname = window.location.hostname;
+
+    // Production (Render, Vercel, etc.)
+    if (hostname.includes('onrender.com') || hostname.includes('vercel.app')) {
+        return '/api'; // Use relative path to avoid CORS and Mixed Content issues
+    }
+
+    // Local Development
+    return import.meta.env.VITE_API_URL || `http://${hostname}:5000/api`;
+};
+
+export const API_URL = getApiUrl();
 
 export const CONFIG = {
     // FORCE SERVER MODE
-    USE_MOCK_API: false,
+    USE_MOCK_API: false, // Ensure this is false for real data
     API_URL: API_URL,
 
     toggleApiMode: (useMock: boolean) => {
-        // No-op or log warning as we are forcing server mode
         console.warn("Switching to mock mode is disabled in this version.");
     }
 };

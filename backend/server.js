@@ -71,8 +71,8 @@ app.use(cors({
             'http://localhost:5173', 'http://127.0.0.1:5173',
             'https://motovibe.vercel.app',
             'https://motovibe-frontend.onrender.com',
-            'https://site-tasar-m.onrender.com' // Add likely repo-based URL
-        ];
+            'https://motovibe-api.onrender.com',
+            'https://site-tasar-m.onrender.com'
         // Allow requests with no origin (like mobile apps or curl requests)
         if (!origin) return callback(null, true);
 

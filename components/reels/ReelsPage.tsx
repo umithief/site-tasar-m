@@ -33,48 +33,30 @@ export const ReelsPage: React.FC<{ onNavigate: (view: any) => void }> = ({ onNav
     const [reels, setReels] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
 
-<<<<<<< HEAD
     const fetchReels = async () => {
         try {
             setLoading(true);
             const res = await api.get('/reels');
             // Handle both array and { data: [...] } formats safely
             const data = Array.isArray(res.data) ? res.data : (res.data?.data || []);
-            setReels(Array.isArray(data) ? data : []);
+
+            if (data.length > 0) {
+                setReels(data);
+            } else {
+                setReels(MOCK_REELS); // Fallback to mock if API returns empty
+            }
         } catch (error) {
             console.error('Failed to fetch reels:', error);
+            setReels(MOCK_REELS); // Fallback on error
         } finally {
             setLoading(false);
         }
     };
-=======
-    useEffect(() => {
-        const fetchReels = async () => {
-            try {
-                // Try fetching from API
-                const res = await api.get('/reels');
-                if (res.data && res.data.length > 0) {
-                    setReels(res.data);
-                } else {
-                    setReels(MOCK_REELS); // Fallback to mock
-                }
-            } catch (error) {
-                console.error('Failed to fetch reels:', error);
-                setReels(MOCK_REELS); // Fallback on error
-            } finally {
-                setLoading(false);
-            }
-        };
->>>>>>> restore-2025-12-25
 
     React.useEffect(() => {
         fetchReels();
     }, []);
 
-<<<<<<< HEAD
-    if (loading && reels.length === 0) {
-        return <div className="min-h-screen bg-black flex items-center justify-center text-white">Loading...</div>;
-=======
     if (loading) {
         return (
             <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white gap-4">
@@ -82,7 +64,6 @@ export const ReelsPage: React.FC<{ onNavigate: (view: any) => void }> = ({ onNav
                 <p className="text-gray-400 text-sm animate-pulse">Akış yükleniyor...</p>
             </div>
         );
->>>>>>> restore-2025-12-25
     }
 
     if (reels.length === 0) {
@@ -102,31 +83,21 @@ export const ReelsPage: React.FC<{ onNavigate: (view: any) => void }> = ({ onNav
 
     // Full screen player
     return (
-<<<<<<< HEAD
-        <div className="bg-black min-h-screen">
+        <div className="bg-black min-h-screen fixed inset-0 z-[50]">
             {/* Mobile View */}
-            <div className="md:hidden">
-                <MobileReels reels={reels} currentUser={user} onRefresh={fetchReels} />
+            <div className="md:hidden h-full">
+                <MobileReels reels={reels} currentUser={user} onRefresh={fetchReels} onBack={() => onNavigate('home')} />
             </div>
 
             {/* Desktop View */}
-            <div className="hidden md:block">
+            <div className="hidden md:block h-full">
                 <ReelPlayer
                     reels={reels}
                     initialIndex={0}
-                    onClose={() => { }} // No-op since it's a page
+                    onClose={() => onNavigate('home')}
                     currentUser={user}
                 />
             </div>
-=======
-        <div className="fixed inset-0 z-[50] bg-black">
-            <ReelPlayer
-                reels={reels}
-                initialIndex={0}
-                onClose={() => onNavigate('home')}
-                currentUser={user}
-            />
->>>>>>> restore-2025-12-25
         </div>
     );
 };

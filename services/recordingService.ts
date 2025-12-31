@@ -91,8 +91,8 @@ export const recordingService = {
         }
 
         const newRecording: SessionRecording = {
-            id: `REC-${Date.now()}`,
-            userId: user ? user.id : 'guest',
+            _id: `REC-${Date.now()}`,
+            userId: user ? user._id : 'guest',
             userName: user ? user.name : 'Ziyaretçi',
             startTime,
             endTime,
@@ -126,7 +126,7 @@ export const recordingService = {
 
     deleteRecording: (id: string) => {
         const recordings = getStorage<SessionRecording[]>(DB.RECORDINGS, []);
-        const filtered = recordings.filter(r => r.id !== id);
+        const filtered = recordings.filter(r => r._id !== id);
         setStorage(DB.RECORDINGS, filtered);
     }
 };

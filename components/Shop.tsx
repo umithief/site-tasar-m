@@ -28,14 +28,10 @@ export const Shop: React.FC<ShopProps> = ({
     // We delegate completely to WebShop for the desktop experience
     return (
         <WebShop
-            // We pass products if we want WebShop to use them, but WebShop defines its own state. 
-            // Let's pass them to avoid re-fetching if App already has them. 
-            // I need to update WebShop to accept 'products' prop first.
-            // For now, I will let WebShop fetch or better yet, I will use a prop in WebShop.
+            products={products} // Pass products down
             onAddToCart={onAddToCart}
             onToggleFavorite={onToggleFavorite}
             favoriteIds={favoriteIds}
-        // WebShop currently manages its own products state but I will update it.
         />
     );
 };

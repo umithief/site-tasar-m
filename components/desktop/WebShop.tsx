@@ -9,17 +9,19 @@ import { QuickViewDrawer } from './QuickViewDrawer';
 import { useAuthStore } from '../../store/authStore';
 
 interface WebShopProps {
+    products: Product[];
     onAddToCart: (product: Product) => void;
     onToggleFavorite: (product: Product) => void;
     favoriteIds: string[];
 }
 
 export const WebShop: React.FC<WebShopProps> = ({
+    products,
     onAddToCart,
     onToggleFavorite,
     favoriteIds
 }) => {
-    const [products, setProducts] = useState<Product[]>([]);
+    // const [products, setProducts] = useState<Product[]>([]); // Removed: Using prop
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [isLoading, setIsLoading] = useState(true);
 
@@ -45,13 +47,11 @@ export const WebShop: React.FC<WebShopProps> = ({
     }, [products, selectedCategory, selectedBikeId, priceRange]);
 
     const loadData = async () => {
-        setIsLoading(true);
+        // Only loading needed for garage data now
+        // setIsLoading(true); // Don't block UI for garage data if we have products
+
         try {
-            const [productsData, garageData] = await Promise.all([
-                productService.getProducts(),
-                user ? garageService.getGarage() : Promise.resolve([])
-            ]);
-            setProducts(productsData);
+            const garageData = user ? await garageService.getGarage() : [];
             setGarageBikes(garageData);
         } catch (error) {
             console.error(error);

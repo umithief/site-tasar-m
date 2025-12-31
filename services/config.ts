@@ -8,7 +8,9 @@ const getApiUrl = () => {
 
     // Production (Render, Vercel, etc.)
     if (hostname.includes('onrender.com') || hostname.includes('vercel.app')) {
-        return '/api'; // Use relative path to avoid CORS and Mixed Content issues
+        if (hostname.includes('onrender.com') || hostname.includes('vercel.app')) {
+            return 'https://motovibe-api.onrender.com/api'; // Use ABSOLUTE backend URL for cross-domain reqs
+        }
     }
 
     // Local Development

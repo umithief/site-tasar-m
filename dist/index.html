@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <!DOCTYPE html>
 <html lang="tr" class="light">
 
@@ -62,4 +63,70 @@
   <div id="root"></div>
 </body>
 
+=======
+<!DOCTYPE html>
+<html lang="tr" class="light">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="theme-color" content="#ffffff" />
+
+  <!-- SEO & Meta Tags -->
+  <title>MotoVibe | Premium Motosiklet Aksesuarları & AI Asistan</title>
+
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css" />
+  <script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"
+    crossorigin=""></script>
+
+  <!-- Glightbox & Other CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/glightbox/dist/css/glightbox.min.css" />
+  <script src="https://cdn.jsdelivr.net/gh/mcstudios/glightbox/dist/js/glightbox.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/notyf@3/notyf.min.css">
+  <link href="https://unpkg.com/filepond@^4/dist/filepond.css" rel="stylesheet" />
+  <link href="https://unpkg.com/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css"
+    rel="stylesheet" />
+  <script type="module" src="https://ajax.googleapis.com/ajax/libs/model-viewer/3.4.0/model-viewer.min.js"></script>
+
+  <script>
+    window.process = window.process || {};
+    window.process.env = window.process.env || {};
+    window.process.env.NODE_ENV = window.process.env.NODE_ENV || 'development';
+    window.process.env.API_KEY = window.process.env.API_KEY || '';
+
+    (function () {
+      // Force Light Mode Logic
+      document.documentElement.classList.remove('dark');
+      document.documentElement.classList.add('light');
+      localStorage.setItem('mv_theme', 'light');
+
+      var storedColor = localStorage.getItem('mv_color_theme');
+      if (storedColor) {
+        document.documentElement.setAttribute('data-theme', storedColor);
+      }
+    })();
+  </script>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap"
+    rel="stylesheet">
+
+
+  <script type="module" crossorigin src="/assets/index-C1uPNMix.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-aG7dAMMz.css">
+</head>
+
+<body class="bg-[#f9fafb] text-gray-900 overflow-x-hidden antialiased selection:bg-moto-accent selection:text-white">
+  <div id="root"></div>
+</body>
+
+>>>>>>> restore-2025-12-25
 </html>

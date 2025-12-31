@@ -181,6 +181,36 @@ export const getProfile = catchAsync(async (req, res, next) => {
     });
 });
 
+export const updateProfile = catchAsync(async (req, res, next) => {
+    // 1) Create error if user POSTs password data
+    if (req.body.password || req.body.passwordConfirm) {
+        return next(new AppError('Bu rota üzerinden şifre güncellenemez.', 400));
+    }
+
+    // 2) Filtered out unwanted field names that are not allowed to be updated
+    // Allow: name, email, username, bio, location, coverImage, avatar (if strictly passed, though logic might differ), garage
+    // For now, allow body directly but be careful with roles/points.
+
+    const allowedFields = ['name', 'email', 'username', 'bio', 'location', 'coverImage', 'avatar', 'phone', 'address'];
+    const filteredBody = {};
+    Object.keys(req.body).forEach(el => {
+        if (allowedFields.includes(el)) filteredBody[el] = req.body[el];
+    });
+
+    // 3) Update user document
+    const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
+        new: true,
+        runValidators: true
+    });
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            user: updatedUser
+        }
+    });
+});
+
 export const getAllUsers = catchAsync(async (req, res, next) => {
     const users = await User.find().select('-password').lean();
     res.status(200).json(users);

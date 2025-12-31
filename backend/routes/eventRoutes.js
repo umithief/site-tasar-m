@@ -48,4 +48,66 @@ router.delete('/:id', async (req, res) => {
     }
 });
 
+// POST /api/events/:id/join
+router.post('/:id/join', async (req, res) => {
+    try {
+        const MeetupEvent = mongoose.model('MeetupEvent');
+        const { userId, name, avatar } = req.body;
+        const event = await MeetupEvent.findById(req.params.id);
+        if (!event) return res.status(404).json({ message: 'Etkinlik bulunamadı' });
+
+        // Check if already joined
+        const isJoined = event.attendeeList.some(a => a.userId === userId);
+        if (!isJoined) {
+            event.attendeeList.push({ userId, name, avatar });
+            event.attendees = event.attendeeList.length;
+            await event.save();
+        }
+        res.json(event);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// POST /api/events/:id/leave
+router.post('/:id/leave', async (req, res) => {
+    try {
+        const MeetupEvent = mongoose.model('MeetupEvent');
+        const { userId } = req.body;
+        const event = await MeetupEvent.findById(req.params.id);
+        if (!event) return res.status(404).json({ message: 'Etkinlik bulunamadı' });
+
+        event.attendeeList = event.attendeeList.filter(a => a.userId !== userId);
+        event.attendees = event.attendeeList.length;
+        await event.save();
+        res.json(event);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+// POST /api/events/:id/message
+router.post('/:id/message', async (req, res) => {
+    try {
+        const MeetupEvent = mongoose.model('MeetupEvent');
+        const { userId, userName, text, time } = req.body;
+        const event = await MeetupEvent.findById(req.params.id);
+        if (!event) return res.status(404).json({ message: 'Etkinlik bulunamadı' });
+
+        const newMessage = {
+            id: new mongoose.Types.ObjectId().toString(),
+            userId,
+            userName,
+            text,
+            time: time || new Date().toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' })
+        };
+
+        event.messages.push(newMessage);
+        await event.save();
+        res.status(201).json(newMessage);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
 export default router;

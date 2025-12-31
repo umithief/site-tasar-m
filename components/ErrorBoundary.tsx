@@ -1,44 +1,50 @@
-import React, { Component, ErrorInfo, ReactNode } from 'react';
+import React, { Component, ErrorInfo, ReactNode } from "react";
 
 interface Props {
     children: ReactNode;
-    fallback?: ReactNode;
-    name?: string;
 }
 
 interface State {
     hasError: boolean;
     error: Error | null;
+    errorInfo: ErrorInfo | null;
 }
 
 export class ErrorBoundary extends Component<Props, State> {
     public state: State = {
         hasError: false,
-        error: null
+        error: null,
+        errorInfo: null,
     };
 
     public static getDerivedStateFromError(error: Error): State {
-        return { hasError: true, error };
+        // Update state so the next render will show the fallback UI.
+        return { hasError: true, error, errorInfo: null };
     }
 
     public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-        console.error(`ErrorBoundary [${this.props.name || 'Component'}]:`, error, errorInfo);
+        console.error("Uncaught error:", error, errorInfo);
+        this.setState({ error, errorInfo });
     }
 
     public render() {
         if (this.state.hasError) {
-            if (this.props.fallback) {
-                return this.props.fallback;
-            }
             return (
-                <div className="p-4 m-4 border border-red-500/20 bg-red-500/10 rounded-xl text-center">
-                    <h3 className="text-red-500 font-bold mb-2">Component Error ({this.props.name})</h3>
-                    <p className="text-red-400 text-xs font-mono mb-4">{this.state.error?.message}</p>
+                <div className="p-10 bg-black text-white h-screen overflow-auto">
+                    <h1 className="text-2xl text-red-500 font-bold mb-4">Bir şeyler ters gitti.</h1>
+                    <h2 className="text-xl font-bold mb-2">Hata Detayı:</h2>
+                    <pre className="bg-gray-900 p-4 rounded text-sm text-red-300 whitespace-pre-wrap mb-6">
+                        {this.state.error?.toString()}
+                    </pre>
+                    <h3 className="text-lg font-bold mb-2">Component Stack:</h3>
+                    <pre className="bg-gray-900 p-4 rounded text-xs text-gray-400 whitespace-pre-wrap">
+                        {this.state.errorInfo?.componentStack}
+                    </pre>
                     <button
-                        onClick={() => this.setState({ hasError: false })}
-                        className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-xs font-bold rounded-lg transition-colors"
+                        onClick={() => window.location.reload()}
+                        className="mt-6 px-4 py-2 bg-blue-600 rounded hover:bg-blue-700"
                     >
-                        Try Retry
+                        Sayfayı Yenile
                     </button>
                 </div>
             );

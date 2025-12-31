@@ -20,7 +20,7 @@ declare global {
 
 export type Language = 'tr' | 'en';
 
-export type ViewState = 'home' | 'shop' | 'routes' | 'blog' | 'forum' | 'riders' | 'favorites' | 'profile' | 'public-profile' | 'cart' | 'checkout' | 'auth' | 'admin' | 'product-detail' | 'ride-mode' | 'mototool' | 'about' | 'ai-assistant' | 'meetup' | 'service-finder' | 'valuation' | 'qr-generator' | 'vlog-map' | 'lifesaver' | 'social-hub' | 'showcase' | 'reels' | 'explore' | 'create' | 'garage' | 'my-profile' | 'order-tracking' | 'onboarding';
+export type ViewState = 'home' | 'shop' | 'routes' | 'blog' | 'forum' | 'riders' | 'favorites' | 'profile' | 'public-profile' | 'cart' | 'checkout' | 'auth' | 'admin' | 'product-detail' | 'ride-mode' | 'mototool' | 'about' | 'ai-assistant' | 'meetup' | 'service-finder' | 'valuation' | 'qr-generator' | 'vlog-map' | 'lifesaver' | 'social-hub' | 'showcase' | 'reels' | 'explore' | 'create' | 'garage' | 'events' | 'my-profile';
 
 
 export interface CategoryItem {
@@ -70,6 +70,16 @@ export interface Product {
   isEditorsChoice?: boolean; // Yeni: Editörün Seçimi
   isDealOfTheDay?: boolean; // Yeni: Günün Fırsatı
   compatibleBikes?: string[]; // List of compatible bike models
+  discountPrice?: number; // İndirimli fiyat
+}
+
+export interface FilterState {
+  search: string;
+  categories: string[];
+  minPrice: number;
+  maxPrice: number;
+  brands: string[];
+  sortBy: 'featured' | 'price-asc' | 'price-desc' | 'rating';
 }
 
 export interface MotoVlog {
@@ -140,6 +150,7 @@ export interface User {
   rank: 'Scooter Çırağı' | 'Viraj Ustası' | 'Yol Kaptanı';
   garage?: UserBike[];
   bio?: string;
+  avatar?: string;
   followers?: string[] | any[];
   following?: string[] | any[];
   // Social Additions
@@ -272,6 +283,7 @@ export interface ActivityLog {
 export interface VisitorStats {
   totalVisits: number;
   todayVisits: number;
+  todayVisitDiff?: number; // Add this
 }
 
 export interface AnalyticsEvent {
@@ -391,7 +403,7 @@ export interface MeetupEvent {
   coordinates: { lat: number; lng: number };
   organizer: string;
   attendees: number;
-  attendeeList?: { id: string; name: string; avatar?: string }[];
+  attendeeList?: { userId: string; name: string; avatar?: string }[];
   messages?: MeetupMessage[]; // Sohbet Geçmişi
   image: string;
   description: string;

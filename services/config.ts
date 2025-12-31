@@ -1,20 +1,17 @@
-// Bu dosya uygulamanın nerede çalıştığını (Local vs Canlı) otomatik algılar.
-
-// Canlı API URL'i (Env varsa kullan, yoksa monolith deployment varsayarak relative path kullan)
+/// <reference types="vite/client" />
 export const API_URL = import.meta.env.VITE_API_URL ||
-    ((typeof window !== 'undefined' && window.location.hostname === 'localhost')
-        ? 'http://localhost:5000/api'
-        : 'https://motovibe-api.onrender.com/api');
+    ((typeof window !== 'undefined')
+        ? `http://${window.location.hostname}:5000/api`
+        : 'http://localhost:5000/api');
 
-// Config nesnesi
 export const CONFIG = {
+    // FORCE SERVER MODE
     USE_MOCK_API: false,
     API_URL: API_URL,
 
-    // Modu değiştir ve sayfayı yenile
     toggleApiMode: (useMock: boolean) => {
-        localStorage.setItem('mv_use_mock_api', JSON.stringify(useMock));
-        window.location.reload();
+        // No-op or log warning as we are forcing server mode
+        console.warn("Switching to mock mode is disabled in this version.");
     }
 };
 

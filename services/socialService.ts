@@ -221,5 +221,19 @@ export const socialService = {
             console.error('Explore Feed Error:', error);
             return this.getFeed(); // Fallback
         }
+    },
+
+    async deletePost(postId: string): Promise<boolean> {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await fetch(`${CONFIG.API_URL}/social/${postId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            return response.ok;
+        } catch (error) {
+            console.error('Delete Post Error:', error);
+            return false;
+        }
     }
 };

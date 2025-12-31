@@ -14,6 +14,7 @@ import { UserAvatar } from '../ui/UserAvatar';
 import { FollowButton } from './FollowButton';
 import { User, SocialPost, ViewState } from '../../types';
 import { useSocket } from '../../context/SocketContext';
+import { ProfileEditModal } from './ProfileEditModal';
 
 // --- Types & Interfaces ---
 interface ProfilePageProps {
@@ -40,6 +41,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userId, onNavigate, on
     const [activeTab, setActiveTab] = useState<'posts' | 'media' | 'specs'>('posts');
     const [isOnline, setIsOnline] = useState(false);
     const [realtimeFollowers, setRealtimeFollowers] = useState<number | null>(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     const isOwnProfile = currentUser?._id === userId;
 
@@ -247,7 +249,10 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userId, onNavigate, on
                 {/* 3. Command Center (Actions) */}
                 <div className="flex flex-col sm:flex-row items-center gap-4 mb-16 border-t border-white/10 pt-8">
                     {isOwnProfile ? (
-                        <button className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-white text-black hover:bg-moto-accent font-black uppercase tracking-wider rounded-xl transition-all shadow-lg hover:shadow-moto-accent/50">
+                        <button
+                            onClick={() => setIsEditModalOpen(true)}
+                            className="w-full sm:w-auto flex items-center justify-center gap-2 px-8 py-4 bg-white text-black hover:bg-moto-accent font-black uppercase tracking-wider rounded-xl transition-all shadow-lg hover:shadow-moto-accent/50"
+                        >
                             <Settings className="w-4 h-4" />
                             System Config
                         </button>
@@ -402,6 +407,11 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userId, onNavigate, on
                     </AnimatePresence>
                 </div>
             </div>
+
+            <ProfileEditModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+            />
         </div>
     );
 };

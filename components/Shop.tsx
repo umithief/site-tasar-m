@@ -16,8 +16,6 @@ interface ShopProps {
     onToggleFavorite: (product: Product) => void;
     onQuickView: (product: Product) => void;
     onNavigate: (view: ViewState) => void;
-    onCompare: (product: Product) => void;
-    compareList: Product[];
     initialCategory?: ProductCategory | 'ALL';
 }
 
@@ -29,8 +27,6 @@ export const Shop: React.FC<ShopProps> = ({
     onToggleFavorite,
     onQuickView,
     onNavigate,
-    onCompare,
-    compareList,
     initialCategory = 'ALL'
 }) => {
     const { t } = useLanguage();
@@ -245,8 +241,6 @@ export const Shop: React.FC<ShopProps> = ({
                                     onQuickView={onQuickView}
                                     isFavorite={favoriteIds.includes(product._id)}
                                     onToggleFavorite={onToggleFavorite}
-                                    onCompare={onCompare}
-                                    isCompared={compareList.some(p => p._id === product._id)}
                                     highlight={searchQuery}
                                 />
                             ))}

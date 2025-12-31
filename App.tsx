@@ -26,8 +26,6 @@ import { Blog } from './components/Blog';
 import { ServiceFinder } from './components/ServiceFinder';
 import { IntroAnimation } from './components/IntroAnimation';
 import { OnboardingTour } from './components/OnboardingTour';
-import { CompareBar } from './components/CompareBar';
-import { CompareModal } from './components/CompareModal';
 import { ScrollProgress } from './components/ScrollProgress';
 import { ProModal } from './components/ProModal';
 import { FeedbackModal } from './components/FeedbackModal';
@@ -92,9 +90,6 @@ export const App: React.FC = () => {
     const [initialShopCategory, setInitialShopCategory] = useState<ProductCategory | 'ALL'>('ALL');
 
     const [favoriteIds, setFavoriteIds] = useState<string[]>([]);
-    const [compareList, setCompareList] = useState<Product[]>([]);
-    const [isCompareModalOpen, setIsCompareModalOpen] = useState(false);
-
     const [showScrollTop, setShowScrollTop] = useState(false);
 
     const [bootState, setBootState] = useState<'idle' | 'complete'>('idle');
@@ -229,21 +224,6 @@ export const App: React.FC = () => {
         addToast('info', favoriteIds.includes(product._id) ? 'Favorilerden çıkarıldı' : 'Favorilere eklendi');
     };
 
-    const toggleCompare = (product: Product) => {
-        setCompareList(prev => {
-            const exists = prev.find(p => p._id === product._id);
-            if (exists) {
-                return prev.filter(p => p._id !== product._id);
-            } else {
-                if (prev.length >= 3) {
-                    addToast('info', 'En fazla 3 ürün karşılaştırabilirsiniz.');
-                    return prev;
-                }
-                return [...prev, product];
-            }
-        });
-    };
-
     const handleCheckout = async () => {
         if (!user) {
             setIsCartOpen(false);
@@ -315,9 +295,9 @@ export const App: React.FC = () => {
 
     const renderView = () => {
         switch (view) {
-            case 'home': return <Home onNavigate={navigateTo} products={products} onAddToCart={addToCart} onProductClick={(p: any) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
-            case 'showcase': return <Showcase products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
-            case 'shop': return isMobileMenuOpen || window.innerWidth < 768 ? <MobileShop initialCategory={initialShopCategory} onNavigate={navigateTo} /> : <Shop products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onNavigate={navigateTo} initialCategory={initialShopCategory} />;
+            case 'home': return <Home onNavigate={navigateTo} products={products} onAddToCart={addToCart} onProductClick={(p: any) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
+            case 'showcase': return <Showcase products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onNavigate={navigateTo} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
+            case 'shop': return isMobileMenuOpen || window.innerWidth < 768 ? <MobileShop initialCategory={initialShopCategory} onNavigate={navigateTo} /> : <Shop products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onNavigate={navigateTo} initialCategory={initialShopCategory} />;
             case 'auth': return isMobile ? (
                 <MobileAuth
                     onClose={() => navigateTo('home')}
@@ -347,7 +327,7 @@ export const App: React.FC = () => {
             );
             case 'product-detail': return isMobile ?
                 <MobileProductDetail product={selectedProduct} onAddToCart={addToCart} onNavigate={navigateTo} onOpenCart={() => setIsCartOpen(true)} /> :
-                <ProductDetail product={selectedProduct} allProducts={products} onAddToCart={addToCart} onNavigate={navigateTo} onProductClick={(p) => navigateTo('product-detail', p)} onCompare={toggleCompare} isCompared={compareList.some(p => p._id === selectedProduct?._id)} />;
+                <ProductDetail product={selectedProduct} allProducts={products} onAddToCart={addToCart} onNavigate={navigateTo} onProductClick={(p) => navigateTo('product-detail', p)} />;
             case 'favorites': return <Favorites products={products} favoriteIds={favoriteIds} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onNavigate={navigateTo} />;
 
             case 'meetup':
@@ -395,7 +375,7 @@ export const App: React.FC = () => {
                         orderId={lastOrderId}
                         onClose={() => navigateTo('home')}
                     />
-                ) : <Home onNavigate={navigateTo} products={products} onAddToCart={addToCart} onProductClick={(p: any) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
+                ) : <Home onNavigate={navigateTo} products={products} onAddToCart={addToCart} onProductClick={(p: any) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
             case 'routes':
                 return <RouteExplorer
                     user={user}
@@ -405,7 +385,7 @@ export const App: React.FC = () => {
                         navigateTo('ride-mode');
                     }}
                 />;
-            default: return <Home onNavigate={navigateTo} products={products} onAddToCart={addToCart} onProductClick={(p: any) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onCompare={toggleCompare} compareList={compareList} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
+            default: return <Home onNavigate={navigateTo} products={products} onAddToCart={addToCart} onProductClick={(p: any) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
         }
     };
 
@@ -591,19 +571,6 @@ export const App: React.FC = () => {
                     }}
                 />
 
-                <CompareBar
-                    items={compareList}
-                    onRemove={(id) => setCompareList(prev => prev.filter(p => p._id !== id))}
-                    onCompare={() => setIsCompareModalOpen(true)}
-                    onClear={() => setCompareList([])}
-                />
-
-                <CompareModal
-                    isOpen={isCompareModalOpen}
-                    onClose={() => setIsCompareModalOpen(false)}
-                    products={compareList}
-                    onAddToCart={(p) => addToCart(p)}
-                />
 
             </div>
         </SocketProvider>

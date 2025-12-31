@@ -10,8 +10,6 @@ interface HomeProps {
     favoriteIds?: any;
     onToggleFavorite?: any;
     onQuickView?: any;
-    onCompare?: any;
-    compareList?: any;
     onNavigate: (view: ViewState, data?: any) => void;
     onToggleMenu?: any;
 }

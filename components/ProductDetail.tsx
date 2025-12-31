@@ -19,14 +19,13 @@ interface ProductDetailProps {
     onAddToCart: (product: Product, event?: React.MouseEvent) => void;
     onNavigate: (view: ViewState) => void;
     onProductClick: (product: Product) => void;
-    onCompare?: (product: Product) => void;
-    isCompared?: boolean;
 }
 
 export const ProductDetail: React.FC<ProductDetailProps> = ({
     product,
     onAddToCart,
     onNavigate,
+    onProductClick,
 }) => {
     const { t } = useLanguage();
     const [quantity, setQuantity] = useState(1);

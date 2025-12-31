@@ -15,8 +15,6 @@ interface ProductCardProps {
     onQuickView?: (product: Product) => void;
     isFavorite?: boolean;
     onToggleFavorite?: (product: Product) => void;
-    onCompare?: (product: Product) => void;
-    isCompared?: boolean;
     highlight?: string;
 }
 
@@ -93,8 +91,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                         <button
                             onClick={(e) => { e.stopPropagation(); onToggleFavorite(product); }}
                             className={`w-12 h-12 rounded-full backdrop-blur-md border transition-all flex items-center justify-center ${isFavorite
-                                    ? 'bg-moto-accent text-white border-moto-accent'
-                                    : 'bg-white/10 border-white/20 text-white hover:bg-white hover:text-black'
+                                ? 'bg-moto-accent text-white border-moto-accent'
+                                : 'bg-white/10 border-white/20 text-white hover:bg-white hover:text-black'
                                 }`}
                         >
                             <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
@@ -151,8 +149,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                         <div
                             key={i}
                             className={`w-3 h-3 rounded-full transition-all ${i < Math.floor(product.rating)
-                                    ? 'bg-gradient-to-r from-moto-accent to-neon-yellow shadow-glow-sm'
-                                    : 'bg-white/10'
+                                ? 'bg-gradient-to-r from-moto-accent to-neon-yellow shadow-glow-sm'
+                                : 'bg-white/10'
                                 }`}
                         />
                     ))}
@@ -169,8 +167,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                     <button
                         onClick={handleAddToCart}
                         className={`w-12 h-12 rounded-full transition-all flex items-center justify-center shadow-lg group/btn ${isAdded
-                                ? 'bg-neon-green text-black'
-                                : 'bg-gradient-to-r from-moto-accent to-moto-orange-600 text-black hover:shadow-glow-lg'
+                            ? 'bg-neon-green text-black'
+                            : 'bg-gradient-to-r from-moto-accent to-moto-orange-600 text-black hover:shadow-glow-lg'
                             }`}
                     >
                         <AnimatePresence mode="wait">

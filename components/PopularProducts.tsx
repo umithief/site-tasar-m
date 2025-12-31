@@ -13,8 +13,6 @@ interface PopularProductsProps {
     favoriteIds: string[];
     onToggleFavorite: (product: Product) => void;
     onQuickView: (product: Product) => void;
-    onCompare: (product: Product) => void;
-    isCompared: (id: string) => boolean;
     onViewAll: () => void;
 }
 
@@ -25,8 +23,6 @@ export const PopularProducts: React.FC<PopularProductsProps> = ({
     favoriteIds,
     onToggleFavorite,
     onQuickView,
-    onCompare,
-    isCompared,
     onViewAll
 }) => {
     const scrollRef = useRef<HTMLDivElement>(null);
@@ -134,8 +130,8 @@ export const PopularProducts: React.FC<PopularProductsProps> = ({
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as any)}
                                 className={`flex items-center gap-2 px-3 md:px-5 py-2 md:py-2.5 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all border whitespace-nowrap ${activeTab === tab.id
-                                        ? 'bg-moto-accent border-moto-accent text-white shadow-lg shadow-moto-accent/30'
-                                        : 'bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-500 hover:border-moto-accent/50 hover:text-gray-900 dark:hover:text-white'
+                                    ? 'bg-moto-accent border-moto-accent text-white shadow-lg shadow-moto-accent/30'
+                                    : 'bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-500 hover:border-moto-accent/50 hover:text-gray-900 dark:hover:text-white'
                                     }`}
                             >
                                 <tab.icon className="w-3 h-3 md:w-3.5 md:h-3.5" />
@@ -192,8 +188,8 @@ export const PopularProducts: React.FC<PopularProductsProps> = ({
                                         exit={{ opacity: 0, scale: 0.9 }}
                                         transition={{ duration: 0.4, ease: "easeOut" }}
                                         className={`min-w-[165px] sm:min-w-[300px] md:w-[260px] snap-center transition-all duration-500 rounded-2xl ${isHighlighted
-                                                ? 'shadow-[0_25px_50px_-12px_rgba(242,166,25,0.4)] ring-2 ring-moto-accent ring-offset-4 ring-offset-[#080808]'
-                                                : 'shadow-none opacity-60'
+                                            ? 'shadow-[0_25px_50px_-12px_rgba(242,166,25,0.4)] ring-2 ring-moto-accent ring-offset-4 ring-offset-[#080808]'
+                                            : 'shadow-none opacity-60'
                                             }`}
                                     >
                                         <ProductCard
@@ -203,8 +199,6 @@ export const PopularProducts: React.FC<PopularProductsProps> = ({
                                             onQuickView={onQuickView}
                                             isFavorite={favoriteIds.includes(product._id)}
                                             onToggleFavorite={onToggleFavorite}
-                                            onCompare={onCompare}
-                                            isCompared={isCompared(product._id)}
                                         />
                                     </motion.div>
                                 );

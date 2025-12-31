@@ -28,8 +28,6 @@ interface ShowcaseProps {
     favoriteIds: string[];
     onToggleFavorite: (product: Product) => void;
     onQuickView: (product: Product) => void;
-    onCompare: (product: Product) => void;
-    compareList: Product[];
     onNavigate: (view: ViewState, data?: any) => void;
     onToggleMenu: () => void;
 }
@@ -41,8 +39,6 @@ export const Showcase: React.FC<ShowcaseProps> = ({
     favoriteIds,
     onToggleFavorite,
     onQuickView,
-    onCompare,
-    compareList,
     onNavigate,
     onToggleMenu
 }) => {
@@ -201,8 +197,6 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                 favoriteIds={favoriteIds}
                 onToggleFavorite={onToggleFavorite}
                 onQuickView={onQuickView}
-                onCompare={onCompare}
-                isCompared={(id) => compareList.some(p => p._id === id)}
                 onViewAll={() => onNavigate('shop')}
             />
 
@@ -342,8 +336,6 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                                     onQuickView={onQuickView}
                                     isFavorite={favoriteIds.includes(product._id)}
                                     onToggleFavorite={onToggleFavorite}
-                                    onCompare={onCompare}
-                                    isCompared={compareList.some(p => p._id === product._id)}
                                 />
                             </motion.div>
                         ))}

@@ -10,6 +10,14 @@ export const tourService = {
     completeTour: (): void => {
         localStorage.setItem('mv_tour_seen_mobile_v2', 'true');
     },
+    markTourComplete: (): void => {
+        localStorage.setItem('mv_tour_seen_mobile_v2', 'true');
+    },
+
+    // Check if the user has completed the tour
+    hasCompletedTour: (): boolean => {
+        return !!localStorage.getItem('mv_tour_seen_mobile_v2');
+    },
 
     // Reset tour state (useful for debugging or "Show Again" button)
     resetTour: (): void => {

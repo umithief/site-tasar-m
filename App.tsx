@@ -175,7 +175,10 @@ export const App: React.FC = () => {
         useAuthStore.getState().logout(); // Sync store
     };
 
-    const navigateTo = (newView: ViewState) => {
+    const navigateTo = (newView: ViewState, data?: any) => {
+        if (data && newView === 'product-detail') {
+            setSelectedProduct(data);
+        }
         setView(newView);
         window.scrollTo(0, 0);
     };
@@ -364,7 +367,7 @@ export const App: React.FC = () => {
             case 'blog': return <Blog onNavigate={navigateTo} />;
             case 'about': return <About onNavigate={navigateTo} />;
             case 'ai-assistant': return <AIAssistantPage />;
-            case 'forum': return <Forum user={user} onOpenAuth={() => navigateTo('auth')} onViewProfile={handleViewProfile} onOpenPro={() => setIsProModalOpen(true)} onNavigate={navigateTo} />;
+            case 'forum': return <Forum user={user} onOpenAuth={() => navigateTo('auth')} onViewProfile={handleViewProfile} onOpenPro={() => setIsProModalOpen(true)} />;
             case 'social-hub': return <SocialHub user={user} onNavigate={navigateTo} onLogout={handleLogout} onUpdateUser={setUser} initialData={socialHubData} />;
             case 'riders': return <RidersDirectory onViewProfile={handleViewProfile} onNavigate={navigateTo} />;
             case 'reels': return <ReelsPage onNavigate={navigateTo} />;
@@ -562,8 +565,17 @@ export const App: React.FC = () => {
                     </MobileLayout>
                 )}
 
-                <ProModal isOpen={isProModalOpen} onClose={() => setIsProModalOpen(false)} />
-                <FeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} />
+                <ProModal
+                    isOpen={isProModalOpen}
+                    onClose={() => setIsProModalOpen(false)}
+                    onUpgrade={async () => {
+                        // Dummy upgrade handler
+                        await new Promise(r => setTimeout(r, 1000));
+                        addToast('success', 'Tebrikler! Pro üyeliğe geçiş yapıldı.');
+                        setIsProModalOpen(false);
+                    }}
+                />
+                <FeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} user={user} />
 
                 <ProductQuickViewModal
                     isOpen={!!selectedProduct && view !== 'product-detail'}
@@ -582,7 +594,7 @@ export const App: React.FC = () => {
                 />
 
                 <CompareBar
-                    products={compareList}
+                    items={compareList}
                     onRemove={(id) => setCompareList(prev => prev.filter(p => p._id !== id))}
                     onCompare={() => setIsCompareModalOpen(true)}
                     onClear={() => setCompareList([])}

@@ -25,20 +25,20 @@ export const recordingService = {
                 emit(event) {
                     // Push event to buffer
                     eventsBuffer.push(event);
-                    
+
                     // Save periodically every 50 events to prevent data loss
                     if (eventsBuffer.length % 50 === 0) {
                         // Optional: trigger partial save here if needed
                     }
                 },
                 // Ignore sensitive inputs
-                maskAllInputs: true, 
+                maskAllInputs: true,
                 sampling: {
                     // Throttle mouse move events to save space
                     mousemove: true,
-                    mouseInteraction: true, 
-                    scroll: 150, 
-                    input: 'last' 
+                    mouseInteraction: true,
+                    scroll: 150,
+                    input: 'last'
                 }
             });
             console.log("🎥 RRWeb Session Recording Started");
@@ -51,19 +51,29 @@ export const recordingService = {
         if (stopRecording) {
             stopRecording();
             stopRecording = undefined;
-            
+
             if (eventsBuffer.length > 10) {
                 await recordingService.saveSession();
             }
             console.log("🎥 RRWeb Session Recording Stopped");
         }
     },
+    stopSession: async () => {
+        return recordingService.stop();
+    },
+
+    startSession: async (userId: string, userName: string) => {
+        // userId and userName are used in saveSession, which pulls from authService or defaults.
+        // If we want to strictly use passed args we might need to refactor, 
+        // but for now alias to start() is sufficient as saveSession handles user retrieval.
+        return recordingService.start();
+    },
 
     saveSession: async () => {
         const user = await authService.getCurrentUser();
         const endTime = Date.now();
         const durationMs = endTime - startTime;
-        
+
         // Format duration
         const minutes = Math.floor(durationMs / 60000);
         const seconds = ((durationMs % 60000) / 1000).toFixed(0);
@@ -72,12 +82,12 @@ export const recordingService = {
         // OPTIMIZATION: Limit event count to prevent LocalStorage overflow
         const MAX_EVENTS = 500;
         let optimizedEvents = eventsBuffer;
-        
+
         // If buffer is too large, keep initial setup events (often at start) and latest interactions
         if (eventsBuffer.length > MAX_EVENTS) {
-             const start = eventsBuffer.slice(0, 50);
-             const end = eventsBuffer.slice(eventsBuffer.length - (MAX_EVENTS - 50));
-             optimizedEvents = [...start, ...end];
+            const start = eventsBuffer.slice(0, 50);
+            const end = eventsBuffer.slice(eventsBuffer.length - (MAX_EVENTS - 50));
+            optimizedEvents = [...start, ...end];
         }
 
         const newRecording: SessionRecording = {
@@ -98,14 +108,14 @@ export const recordingService = {
         } catch (e) {
             recordings = [];
         }
-        
+
         // Add new recording to start
         recordings.unshift(newRecording);
-        
+
         // AGGRESSIVE TRIMMING: Keep only latest 2 recordings in LocalStorage environment
         // rrweb data is very heavy
         const trimmedRecordings = recordings.slice(0, 2);
-        
+
         setStorage(DB.RECORDINGS, trimmedRecordings);
         eventsBuffer = []; // Clear buffer
     },

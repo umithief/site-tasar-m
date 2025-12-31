@@ -1,5 +1,4 @@
-
-
+// Main Application Component
 import React, { useState, useEffect, useRef } from 'react';
 import { Product, CartItem, ProductCategory, User, AuthMode, Route as RouteType, ViewState, ColorTheme } from './types';
 import { Navbar } from './components/layout/Navbar';

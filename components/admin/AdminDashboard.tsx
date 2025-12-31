@@ -39,7 +39,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ products, orders
                                     </div>
                                     <div>
                                         <div className="text-sm font-bold text-white">{order._id}</div>
-                                        <div className="text-xs text-gray-500">{order.date} • {order.items.length} Ürün</div>
+                                        <div className="text-xs text-gray-500">{order.date} • {order.items?.length || 0} Ürün</div>
                                     </div>
                                 </div>
                                 <div className="flex items-center gap-4">

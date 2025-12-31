@@ -40,6 +40,7 @@ import messageRoutes from './routes/messageRoutes.js';
 import './models/User.js';
 import './models/Post.js'; // Registers 'SocialPost'
 import './models/Message.js';
+import MeetupEvent from './models/MeetupEvent.js';
 
 const __filename = fileURLToPath(import.meta.url);
 
@@ -63,7 +64,14 @@ const upload = multer({ storage: multer.memoryStorage() });
 
 // Middleware
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://motovibe.vercel.app', 'https://motovibe-frontend.onrender.com'], // Allow frontend
+    origin: (origin, callback) => {
+        const allowed = ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://motovibe.vercel.app', 'https://motovibe-frontend.onrender.com'];
+        if (!origin || allowed.includes(origin) || origin.startsWith('http://localhost:') || origin.startsWith('http://192.168.')) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH', 'HEAD'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
@@ -290,20 +298,7 @@ const feedbackSchema = new mongoose.Schema({
 
 const Feedback = mongoose.models.Feedback || mongoose.model('Feedback', feedbackSchema);
 
-const meetupEventSchema = new mongoose.Schema({
-    title: { type: String, required: true },
-    type: String, // 'night-ride' | 'coffee' | 'track-day' | 'offroad'
-    date: String,
-    time: String,
-    location: String,
-    coordinates: { lat: Number, lng: Number },
-    organizer: String,
-    attendees: { type: Number, default: 0 },
-    image: String,
-    description: String
-}, { versionKey: false });
 
-const MeetupEvent = mongoose.models.MeetupEvent || mongoose.model('MeetupEvent', meetupEventSchema);
 
 const showcaseProductSchema = new mongoose.Schema({
     name: { type: String, required: true },
@@ -427,6 +422,74 @@ const seedDatabase = async () => {
             ]);
         }
 
+        const eventCount = await MeetupEvent.countDocuments();
+        if (eventCount === 0) {
+            console.log('📦 Etkinlikler veritabanına ekleniyor...');
+            await MeetupEvent.insertMany([
+                {
+                    title: 'Gece Sürüşü: İstanbul Işıkları',
+                    type: 'night-ride',
+                    date: '2025-06-15',
+                    time: '22:00',
+                    location: 'Bağdat Caddesi, İstanbul',
+                    coordinates: { lat: 40.9632, lng: 29.0632 },
+                    organizer: 'MotoVibe Team',
+                    attendees: 42,
+                    image: 'https://images.unsplash.com/photo-1579895240614-2795c328517e?q=80&w=800&auto=format&fit=crop',
+                    description: 'İstanbul\'un eşsiz gece manzarasında yaklaşık 2 saatlik keyifli bir sürüş.'
+                },
+                {
+                    title: 'Pazar Kahvesi & Sohbet',
+                    type: 'coffee',
+                    date: '2025-06-18',
+                    time: '10:00',
+                    location: 'Emirgan Korusu',
+                    coordinates: { lat: 41.1082, lng: 29.0553 },
+                    organizer: 'Cafe Racers TR',
+                    attendees: 15,
+                    image: 'https://images.unsplash.com/photo-1512413914633-b5043f4041ea?q=80&w=800&auto=format&fit=crop',
+                    description: 'Hafta sonuna güzel bir kahve ve motosiklet sohbetiyle başlıyoruz.'
+                }
+            ]);
+        }
+
+        const vlogCount = await MotoVlog.countDocuments();
+        if (vlogCount === 0) {
+            console.log('📦 Vloglar veritabanına ekleniyor...');
+            await MotoVlog.insertMany([
+                {
+                    title: 'Beyşehir Yolu Gazlama - MT09',
+                    author: 'Tek Teker Arif',
+                    locationName: 'Konya - Beyşehir Yolu',
+                    coordinates: { lat: 37.8500, lng: 32.2000 },
+                    videoUrl: 'https://www.youtube.com/watch?v=3sL0omwZH0A',
+                    thumbnail: 'https://images.unsplash.com/photo-1558981806-ec527fa84c3d?q=80&w=800&auto=format&fit=crop',
+                    views: '125B',
+                    productsUsed: [1, 3]
+                },
+                {
+                    title: 'Antalya Sahil Virajları',
+                    author: 'MotoVibe Official',
+                    locationName: 'Kaş - Kalkan',
+                    coordinates: { lat: 36.2300, lng: 29.5100 },
+                    videoUrl: 'https://www.youtube.com/watch?v=XIhA8d7767o',
+                    thumbnail: 'https://images.unsplash.com/photo-1580910543236-0c95332f7a9d?q=80&w=800&auto=format&fit=crop',
+                    views: '45B',
+                    productsUsed: [2, 6]
+                },
+                {
+                    title: 'Orman İçi Sakin Sürüş',
+                    author: 'Nature Rider',
+                    locationName: 'Belgrad Ormanı',
+                    coordinates: { lat: 41.1900, lng: 28.9700 },
+                    videoUrl: 'https://videos.pexels.com/video-files/3004273/3004273-uhd_2560_1440_30fps.mp4',
+                    thumbnail: 'https://images.pexels.com/videos/3004273/pictures/preview-0.jpg',
+                    views: '12B',
+                    productsUsed: [4, 5]
+                }
+            ]);
+        }
+
         // Seed Admin User (Always Ensure Correct Credentials)
         console.log('🛡️ Admin kullanıcısı (111@111) doğrulanıyor...');
         const User = mongoose.model('User');
@@ -468,7 +531,7 @@ app.use('/api/routes', routeRoutes);
 app.use('/api/slides', slideRoutes);
 app.use('/api/stories', storyRoutes);
 app.use('/api/vlogs', vlogRoutes);
-app.use('/api/vlogs', vlogRoutes);
+
 app.use('/api/events', eventRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
@@ -504,6 +567,38 @@ if (process.env.NODE_ENV === 'production' || process.env.SERVE_FRONTEND === 'tru
         res.send('🚀 MotoVibe Backend (Dev) Çalışıyor! Frontend için Vite sunucusunu kullanın.');
     });
 }
+
+// --- GLOBAL ERROR HANDLER ---
+app.use((err, req, res, next) => {
+    console.error('🔥 Global Error:', err);
+
+    // Mongoose Validation Error
+    if (err.name === 'ValidationError') {
+        return res.status(400).json({
+            status: 'error',
+            message: Object.values(err.errors).map(val => val.message).join(', ')
+        });
+    }
+
+    // JWT Errors
+    if (err.name === 'JsonWebTokenError') return res.status(401).json({ message: 'Geçersiz token. Lütfen tekrar giriş yapın.' });
+    if (err.name === 'TokenExpiredError') return res.status(401).json({ message: 'Token süresi doldu.' });
+
+    // Custom AppError
+    if (err.isOperational) {
+        return res.status(err.statusCode).json({
+            status: err.status,
+            message: err.message
+        });
+    }
+
+    // Default 500
+    res.status(500).json({
+        status: 'error',
+        message: 'Sunucu hatası oluştu',
+        error: process.env.NODE_ENV === 'development' ? err.message : undefined
+    });
+});
 
 // --- START SERVER ---
 if (process.argv[1] === __filename) {

@@ -2,7 +2,7 @@ import React from 'react';
 import { LayoutDashboard, Package, ShoppingCart, Users, Grid, Map, Circle, MessageSquare, Image as ImageIcon, Box, Zap, Globe, LogOut, Calendar, Activity, Film } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'slider' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community' | 'paddock' | 'showcase' | 'vlogs';
+type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'slider' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community' | 'paddock' | 'showcase' | 'vlogs' | 'reels';
 
 interface AdminSidebarProps {
     activeTab: AdminTab;

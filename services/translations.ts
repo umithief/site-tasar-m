@@ -19,6 +19,7 @@ export const translations = {
       riders: 'Sürücüler',
       service: 'Servis Bul',
       blog: 'Moto Blog',
+      forum: 'Forum',
       tools: 'Araçlar',
       feedback: 'Geri Bildirim',
       theme: 'Tema Rengi'

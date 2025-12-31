@@ -9,8 +9,9 @@ router.post('/register', userController.registerUser);
 router.post('/login', userController.loginUser);
 
 // Profile
-router.get('/', protect, userController.getAllUsers);
+router.get('/', userController.getAllUsers);
 router.get('/:id', userController.getProfile);
+router.put('/profile', protect, userController.updateProfile);
 
 // Social Actions (Protected)
 router.use(protect);

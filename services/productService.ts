@@ -1,43 +1,34 @@
-
 import { Product } from '../types';
-import { DB, getStorage, setStorage, delay } from './db';
-import { PRODUCTS as INITIAL_PRODUCTS } from '../constants';
 import { CONFIG } from './config';
 
 export const productService = {
 
     async getProducts(): Promise<Product[]> {
-        if (CONFIG.USE_MOCK_API) {
-            const storedProducts = getStorage<Product[]>(DB.PRODUCTS, []);
-            // Varsayılan ürünlere stok bilgisi ekle (eğer yoksa)
-            if (storedProducts.length === 0) {
-                const productsWithStock = INITIAL_PRODUCTS.map(p => ({ ...p, stock: 10 }));
-                setStorage(DB.PRODUCTS, productsWithStock);
-                return productsWithStock;
+        try {
+            const response = await fetch(`${CONFIG.API_URL}/products`);
+            if (!response.ok) {
+                console.warn('Products API returned status:', response.status);
+                return [];
             }
-            return storedProducts;
-        } else {
-            // REAL BACKEND
-            try {
-                const response = await fetch(`${CONFIG.API_URL}/products`);
-                if (!response.ok) return [];
-                return await response.json();
-            } catch (error) {
-                console.error("Failed to fetch products:", error);
-                // Hata durumunda uygulamanın çökmesini engellemek için boş dizi veya varsayılan ürünleri dön
-                return INITIAL_PRODUCTS.map(p => ({ ...p, stock: 10 }));
-            }
+            const data = await response.json();
+            return Array.isArray(data) ? data : (data.data || []);
+        } catch (error) {
+            console.error("Failed to fetch products:", error);
+            return [];
         }
     },
 
-    // NEW METHOD: Get specific products by IDs
+    // Get specific products by APIs
     async getProductsByIds(ids: string[]): Promise<Product[]> {
+        // Optimization: In a real app, you might want a specific endpoint like /products?ids=...
+        // For now, filtering client-side after fetch is okay if dataset is small, 
+        // but ideally we should fetch only what we need.
         const allProducts = await this.getProducts();
         return allProducts.filter(p => ids.includes(p._id));
     },
 
     async addProduct(product: Omit<Product, '_id'>): Promise<Product> {
-        // Images array'ini ve ana resmi garanti altına al
+        // Ensure images array and main image are present
         const safeProduct = {
             ...product,
             images: product.images || [product.image],
@@ -46,43 +37,23 @@ export const productService = {
             model3d: product.model3d || ''
         };
 
-        if (CONFIG.USE_MOCK_API) {
-            await delay(500);
-            const products = getStorage<Product[]>(DB.PRODUCTS, []);
-            const newProduct: Product = {
-                ...safeProduct,
-                _id: Date.now().toString(),
-            };
-            products.unshift(newProduct);
-            setStorage(DB.PRODUCTS, products);
-            return newProduct;
-        } else {
-            // REAL BACKEND
-            const response = await fetch(`${CONFIG.API_URL}/products`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(safeProduct)
-            });
-            return await response.json();
-        }
+        const response = await fetch(`${CONFIG.API_URL}/products`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(safeProduct)
+        });
+        if (!response.ok) throw new Error('Failed to add product');
+        return await response.json();
     },
 
     async deleteProduct(id: string): Promise<void> {
-        if (CONFIG.USE_MOCK_API) {
-            await delay(300);
-            const products = getStorage<Product[]>(DB.PRODUCTS, []);
-            const filtered = products.filter(p => p._id !== id);
-            setStorage(DB.PRODUCTS, filtered);
-        } else {
-            // REAL BACKEND
-            await fetch(`${CONFIG.API_URL}/products/${id}`, {
-                method: 'DELETE'
-            });
-        }
+        const response = await fetch(`${CONFIG.API_URL}/products/${id}`, {
+            method: 'DELETE'
+        });
+        if (!response.ok) throw new Error('Failed to delete product');
     },
 
     async updateProduct(product: Product): Promise<void> {
-        // Images array'ini ve ana resmi garanti altına al
         const safeProduct = {
             ...product,
             images: product.images || [product.image],
@@ -91,21 +62,11 @@ export const productService = {
             model3d: product.model3d || ''
         };
 
-        if (CONFIG.USE_MOCK_API) {
-            await delay(300);
-            const products = getStorage<Product[]>(DB.PRODUCTS, []);
-            const index = products.findIndex(p => p._id === product._id);
-            if (index !== -1) {
-                products[index] = safeProduct;
-                setStorage(DB.PRODUCTS, products);
-            }
-        } else {
-            // REAL BACKEND
-            await fetch(`${CONFIG.API_URL}/products/${product._id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(safeProduct)
-            });
-        }
+        const response = await fetch(`${CONFIG.API_URL}/products/${product._id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(safeProduct)
+        });
+        if (!response.ok) throw new Error('Failed to update product');
     }
 };

@@ -559,9 +559,7 @@ export const App: React.FC = () => {
                             </AnimatePresence>
                         </main>
 
-                        <div className="hidden md:block">
-                            <BottomNav currentView={view} onNavigate={navigateTo} />
-                        </div>
+
                     </MobileLayout>
                 )}
 

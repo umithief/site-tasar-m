@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Product, CartItem, ProductCategory, User, AuthMode, Route as RouteType, ViewState, ColorTheme } from './types';
@@ -520,189 +520,189 @@ export const App: React.FC = () => {
     const renderContent = () => {
         switch (view) {
             case 'home':
-                return (
-                    <Home
-                        onNavigate={navigateTo}
-                        products={[]}
-                        onAddToCart={() => { }}
-                        onProductClick={(p: any) => setSelectedProduct(p)}
-                        favoriteIds={[]}
-                        onToggleFavorite={() => { }}
-                        onQuickView={() => { }}
-                        onCompare={() => { }}
-                        compareList={[]}
-                        onToggleMenu={() => { }}
-                    />
-                );
-            case 'admin':
-                return user?.isAdmin ? (
-                    <ErrorBoundary>
-                        <AdminPanel
-                            onLogout={handleLogout}
-                            onShowToast={addToast}
-                            onNavigate={navigateTo}
-                        />
-                    </ErrorBoundary>
-                ) : (
-                    <div className="pt-32 text-center text-gray-500">Yetkisiz erişim.</div>
-                );
-            case 'social-hub':
-                return <SocialHub user={user} onNavigate={navigateTo} />;
-            case 'routes':
-                return <RouteExplorer
-                    user={user}
-                    onOpenAuth={() => setIsAuthOpen(true)}
-                    onStartRide={(route) => {
-                        setActiveRoute(route);
-                        navigateTo('ride-mode');
-                    }}
-                />;
-            case 'profile':
-                if (!user) {
-                    setTimeout(() => setIsAuthOpen(true), 100);
-                    return null;
+                            return (
+                            <Home
+                                onNavigate={navigateTo}
+                                products={[]}
+                                onAddToCart={() => { }}
+                                onProductClick={(p: any) => setSelectedProduct(p)}
+                                favoriteIds={[]}
+                                onToggleFavorite={() => { }}
+                                onQuickView={() => { }}
+                                onCompare={() => { }}
+                                compareList={[]}
+                                onToggleMenu={() => { }}
+                            />
+                            );
+                            case 'admin':
+                            return user?.isAdmin ? (
+                            <ErrorBoundary>
+                                <AdminPanel
+                                    onLogout={handleLogout}
+                                    onShowToast={addToast}
+                                    onNavigate={navigateTo}
+                                />
+                            </ErrorBoundary>
+                            ) : (
+                            <div className="pt-32 text-center text-gray-500">Yetkisiz erişim.</div>
+                            );
+                            case 'social-hub':
+                            return <SocialHub user={user} onNavigate={navigateTo} />;
+                            case 'routes':
+                            return <RouteExplorer
+                                user={user}
+                                onOpenAuth={() => setIsAuthOpen(true)}
+                                onStartRide={(route) => {
+                                    setActiveRoute(route);
+                                    navigateTo('ride-mode');
+                                }}
+                            />;
+                            case 'profile':
+                            if (!user) {
+                                setTimeout(() => setIsAuthOpen(true), 100);
+                            return null;
                 }
-                return <ProfilePage userId={user._id} onNavigate={navigateTo as any} />;
-            case 'shop':
-                return (
-                    <Shop
-                        onNavigate={navigateTo}
-                        onAddToCart={(product) => {
-                            addToast('success', `${product.name} sepete eklendi.`);
-                            // In real app, update global cart state here
-                        }}
-                        onProductClick={(p) => setSelectedProduct(p)}
-                        favoriteIds={[]}
-                        onToggleFavorite={(id) => {
-                            addToast('success', 'Favorilere eklendi (Demo)');
-                        }}
-                    />
-                );
-            case 'forum':
-                return (
-                    <Forum
-                        onNavigate={navigateTo}
-                        user={user}
-                        onOpenAuth={() => setIsAuthOpen(true)}
-                    />
-                );
-            case 'meetup': // Mapping 'meetup' view to Events component as per design
-            case 'events': // Fallback if type suggests events
-                return (
-                    <Events
-                        onNavigate={navigateTo}
-                        user={user}
-                        onOpenAuth={() => setIsAuthOpen(true)}
-                    />
-                );
-            case 'blog':
-            case 'riders':
-            case 'favorites':
-            case 'cart':
-            case 'checkout':
-            case 'product-detail':
-                return (
-                    <ProductDetail
-                        product={selectedProduct}
-                        allProducts={[]} // Pass all products if available or empty array
-                        onAddToCart={(product) => addToast('success', `${product.name} sepete eklendi.`)}
-                        onNavigate={navigateTo}
-                        onProductClick={setSelectedProduct}
-                    />
-                );
-            case 'ride-mode':
-                return <RideMode route={activeRoute} onNavigate={navigateTo} />;
-            case 'mototool':
-            case 'about':
-            case 'ai-assistant':
-            case 'meetup':
-            case 'service-finder':
-            case 'valuation':
-            case 'qr-generator':
-            case 'vlog-map':
-            case 'lifesaver':
-            case 'showcase':
-                return (
-                    <Showcase
-                        products={[]} // Pass products here, using empty array for now as Home does
-                        onAddToCart={(product) => addToast('success', `${product.name} sepete eklendi.`)}
-                        onProductClick={setSelectedProduct}
-                        favoriteIds={[]}
-                        onToggleFavorite={() => { }}
-                        onQuickView={setSelectedProduct}
-                        onCompare={() => { }}
-                        compareList={[]}
-                        onNavigate={navigateTo}
-                        onToggleMenu={() => { }}
-                    />
-                );
-            case 'reels':
-                return <ReelsPage onNavigate={navigateTo} />;
-            case 'explore':
-            case 'create':
-                return (
-                    <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
-                        <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
-                            <span className="text-2xl">🚧</span>
+                            return <ProfilePage userId={user._id} onNavigate={navigateTo as any} />;
+                            case 'shop':
+                            return (
+                            <Shop
+                                onNavigate={navigateTo}
+                                onAddToCart={(product) => {
+                                    addToast('success', `${product.name} sepete eklendi.`);
+                                    // In real app, update global cart state here
+                                }}
+                                onProductClick={(p) => setSelectedProduct(p)}
+                                favoriteIds={[]}
+                                onToggleFavorite={(id) => {
+                                    addToast('success', 'Favorilere eklendi (Demo)');
+                                }}
+                            />
+                            );
+                            case 'forum':
+                            return (
+                            <Forum
+                                onNavigate={navigateTo}
+                                user={user}
+                                onOpenAuth={() => setIsAuthOpen(true)}
+                            />
+                            );
+                            case 'meetup': // Mapping 'meetup' view to Events component as per design
+                            case 'events': // Fallback if type suggests events
+                            return (
+                            <Events
+                                onNavigate={navigateTo}
+                                user={user}
+                                onOpenAuth={() => setIsAuthOpen(true)}
+                            />
+                            );
+                            case 'blog':
+                            case 'riders':
+                            case 'favorites':
+                            case 'cart':
+                            case 'checkout':
+                            case 'product-detail':
+                            return (
+                            <ProductDetail
+                                product={selectedProduct}
+                                allProducts={[]} // Pass all products if available or empty array
+                                onAddToCart={(product) => addToast('success', `${product.name} sepete eklendi.`)}
+                                onNavigate={navigateTo}
+                                onProductClick={setSelectedProduct}
+                            />
+                            );
+                            case 'ride-mode':
+                            return <RideMode route={activeRoute} onNavigate={navigateTo} />;
+                            case 'mototool':
+                            case 'about':
+                            case 'ai-assistant':
+                            case 'meetup':
+                            case 'service-finder':
+                            case 'valuation':
+                            case 'qr-generator':
+                            case 'vlog-map':
+                            case 'lifesaver':
+                            case 'showcase':
+                            return (
+                            <Showcase
+                                products={[]} // Pass products here, using empty array for now as Home does
+                                onAddToCart={(product) => addToast('success', `${product.name} sepete eklendi.`)}
+                                onProductClick={setSelectedProduct}
+                                favoriteIds={[]}
+                                onToggleFavorite={() => { }}
+                                onQuickView={setSelectedProduct}
+                                onCompare={() => { }}
+                                compareList={[]}
+                                onNavigate={navigateTo}
+                                onToggleMenu={() => { }}
+                            />
+                            );
+                            case 'reels':
+                            return <ReelsPage onNavigate={navigateTo} />;
+                            case 'explore':
+                            case 'create':
+                            return (
+                            <div className="flex flex-col items-center justify-center min-h-[60vh] text-center px-4">
+                                <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4">
+                                    <span className="text-2xl">🚧</span>
 >>>>>>> restore-2025-12-25
-                        </div>
-                        <h2 className="text-xl font-bold text-white mb-2">Yapım Aşamasında</h2>
-                        <p className="text-gray-400 mb-6 max-w-md">
-                            "{view}" sayfası şu anda geliştirme aşamasındadır. Çok yakında sizlerle olacak.
-                        </p>
-                        <button
-                            onClick={() => navigateTo('home')}
-                            className="px-6 py-2 bg-moto-accent text-black rounded-xl font-bold hover:bg-white transition-colors"
-                        >
-                            Ana Sayfaya Dön
-                        </button>
-                    </div>
-                );
-            case 'garage':
-                return <Garage />;
-            default:
+                                </div>
+                                <h2 className="text-xl font-bold text-white mb-2">Yapım Aşamasında</h2>
+                                <p className="text-gray-400 mb-6 max-w-md">
+                                    "{view}" sayfası şu anda geliştirme aşamasındadır. Çok yakında sizlerle olacak.
+                                </p>
+                                <button
+                                    onClick={() => navigateTo('home')}
+                                    className="px-6 py-2 bg-moto-accent text-black rounded-xl font-bold hover:bg-white transition-colors"
+                                >
+                                    Ana Sayfaya Dön
+                                </button>
+                            </div>
+                            );
+                            case 'garage':
+                            return <Garage />;
+                            default:
         }
     };
 
-    return (
-        <div className="min-h-screen bg-[#09090b] text-white">
-            <Navbar
-                cartCount={0}
-                favoritesCount={0}
-                onCartClick={() => { }}
-                onFavoritesClick={() => { }}
-                onSearch={() => { }}
-                onOpenAuth={() => setIsAuthOpen(true)}
-                onNavigate={navigateTo}
-                currentView={view}
-                colorTheme="orange"
-                onColorChange={() => { }}
-                onToggleMenu={() => { }}
-            />
+                            return (
+                            <div className="min-h-screen bg-[#09090b] text-white">
+                                <Navbar
+                                    cartCount={0}
+                                    favoritesCount={0}
+                                    onCartClick={() => { }}
+                                    onFavoritesClick={() => { }}
+                                    onSearch={() => { }}
+                                    onOpenAuth={() => setIsAuthOpen(true)}
+                                    onNavigate={navigateTo}
+                                    currentView={view}
+                                    colorTheme="orange"
+                                    onColorChange={() => { }}
+                                    onToggleMenu={() => { }}
+                                />
 
-            <main className="pt-20">
-                {renderContent()}
-            </main>
+                                <main className="pt-20">
+                                    {renderContent()}
+                                </main>
 
-            <AuthModal
-                isOpen={isAuthOpen}
-                onClose={() => setIsAuthOpen(false)}
-                onLogin={handleLogin}
-                initialMode="login"
-            />
+                                <AuthModal
+                                    isOpen={isAuthOpen}
+                                    onClose={() => setIsAuthOpen(false)}
+                                    onLogin={handleLogin}
+                                    initialMode="login"
+                                />
 
-            <ProductQuickViewModal
-                isOpen={!!selectedProduct && view !== 'product-detail'}
-                product={selectedProduct}
-                onClose={() => setSelectedProduct(null)}
-                onAddToCart={(product) => {
-                    addToast('success', `${product.name} sepete eklendi.`);
-                    setSelectedProduct(null);
-                }}
-                onViewDetail={(product) => navigateTo('product-detail')}
-            />
+                                <ProductQuickViewModal
+                                    isOpen={!!selectedProduct && view !== 'product-detail'}
+                                    product={selectedProduct}
+                                    onClose={() => setSelectedProduct(null)}
+                                    onAddToCart={(product) => {
+                                        addToast('success', `${product.name} sepete eklendi.`);
+                                        setSelectedProduct(null);
+                                    }}
+                                    onViewDetail={(product) => navigateTo('product-detail')}
+                                />
 
-            <ToastContainer toasts={toasts} onRemove={removeToast} />
-        </div>
-    );
+                                <ToastContainer toasts={toasts} onRemove={removeToast} />
+                            </div>
+                            );
 };

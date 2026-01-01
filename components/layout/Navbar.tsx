@@ -170,12 +170,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                                                 <ShieldCheck className="w-5 h-5" /> Admin Panel
                                             </button>
                                         )}
-                                        <button onClick={() => { onNavigate('profile'); setIsProfileOpen(false); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-zinc-200 hover:bg-white/10">
-                                            <UserIcon className="w-5 h-5" /> Kanalınız (Profil)
-                                        </button>
-                                        <button onClick={() => { onNavigate('profile'); setIsProfileOpen(false); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-zinc-200 hover:bg-white/10">
-                                            <Warehouse className="w-5 h-5" /> Garajınız
-                                        </button>
+                                        {/* Removed Profile/Garage links requested by user */}
                                         <button onClick={() => { onNavigate('settings' as any); setIsProfileOpen(false); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-zinc-200 hover:bg-white/10">
                                             <Settings className="w-5 h-5" /> Ayarlar
                                         </button>

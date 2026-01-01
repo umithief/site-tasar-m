@@ -184,7 +184,10 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ userId, username: 
                     {/* Interaction Buttons */}
                     <div className="flex gap-2">
                         {isOwnProfile ? (
-                            <button className="px-6 py-2 rounded-xl bg-white/5 border border-white/10 font-bold text-sm backdrop-blur-md hover:bg-white/10 transition-all">
+                            <button
+                                onClick={() => onNavigate && onNavigate('settings')}
+                                className="px-6 py-2 rounded-xl bg-white/5 border border-white/10 font-bold text-sm backdrop-blur-md hover:bg-white/10 transition-all"
+                            >
                                 Profili Düzenle
                             </button>
                         ) : (
@@ -199,7 +202,10 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ userId, username: 
                                 >
                                     {isFollowing ? 'Takip Ediliyor' : 'Takip Et'}
                                 </button>
-                                <button className="p-2 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10">
+                                <button
+                                    onClick={() => onNavigate && onNavigate('chat', { userId: profileUser._id })}
+                                    className="p-2 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10"
+                                >
                                     <MessageCircle className="w-5 h-5" />
                                 </button>
                             </>

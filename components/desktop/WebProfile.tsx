@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, SocialProfile, ViewState, ColorTheme, SocialPost } from '../../types';
+import { User, SocialProfile, ViewState, SocialPost } from '../../types';
 import { MotovibeSidebar } from '../layout/MotovibeSidebar';
 import { WebGarageCard } from './WebGarageCard';
 import { UserAvatar } from '../ui/UserAvatar';
 import { socialService } from '../../services/socialService';
 import { useAuthStore } from '../../store/authStore';
 import {
-    MapPin, Calendar, Heart, MessageCircle, Share2,
+    MapPin, Calendar, Heart, MessageCircle,
     Grid, Archive, Route, Award, Settings, LogOut
 } from 'lucide-react';
 import { notify } from '../../services/notificationService';
+import { useFollow } from '../../hooks/useFollow';
 
 interface WebProfileProps {
-    user: User | SocialProfile; // Can be current user or viewed user
+    user: User | SocialProfile;
     onNavigate: (view: ViewState, data?: any) => void;
     onLogout?: () => void;
     isOwnProfile?: boolean;
@@ -34,9 +35,25 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
     const [profileStats, setProfileStats] = useState({
         followers: 0,
         following: 0,
-        totalKm: 12500, // Mock for now, or fetch from stats
-        garageValue: '₺850.000', // Mock or calc
+        totalKm: 12500, // Mock for now
+        garageValue: '₺850.000', // Mock
     });
+
+    // Follow Logic
+    const { mutate: toggleFollow, isPending: isFollowPending } = useFollow();
+
+    // Derive isFollowing properly from the current user's data
+    const isFollowing = currentUser?.following?.some((f: any) =>
+        (typeof f === 'string' ? f : f._id) === user._id
+    ) ?? false;
+
+    const handleFollow = () => {
+        if (!currentUser) {
+            notify.error('Lütfen giriş yapın');
+            return;
+        }
+        toggleFollow({ targetUserId: user._id, isCurrentlyFollowing: isFollowing });
+    };
 
     // Fetch Extra Data
     useEffect(() => {
@@ -168,7 +185,10 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
                             <div className="ml-4 pl-8 border-l border-white/10 flex gap-3">
                                 {isOwnProfile ? (
                                     <>
-                                        <button className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 transition-colors text-white">
+                                        <button
+                                            onClick={() => onNavigate('settings' as any)}
+                                            className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 transition-colors text-white"
+                                        >
                                             <Settings className="w-5 h-5" />
                                         </button>
                                         <button onClick={onLogout} className="p-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-500 transition-colors">
@@ -176,8 +196,15 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
                                         </button>
                                     </>
                                 ) : (
-                                    <button className="px-8 py-3 bg-moto-accent text-black font-bold uppercase tracking-wider rounded-xl hover:bg-orange-400 transition-colors">
-                                        Follow
+                                    <button
+                                        onClick={handleFollow}
+                                        disabled={isFollowPending}
+                                        className={`px-8 py-3 font-bold uppercase tracking-wider rounded-xl transition-colors ${isFollowing
+                                            ? 'bg-zinc-800 text-gray-400 hover:bg-zinc-700'
+                                            : 'bg-moto-accent text-black hover:bg-orange-400'
+                                            }`}
+                                    >
+                                        {isFollowPending ? '...' : (isFollowing ? 'Following' : 'Follow')}
                                     </button>
                                 )}
                             </div>

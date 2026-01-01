@@ -96,17 +96,17 @@ export const Navbar: React.FC<NavbarProps> = ({
                             placeholder="Ara"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full h-10 bg-[#121212] border border-[#303030] rounded-l-full px-4 pl-10 text-white placeholder-zinc-500 focus:outline-none focus:border-[#1c62b9] focus:shadow-[inset_0_1px_2px_rgba(0,0,0,0.3)] transition-colors"
+                            className="w-full h-10 bg-[#121212] border border-[#303030] rounded-l-full px-4 text-white placeholder-zinc-500 focus:outline-none focus:border-[#1c62b9] focus:shadow-[inset_0_1px_2px_rgba(0,0,0,0.3)] transition-all ease-in-out duration-200"
                         />
-                        <div className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 hidden sm:block">
-                            {/* <Search className="w-4 h-4" /> Optional inner icon */}
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hidden sm:block pointer-events-none">
+                            {/* Potential Keyboard shortcut hint here */}
                         </div>
                     </div>
                     <button type="submit" className="h-10 px-6 bg-[#222222] border border-l-0 border-[#303030] rounded-r-full hover:bg-[#303030] transition-colors flex items-center justify-center">
                         <Search className="w-5 h-5 text-zinc-400" />
                     </button>
                 </form>
-                <button className="ml-4 w-10 h-10 rounded-full bg-[#181818] hover:bg-[#303030] flex items-center justify-center transition-colors">
+                <button className="ml-4 w-10 h-10 rounded-full bg-[#181818] hover:bg-[#303030] flex items-center justify-center transition-colors shadow-sm">
                     <span className="sr-only">Voice Search</span>
                     <svg viewBox="0 0 24 24" height="24" width="24" className="block w-5 h-5 fill-white"><path d="M12 3c-1.66 0-3 1.34-3 3v8c0 1.66 1.34 3 3 3s3-1.34 3-3V6c0-1.66-1.34-3-3-3zm0 13.5c-2.48 0-4.5-2.02-4.5-4.5v-0.5c0-0.28-0.22-0.5-0.5-0.5s-0.5 0.22-0.5 0.5v0.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5v-0.5c0-0.28-0.22-0.5-0.5-0.5s-0.5 0.22-0.5 0.5v0.5c0 2.48-2.02 4.5-4.5 4.5zm0 5.5c-0.28 0-0.5-0.22-0.5-0.5s0.22-0.5 0.5-0.5 0.5 0.22 0.5 0.5-0.22 0.5-0.5 0.5z"></path><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"></path><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"></path></svg>
                 </button>
@@ -120,20 +120,20 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <Search className="w-6 h-6" />
                 </button>
 
-                <button className="p-2 rounded-full hover:bg-white/10 text-white relative">
-                    <Bell className="w-6 h-6" />
+                <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 text-white relative transition-colors">
+                    <Bell className="w-6 h-6" strokeWidth={1.5} />
                     {notifications > 0 && (
-                        <span className="absolute top-1 right-1 w-2 h-2 bg-red-600 rounded-full border border-[#0f0f0f]" />
+                        <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-[#cc0000] rounded-full border-2 border-[#0f0f0f]" />
                     )}
                 </button>
 
                 <button
                     onClick={onCartClick}
-                    className="p-2 rounded-full hover:bg-white/10 text-white relative"
+                    className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 text-white relative transition-colors"
                 >
-                    <ShoppingBag className="w-6 h-6" />
+                    <ShoppingBag className="w-6 h-6" strokeWidth={1.5} />
                     {cartCount > 0 && (
-                        <span className="absolute top-1 right-0 bg-red-600 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full border border-[#0f0f0f]">
+                        <span className="absolute -top-1 -right-1 bg-[#cc0000] text-white text-[10px] font-bold min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full border-2 border-[#0f0f0f]">
                             {cartCount}
                         </span>
                     )}

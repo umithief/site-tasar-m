@@ -7,9 +7,31 @@ import { socialService } from '../../services/socialService';
 import { useFollow } from '../../hooks/useFollow';
 import { UserAvatar } from '../ui/UserAvatar';
 
-export const MobileProfile = () => {
-    const { username } = useParams<{ username: string }>(); // or ID, flexible
-    const navigate = useNavigate();
+// ... imports
+import { User } from '../../types';
+
+interface MobileProfileProps {
+    userId?: string;
+    username?: string;
+    onNavigate?: (view: any, data?: any) => void; // align with App.tsx naming
+    onBack?: () => void;
+}
+
+export const MobileProfile: React.FC<MobileProfileProps> = ({ userId, username: propUsername, onNavigate, onBack }) => {
+    const { username: paramUsername } = useParams<{ username: string }>();
+    const effectiveUsername = propUsername || paramUsername || userId;
+
+    // Internal navigation helper to bridge gap if needed
+    const safeNavigate = (path: string | number) => {
+        if (typeof path === 'number' && path === -1) {
+            if (onBack) onBack();
+            else if (onNavigate) onNavigate('home');
+        } else if (typeof path === 'string') {
+            // Handle specific routes if needed, otherwise ignore or mapped
+        }
+    };
+
+    // const navigate = useNavigate(); // We might not be in a router context for this app structure, relying on onNavigate from props mostly.
     const { user: currentUser } = useAuthStore();
 
     // State
@@ -35,14 +57,16 @@ export const MobileProfile = () => {
     // Fetch Data
     useEffect(() => {
         const fetchProfile = async () => {
-            if (!username) return;
+            if (!effectiveUsername && !userId) return;
+            const lookupId = effectiveUsername || userId;
+
             setIsLoading(true);
             try {
                 // Fetch profile data (which now includes posts)
-                let data = await socialService.getUserProfile(username);
+                let data = await socialService.getUserProfile(lookupId!);
 
                 // Fallback for "Me" if API fails or special handling needed
-                if (!data && currentUser && (currentUser.username === username || currentUser._id === username || username === 'me')) {
+                if (!data && currentUser && (currentUser.username === effectiveUsername || currentUser._id === effectiveUsername || effectiveUsername === 'me')) {
                     // Since backend getProfile is updated, this might not be needed if API call succeeds.
                     // But keeps robust fallback.
                     // Note: socialService.getUserProfile creates the fetch call.
@@ -68,7 +92,7 @@ export const MobileProfile = () => {
         };
 
         fetchProfile();
-    }, [username, currentUser]);
+    }, [effectiveUsername, userId, currentUser]);
 
     // Live Follow Hook
     const { mutate: toggleFollow, isPending: isFollowPending } = useFollow();
@@ -113,7 +137,7 @@ export const MobileProfile = () => {
 
                 {/* Navbar (Absolute) */}
                 <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-center z-50 pt-12">
-                    <button onClick={() => navigate(-1)} className="p-2 bg-black/20 backdrop-blur-md rounded-full text-white hover:bg-white/10">
+                    <button onClick={() => onBack ? onBack() : safeNavigate(-1)} className="p-2 bg-black/20 backdrop-blur-md rounded-full text-white hover:bg-white/10">
                         <ChevronLeft className="w-6 h-6" />
                     </button>
                     {isOwnProfile && (
@@ -281,7 +305,7 @@ export const MobileProfile = () => {
                                         animate={{ opacity: 1, y: 0 }}
                                         transition={{ delay: i * 0.05 }}
                                         className="relative aspect-[4/5] bg-[#111] overflow-hidden group cursor-pointer"
-                                        onClick={() => navigate(`/post/${post._id}`)} // Or open modal
+                                        onClick={() => onNavigate && onNavigate('post-detail', { postId: post._id })} // Or open modal
                                     >
                                         <img
                                             src={post.images?.[0] || post.mediaUrl || post.image}

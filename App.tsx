@@ -58,6 +58,7 @@ import { Showcase } from './components/Showcase';
 import { AuthPage } from './components/AuthPage';
 import { Shop } from './components/Shop';
 import { MobileShop } from './components/mobile/MobileShop';
+import { MobileProfile } from './components/mobile/MobileProfile';
 import { Favorites } from './components/Favorites';
 import { AIAssistantPage } from './components/AIAssistantPage';
 import { ProductDetail } from './components/ProductDetail';
@@ -175,6 +176,12 @@ export const App: React.FC = () => {
     const navigateTo = (newView: ViewState, data?: any) => {
         if (data && newView === 'product-detail') {
             setSelectedProduct(data);
+        }
+        if (data && newView === 'public-profile') {
+            // If data has _id, it's a user object or partial user object
+            if (data._id) {
+                setViewingUser(data);
+            }
         }
         setView(newView);
         window.scrollTo(0, 0);
@@ -362,9 +369,18 @@ export const App: React.FC = () => {
             case 'qr-generator': return <HelmetQRGenerator onNavigate={navigateTo} />;
             case 'vlog-map': return <MotoVlogMap onNavigate={navigateTo} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} user={user} />;
             case 'lifesaver': return <LifeSaver onClose={() => navigateTo('home')} />;
-            case 'profile': return user ? <UserProfile user={user} onLogout={handleLogout} onUpdateUser={setUser} onNavigate={navigateTo} colorTheme={colorTheme} onColorChange={setColorTheme} /> : <div className="pt-32 text-center text-gray-500">Lütfen giriş yapın.</div>;
-            case 'my-profile': return user ? <MyProfile /> : <div className="pt-32 text-center text-gray-500">Lütfen giriş yapın.</div>;
-            case 'public-profile': return viewingUser ? <ProfilePage userId={viewingUser._id} onNavigate={navigateTo} onBack={() => navigateTo('riders')} /> : <div className="pt-32 text-center text-gray-500">Kullanıcı yüklenemedi.</div>;
+            case 'profile': return isMobile && user
+                ? <MobileProfile userId={user._id} onNavigate={navigateTo} onBack={() => navigateTo('home')} />
+                : (user ? <UserProfile user={user} onLogout={handleLogout} onUpdateUser={setUser} onNavigate={navigateTo} colorTheme={colorTheme} onColorChange={setColorTheme} /> : <div className="pt-32 text-center text-gray-500">Lütfen giriş yapın.</div>);
+
+            case 'my-profile': return isMobile && user
+                ? <MobileProfile userId={user._id} onNavigate={navigateTo} onBack={() => navigateTo('home')} />
+                : (user ? <MyProfile /> : <div className="pt-32 text-center text-gray-500">Lütfen giriş yapın.</div>);
+
+            case 'public-profile': return isMobile && viewingUser
+                ? <MobileProfile userId={viewingUser._id} onNavigate={navigateTo} onBack={() => navigateTo('riders')} />
+                : (viewingUser ? <ProfilePage userId={viewingUser._id} onNavigate={navigateTo} onBack={() => navigateTo('riders')} /> : <div className="pt-32 text-center text-gray-500">Kullanıcı yüklenemedi.</div>);
+
             case 'admin': return user?.isAdmin ? <AdminPanel onLogout={handleLogout} onShowToast={addToast} onNavigate={navigateTo} /> : <div className="pt-32 text-center text-gray-500">Yetkisiz erişim.</div>;
             case 'onboarding': return <MobileOnboarding onNavigate={navigateTo} />;
             case 'blog': return <Blog onNavigate={navigateTo} />;

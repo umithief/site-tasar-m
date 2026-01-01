@@ -102,7 +102,8 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout, onUpda
         // Needs fetching (IDs only)
         try {
             // Using socialService to get full profile which populates these fields
-            const fullProfile = await import('../../services/socialService').then(m => m.socialService.getUserProfile(user._id));
+            const targetId = displayProfile._id || displayProfile.id || user._id;
+            const fullProfile = await import('../../services/socialService').then(m => m.socialService.getUserProfile(targetId));
             if (fullProfile) {
                 setModalUsers(type === 'followers' ? (fullProfile.followers || []) : (fullProfile.following || []));
             }

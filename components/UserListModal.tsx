@@ -14,6 +14,7 @@ interface UserListModalProps {
 }
 
 export const UserListModal: React.FC<UserListModalProps> = ({ isOpen, onClose, title, users, onNavigate }) => {
+    if (isOpen) console.log('UserListModal Users:', users);
     if (!isOpen) return null;
 
     return (

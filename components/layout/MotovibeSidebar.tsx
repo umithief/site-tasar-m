@@ -33,6 +33,7 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
             title: 'MAIN',
             items: [
                 { id: 'home', icon: Home, label: 'Feed' },
+                { id: 'showcase', icon: Layers, label: 'Showcase' }, // Added Showcase
                 { id: 'explore', icon: Compass, label: 'Explore' },
                 { id: 'reels', icon: Zap, label: 'Velocity Reels' },
                 { id: 'shop', icon: ShoppingBag, label: 'Premium Shop' },

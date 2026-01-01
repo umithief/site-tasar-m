@@ -11,6 +11,7 @@ import { storageService } from '../../services/storageService';
 import { notify } from '../../services/notificationService';
 import { useLanguage } from '../../contexts/LanguageProvider';
 import { BikeDetailModal } from '../BikeDetailModal';
+import { ZenGarage } from '../ZenGarage';
 
 // Extend SocialProfile or use UserType, we need a unified approach.
 // The main App passes `user` which is `UserType`. We can cast or map it.
@@ -214,56 +215,14 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout, onUpda
                 </div>
             </div>
 
-            {/* The Garage (Minimalist Grid) */}
+            {/* The Garage (Zen Design) */}
             <div className="max-w-7xl mx-auto px-4 lg:px-8 mb-24">
-                <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-4">
-                    <h2 className="text-sm font-bold tracking-widest text-gray-400 uppercase">My Garage</h2>
-                    <span className="text-xs font-mono text-gray-600">{myBikes.length} MACHINES</span>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {/* Add Button - Minimal Dashed */}
-                    <motion.button
-                        whileHover={{ scale: 1.02 }}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => setSelectedBike({ _id: '', brand: '', model: '', year: '', km: '', color: '', image: '', maintenance: [], modifications: [], isPublic: true } as UserBike)}
-                        className="group relative h-[300px] rounded-xl border border-dashed border-zinc-800 hover:border-zinc-600 hover:bg-zinc-900/30 transition-all flex flex-col items-center justify-center gap-3 text-zinc-600 hover:text-zinc-300"
-                    >
-                        <div className="p-3 rounded-full bg-zinc-900 group-hover:bg-zinc-800 transition-colors">
-                            <Plus className="w-6 h-6" />
-                        </div>
-                        <span className="text-xs font-medium uppercase tracking-wider">Add Motorcycle</span>
-                    </motion.button>
-
-                    {/* Bike Cards - Minimal */}
-                    {myBikes.map((bike) => (
-                        <motion.div
-                            key={bike._id}
-                            layoutId={`bike-${bike._id}`}
-                            onClick={() => setSelectedBike(bike)}
-                            className="group relative h-[300px] rounded-xl bg-zinc-900/20 hover:bg-zinc-900/40 border border-white/5 hover:border-white/10 transition-all overflow-hidden cursor-pointer"
-                        >
-                            <div className="h-2/3 w-full overflow-hidden">
-                                <img
-                                    src={bike.image}
-                                    alt={bike.model}
-                                    className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
-                                />
-                            </div>
-                            <div className="p-5">
-                                <div className="flex justify-between items-start">
-                                    <div>
-                                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">{bike.brand}</h3>
-                                        <p className="text-lg font-medium text-white tracking-tight">{bike.model}</p>
-                                    </div>
-                                    <div className="p-2 rounded-full bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity">
-                                        <Settings className="w-4 h-4 text-white" />
-                                    </div>
-                                </div>
-                            </div>
-                        </motion.div>
-                    ))}
-                </div>
+                <ZenGarage
+                    bikes={myBikes}
+                    isEditable={isOwnProfile && !!onUpdateUser}
+                    onAdd={() => setSelectedBike({ _id: '', brand: '', model: '', year: '', km: '', color: '', image: '', maintenance: [], modifications: [], isPublic: true } as UserBike)}
+                    onBikeClick={setSelectedBike}
+                />
             </div>
 
             {/* Content Feed */}

@@ -13,6 +13,7 @@ import { PostCard } from './PostCard';
 import { SocialPost, UserBike } from '../../types';
 import { authService } from '../../services/auth';
 import { gamificationService, RANKS } from '../../services/gamificationService';
+import { ZenGarage } from '../ZenGarage';
 
 // --- Types & Mocks ---
 
@@ -366,12 +367,12 @@ export const MyProfile: React.FC = () => {
                                 )}
 
                                 {activeTab === 'garage' && (
-                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-                                        <GarageCard isAdd />
-                                        {user.garage?.map((bike) => (
-                                            <GarageCard key={bike._id} bike={bike} />
-                                        ))}
-                                    </div>
+                                    <ZenGarage
+                                        bikes={user.garage || []}
+                                        isEditable={true}
+                                        onAdd={() => notify.info('Yeni araç ekleme yakında!')}
+                                        onBikeClick={(bike) => notify.info(`Viewing ${bike.model}`)}
+                                    />
                                 )}
 
                                 {activeTab === 'saved' && (

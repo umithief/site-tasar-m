@@ -177,10 +177,7 @@ export const getUserPosts = catchAsync(async (req, res, next) => {
 
     const posts = await Post.find({ user: userId })
         .sort({ createdAt: -1 })
-        .populate({
-            path: 'comments.user',
-            select: 'name avatar'
-        })
+
         .lean();
 
     // Calculate isLiked if user is authenticated

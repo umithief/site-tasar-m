@@ -116,6 +116,17 @@ export const App: React.FC = () => {
 
     const [socialHubData, setSocialHubData] = useState<any>(null); // Placeholder for initial data
 
+    // GLOBAL AUTH SYNC: Listen to store changes to keep local state updated (e.g. from Settings)
+    const authUser = useAuthStore((state) => state.user);
+    useEffect(() => {
+        // Deep compare or check specific fields to avoid loops, but strictly syncing if different is safer for updates
+        // We check if we have a user and if it's different (or if we had none and now we do)
+        // Simple JSON stringify is sufficient for this data size
+        if (JSON.stringify(user) !== JSON.stringify(authUser)) {
+            setUser(authUser);
+        }
+    }, [authUser, user]);
+
     const { playSuccess } = useAppSounds();
     const [flyingItems, setFlyingItems] = useState<{ id: number; image: string; startRect: DOMRect; targetRect: DOMRect }[]>([]);
     const [animKey, setAnimKey] = useState(0);

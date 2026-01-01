@@ -43,7 +43,6 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
         {
             title: 'PERSONAL',
             items: [
-                { id: 'profile', icon: Warehouse, label: 'My Garage' }, // Using Warehouse for Garage/Profile
                 { id: 'favorites', icon: Heart, label: 'Favorites' },
                 { id: 'settings', icon: Settings, label: 'Settings' },
             ]
@@ -163,32 +162,8 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
                 ))}
             </div>
 
-            {/* 3. Bottom User Profile (Mini & Expanded) */}
-            <div className="p-4 border-t border-white/5">
-                <button
-                    onClick={() => onNavigate('profile')}
-                    className={`flex items-center ${isExpanded ? 'gap-3' : 'justify-center'} w-full p-2 rounded-xl hover:bg-white/5 transition-colors group`}
-                >
-                    <div className="relative">
-                        <UserAvatar name={user?.name || 'Guest'} src={user?.avatar} size={32} className="rounded-full ring-2 ring-transparent group-hover:ring-orange-500/50 transition-all" />
-                        <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-green-500 border-2 border-black rounded-full"></div>
-                    </div>
-
-                    <AnimatePresence>
-                        {isExpanded && (
-                            <motion.div
-                                initial={{ opacity: 0, width: 0 }}
-                                animate={{ opacity: 1, width: 'auto' }}
-                                exit={{ opacity: 0, width: 0 }}
-                                className="flex flex-col items-start overflow-hidden whitespace-nowrap"
-                            >
-                                <span className="text-sm font-bold text-white truncate max-w-[140px]">{user?.name || 'Sign In'}</span>
-                                <span className="text-[10px] text-zinc-500 uppercase tracking-wider">{user?.rank || 'Guest Rider'}</span>
-                            </motion.div>
-                        )}
-                    </AnimatePresence>
-                </button>
-            </div>
+            {/* 3. Bottom User Profile (Removed) */}
+            {/* <div className="p-4 border-t border-white/5">...</div> */}
         </motion.aside>
     );
 };

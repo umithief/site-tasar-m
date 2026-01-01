@@ -43,7 +43,7 @@ export const BottomNav: React.FC<SidebarProps> = ({
         { id: 'shop', icon: ShoppingBag, label: 'Shop', view: 'shop' },
         { id: 'create', icon: Plus, label: 'Create', isFab: true },
 
-        { id: 'profile', icon: User, label: 'Profile', view: user ? 'profile' : 'auth' },
+        // { id: 'profile', icon: User, label: 'Profile', view: user ? 'profile' : 'auth' },
         { id: 'onboarding', icon: Zap, label: 'Onboard', view: 'onboarding' },
     ];
 
@@ -53,9 +53,10 @@ export const BottomNav: React.FC<SidebarProps> = ({
         if (item.id === 'create') {
             setIsFabOpen(!isFabOpen);
         } else if (item.id === 'profile') {
-            if (user) onNavigate('profile');
-            else onOpenAuth();
-            setIsFabOpen(false);
+            // Profile Removed
+            // if (user) onNavigate('profile');
+            // else onOpenAuth();
+            // setIsFabOpen(false);
         } else {
             onNavigate(item.view);
             setIsFabOpen(false);

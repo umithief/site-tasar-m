@@ -306,6 +306,7 @@ export const App: React.FC = () => {
                     onSuccess={(user) => {
                         if (user) {
                             setUser(user);
+                            useAuthStore.getState().setUser(user); // Sync store
                             addToast('success', `Hoş geldin, ${user.name}`);
                             if (!user.garage || user.garage.length === 0) {
                                 navigateTo('onboarding');
@@ -317,6 +318,7 @@ export const App: React.FC = () => {
                             authService.getCurrentUser().then(u => {
                                 if (u) {
                                     setUser(u);
+                                    useAuthStore.getState().setUser(u); // Sync store
                                     addToast('success', `Hoş geldin, ${u.name}`);
                                     if (!u.garage || u.garage.length === 0) {
                                         navigateTo('onboarding');
@@ -332,12 +334,14 @@ export const App: React.FC = () => {
                 <AuthPage onNavigate={navigateTo} onLoginSuccess={async (user) => {
                     if (user) {
                         setUser(user);
+                        useAuthStore.getState().setUser(user); // Sync store
                         addToast('success', `Hoş geldin, ${user.name}`);
                         navigateTo('home');
                     } else {
                         const u = await authService.getCurrentUser();
                         if (u) {
                             setUser(u);
+                            useAuthStore.getState().setUser(u); // Sync store
                             addToast('success', `Hoş geldin, ${u.name}`);
                             navigateTo('home');
                         }
@@ -449,12 +453,14 @@ export const App: React.FC = () => {
                                 setIsAuthOpen(false);
                                 if (user) {
                                     setUser(user);
+                                    useAuthStore.getState().setUser(user); // Sync store
                                     addToast('success', `Hoş geldin, ${user.name}`);
-                                    navigateTo('home'); // Or stay on current page? Usually close modal is enough, but user might expect refresh
+                                    navigateTo('home');
                                 } else {
                                     authService.getCurrentUser().then(u => {
                                         if (u) {
                                             setUser(u);
+                                            useAuthStore.getState().setUser(u); // Sync store
                                             addToast('success', `Hoş geldin, ${u.name}`);
                                             navigateTo('home');
                                         }

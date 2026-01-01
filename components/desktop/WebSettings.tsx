@@ -269,6 +269,16 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                                             />
                                             <div className="text-right text-[10px] text-gray-500">{formData.bio.length}/150</div>
                                         </div>
+
+                                        <div className="flex justify-end pt-4">
+                                            <button
+                                                onClick={handleProfileUpdate}
+                                                disabled={isLoading}
+                                                className="w-full md:w-auto px-8 py-3 bg-moto-accent text-black font-bold uppercase tracking-wider text-sm rounded-xl hover:bg-orange-400 transition-colors shadow-[0_0_20px_rgba(255,165,0,0.3)] hover:shadow-[0_0_30px_rgba(255,165,0,0.5)]"
+                                            >
+                                                {isLoading ? 'Saving...' : 'Save Profile Changes'}
+                                            </button>
+                                        </div>
                                     </section>
                                 </motion.div>
                             )}

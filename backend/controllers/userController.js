@@ -355,6 +355,27 @@ export const removeFromGarage = catchAsync(async (req, res, next) => {
     });
 });
 
+export const setPrimaryBike = catchAsync(async (req, res, next) => {
+    const { garageId } = req.body;
+
+    const user = await User.findById(req.user.id);
+    if (!user) return next(new AppError('Kullanıcı bulunamadı.', 404));
+
+    const bike = user.garage.id(garageId);
+    if (!bike) return next(new AppError('Motosiklet bulunamadı.', 404));
+
+    user.primaryBike = `${bike.brand} ${bike.model}`;
+    // Optionally update legacy bikeModel field too
+    user.bikeModel = `${bike.brand} ${bike.model}`;
+
+    await user.save();
+
+    res.status(200).json({
+        status: 'success',
+        data: { primaryBike: user.primaryBike }
+    });
+});
+
 // --- CART CONTROLLERS ---
 
 export const getCart = catchAsync(async (req, res, next) => {

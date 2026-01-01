@@ -22,6 +22,7 @@ router.post('/follow/:id', userController.toggleFollow);
 
 // Garage
 router.post('/garage', userController.addToGarage);
+router.put('/garage/primary', userController.setPrimaryBike);
 router.delete('/garage/:garageId', userController.removeFromGarage);
 
 // Cart

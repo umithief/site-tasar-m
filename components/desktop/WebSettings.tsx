@@ -278,15 +278,34 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
                                     <div className="grid grid-cols-1 gap-4">
                                         {user.garage?.map((bike, idx) => (
-                                            <div key={bike._id || idx} className="bg-white/5 border border-white/10 rounded-2xl p-4 flex gap-6 items-center group hover:border-white/20 transition-all">
+                                            <div key={bike._id || idx} className={`bg-white/5 border rounded-2xl p-4 flex gap-6 items-center group transition-all ${user.primaryBike === `${bike.brand} ${bike.model}` ? 'border-moto-accent bg-moto-accent/5' : 'border-white/10 hover:border-white/20'}`}>
                                                 <div className="w-32 h-20 bg-black rounded-lg overflow-hidden shrink-0">
                                                     <img src={bike.image} alt="bike" className="w-full h-full object-cover" />
                                                 </div>
                                                 <div className="flex-1">
-                                                    <h4 className="font-bold text-lg text-white">{bike.brand} {bike.model}</h4>
+                                                    <div className="flex items-center gap-2">
+                                                        <h4 className="font-bold text-lg text-white">{bike.brand} {bike.model}</h4>
+                                                        {user.primaryBike === `${bike.brand} ${bike.model}` && <span className="px-2 py-0.5 bg-moto-accent text-black text-[10px] font-black uppercase rounded">Primary</span>}
+                                                    </div>
                                                     <p className="text-sm text-gray-400 font-mono">{bike.year} • {bike.km || '0'} KM</p>
                                                 </div>
                                                 <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                    {user.primaryBike !== `${bike.brand} ${bike.model}` && (
+                                                        <button
+                                                            onClick={async () => {
+                                                                try {
+                                                                    const res = await api.put('/users/garage/primary', { garageId: bike._id });
+                                                                    if (res.data.status === 'success') {
+                                                                        setUser({ ...user, primaryBike: res.data.data.primaryBike }); // Optimistic/Sync
+                                                                        notify.success('Primary bike updated');
+                                                                    }
+                                                                } catch (e) { notify.error('Failed to set primary'); }
+                                                            }}
+                                                            className="p-2 hover:bg-white/10 rounded border border-white/5 text-xs font-bold uppercase"
+                                                        >
+                                                            Set Primary
+                                                        </button>
+                                                    )}
                                                     <button onClick={() => notify.info('Edit spec functionality coming soon')} className="p-2 hover:bg-white/10 rounded border border-white/5 text-xs font-bold uppercase">Edit Specs</button>
                                                     <button onClick={() => handleRemoveBike(bike._id)} className="p-2 hover:bg-red-500/20 rounded border border-white/5 text-red-500">
                                                         <Trash2 className="w-4 h-4" />

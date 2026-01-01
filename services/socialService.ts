@@ -175,7 +175,7 @@ export const socialService = {
 
             // Limit to 5 for the sidebar and basic mapping
             return users.slice(0, 5).map((u: any) => ({
-                id: u._id,
+                _id: u._id,
                 name: u.name,
                 bike: u.garage && u.garage.length > 0 ? `${u.garage[0].brand} ${u.garage[0].model}` : 'Motor Tutkunu',
                 avatar: u.profileImage || u.avatar

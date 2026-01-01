@@ -22,7 +22,7 @@ import { useAuthStore } from '../../store/authStore';
 
 interface SocialHubProps {
     user: any;
-    onNavigate?: (view: ViewState) => void;
+    onNavigate?: (view: ViewState, data?: any) => void;
     onLogout?: () => void;
     onUpdateUser?: (user: any) => void;
     initialData?: any;
@@ -49,6 +49,32 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
     // Comment Sheet State
     const [activePostId, setActivePostId] = useState<string | null>(null);
     const [isCommentSheetOpen, setIsCommentSheetOpen] = useState(false);
+
+    // Search State
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [isSearching, setIsSearching] = useState(false);
+    const [showSearchResults, setShowSearchResults] = useState(false);
+
+    // Debounced Search
+    useEffect(() => {
+        const timer = setTimeout(async () => {
+            if (searchQuery.length >= 2) {
+                setIsSearching(true);
+                const results = await socialService.search(searchQuery);
+                setSearchResults(results.users || []);
+                setIsSearching(false);
+                setShowSearchResults(true);
+            } else {
+                setSearchResults([]);
+                setShowSearchResults(false);
+            }
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [searchQuery]);
+
+
 
     // Initial Data Fetch
     useEffect(() => {
@@ -266,14 +292,55 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                 < div className="hidden lg:block sticky top-28 h-fit space-y-8" >
 
                     {/* Search Field */}
-                    < div className="relative group" >
+                    <div className="relative group z-50">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-moto-accent transition-colors" />
                         <input
                             type="text"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            onFocus={() => searchQuery.length >= 2 && setShowSearchResults(true)}
                             placeholder="Sürücü, rota veya etkinlik ara..."
                             className="w-full bg-[#111] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-moto-accent/50 transition-colors shadow-lg"
                         />
-                    </div >
+
+                        {/* Search Dropdown */}
+                        <AnimatePresence>
+                            {showSearchResults && (
+                                <motion.div
+                                    initial={{ opacity: 0, y: 10 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    exit={{ opacity: 0, y: 10 }}
+                                    className="absolute top-full left-0 right-0 mt-2 bg-[#18181b] border border-white/10 rounded-2xl shadow-xl overflow-hidden max-h-[400px] overflow-y-auto custom-scrollbar"
+                                >
+                                    {isSearching ? (
+                                        <div className="p-4 text-center text-gray-500 text-xs">Aranıyor...</div>
+                                    ) : searchResults.length > 0 ? (
+                                        <div className="py-2">
+                                            {searchResults.map((user) => (
+                                                <div
+                                                    key={user._id}
+                                                    onClick={() => {
+                                                        onNavigate && onNavigate('public-profile', { _id: user._id });
+                                                        setShowSearchResults(false);
+                                                        setSearchQuery('');
+                                                    }}
+                                                    className="flex items-center gap-3 px-4 py-3 hover:bg-white/5 cursor-pointer transition-colors"
+                                                >
+                                                    <UserAvatar src={user.profileImage} name={user.name} size={32} />
+                                                    <div>
+                                                        <div className="text-white font-bold text-sm">{user.name}</div>
+                                                        <div className="text-gray-500 text-xs">{user.bike || 'Motosiklet Tutkunu'}</div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="p-4 text-center text-gray-500 text-xs">Sonuç bulunamadı</div>
+                                    )}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
 
                     {/* Active Squads (Chats) */}
                     < div className="bg-[#111] rounded-3xl p-6 border border-white/5 shadow-xl" >
@@ -303,15 +370,17 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                         <h3 className="font-bold text-white tracking-wide text-sm mb-6 relative z-10">ÖNERİLEN SÜRÜCÜLER</h3>
                         <div className="space-y-5 relative z-10">
                             {suggestedRiders.slice(0, 4).map(rider => (
-                                <div key={rider._id} className="flex items-center justify-between">
-                                    <div className="flex items-center gap-3 cursor-pointer" onClick={() => onNavigate && onNavigate('public-profile', { _id: rider._id })}>
+                                <div key={rider._id} className="flex items-center justify-between group/rider">
+                                    <div className="flex items-center gap-3 cursor-pointer flex-1" onClick={() => onNavigate && onNavigate('public-profile', { _id: rider._id })}>
                                         <UserAvatar src={rider.avatar} name={rider.name} size={36} />
-                                        <div>
-                                            <div className="font-bold text-xs text-white">{rider.name}</div>
-                                            <div className="text-[10px] text-gray-400">{rider.bike || 'Rider'}</div>
+                                        <div className="overflow-hidden">
+                                            <div className="font-bold text-xs text-white truncate">{rider.name}</div>
+                                            <div className="text-[10px] text-gray-400 truncate">{rider.bike || 'Rider'}</div>
                                         </div>
                                     </div>
-                                    <FollowButton targetUserId={rider._id} className="!w-6 !h-6 !p-0 rounded-full !min-w-0" />
+                                    <div className="opacity-100 transition-opacity">
+                                        <FollowButton targetUserId={rider._id} className="!w-auto !h-7 !px-3 !text-[10px]" />
+                                    </div>
                                 </div>
                             ))}
                         </div>

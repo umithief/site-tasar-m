@@ -135,6 +135,8 @@ export interface UserBike {
   modifications?: BikeModification[];
   notes?: string;
   isPublic?: boolean;
+  cc?: string;
+  hp?: string;
 }
 
 export interface User {

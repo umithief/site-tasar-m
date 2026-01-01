@@ -59,6 +59,7 @@ import { AuthPage } from './components/AuthPage';
 import { Shop } from './components/Shop';
 import { MobileShop } from './components/mobile/MobileShop';
 import { MobileProfile } from './components/mobile/MobileProfile';
+import { WebProfile } from './components/desktop/WebProfile';
 import { Favorites } from './components/Favorites';
 import { AIAssistantPage } from './components/AIAssistantPage';
 import { ProductDetail } from './components/ProductDetail';
@@ -371,15 +372,15 @@ export const App: React.FC = () => {
             case 'lifesaver': return <LifeSaver onClose={() => navigateTo('home')} />;
             case 'profile': return isMobile && user
                 ? <MobileProfile userId={user._id} onNavigate={navigateTo} onBack={() => navigateTo('home')} />
-                : (user ? <UserProfile user={user} onLogout={handleLogout} onUpdateUser={setUser} onNavigate={navigateTo} colorTheme={colorTheme} onColorChange={setColorTheme} /> : <div className="pt-32 text-center text-gray-500">Lütfen giriş yapın.</div>);
+                : (user ? <WebProfile user={user} onNavigate={navigateTo} onLogout={handleLogout} isOwnProfile={true} /> : <div className="pt-32 text-center text-gray-500">Lütfen giriş yapın.</div>);
 
             case 'my-profile': return isMobile && user
                 ? <MobileProfile userId={user._id} onNavigate={navigateTo} onBack={() => navigateTo('home')} />
-                : (user ? <MyProfile /> : <div className="pt-32 text-center text-gray-500">Lütfen giriş yapın.</div>);
+                : (user ? <WebProfile user={user} onNavigate={navigateTo} onLogout={handleLogout} isOwnProfile={true} /> : <div className="pt-32 text-center text-gray-500">Lütfen giriş yapın.</div>);
 
             case 'public-profile': return isMobile && viewingUser
                 ? <MobileProfile userId={viewingUser._id} onNavigate={navigateTo} onBack={() => navigateTo('riders')} />
-                : (viewingUser ? <ProfilePage userId={viewingUser._id} onNavigate={navigateTo} onBack={() => navigateTo('riders')} /> : <div className="pt-32 text-center text-gray-500">Kullanıcı yüklenemedi.</div>);
+                : (viewingUser ? <WebProfile user={viewingUser} onNavigate={navigateTo} isOwnProfile={false} /> : <div className="pt-32 text-center text-gray-500">Kullanıcı yüklenemedi.</div>);
 
             case 'admin': return user?.isAdmin ? <AdminPanel onLogout={handleLogout} onShowToast={addToast} onNavigate={navigateTo} /> : <div className="pt-32 text-center text-gray-500">Yetkisiz erişim.</div>;
             case 'onboarding': return <MobileOnboarding onNavigate={navigateTo} />;

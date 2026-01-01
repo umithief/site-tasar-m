@@ -9,12 +9,19 @@ export const getFeedPosts = catchAsync(async (req, res, next) => {
     const limit = parseInt(req.query.limit) || 10;
     const skip = (page - 1) * limit;
 
-    // 1. Get current user's following list
-    const currentUser = await User.findById(req.user.id);
+    // 1. Get current user's following list (Select only following field for performance)
+    const currentUser = await User.findById(req.user.id).select('following');
 
-    // 2. Fetch posts where user is in 'following' list OR is the current user
+    // Safety check: Ensure following is an array, default to empty
+    const followingIds = currentUser?.following ? currentUser.following.map(id => id.toString()) : [];
+
+    // Add current user's ID to the list (to see own posts)
+    // Using Set to prevent duplicates if user somehow follows themselves
+    const allowedUserIds = [...new Set([...followingIds, req.user.id.toString()])];
+
+    // 2. Fetch posts strictly from this list
     const posts = await Post.find({
-        user: { $in: [...currentUser.following, req.user.id] }
+        user: { $in: allowedUserIds }
     })
         .sort({ createdAt: -1 })
         .skip(skip)
@@ -31,7 +38,7 @@ export const getFeedPosts = catchAsync(async (req, res, next) => {
     }));
 
     const total = await Post.countDocuments({
-        user: { $in: [...currentUser.following, req.user.id] }
+        user: { $in: allowedUserIds }
     });
 
     res.status(200).json({

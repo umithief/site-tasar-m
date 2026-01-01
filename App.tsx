@@ -71,6 +71,7 @@ import { MobileProductDetail } from './components/mobile/MobileProductDetail';
 import { CartBottomSheet } from './components/mobile/CartBottomSheet';
 import { CheckoutPage } from './components/checkout/CheckoutPage';
 import { OrderTracking } from './components/checkout/OrderTracking';
+import { WebSettings } from './components/desktop/WebSettings';
 import { Garage } from './components/garage/Garage';
 
 export const App: React.FC = () => {
@@ -425,6 +426,7 @@ export const App: React.FC = () => {
                         navigateTo('ride-mode');
                     }}
                 />;
+            case 'settings': return <WebSettings onNavigate={navigateTo} />;
             default: return <Home onNavigate={navigateTo} products={products} onAddToCart={addToCart} onProductClick={(p: any) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
         }
     };

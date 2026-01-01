@@ -39,7 +39,16 @@ const userSchema = new mongoose.Schema({
     following: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
 
     // Settings
-    isPremium: { type: Boolean, default: false }
+    isPremium: { type: Boolean, default: false },
+    privacy: {
+        isPrivate: { type: Boolean, default: false },
+        hideLocation: { type: Boolean, default: false }
+    },
+    notifications: {
+        likes: { type: Boolean, default: true },
+        comments: { type: Boolean, default: true },
+        follows: { type: Boolean, default: true }
+    }
 }, {
     timestamps: true,
     toJSON: { virtuals: true },

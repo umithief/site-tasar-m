@@ -228,6 +228,75 @@ export const updateProfile = catchAsync(async (req, res, next) => {
     });
 });
 
+export const updateSettings = catchAsync(async (req, res, next) => {
+    // fields: privacy (obj), notifications (obj), password (handled via auth route usually, but here we might just do settings)
+    // The prompt requested a specific PUT /api/users/update-settings
+    // Password change usually requires a separate sensitive route, but we can check if it's here.
+    // NOTE: For password change, we'll keep it simple or strictly separate.
+    // Let's handle privacy and notifications here.
+
+    const allowedFields = ['privacy', 'notifications'];
+    const filteredBody = {};
+    Object.keys(req.body).forEach(el => {
+        if (allowedFields.includes(el)) filteredBody[el] = req.body[el];
+    });
+
+    const updatedUser = await User.findByIdAndUpdate(req.user.id, filteredBody, {
+        new: true,
+        runValidators: true
+    });
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            user: updatedUser
+        }
+    });
+});
+
+export const updatePassword = catchAsync(async (req, res, next) => {
+    // Since user requested "Change Password flow", we need a controller for it.
+    // This typically requires: currentPassword, password, passwordConfirm
+    const { currentPassword, password, passwordConfirm } = req.body;
+
+    // 1) Get user from collection
+    const user = await User.findById(req.user.id).select('+password');
+
+    // 2) Check if POSTed current password is correct
+    if (!(await user.correctPassword(currentPassword, user.password))) {
+        return next(new AppError('Mevcut şifreniz hatalı.', 401));
+    }
+
+    // 3) Update
+    // Hash is handled if we set it directly? Wait, User model doesn't have pre-save hook for hash!
+    // I need to hash it here manually then since I didn't add the hook earlier.
+    const salt = await bcrypt.genSalt(12);
+    user.password = await bcrypt.hash(password, salt);
+    // user.passwordConfirm = passwordConfirm; // Not needed in DB if we assume validation passed or we handle equality check here.
+
+    if (password !== passwordConfirm) {
+        return next(new AppError('Şifreler eşleşmiyor.', 400));
+    }
+
+    await user.save();
+
+    // Log user in, send JWT
+    const signToken = (id) => {
+        return jwt.sign({ id }, process.env.JWT_SECRET || 'gizli-anahtar-123', {
+            expiresIn: process.env.JWT_EXPIRES_IN || '30d'
+        });
+    };
+    const token = signToken(user._id);
+
+    res.status(200).json({
+        status: 'success',
+        token,
+        data: {
+            user
+        }
+    });
+});
+
 export const getAllUsers = catchAsync(async (req, res, next) => {
     const users = await User.find().select('-password').lean();
     res.status(200).json(users);

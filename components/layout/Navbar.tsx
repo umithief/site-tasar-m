@@ -78,30 +78,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 </div>
             </div>
 
-            {/* Center: Search Bar */}
-            <div className="hidden md:flex flex-1 max-w-[720px] mx-10">
-                <form onSubmit={handleSearchSubmit} className="w-full flex">
-                    <div className="relative flex-1">
-                        <input
-                            type="text"
-                            placeholder="Ara"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full h-10 bg-[#121212] border border-[#303030] rounded-l-full px-4 text-white placeholder-zinc-500 focus:outline-none focus:border-[#1c62b9] focus:shadow-[inset_0_1px_2px_rgba(0,0,0,0.3)] transition-all ease-in-out duration-200"
-                        />
-                        <div className="absolute right-4 top-1/2 -translate-y-1/2 text-zinc-500 hidden sm:block pointer-events-none">
-                            {/* Potential Keyboard shortcut hint here */}
-                        </div>
-                    </div>
-                    <button type="submit" className="h-10 px-6 bg-[#222222] border border-l-0 border-[#303030] rounded-r-full hover:bg-[#303030] transition-colors flex items-center justify-center">
-                        <Search className="w-5 h-5 text-zinc-400" />
-                    </button>
-                </form>
-                <button className="ml-4 w-10 h-10 rounded-full bg-[#181818] hover:bg-[#303030] flex items-center justify-center transition-colors shadow-sm">
-                    <span className="sr-only">Voice Search</span>
-                    <svg viewBox="0 0 24 24" height="24" width="24" className="block w-5 h-5 fill-white"><path d="M12 3c-1.66 0-3 1.34-3 3v8c0 1.66 1.34 3 3 3s3-1.34 3-3V6c0-1.66-1.34-3-3-3zm0 13.5c-2.48 0-4.5-2.02-4.5-4.5v-0.5c0-0.28-0.22-0.5-0.5-0.5s-0.5 0.22-0.5 0.5v0.5c0 3.04 2.46 5.5 5.5 5.5s5.5-2.46 5.5-5.5v-0.5c0-0.28-0.22-0.5-0.5-0.5s-0.5 0.22-0.5 0.5v0.5c0 2.48-2.02 4.5-4.5 4.5zm0 5.5c-0.28 0-0.5-0.22-0.5-0.5s0.22-0.5 0.5-0.5 0.5 0.22 0.5 0.5-0.22 0.5-0.5 0.5z"></path><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"></path><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"></path></svg>
-                </button>
-            </div>
+
 
             {/* Right: Actions */}
             <div className="flex items-center gap-1 sm:gap-2">

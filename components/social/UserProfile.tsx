@@ -203,7 +203,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout, onUpda
                 </div>
             </div>
 
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 mb-12 flex flex-col items-center text-center">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-32 mb-12 flex flex-col items-center text-center">
                 <h1 className="text-3xl font-display font-black uppercase flex items-center gap-3">
                     {displayProfile.name}
                     {displayProfile.rank && <span className="bg-moto-accent text-black text-xs px-2 py-1 rounded font-bold">{displayProfile.rank}</span>}

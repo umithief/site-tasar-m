@@ -399,7 +399,7 @@ export const App: React.FC = () => {
 
     return (
         <SocketProvider>
-            <div key={animKey} className={`flex flex-col min-h-[100dvh] bg-[#0f0f0f] text-gray-100 transition-colors duration-1000 ${isFullScreenMode ? 'overflow-hidden h-screen bg-black text-white' : ''}`}>
+            <div key={animKey} className={`flex flex-col min-h-[100dvh] bg-black text-gray-100 transition-colors duration-1000 ${isFullScreenMode ? 'overflow-hidden h-screen bg-black text-white' : ''}`}>
 
                 <div className="bg-noise opacity-5"></div>
 

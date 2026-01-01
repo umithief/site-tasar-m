@@ -15,6 +15,7 @@ import { FollowButton } from './FollowButton';
 import { User, SocialPost, ViewState } from '../../types';
 import { useSocket } from '../../context/SocketContext';
 import { ProfileEditModal } from './ProfileEditModal';
+import { UserListModal } from '../UserListModal';
 
 // --- Types & Interfaces ---
 interface ProfilePageProps {
@@ -24,8 +25,9 @@ interface ProfilePageProps {
 }
 
 // Stats Component for reuse
-const StatItem = ({ label, value }: { label: string; value: number }) => (
-    <div className="flex flex-col items-center group cursor-pointer">
+// Stats Component for reuse
+const StatItem = ({ label, value, onClick }: { label: string; value: number; onClick?: () => void }) => (
+    <div onClick={onClick} className={`flex flex-col items-center group ${onClick ? 'cursor-pointer' : ''}`}>
         <span className="text-2xl md:text-3xl font-display font-black text-white group-hover:text-moto-accent transition-colors">
             {value}
         </span>
@@ -42,6 +44,15 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userId, onNavigate, on
     const [isOnline, setIsOnline] = useState(false);
     const [realtimeFollowers, setRealtimeFollowers] = useState<number | null>(null);
     const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+    // User List Modal State
+    const [isUserListOpen, setIsUserListOpen] = useState(false);
+    const [userListType, setUserListType] = useState<'followers' | 'following'>('followers');
+
+    const handleOpenUserList = (type: 'followers' | 'following') => {
+        setUserListType(type);
+        setIsUserListOpen(true);
+    };
 
     const isOwnProfile = currentUser?._id === userId;
 
@@ -238,9 +249,9 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userId, onNavigate, on
                         transition={{ delay: 0.4 }}
                         className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 flex items-center gap-8 md:gap-12 shadow-2xl mx-auto lg:mx-0 w-full lg:w-auto justify-center"
                     >
-                        <StatItem label="Followers" value={followerCount} />
+                        <StatItem label="Followers" value={followerCount} onClick={() => handleOpenUserList('followers')} />
                         <div className="w-px h-10 bg-white/10"></div>
-                        <StatItem label="Following" value={followingCount} />
+                        <StatItem label="Following" value={followingCount} onClick={() => handleOpenUserList('following')} />
                         <div className="w-px h-10 bg-white/10"></div>
                         <StatItem label="Ride Outs" value={postCount} />
                     </motion.div>
@@ -407,6 +418,14 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ userId, onNavigate, on
                     </AnimatePresence>
                 </div>
             </div>
+
+            <UserListModal
+                isOpen={isUserListOpen}
+                onClose={() => setIsUserListOpen(false)}
+                title={userListType === 'followers' ? 'Takipçiler' : 'Takip Edilenler'}
+                users={userListType === 'followers' ? (profile?.followers || []) : (profile?.following || [])}
+                onNavigate={onNavigate}
+            />
 
             <ProfileEditModal
                 isOpen={isEditModalOpen}

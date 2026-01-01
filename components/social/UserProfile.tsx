@@ -12,6 +12,8 @@ import { notify } from '../../services/notificationService';
 import { useLanguage } from '../../contexts/LanguageProvider';
 import { BikeDetailModal } from '../BikeDetailModal';
 import { ZenGarage } from '../ZenGarage';
+import { FollowButton } from './FollowButton';
+import { UserListModal } from '../UserListModal';
 
 // Extend SocialProfile or use UserType, we need a unified approach.
 // The main App passes `user` which is `UserType`. We can cast or map it.
@@ -69,6 +71,46 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout, onUpda
         location: user.address || '',
         phone: user.phone || ''
     });
+
+    // User List Modal State
+    const [isUserListOpen, setIsUserListOpen] = useState(false);
+    const [userListType, setUserListType] = useState<'followers' | 'following'>('followers');
+    const [modalUsers, setModalUsers] = useState<any[]>([]);
+
+    const handleOpenUserList = async (type: 'followers' | 'following') => {
+        const list = type === 'followers' ? displayProfile.followers : displayProfile.following;
+
+        // If list is empty or undefined, nothing to show (or show empty modal)
+        if (!list || list.length === 0) {
+            setModalUsers([]);
+            setUserListType(type);
+            setIsUserListOpen(true);
+            return;
+        }
+
+        // If list items are objects with names, use them
+        if (typeof list[0] === 'object' && list[0].name) {
+            setModalUsers(list);
+            setUserListType(type);
+            setIsUserListOpen(true);
+            return;
+        }
+
+        // Needs fetching (IDs only)
+        try {
+            // Using socialService to get full profile which populates these fields
+            const fullProfile = await import('../../services/socialService').then(m => m.socialService.getUserProfile(user._id));
+            if (fullProfile) {
+                setModalUsers(type === 'followers' ? (fullProfile.followers || []) : (fullProfile.following || []));
+            }
+        } catch (error) {
+            console.error('Failed to fetch user list details', error);
+            setModalUsers([]);
+        }
+
+        setUserListType(type);
+        setIsUserListOpen(true);
+    };
 
     const isOwnProfile = !propProfile || propProfile._id === user._id;
 
@@ -152,29 +194,35 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout, onUpda
                     className="w-full h-full object-cover opacity-80"
                 />
 
-                {/* Header Actions - Only show for Own Profile */}
-                {isOwnProfile && (
-                    <div className="absolute top-4 right-4 z-30 flex gap-2">
-                        {user.isAdmin && onNavigate && (
-                            <button
-                                onClick={() => onNavigate('admin')}
-                                className="p-2 bg-blue-600/80 backdrop-blur text-white rounded-full hover:bg-blue-600 transition-colors shadow-lg"
-                            >
-                                <LayoutDashboard className="w-5 h-5" />
-                            </button>
-                        )}
-                        {onUpdateUser && (
-                            <button onClick={() => setIsEditModalOpen(true)} className="p-2 bg-white/10 backdrop-blur text-white rounded-full hover:bg-white/20 transition-colors">
-                                <Settings className="w-5 h-5" />
-                            </button>
-                        )}
-                        {onLogout && (
-                            <button onClick={onLogout} className="p-2 bg-red-500/80 backdrop-blur text-white rounded-full hover:bg-red-600 transition-colors">
-                                <LogOut className="w-5 h-5" />
-                            </button>
-                        )}
-                    </div>
-                )}
+                {/* Header Actions */}
+                <div className="absolute top-4 right-4 z-30 flex gap-2">
+                    {!isOwnProfile && displayProfile._id && (
+                        <FollowButton targetUserId={displayProfile._id} />
+                    )}
+
+                    {isOwnProfile && (
+                        <>
+                            {user.isAdmin && onNavigate && (
+                                <button
+                                    onClick={() => onNavigate('admin')}
+                                    className="p-2 bg-blue-600/80 backdrop-blur text-white rounded-full hover:bg-blue-600 transition-colors shadow-lg"
+                                >
+                                    <LayoutDashboard className="w-5 h-5" />
+                                </button>
+                            )}
+                            {onUpdateUser && (
+                                <button onClick={() => setIsEditModalOpen(true)} className="p-2 bg-white/10 backdrop-blur text-white rounded-full hover:bg-white/20 transition-colors">
+                                    <Settings className="w-5 h-5" />
+                                </button>
+                            )}
+                            {onLogout && (
+                                <button onClick={onLogout} className="p-2 bg-red-500/80 backdrop-blur text-white rounded-full hover:bg-red-600 transition-colors">
+                                    <LogOut className="w-5 h-5" />
+                                </button>
+                            )}
+                        </>
+                    )}
+                </div>
 
                 {/* Profile Stats Card - Floating */}
                 <div className="absolute -bottom-20 left-1/2 -translate-x-1/2 z-20 w-[95%] md:w-[600px] bg-white/5 backdrop-blur-xl border border-white/10 rounded-3xl p-6 shadow-2xl flex items-center justify-between">
@@ -183,18 +231,24 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout, onUpda
                         <span className="text-[9px] md:text-[10px] text-gray-500 uppercase tracking-widest font-bold">XP Points</span>
                     </div>
                     <div className="w-[1px] h-8 bg-white/10" />
-                    <div className="flex flex-col items-center flex-1">
-                        <span className="text-xl md:text-2xl font-display font-black text-white">
+                    <div
+                        className="flex flex-col items-center flex-1 cursor-pointer group"
+                        onClick={() => handleOpenUserList('followers')}
+                    >
+                        <span className="text-xl md:text-2xl font-display font-black text-white group-hover:text-moto-accent transition-colors">
                             {Array.isArray(displayProfile.followers) ? displayProfile.followers.length : (displayProfile.followersCount || 0)}
                         </span>
-                        <span className="text-[9px] md:text-[10px] text-gray-500 uppercase tracking-widest font-bold">Followers</span>
+                        <span className="text-[9px] md:text-[10px] text-gray-500 uppercase tracking-widest font-bold group-hover:text-white transition-colors">Followers</span>
                     </div>
                     <div className="w-[1px] h-8 bg-white/10" />
-                    <div className="flex flex-col items-center flex-1">
-                        <span className="text-xl md:text-2xl font-display font-black text-white">
+                    <div
+                        className="flex flex-col items-center flex-1 cursor-pointer group"
+                        onClick={() => handleOpenUserList('following')}
+                    >
+                        <span className="text-xl md:text-2xl font-display font-black text-white group-hover:text-moto-accent transition-colors">
                             {Array.isArray(displayProfile.following) ? displayProfile.following.length : (displayProfile.followingCount || 0)}
                         </span>
-                        <span className="text-[9px] md:text-[10px] text-gray-500 uppercase tracking-widest font-bold">Following</span>
+                        <span className="text-[9px] md:text-[10px] text-gray-500 uppercase tracking-widest font-bold group-hover:text-white transition-colors">Following</span>
                     </div>
 
                     {/* Floating Avatar */}
@@ -532,6 +586,14 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout, onUpda
                     }}
                 />
             )}
+
+            <UserListModal
+                isOpen={isUserListOpen}
+                onClose={() => setIsUserListOpen(false)}
+                title={userListType === 'followers' ? 'Takipçiler' : 'Takip Edilenler'}
+                users={modalUsers}
+                onNavigate={onNavigate}
+            />
 
         </div>
     );

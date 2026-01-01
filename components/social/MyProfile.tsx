@@ -14,6 +14,7 @@ import { SocialPost, UserBike } from '../../types';
 import { authService } from '../../services/auth';
 import { gamificationService, RANKS } from '../../services/gamificationService';
 import { ZenGarage } from '../ZenGarage';
+import { UserListModal } from '../UserListModal';
 
 // --- Types & Mocks ---
 
@@ -70,6 +71,51 @@ export const MyProfile: React.FC = () => {
         location: user?.location || '',
         coverImage: user?.coverImage || ''
     });
+
+    // User List Modal State
+    const [isUserListOpen, setIsUserListOpen] = useState(false);
+    const [userListType, setUserListType] = useState<'followers' | 'following'>('followers');
+    const [modalUsers, setModalUsers] = useState<any[]>([]);
+
+    const handleOpenUserList = async (type: 'followers' | 'following') => {
+        if (!user) return;
+
+        const list = type === 'followers' ? user.followers : user.following;
+
+        // If list is empty or undefined, nothing to show (or show empty modal if count > 0 but list empty? simplified logic for now)
+        // If we have counts but empty list, we must fetch
+
+        const count = type === 'followers' ? (user.followersCount || 0) : (user.followingCount || 0);
+
+        if (count === 0 && (!list || list.length === 0)) {
+            setModalUsers([]);
+            setUserListType(type);
+            setIsUserListOpen(true);
+            return;
+        }
+
+        // Check if list items are objects
+        if (list && list.length > 0 && typeof list[0] === 'object' && list[0].name) {
+            setModalUsers(list);
+            setUserListType(type);
+            setIsUserListOpen(true);
+            return;
+        }
+
+        // Fetch details
+        try {
+            const fullProfile = await import('../../services/socialService').then(m => m.socialService.getUserProfile(user._id));
+            if (fullProfile) {
+                setModalUsers(type === 'followers' ? (fullProfile.followers || []) : (fullProfile.following || []));
+            }
+        } catch (error) {
+            console.error('Failed to fetch user list details', error);
+            setModalUsers([]);
+        }
+
+        setUserListType(type);
+        setIsUserListOpen(true);
+    };
 
     useEffect(() => {
         if (user) {
@@ -151,8 +197,11 @@ export const MyProfile: React.FC = () => {
         </div>
     );
 
-    const StatItem: React.FC<{ label: string, value: string | number, icon: any }> = ({ label, value, icon: Icon }) => (
-        <div className="flex flex-col items-center justify-center p-3 bg-white/5 border border-white/5 rounded-xl hover:bg-white/10 transition-all group cursor-pointer hover:border-white/10">
+    const StatItem: React.FC<{ label: string, value: string | number, icon: any, onClick?: () => void }> = ({ label, value, icon: Icon, onClick }) => (
+        <div
+            onClick={onClick}
+            className={`flex flex-col items-center justify-center p-3 bg-white/5 border border-white/5 rounded-xl hover:bg-white/10 transition-all group ${onClick ? 'cursor-pointer hover:border-white/10' : ''}`}
+        >
             <Icon className="w-4 h-4 mb-2 text-gray-600 group-hover:text-moto-accent transition-colors" />
             <span className="text-lg font-display font-black text-white">{value}</span>
             <span className="text-[9px] text-gray-600 uppercase tracking-widest font-bold group-hover:text-gray-400 transition-colors">{label}</span>
@@ -272,8 +321,18 @@ export const MyProfile: React.FC = () => {
 
                                     {/* Quick Stats */}
                                     <div className="grid grid-cols-2 gap-3 w-full mb-6">
-                                        <StatItem label="Followers" value={user.followersCount || 0} icon={UserAvatar} />
-                                        <StatItem label="Reels" value={'12'} icon={Film} />
+                                        <StatItem
+                                            label="Followers"
+                                            value={Array.isArray(user.followers) ? user.followers.length : (user.followersCount || 0)}
+                                            icon={UserAvatar}
+                                            onClick={() => handleOpenUserList('followers')}
+                                        />
+                                        <StatItem
+                                            label="Following"
+                                            value={Array.isArray(user.following) ? user.following.length : (user.followingCount || 0)}
+                                            icon={UserAvatar}
+                                            onClick={() => handleOpenUserList('following')}
+                                        />
                                         <StatItem label="Garage" value={user.garage?.length || 0} icon={Bike} />
                                         <StatItem label="Rides" value={'42'} icon={MapPin} />
                                     </div>
@@ -502,6 +561,13 @@ export const MyProfile: React.FC = () => {
                     </motion.div>
                 )}
             </AnimatePresence>
+
+            <UserListModal
+                isOpen={isUserListOpen}
+                onClose={() => setIsUserListOpen(false)}
+                title={userListType === 'followers' ? 'Takipçiler' : 'Takip Edilenler'}
+                users={modalUsers}
+            />
         </div>
     );
 };

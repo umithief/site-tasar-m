@@ -18,7 +18,7 @@ interface MobilePostCardProps {
     onCommentClick?: () => void;
 }
 
-export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, currentUserId, onCommentClick }) => {
+export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, currentUserId, onNavigate, onCommentClick }) => {
     const [isLiked, setIsLiked] = useState(post.isLiked);
     // Safe access for likes count with fallback
     const [likeCount, setLikeCount] = useState(
@@ -29,6 +29,7 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
     const [lastTap, setLastTap] = useState(0);
     const [showHeartOverlay, setShowHeartOverlay] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
+    const [showOptions, setShowOptions] = useState(false);
 
     // Live Follow Logic
     const { mutate: toggleFollow, isPending } = useFollow();
@@ -81,7 +82,17 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
         <div className="mb-4 bg-black border-b border-white/10 pb-4">
             {/* Header */}
             <div className="px-3 py-2 flex items-center justify-between">
-                <div className="flex items-center gap-2">
+                <div
+                    className="flex items-center gap-2 cursor-pointer active:opacity-70 transition-opacity"
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        if (onNavigate && post.userId) {
+                            // Support both ID and Username based routing preference
+                            const target = (post as any).username || post.userId;
+                            onNavigate('public-profile', { userId: post.userId, username: target });
+                        }
+                    }}
+                >
                     <UserAvatar name={post.userName} src={post.userAvatar} size={32} />
                     <div className="flex flex-col">
                         <div className="flex items-center gap-2">
@@ -113,10 +124,38 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                         )}
                     </div>
                 </div>
-                <button className="p-1 text-gray-400">
+                <button
+                    className="p-1 text-gray-400 hover:text-white"
+                    onClick={() => setShowOptions(true)}
+                >
                     <MoreHorizontal className="w-5 h-5" />
                 </button>
             </div>
+
+            {/* Options Menu */}
+            <MobileBottomSheet
+                isOpen={showOptions}
+                onClose={() => setShowOptions(false)}
+                title="Post Options"
+            >
+                <div className="space-y-2 p-4">
+                    {currentUserId === post.userId ? (
+                        <button className="w-full flex items-center gap-3 p-4 bg-red-500/10 text-red-500 rounded-2xl font-bold">
+                            <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center"><Share2 className="w-4 h-4 rotate-180" /></div> {/* Reuse icon for delete logic later */}
+                            Delete Post (Coming Soon)
+                        </button>
+                    ) : (
+                        <>
+                            <button className="w-full flex items-center gap-3 p-4 bg-white/5 text-white rounded-2xl font-bold">
+                                <Bookmark className="w-5 h-5" /> Save Post
+                            </button>
+                            <button className="w-full flex items-center gap-3 p-4 bg-red-500/10 text-red-500 rounded-2xl font-bold">
+                                Report Inappropriate
+                            </button>
+                        </>
+                    )}
+                </div>
+            </MobileBottomSheet>
 
             {/* Media (Zero Margin) */}
             <div

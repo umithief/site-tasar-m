@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { notify } from '../../services/notificationService';
 import { useFollow } from '../../hooks/useFollow';
+import { UserListModal } from '../UserListModal';
 
 interface WebProfileProps {
     user: User | SocialProfile;
@@ -39,6 +40,11 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
         garageValue: '₺850.000', // Mock
     });
 
+    // Modal State
+    const [isUserListOpen, setIsUserListOpen] = useState(false);
+    const [userListTitle, setUserListTitle] = useState('');
+    const [userListUsers, setUserListUsers] = useState<any[]>([]);
+
     // Follow Logic
     const { mutate: toggleFollow, isPending: isFollowPending } = useFollow();
 
@@ -52,7 +58,24 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
             notify.error('Lütfen giriş yapın');
             return;
         }
+
+        const newStatus = !isFollowing;
         toggleFollow({ targetUserId: user._id, isCurrentlyFollowing: isFollowing });
+
+        // Optimistic Update for displayed stats
+        setProfileStats(prev => ({
+            ...prev,
+            followers: (typeof prev.followers === 'number' ? prev.followers : 0) + (newStatus ? 1 : -1)
+        }));
+    };
+
+    const handleStatClick = (type: 'followers' | 'following') => {
+        const list = type === 'followers' ? user.followers : user.following;
+        const normalizedList = Array.isArray(list) ? list.map((u: any) => typeof u === 'string' ? { _id: u, name: 'User', avatar: '' } : u) : [];
+
+        setUserListUsers(normalizedList);
+        setUserListTitle(type === 'followers' ? 'Takipçiler' : 'Takip Edilenler');
+        setIsUserListOpen(true);
     };
 
     // Fetch Extra Data
@@ -96,6 +119,14 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
 
     return (
         <div className="flex bg-[#050505] min-h-screen text-white font-sans selection:bg-moto-accent selection:text-black">
+            <UserListModal
+                isOpen={isUserListOpen}
+                onClose={() => setIsUserListOpen(false)}
+                title={userListTitle}
+                users={userListUsers}
+                onNavigate={onNavigate}
+            />
+
             {/* 1. Sidebar Integration (Left Fixed) */}
             <MotovibeSidebar
                 activeView="profile"
@@ -169,9 +200,17 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
                             animate={{ x: 0, opacity: 1 }}
                             className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 flex flex-wrap items-center gap-8 xl:gap-12"
                         >
-                            <StatItem label="Followers" value={profileStats.followers} />
+                            <StatItem
+                                label="Followers"
+                                value={profileStats.followers}
+                                onClick={() => handleStatClick('followers')}
+                            />
                             <div className="w-px h-8 bg-white/10 hidden md:block" />
-                            <StatItem label="Following" value={profileStats.following} />
+                            <StatItem
+                                label="Following"
+                                value={profileStats.following}
+                                onClick={() => handleStatClick('following')}
+                            />
 
                             {/* Desktop only dividers/stats for robustness */}
                             <div className="hidden md:flex items-center gap-12">
@@ -314,8 +353,11 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
 };
 
 // Helper Component for Stats
-const StatItem = ({ label, value, isMono = false, highlight = false }: { label: string, value: string | number, isMono?: boolean, highlight?: boolean }) => (
-    <div className="flex flex-col">
+const StatItem = ({ label, value, isMono = false, highlight = false, onClick }: { label: string, value: string | number, isMono?: boolean, highlight?: boolean, onClick?: () => void }) => (
+    <div
+        className={`flex flex-col ${onClick ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
+        onClick={onClick}
+    >
         <span className={`text-2xl font-black ${isMono ? 'font-mono' : 'font-display'} ${highlight ? 'text-moto-accent' : 'text-white'}`}>
             {value}
         </span>

@@ -6,6 +6,7 @@ import { useAuthStore } from '../../store/authStore';
 import { socialService } from '../../services/socialService';
 import { useFollow } from '../../hooks/useFollow';
 import { UserAvatar } from '../ui/UserAvatar';
+import { UserListModal } from '../UserListModal';
 
 // ... imports
 import { User } from '../../types';
@@ -40,6 +41,11 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ userId, username: 
     const [isLoading, setIsLoading] = useState(true);
     const [activeTab, setActiveTab] = useState<'posts' | 'garage' | 'routes'>('posts');
     const [isFollowing, setIsFollowing] = useState(false);
+
+    // Modal State
+    const [isUserListOpen, setIsUserListOpen] = useState(false);
+    const [userListTitle, setUserListTitle] = useState('');
+    const [userListUsers, setUserListUsers] = useState<any[]>([]);
 
     // Scroll Animations
     const containerRef = useRef<HTMLDivElement>(null);
@@ -99,8 +105,28 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ userId, username: 
 
     const handleFollow = () => {
         if (!currentUser || !profileUser) return;
+
+        const newStatus = !isFollowing;
         toggleFollow({ targetUserId: profileUser._id, isCurrentlyFollowing: isFollowing });
-        setIsFollowing(!isFollowing); // Optimistic local toggle
+        setIsFollowing(newStatus); // Optimistic local toggle
+
+        // Optimistic Stats Update
+        setProfileUser((prev: any) => ({
+            ...prev,
+            followersCount: (prev.followersCount || 0) + (newStatus ? 1 : -1)
+        }));
+    };
+
+    const handleStatClick = (type: 'followers' | 'following') => {
+        if (!profileUser) return;
+
+        // Ensure we have an array, or fallback via API if needed (assuming populated for now based on earlier work)
+        const list = type === 'followers' ? profileUser.followers : profileUser.following;
+        const normalizedList = Array.isArray(list) ? list.map((u: any) => typeof u === 'string' ? { _id: u, name: 'User', avatar: '', username: '' } : u) : [];
+
+        setUserListUsers(normalizedList);
+        setUserListTitle(type === 'followers' ? 'Takipçiler' : 'Takip Edilenler');
+        setIsUserListOpen(true);
     };
 
     if (isLoading) {
@@ -119,6 +145,14 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ userId, username: 
 
     return (
         <div ref={containerRef} className="h-screen overflow-y-auto bg-[#09090b] text-white scroll-smooth no-scrollbar">
+            {/* User List Modal */}
+            <UserListModal
+                isOpen={isUserListOpen}
+                onClose={() => setIsUserListOpen(false)}
+                title={userListTitle}
+                users={userListUsers}
+                onNavigate={onNavigate}
+            />
 
             {/* --- HERO SECTION --- */}
             <div className="relative w-full h-[280px]">
@@ -237,16 +271,24 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ userId, username: 
 
             {/* --- STATS DASHBOARD --- */}
             <div className="mt-8 px-4 grid grid-cols-3 gap-3">
-                {[
-                    { label: 'Takipçi', value: profileUser.followersCount || 0 },
-                    { label: 'Takip', value: profileUser.followingCount || 0 },
-                    { label: 'Sürüş', value: profileUser.totalRides || profileUser.posts?.length || 0 }
-                ].map((stat, i) => (
-                    <div key={i} className="bg-[#111] border border-white/5 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer hover:border-white/10 transition-colors">
-                        <span className="font-mono text-xl font-bold text-white mb-1">{stat.value}</span>
-                        <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">{stat.label}</span>
-                    </div>
-                ))}
+                <div
+                    onClick={() => handleStatClick('followers')}
+                    className="bg-[#111] border border-white/5 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer hover:border-white/10 transition-colors active:scale-95 duration-200"
+                >
+                    <span className="font-mono text-xl font-bold text-white mb-1">{profileUser.followersCount || (profileUser.followers?.length) || 0}</span>
+                    <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Takipçi</span>
+                </div>
+                <div
+                    onClick={() => handleStatClick('following')}
+                    className="bg-[#111] border border-white/5 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer hover:border-white/10 transition-colors active:scale-95 duration-200"
+                >
+                    <span className="font-mono text-xl font-bold text-white mb-1">{profileUser.followingCount || (profileUser.following?.length) || 0}</span>
+                    <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Takip</span>
+                </div>
+                <div className="bg-[#111] border border-white/5 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer hover:border-white/10 transition-colors">
+                    <span className="font-mono text-xl font-bold text-white mb-1">{profileUser.totalRides || profileUser.posts?.length || 0}</span>
+                    <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Sürüş</span>
+                </div>
             </div>
 
             {/* --- DIGITAL GARAGE --- */}

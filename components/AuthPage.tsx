@@ -5,27 +5,16 @@ import { authService } from '../services/auth';
 import { useAppSounds } from '../hooks/useAppSounds';
 import { notify } from '../services/notificationService';
 
-export const AuthPage = ({ onLoginSuccess, onNavigate }: { onLoginSuccess?: () => void, onNavigate?: (view: any) => void }) => {
-    const { playSuccess, playClick } = useAppSounds();
-    const [isLogin, setIsLogin] = useState(true); // true = Login Form Visible (Cover on Right)
-
-    const [loginEmail, setLoginEmail] = useState('');
-    const [loginPass, setLoginPass] = useState('');
-    const [rememberMe, setRememberMe] = useState(false);
-
-    const [regName, setRegName] = useState('');
-    const [regEmail, setRegEmail] = useState('');
-    const [regPass, setRegPass] = useState('');
-
-    const [loading, setLoading] = useState(false);
-
+// Update Props Interface
+export const AuthPage = ({ onLoginSuccess, onNavigate }: { onLoginSuccess?: (user?: any) => void, onNavigate?: (view: any) => void }) => {
+    // ...
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         try {
-            await authService.login(loginEmail, loginPass, rememberMe);
+            const user = await authService.login(loginEmail, loginPass, rememberMe);
             playSuccess();
-            if (onLoginSuccess) onLoginSuccess();
+            if (onLoginSuccess) onLoginSuccess(user); // Pass user directly
             notify.success('Giriş başarılı!');
         } catch (error: any) {
             console.error(error);

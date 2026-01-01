@@ -52,29 +52,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
     const [activePostId, setActivePostId] = useState<string | null>(null);
     const [isCommentSheetOpen, setIsCommentSheetOpen] = useState(false);
 
-    // Search State
-    const [searchQuery, setSearchQuery] = useState('');
-    const [searchResults, setSearchResults] = useState<any[]>([]);
-    const [isSearching, setIsSearching] = useState(false);
-    const [showSearchResults, setShowSearchResults] = useState(false);
 
-    // Debounced Search
-    useEffect(() => {
-        const timer = setTimeout(async () => {
-            if (searchQuery.length >= 2) {
-                setIsSearching(true);
-                const results = await socialService.search(searchQuery);
-                setSearchResults(results.users || []);
-                setIsSearching(false);
-                setShowSearchResults(true);
-            } else {
-                setSearchResults([]);
-                setShowSearchResults(false);
-            }
-        }, 500);
-
-        return () => clearTimeout(timer);
-    }, [searchQuery]);
 
 
 
@@ -271,11 +249,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                                 className="shadow-[0_0_20px_rgba(255,87,34,0.3)] animate-pulse"
                                                 onClick={() => {
                                                     // Functionality to open "Suggested Riders" or navigate to search
-                                                    const searchInput = document.querySelector('input[type="text"]') as HTMLInputElement;
-                                                    if (searchInput) {
-                                                        searchInput.focus();
-                                                        setSearchQuery(' '); // Trigger search suggestions logic if needed
-                                                    }
+                                                    // Placeholder for future navigation
                                                 }}
                                             >
                                                 Sürücüleri Keşfet
@@ -331,56 +305,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                 {/* --- RIGHT SIDEBAR (Context) --- */}
                 < div className="hidden lg:block sticky top-28 h-fit space-y-8" >
 
-                    {/* Search Field */}
-                    <div className="relative group z-50">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-moto-accent transition-colors" />
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            onFocus={() => searchQuery.length >= 2 && setShowSearchResults(true)}
-                            placeholder="Sürücü, rota veya etkinlik ara..."
-                            className="w-full bg-[#111] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-moto-accent/50 transition-colors shadow-lg"
-                        />
 
-                        {/* Search Dropdown */}
-                        <AnimatePresence>
-                            {showSearchResults && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: 10 }}
-                                    className="absolute top-full left-0 right-0 mt-2 bg-[#18181b] border border-white/10 rounded-2xl shadow-xl overflow-hidden max-h-[400px] overflow-y-auto custom-scrollbar"
-                                >
-                                    {isSearching ? (
-                                        <div className="p-4 text-center text-gray-500 text-xs">Aranıyor...</div>
-                                    ) : searchResults.length > 0 ? (
-                                        <div className="py-2">
-                                            {searchResults.map((user) => (
-                                                <div
-                                                    key={user._id}
-                                                    onClick={() => {
-                                                        onNavigate && onNavigate('public-profile', { _id: user._id });
-                                                        setShowSearchResults(false);
-                                                        setSearchQuery('');
-                                                    }}
-                                                    className="flex items-center gap-3 px-4 py-3 hover:bg-white/5 cursor-pointer transition-colors"
-                                                >
-                                                    <UserAvatar src={user.profileImage} name={user.name} size={32} />
-                                                    <div>
-                                                        <div className="text-white font-bold text-sm">{user.name}</div>
-                                                        <div className="text-gray-500 text-xs">{user.bike || 'Motosiklet Tutkunu'}</div>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    ) : (
-                                        <div className="p-4 text-center text-gray-500 text-xs">Sonuç bulunamadı</div>
-                                    )}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div>
 
                     {/* Active Squads (Chats) */}
                     < div className="bg-[#111] rounded-3xl p-6 border border-white/5 shadow-xl" >

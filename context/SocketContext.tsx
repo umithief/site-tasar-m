@@ -3,6 +3,7 @@ import { io, Socket } from 'socket.io-client';
 import { CONFIG } from '../services/config';
 import { useNotificationStore } from '../store/useNotificationStore';
 import { notify } from '../services/notificationService';
+import { NotificationToastUI } from '../components/ui/NotificationToast';
 
 interface SocketContextType {
     socket: Socket | null;
@@ -23,6 +24,8 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     const socketRef = React.useRef<Socket | null>(null);
     const [isConnected, setIsConnected] = useState(false);
     const [onlineUsers, setOnlineUsers] = useState<string[]>([]);
+
+    const [activeNotification, setActiveNotification] = useState<any>(null);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -72,10 +75,23 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
             console.debug('🟢 [Socket] User Online:', data.userId);
         });
 
-        socketInstance.on('new_notification', (notification) => {
-            console.log('🔔 [Socket] New Notification:', notification);
-            useNotificationStore.getState().addNotification(notification);
-            notify.success('Yeni bir bildiriminiz var!');
+        socketInstance.on('new_notification', (data) => {
+            console.log('🔔 [Socket] New Notification:', data);
+
+            // Normalize data to match store interface (nested sender object)
+            const normalizedNotification = {
+                ...data,
+                sender: data.sender || {
+                    _id: data.senderId,
+                    name: data.senderName,
+                    avatar: data.senderAvatar,
+                    username: data.senderName // fallback
+                }
+            };
+
+            useNotificationStore.getState().addNotification(normalizedNotification);
+            setActiveNotification(normalizedNotification);
+            // Optional: Play sound here
         });
 
         socketRef.current = socketInstance;
@@ -95,6 +111,29 @@ export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     return (
         <SocketContext.Provider value={{ socket, isConnected, onlineUsers }}>
             {children}
+            {/* Global Notification Toast */}
+            {import.meta.env.MODE !== 'test' && (
+                <React.Suspense fallback={null}>
+                    {/* Lazy load helps? Or just direct import is fine since it's small */}
+                    {activeNotification && (
+                        <div style={{ position: 'fixed', top: 0, left: 0, width: '100%', zIndex: 9999, pointerEvents: 'none' }}>
+                            <div style={{ pointerEvents: 'auto' }}>
+                                {/* We need to import NotificationToastUI. It's not imported yet. 
+                                    I will include the import at the top of the file in a separate edit or assume I can do it here if I rewrite imports.
+                                    Actually, I should rewrite the whole file or huge chunk to include imports.
+                                    Let me do a smaller edit for the state/effect and a separate valid one for imports + rendering.
+                                    Wait, I can just use the replace_file_content to swap the whole component body if needed, but imports are at top.
+                                 */}
+                            </div>
+                        </div>
+                    )}
+                </React.Suspense>
+            )}
+            <NotificationToastUI
+                notification={activeNotification}
+                visible={!!activeNotification}
+                onDismiss={() => setActiveNotification(null)}
+            />
         </SocketContext.Provider>
     );
 };

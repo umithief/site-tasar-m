@@ -1,7 +1,8 @@
 import React from 'react';
-import { Home, ShoppingBag, Map, Calendar, User, Search, Settings, HelpCircle, Flame, MessageSquare, History, PlaySquare, ChevronRight, MonitorPlay } from 'lucide-react';
+import { Home, ShoppingBag, Map, Calendar, User, Search, Settings, HelpCircle, Flame, MessageSquare, History, PlaySquare, ChevronRight, MonitorPlay, Bell } from 'lucide-react';
 import { ViewState } from '../../types';
 import { useAuthStore } from '../../store/authStore';
+import { useNotificationStore } from '../../store/useNotificationStore';
 import { UserAvatar } from '../ui/UserAvatar';
 
 interface SidebarProps {
@@ -20,6 +21,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, onNavigate, isOpen
         { icon: Flame, label: 'Shorts', id: 'reels' },
         { icon: ShoppingBag, label: 'Mağaza', id: 'shop' },
         { icon: Map, label: 'Rotalar', id: 'routes' },
+        { icon: Bell, label: 'Bildirimler', id: 'notifications', badge: true }, // Added Notifications
     ];
 
     const youItems = [
@@ -49,10 +51,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, onNavigate, isOpen
                     <button
                         key={item.id}
                         onClick={() => onNavigate(item.id as ViewState)}
-                        className={`flex flex-col items-center gap-1 w-16 py-4 rounded-lg hover:bg-[#272727] transition-colors
+                        className={`flex flex-col items-center gap-1 w-16 py-4 rounded-lg hover:bg-[#272727] transition-colors relative
                         ${activeView === item.id ? 'text-white' : 'text-white'}`}
                     >
-                        <item.icon className={`w-6 h-6 ${activeView === item.id ? 'fill-white' : ''}`} strokeWidth={activeView === item.id ? 2.5 : 1.5} />
+                        <div className="relative">
+                            <item.icon className={`w-6 h-6 ${activeView === item.id ? 'fill-white' : ''}`} strokeWidth={activeView === item.id ? 2.5 : 1.5} />
+                            {item.badge && useNotificationStore.getState().unreadCount > 0 && (
+                                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-moto-accent rounded-full animate-pulse shadow-[0_0_8px_#ff5722]" />
+                            )}
+                        </div>
                         <span className="text-[10px] truncate w-full text-center">{item.label}</span>
                     </button>
                 ))}
@@ -151,13 +158,18 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, onNavigate, isOpen
     );
 };
 
-const SidebarItem = ({ icon: Icon, label, isActive, onClick }: { icon: any, label: string, isActive: boolean, onClick: () => void }) => (
+const SidebarItem = ({ icon: Icon, label, isActive, badge, onClick }: { icon: any, label: string, isActive: boolean, badge?: boolean, onClick: () => void }) => (
     <button
         onClick={onClick}
-        className={`w-full flex items-center gap-5 px-3 py-2.5 rounded-lg mb-0.5 transition-colors
+        className={`w-full flex items-center gap-5 px-3 py-2.5 rounded-lg mb-0.5 transition-colors relative group
         ${isActive ? 'bg-[#272727] text-white font-medium' : 'text-white hover:bg-[#272727]'}`}
     >
-        <Icon className={`w-6 h-6 ${isActive ? 'fill-current' : ''}`} strokeWidth={isActive ? 2.5 : 1.5} />
+        <div className="relative">
+            <Icon className={`w-6 h-6 ${isActive ? 'fill-current' : ''}`} strokeWidth={isActive ? 2.5 : 1.5} />
+            {badge && useNotificationStore.getState().unreadCount > 0 && (
+                <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-moto-accent rounded-full animate-pulse shadow-[0_0_8px_#ff5722]" />
+            )}
+        </div>
         <span className="text-sm truncate">{label}</span>
     </button>
 );

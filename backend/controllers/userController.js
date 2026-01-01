@@ -140,6 +140,7 @@ export const toggleFollow = catchAsync(async (req, res, next) => {
             sendNotification(targetUserId, 'follow', {
                 senderId: currentUserId,
                 senderName: req.user.name,
+                senderAvatar: req.user.avatar,
                 message: `${req.user.name} seni takip etmeye başladı.`
             });
         }

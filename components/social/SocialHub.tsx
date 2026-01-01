@@ -19,6 +19,7 @@ import { messageService } from '../../services/messageService';
 import { usePosts, useCreatePost } from '../../hooks/usePosts';
 import { MediaUploader } from '../ui/MediaUploader';
 import { useAuthStore } from '../../store/authStore';
+import { useNotificationStore } from '../../store/useNotificationStore';
 
 interface SocialHubProps {
     user: any;
@@ -148,12 +149,23 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                     )}
                                 </button>
                             ))}
-                            <button
-                                onClick={() => setIsCreateOpen(!isCreateOpen)}
-                                className="ml-auto bg-moto-accent/10 text-moto-accent p-2.5 rounded-full hover:bg-moto-accent hover:text-black transition-all border border-moto-accent/20"
-                            >
-                                <Plus className="w-5 h-5" />
-                            </button>
+                            <div className="ml-auto flex items-center gap-2">
+                                <button
+                                    onClick={() => onNavigate && onNavigate('notifications', {})}
+                                    className="relative bg-[#18181b] text-zinc-400 p-2.5 rounded-full hover:bg-[#27272a] hover:text-white transition-all border border-white/5"
+                                >
+                                    <Bell className="w-5 h-5" />
+                                    {useNotificationStore.getState().unreadCount > 0 && (
+                                        <span className="absolute top-2 right-2.5 w-2 h-2 bg-moto-accent rounded-full animate-pulse shadow-[0_0_10px_#ff5722]" />
+                                    )}
+                                </button>
+                                <button
+                                    onClick={() => setIsCreateOpen(!isCreateOpen)}
+                                    className="bg-moto-accent/10 text-moto-accent p-2.5 rounded-full hover:bg-moto-accent hover:text-black transition-all border border-moto-accent/20"
+                                >
+                                    <Plus className="w-5 h-5" />
+                                </button>
+                            </div>
                         </div>
                     </div>
                     {/* View Switcher */}

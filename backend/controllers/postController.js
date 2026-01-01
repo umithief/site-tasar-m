@@ -136,6 +136,19 @@ export const addComment = catchAsync(async (req, res, next) => {
     // Populate for return
     await newComment.populate('author', 'name avatar');
 
+    // Notify Post Owner (if not self)
+    if (post.user.toString() !== req.user.id.toString()) {
+        const { sendNotification } = await import('../socket.js');
+        sendNotification(post.user, 'comment', {
+            senderId: req.user.id,
+            senderName: req.user.name,
+            senderAvatar: req.user.avatar,
+            postId: post._id,
+            commentId: newComment._id,
+            message: `${req.user.name} gönderine yorum yaptı: "${content.substring(0, 30)}${content.length > 30 ? '...' : ''}"`
+        });
+    }
+
     res.status(201).json({
         status: 'success',
         message: 'Yorum eklendi',

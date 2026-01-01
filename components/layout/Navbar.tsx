@@ -7,6 +7,7 @@ import {
 import { ViewState, User as UserType, ColorTheme } from '../../types';
 import { useAuthStore } from '../../store/authStore';
 import { useSocket } from '../../hooks/useSocket';
+import { useNotificationStore } from '../../store/useNotificationStore';
 import { useLanguage } from '../../contexts/LanguageProvider';
 import { SearchOverlay } from './SearchOverlay';
 import { UserAvatar } from '../ui/UserAvatar';
@@ -39,22 +40,12 @@ export const Navbar: React.FC<NavbarProps> = ({
     const { user, logout, isAuthenticated } = useAuthStore();
     const { socket } = useSocket();
     const { t } = useLanguage();
+    const { unreadCount } = useNotificationStore(); // Use global store
 
     const [isProfileOpen, setIsProfileOpen] = useState(false);
-    const [notifications, setNotifications] = useState(0);
     const [searchQuery, setSearchQuery] = useState('');
 
-    useEffect(() => {
-        if (socket) {
-            const handleNotification = () => setNotifications(prev => prev + 1);
-            socket.on('new_message', handleNotification);
-            socket.on('new_follower', handleNotification);
-            return () => {
-                socket.off('new_message', handleNotification);
-                socket.off('new_follower', handleNotification);
-            };
-        }
-    }, [socket]);
+    // Legacy effect removed, handled by SocketContext + Store
 
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
@@ -120,10 +111,13 @@ export const Navbar: React.FC<NavbarProps> = ({
                     <Search className="w-6 h-6" />
                 </button>
 
-                <button className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 text-white relative transition-colors">
+                <button
+                    onClick={() => onNavigate('notifications', {})}
+                    className="w-10 h-10 flex items-center justify-center rounded-full hover:bg-white/10 text-white relative transition-colors"
+                >
                     <Bell className="w-6 h-6" strokeWidth={1.5} />
-                    {notifications > 0 && (
-                        <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-[#cc0000] rounded-full border-2 border-[#0f0f0f]" />
+                    {unreadCount > 0 && (
+                        <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-[#cc0000] rounded-full border-2 border-[#0f0f0f] animate-pulse" />
                     )}
                 </button>
 

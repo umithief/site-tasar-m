@@ -1,90 +1,169 @@
 import React from 'react';
-import { Home, ShoppingBag, Map, Calendar, User, PlusCircle, Search, Settings } from 'lucide-react';
+import { Home, ShoppingBag, Map, Calendar, User, Search, Settings, HelpCircle, Flame, MessageSquare, History, PlaySquare, ChevronRight, MonitorPlay } from 'lucide-react';
 import { ViewState } from '../../types';
 import { useAuthStore } from '../../store/authStore';
+import { UserAvatar } from '../ui/UserAvatar';
 
 interface SidebarProps {
     activeView: ViewState;
     onNavigate: (view: ViewState) => void;
+    isOpen: boolean;
+    isMobile?: boolean; // If true, it might be an overlay instead of pushing content
+    onClose?: () => void;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ activeView, onNavigate }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ activeView, onNavigate, isOpen, isMobile, onClose }) => {
     const { user } = useAuthStore();
 
-    const navItems = [
-        { icon: Home, label: 'Feed', id: 'home' },
-        { icon: Search, label: 'Explore', id: 'explore' },
-        { icon: ShoppingBag, label: 'Shop', id: 'shop' },
-        { icon: Map, label: 'Routes', id: 'routes' },
-        { icon: Calendar, label: 'Events', id: 'meetup' },
-        // { icon: MessageSquare, label: 'Forum', id: 'forum' },
+    const mainItems = [
+        { icon: Home, label: 'Ana Sayfa', id: 'home' },
+        { icon: Flame, label: 'Shorts', id: 'reels' },
+        { icon: ShoppingBag, label: 'Mağaza', id: 'shop' },
+        { icon: Map, label: 'Rotalar', id: 'routes' },
     ];
 
+    const youItems = [
+        { icon: User, label: 'Kanalınız', id: 'profile' },
+        { icon: History, label: 'Geçmiş', id: 'history' }, // Placeholder view
+        { icon: PlaySquare, label: 'Videolarınız', id: 'my-videos' }, // Placeholder view
+    ];
+
+    const exploreItems = [
+        { icon: Calendar, label: 'Etkinlikler', id: 'meetup' },
+        { icon: MessageSquare, label: 'Topluluk (Forum)', id: 'forum' },
+        { icon: MonitorPlay, label: 'Canlı Yayın', id: 'live' }, // Placeholder
+    ];
+
+    const footerItems = [
+        { icon: Settings, label: 'Ayarlar', id: 'settings' },
+        { icon: HelpCircle, label: 'Yardım', id: 'help' },
+    ];
+
+    // If sidebar is closed on desktop, show mini sidebar
+    // If sidebar is closed on mobile, show nothing (it's off screen)
+
+    // Mini Sidebar (Desktop Closed)
+    if (!isOpen && !isMobile) {
+        return (
+            <aside className="fixed left-0 top-16 h-[calc(100vh-4rem)] w-20 bg-[#0f0f0f] flex flex-col items-center py-4 gap-6 overflow-y-auto overflow-x-hidden z-40">
+                {mainItems.map((item) => (
+                    <button
+                        key={item.id}
+                        onClick={() => onNavigate(item.id as ViewState)}
+                        className={`flex flex-col items-center gap-1 w-16 py-4 rounded-lg hover:bg-[#272727] transition-colors
+                        ${activeView === item.id ? 'text-white' : 'text-white'}`}
+                    >
+                        <item.icon className={`w-6 h-6 ${activeView === item.id ? 'fill-white' : ''}`} strokeWidth={activeView === item.id ? 2.5 : 1.5} />
+                        <span className="text-[10px] truncate w-full text-center">{item.label}</span>
+                    </button>
+                ))}
+            </aside>
+        );
+    }
+
+    // Full Sidebar
     return (
-        <aside className="fixed left-0 top-0 h-screen w-[20%] border-r border-white/5 bg-black/50 backdrop-blur-xl flex flex-col justify-between p-8 z-50">
-            {/* Logo Area */}
-            <div>
-                <div onClick={() => onNavigate('home')} className="flex items-center gap-3 mb-12 cursor-pointer group">
-                    <div className="w-10 h-10 bg-orange-500 rounded-xl flex items-center justify-center transform group-hover:rotate-12 transition-transform duration-300 shadow-[0_0_20px_rgba(255,69,0,0.3)]">
-                        <span className="font-bold text-black text-xl italic">M</span>
-                    </div>
-                    <div>
-                        <h1 className="text-xl font-bold text-white tracking-widest uppercase">MOTOVIBE</h1>
-                        <p className="text-[10px] text-zinc-500 tracking-[0.3em] font-medium uppercase">Premium Gear</p>
-                    </div>
-                </div>
+        <>
+            {/* Mobile Overlay */}
+            {isMobile && isOpen && (
+                <div className="fixed inset-0 bg-black/50 z-[1000]" onClick={onClose} />
+            )}
 
-                {/* Navigation */}
-                <nav className="space-y-2">
-                    {navItems.map((item) => (
-                        <button
-                            key={item.id}
-                            onClick={() => onNavigate(item.id as ViewState)}
-                            className={`w-full flex items-center gap-4 p-4 rounded-xl transition-all duration-300 group
-                            ${activeView === item.id
-                                    ? 'bg-orange-500/10 text-orange-500 translate-x-2'
-                                    : 'text-zinc-400 hover:text-white hover:bg-white/5'}`}
-                        >
-                            <item.icon className={`w-5 h-5 transition-transform duration-300 group-hover:scale-110 ${activeView === item.id ? 'stroke-[2.5px]' : 'stroke-[1.5px]'}`} />
-                            <span className={`text-sm font-medium tracking-wide uppercase ${activeView === item.id ? 'font-bold' : ''}`}>
-                                {item.label}
-                            </span>
-                            {activeView === item.id && (
-                                <div className="ml-auto w-1.5 h-1.5 rounded-full bg-orange-500 shadow-[0_0_10px_orange]" />
-                            )}
+            <aside className={`
+                fixed top-0 left-0 h-full w-60 bg-[#0f0f0f] overflow-y-auto z-[1001] transform transition-transform duration-300
+                ${isMobile
+                    ? (isOpen ? 'translate-x-0' : '-translate-x-full')
+                    : 'top-16 h-[calc(100vh-4rem)] translate-x-0'} // Desktop always visible if we are in this block, but logically handled by condition above
+            `}>
+                {isMobile && (
+                    <div className="flex items-center gap-4 px-6 h-16 border-b border-white/5">
+                        <button onClick={onClose} className="p-2 -ml-2 rounded-full hover:bg-white/10 text-white">
+                            <MenuIcon />
                         </button>
-                    ))}
-                </nav>
-            </div>
-
-            {/* Bottom Actions */}
-            <div className="space-y-4">
-                <button
-                    onClick={() => onNavigate('create')}
-                    className="w-full bg-white text-black h-14 rounded-xl flex items-center justify-center gap-2 font-bold uppercase tracking-widest hover:bg-orange-500 hover:text-white transition-all duration-300 shadow-lg group"
-                >
-                    <PlusCircle className="w-5 h-5 group-hover:rotate-90 transition-transform" />
-                    <span>Create</span>
-                </button>
-
-                <div
-                    onClick={() => onNavigate(user ? 'my-profile' : 'auth')}
-                    className="flex items-center gap-3 p-3 rounded-xl hover:bg-white/5 cursor-pointer transition-colors border border-transparent hover:border-white/5"
-                >
-                    {user?.avatar ? (
-                        <img src={user.avatar} className="w-10 h-10 rounded-full object-cover border border-zinc-700" />
-                    ) : (
-                        <div className="w-10 h-10 rounded-full bg-zinc-800 flex items-center justify-center text-zinc-500">
-                            <User className="w-5 h-5" />
-                        </div>
-                    )}
-                    <div className="flex-1 overflow-hidden">
-                        <p className="text-sm font-bold text-white truncate">{user?.name || 'Sign In'}</p>
-                        <p className="text-xs text-zinc-500 truncate">@{user?.username || 'guest'}</p>
+                        <span className="font-display font-bold text-xl text-white tracking-tight">MOTOVIBE</span>
                     </div>
-                    <Settings className="w-4 h-4 text-zinc-600" />
+                )}
+
+                <div className="py-3 px-3">
+                    {/* Main Section */}
+                    <div className="border-b border-white/10 pb-3 mb-3">
+                        {mainItems.map(item => (
+                            <SidebarItem
+                                key={item.id}
+                                icon={item.icon}
+                                label={item.label}
+                                isActive={activeView === item.id}
+                                onClick={() => { onNavigate(item.id as ViewState); if (isMobile && onClose) onClose(); }}
+                            />
+                        ))}
+                    </div>
+
+                    {/* You Section */}
+                    <div className="border-b border-white/10 pb-3 mb-3">
+                        <div className="px-3 py-2 flex items-center gap-2 text-base font-bold text-white cursor-pointer hover:bg-[#272727] rounded-lg group" onClick={() => onNavigate('profile')}>
+                            <span>Siz</span>
+                            <ChevronRight className="w-4 h-4 text-white group-hover:block hidden" />
+                        </div>
+                        {youItems.map(item => (
+                            <SidebarItem
+                                key={item.id}
+                                icon={item.icon}
+                                label={item.label}
+                                isActive={activeView === item.id}
+                                onClick={() => { onNavigate(item.id as ViewState); if (isMobile && onClose) onClose(); }}
+                            />
+                        ))}
+                    </div>
+
+                    {/* Explore Section */}
+                    <div className="border-b border-white/10 pb-3 mb-3">
+                        <div className="px-3 py-2 text-base font-bold text-white">Keşfet</div>
+                        {exploreItems.map(item => (
+                            <SidebarItem
+                                key={item.id}
+                                icon={item.icon}
+                                label={item.label}
+                                isActive={activeView === item.id}
+                                onClick={() => { onNavigate(item.id as ViewState); if (isMobile && onClose) onClose(); }}
+                            />
+                        ))}
+                    </div>
+
+                    {/* Footer Section */}
+                    <div className="pb-3 mb-3">
+                        {footerItems.map(item => (
+                            <SidebarItem
+                                key={item.id}
+                                icon={item.icon}
+                                label={item.label}
+                                isActive={activeView === item.id}
+                                onClick={() => { onNavigate(item.id as ViewState); if (isMobile && onClose) onClose(); }}
+                            />
+                        ))}
+                    </div>
+
+                    <div className="px-4 py-4 text-xs text-zinc-500 font-medium">
+                        <p>© 2026 Google LLC</p>
+                        <p className="mt-2">Motovibe Premium</p>
+                    </div>
+
                 </div>
-            </div>
-        </aside>
+            </aside>
+        </>
     );
 };
+
+const SidebarItem = ({ icon: Icon, label, isActive, onClick }: { icon: any, label: string, isActive: boolean, onClick: () => void }) => (
+    <button
+        onClick={onClick}
+        className={`w-full flex items-center gap-5 px-3 py-2.5 rounded-lg mb-0.5 transition-colors
+        ${isActive ? 'bg-[#272727] text-white font-medium' : 'text-white hover:bg-[#272727]'}`}
+    >
+        <Icon className={`w-6 h-6 ${isActive ? 'fill-current' : ''}`} strokeWidth={isActive ? 2.5 : 1.5} />
+        <span className="text-sm truncate">{label}</span>
+    </button>
+);
+
+const MenuIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+)

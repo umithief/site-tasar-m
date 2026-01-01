@@ -2,6 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Product, CartItem, ProductCategory, User, AuthMode, Route as RouteType, ViewState, ColorTheme } from './types';
 import { Navbar } from './components/layout/Navbar';
+import { Sidebar } from './components/layout/Sidebar';
 import { BottomNav } from './components/layout/BottomNav';
 import { CartDrawer } from './components/layout/CartDrawer';
 import { AuthModal } from './components/AuthModal';
@@ -76,6 +77,7 @@ export const App: React.FC = () => {
     const [isCartOpen, setIsCartOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
+    const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
     useEffect(() => {
         const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -510,6 +512,7 @@ export const App: React.FC = () => {
                         onOpenFeedback={() => setIsFeedbackOpen(true)}
                         onToggleTheme={() => setIsThemeModalOpen(true)}
                     >
+                        {/* Desktop Header & Sidebar */}
                         <div className="hidden md:block">
                             <Navbar
                                 cartCount={cartItems.reduce((a, b) => a + b.quantity, 0)}
@@ -521,11 +524,24 @@ export const App: React.FC = () => {
                                 onNavigate={navigateTo}
                                 currentView={view}
                                 colorTheme={colorTheme}
-                                onToggleMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                                onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+                            />
+
+                            <Sidebar
+                                activeView={view}
+                                onNavigate={navigateTo}
+                                isOpen={isSidebarOpen}
+                                isMobile={false}
                             />
                         </div>
 
-                        <main className="pt-20 md:pt-24 min-h-screen">
+                        {/* Main Content Area - Adjusted for Sidebar */}
+                        <main
+                            className={`min-h-screen pt-20 transition-all duration-300 ${!isMobile
+                                    ? (isSidebarOpen ? 'md:pl-64' : 'md:pl-24')
+                                    : 'pt-20 pb-20' /* Mobile Padding */
+                                }`}
+                        >
                             <AnimatePresence mode="wait">
                                 <motion.div
                                     key={view}
@@ -533,11 +549,13 @@ export const App: React.FC = () => {
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: -20 }}
                                     transition={{ duration: 0.3 }}
+                                    className="px-4 md:px-8 max-w-[1600px] mx-auto"
                                 >
                                     {renderView()}
                                 </motion.div>
                             </AnimatePresence>
                         </main>
+
 
 
                     </MobileLayout>

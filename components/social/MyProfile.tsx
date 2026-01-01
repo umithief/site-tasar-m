@@ -160,41 +160,47 @@ export const MyProfile: React.FC = () => {
 
     const GarageCard: React.FC<{ bike?: UserBike, isAdd?: boolean }> = ({ bike, isAdd }) => {
         if (isAdd) return (
-            <button
+            <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={() => notify.info('Yeni araç ekleme yakında!')}
-                className="aspect-[4/5] w-full rounded-2xl border-2 border-dashed border-white/10 bg-white/5 flex flex-col items-center justify-center gap-4 group hover:bg-white/10 hover:border-moto-accent/40 transition-all"
+                className="group relative h-[280px] w-full rounded-xl border border-dashed border-zinc-800 hover:border-zinc-600 hover:bg-zinc-900/30 transition-all flex flex-col items-center justify-center gap-3 text-zinc-600 hover:text-zinc-300"
             >
-                <div className="w-14 h-14 rounded-full bg-black border border-white/10 flex items-center justify-center group-hover:scale-110 transition-transform text-gray-500 group-hover:text-white">
+                <div className="p-3 rounded-full bg-zinc-900 group-hover:bg-zinc-800 transition-colors">
                     <Plus className="w-6 h-6" />
                 </div>
-                <span className="text-xs font-bold text-gray-500 uppercase tracking-widest">Add Bike</span>
-            </button>
+                <span className="text-xs font-medium uppercase tracking-wider">Add Motorcycle</span>
+            </motion.button>
         );
 
         return (
-            <div className="group relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-zinc-900 border border-white/5 hover:border-moto-accent/50 transition-colors">
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10 opactiy-80" />
-                <img src={bike?.image} alt={bike?.model} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-
-                <div className="absolute bottom-4 left-4 right-4 z-20">
-                    <div className="flex items-center gap-2 mb-2">
-                        <span className="px-2 py-0.5 bg-moto-accent text-black text-[10px] font-black uppercase rounded">{bike?.brand}</span>
-                        {bike?.year && <span className="px-2 py-0.5 bg-white/20 backdrop-blur text-white text-[10px] font-bold rounded">{bike.year}</span>}
+            <motion.div
+                layoutId={`bike-${bike?._id}`}
+                className="group relative h-[280px] w-full rounded-xl bg-zinc-900/20 hover:bg-zinc-900/40 border border-white/5 hover:border-white/10 transition-all overflow-hidden cursor-pointer"
+            >
+                <div className="h-2/3 w-full overflow-hidden">
+                    <img
+                        src={bike?.image}
+                        alt={bike?.model}
+                        className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+                    />
+                </div>
+                <div className="p-4">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">{bike?.brand}</h3>
+                            <p className="text-sm font-bold text-white tracking-tight leading-tight">{bike?.model}</p>
+                        </div>
+                        <div className="p-1.5 rounded-full bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <Settings className="w-3 h-3 text-white" />
+                        </div>
                     </div>
-                    <h3 className="text-xl font-display font-black text-white leading-none uppercase italic">{bike?.model}</h3>
-
-                    <div className="mt-3 flex items-center gap-3 opacity-0 group-hover:opacity-100 transition-opacity transform translate-y-2 group-hover:translate-y-0 duration-300">
-                        <div className="flex items-center gap-1 text-[10px] text-gray-300">
-                            <Wrench className="w-3 h-3 text-moto-accent" />
-                            <span>{bike?.modifications?.length || 0} Mods</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-[10px] text-gray-300">
-                            <Activity className="w-3 h-3 text-moto-accent" />
-                            <span>{bike?.km} km</span>
-                        </div>
+                    <div className="mt-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
+                        {bike?.year && <span className="text-[10px] text-gray-500">{bike.year}</span>}
+                        {bike?.km && <span className="text-[10px] text-gray-500">• {bike.km} km</span>}
                     </div>
                 </div>
-            </div>
+            </motion.div>
         );
     };
 

@@ -329,12 +329,18 @@ export const App: React.FC = () => {
                     }}
                 />
             ) : (
-                <AuthPage onNavigate={navigateTo} onLoginSuccess={async () => {
-                    const u = await authService.getCurrentUser();
-                    if (u) {
-                        setUser(u);
-                        addToast('success', `Hoş geldin, ${u.name}`);
+                <AuthPage onNavigate={navigateTo} onLoginSuccess={async (user) => {
+                    if (user) {
+                        setUser(user);
+                        addToast('success', `Hoş geldin, ${user.name}`);
                         navigateTo('home');
+                    } else {
+                        const u = await authService.getCurrentUser();
+                        if (u) {
+                            setUser(u);
+                            addToast('success', `Hoş geldin, ${u.name}`);
+                            navigateTo('home');
+                        }
                     }
                 }} />
             );

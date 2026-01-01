@@ -14,6 +14,9 @@ interface FollowButtonProps {
 }
 
 export const FollowButton: React.FC<FollowButtonProps> = ({ targetUserId, isFollowing = false, className, onToggle }) => {
+    // Safety guard early return
+    if (!targetUserId) return null;
+
     const { mutate: toggleFollow, isPending } = useFollow();
     const { user: currentUser } = useAuthStore();
 

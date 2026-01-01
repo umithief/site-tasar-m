@@ -89,7 +89,10 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout, onUpda
         }
 
         // If list items are objects with names, use them
-        if (typeof list[0] === 'object' && list[0].name) {
+        // Verify ALL items are objects (to handle mixed state from optimistic updates)
+        const allObjects = list.every((item: any) => typeof item === 'object' && item !== null && (item._id || item.id || item.name));
+
+        if (allObjects) {
             setModalUsers(list);
             setUserListType(type);
             setIsUserListOpen(true);

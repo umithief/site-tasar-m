@@ -95,7 +95,10 @@ export const MyProfile: React.FC = () => {
         }
 
         // Check if list items are objects
-        if (list && list.length > 0 && typeof list[0] === 'object' && list[0].name) {
+        // Verify ALL items are objects (to handle mixed state from optimistic updates)
+        const allObjects = list.every((item: any) => typeof item === 'object' && item !== null && (item._id || item.id || item.name));
+
+        if (list && list.length > 0 && allObjects) {
             setModalUsers(list);
             setUserListType(type);
             setIsUserListOpen(true);

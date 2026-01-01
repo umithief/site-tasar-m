@@ -7,7 +7,18 @@ import { notify } from '../services/notificationService';
 
 // Update Props Interface
 export const AuthPage = ({ onLoginSuccess, onNavigate }: { onLoginSuccess?: (user?: any) => void, onNavigate?: (view: any) => void }) => {
-    // ...
+    const { playSuccess, playClick } = useAppSounds();
+    const [isLogin, setIsLogin] = useState(true); // true = Login Form Visible (Cover on Right)
+
+    const [loginEmail, setLoginEmail] = useState('');
+    const [loginPass, setLoginPass] = useState('');
+    const [rememberMe, setRememberMe] = useState(false);
+
+    const [regName, setRegName] = useState('');
+    const [regEmail, setRegEmail] = useState('');
+    const [regPass, setRegPass] = useState('');
+
+    const [loading, setLoading] = useState(false);
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);

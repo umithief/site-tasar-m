@@ -3,6 +3,9 @@ import User from '../models/User.js';
 import catchAsync from '../utils/catchAsync.js';
 import AppError from '../utils/appError.js';
 
+// Import Comment model
+import Comment from '../models/Comment.js';
+
 // Get Feed Posts (From Following + Own)
 export const getFeedPosts = catchAsync(async (req, res, next) => {
     const page = parseInt(req.query.page) || 1;
@@ -26,10 +29,6 @@ export const getFeedPosts = catchAsync(async (req, res, next) => {
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
-        .populate({
-            path: 'comments.user',
-            select: 'name avatar'
-        })
         .lean();
 
     const postsWithLikeStatus = posts.map(post => ({
@@ -124,25 +123,36 @@ export const addComment = catchAsync(async (req, res, next) => {
     if (!post) return next(new AppError('Post bulunamadı.', 404));
     if (!content) return next(new AppError('Yorum boş olamaz', 400));
 
-    const comment = {
-        user: req.user.id,
-        authorName: req.user.name,
-        // authorAvatar: req.user.avatar,
+    const newComment = await Comment.create({
         content,
-        timestamp: Date.now()
-    };
+        author: req.user.id,
+        post: post._id
+    });
 
-    post.comments.push(comment);
+    // Update post meta
     post.commentCount += 1;
-
     await post.save();
 
-    // Re-fetch or simplistic return (Populate user for frontend display)
-    // For now returning post
+    // Populate for return
+    await newComment.populate('author', 'name avatar');
+
     res.status(201).json({
         status: 'success',
         message: 'Yorum eklendi',
-        data: { comments: post.comments }
+        data: { comment: newComment }
+    });
+});
+
+export const getPostComments = catchAsync(async (req, res, next) => {
+    const { id } = req.params;
+    const comments = await Comment.find({ post: id })
+        .sort({ createdAt: -1 })
+        .populate('author', 'name avatar');
+
+    res.status(200).json({
+        status: 'success',
+        results: comments.length,
+        data: { comments }
     });
 });
 

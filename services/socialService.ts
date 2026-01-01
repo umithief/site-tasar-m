@@ -67,7 +67,7 @@ export const socialService = {
         }
     },
 
-    async commentPost(postId: string, commentData: { authorId: string; authorName: string; content: string }): Promise<SocialPost | null> {
+    async commentPost(postId: string, content: string): Promise<any> {
         const token = localStorage.getItem('token');
         try {
             const response = await fetch(`${CONFIG.API_URL}/social/${postId}/comment`, {
@@ -76,13 +76,28 @@ export const socialService = {
                     'Content-Type': 'application/json',
                     'Authorization': `Bearer ${token}`
                 },
-                body: JSON.stringify(commentData)
+                body: JSON.stringify({ content })
             });
             if (!response.ok) throw new Error('Comment Failed');
             return await response.json();
         } catch (error) {
             console.error('Comment Error:', error);
             return null;
+        }
+    },
+
+    async getComments(postId: string): Promise<any[]> {
+        const token = localStorage.getItem('token');
+        try {
+            const response = await fetch(`${CONFIG.API_URL}/social/${postId}/comments`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!response.ok) throw new Error('Get Comments Failed');
+            const data = await response.json();
+            return data.data?.comments || [];
+        } catch (error) {
+            console.error('Get Comments Error:', error);
+            return [];
         }
     },
 

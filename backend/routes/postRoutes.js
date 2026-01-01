@@ -14,5 +14,6 @@ router.get('/feed', postController.getFeedPosts);
 router.post('/', postController.createPost);
 router.post('/:id/like', postController.toggleLike);
 router.post('/:id/comment', postController.addComment);
+router.get('/:id/comments', postController.getPostComments);
 
 export default router;

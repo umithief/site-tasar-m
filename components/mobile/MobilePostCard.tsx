@@ -9,16 +9,21 @@ import { MobileBottomSheet } from './MobileBottomSheet';
 import { MobileComments } from './MobileComments'; // Import Added
 import { useAuthStore } from '../../store/authStore';
 import { useFollow } from '../../hooks/useFollow';
+import { PostActionsBar } from '../social/PostActionsBar';
 
 interface MobilePostCardProps {
     post: SocialPost;
     currentUserId?: string;
     onNavigate?: (view: any, data?: any) => void;
+    onCommentClick?: () => void;
 }
 
-export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, currentUserId, onNavigate }) => {
+export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, currentUserId, onCommentClick }) => {
     const [isLiked, setIsLiked] = useState(post.isLiked);
-    const [likeCount, setLikeCount] = useState(typeof post.likes === 'number' ? post.likes : (Array.isArray(post.likes) ? post.likes.length : 0));
+    // Safe access for likes count
+    const [likeCount, setLikeCount] = useState(
+        typeof post.likes === 'number' ? post.likes : (Array.isArray(post.likes) ? post.likes.length : 0)
+    );
     const [lastTap, setLastTap] = useState(0);
     const [showHeartOverlay, setShowHeartOverlay] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
@@ -41,42 +46,6 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
             return fId.toString() === post.userId.toString();
         });
     }, [currentUser?.following, post.userId]);
-
-    // Comment States
-    const [showComments, setShowComments] = useState(false);
-    const [commentText, setCommentText] = useState('');
-    const [comments, setComments] = useState(post.commentList || []);
-    const [commentCount, setCommentCount] = useState(typeof post.comments === 'number' ? post.comments : (Array.isArray(post.comments) ? post.comments.length : 0));
-
-    const handlePostComment = async (textOverride?: string) => {
-        const textToPost = textOverride || commentText;
-        if (!textToPost.trim()) return;
-
-        // Optimistic
-        const newComment = {
-            _id: Date.now().toString(),
-            authorName: 'Sen',
-            content: textToPost,
-            timestamp: new Date().toISOString()
-        };
-
-        setComments(prev => [...prev, newComment]);
-        setCommentCount(prev => prev + 1);
-        setCommentText(''); // Clear local state if any
-
-        try {
-            const response: any = await socialService.commentPost(post._id, {
-                authorId: currentUserId || 'guest',
-                authorName: 'User',
-                content: newComment.content
-            });
-            if (response && response.data && response.data.comments) {
-                setComments(response.data.comments);
-            }
-        } catch (error) {
-            console.error('Comment failed', error);
-        }
-    };
 
     const handleLike = async () => {
         if (!currentUserId) return; // Silent fail or trigger auth elsewhere
@@ -148,7 +117,7 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                 onClick={handleDoubleTap}
             >
                 <img
-                    src={post.images?.[0] || post.image}
+                    src={post.images?.[0] || (post as any).image}
                     alt={post.userName}
                     loading="lazy"
                     className="w-full h-full object-cover"
@@ -172,39 +141,7 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
             </div>
 
             {/* Action Bar */}
-            <div className="px-3 py-3 flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <motion.button
-                        whileTap={{ scale: 0.8 }}
-                        onClick={handleLike}
-                        className="p-1 -ml-1"
-                    >
-                        <Heart
-                            className={`w-7 h-7 ${isLiked ? 'text-red-500 fill-red-500' : 'text-white'}`}
-                            strokeWidth={isLiked ? 0 : 2}
-                        />
-                    </motion.button>
-
-                    <motion.button
-                        whileTap={{ scale: 0.8 }}
-                        className="p-1"
-                        onClick={() => setShowComments(true)}
-                    >
-                        <MessageCircle className="w-7 h-7 text-white" strokeWidth={2} />
-                    </motion.button>
-
-                    <motion.button
-                        whileTap={{ scale: 0.8 }}
-                        className="p-1"
-                    >
-                        <Share2 className="w-7 h-7 text-white" strokeWidth={2} />
-                    </motion.button>
-                </div>
-
-                <motion.button whileTap={{ scale: 0.8 }} className="p-1 -mr-1">
-                    <Bookmark className="w-7 h-7 text-white" strokeWidth={2} />
-                </motion.button>
-            </div>
+            <PostActionsBar post={post} onCommentClick={() => onCommentClick && onCommentClick()} />
 
             {/* Likes */}
             <div className="px-3 text-sm font-bold text-white mb-1">
@@ -230,23 +167,6 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                     )}
                 </p>
             </div>
-
-            {/* Comments Sheet */}
-            <MobileBottomSheet
-                isOpen={showComments}
-                onClose={() => setShowComments(false)}
-                title="Yorumlar"
-                height="h-[80vh]"
-            >
-                <MobileComments
-                    postId={post._id}
-                    comments={comments}
-                    currentUserAvatar={currentUser?.avatar} // Assuming user object has avatar
-                    onAddComment={(text) => {
-                        handlePostComment(text);
-                    }}
-                />
-            </MobileBottomSheet>
         </div>
     );
 });

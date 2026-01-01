@@ -73,6 +73,7 @@ export const useFollow = () => {
 
             // Also update React Query cache for Riders list if needed
             queryClient.invalidateQueries({ queryKey: ['users'] });
+            queryClient.invalidateQueries({ queryKey: ['posts'] });
         },
     });
 };

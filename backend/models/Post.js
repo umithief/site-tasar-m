@@ -1,12 +1,7 @@
 import mongoose from 'mongoose';
 
-const commentSchema = new mongoose.Schema({
-    user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-    authorName: String, // Cache name for easier display
-    authorAvatar: String,
-    content: { type: String, required: true },
-    timestamp: { type: Date, default: Date.now }
-});
+// Comment schema moved to separate model
+
 
 const postSchema = new mongoose.Schema({
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
@@ -22,7 +17,9 @@ const postSchema = new mongoose.Schema({
 
     // Engagement
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    comments: [commentSchema],
+    // comments: Removed embedded array in favor of separate Comment collection for scalability
+
+    // Meta
 
     // Meta
     location: String,

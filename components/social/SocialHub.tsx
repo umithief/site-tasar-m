@@ -8,6 +8,7 @@ import { DirectMessages } from './DirectMessages';
 import { SocialPost, ViewState } from '../../types';
 import { UserAvatar } from '../ui/UserAvatar';
 import { Button } from '../ui/Button';
+import { CommentSheet } from './CommentSheet';
 
 // Feature Components
 import { MotoVlogMap } from '../MotoVlogMap';
@@ -44,6 +45,10 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
     const [suggestedRiders, setSuggestedRiders] = useState<any[]>([]);
     const [activeThreads, setActiveThreads] = useState<any[]>([]);
     const [initialChatId, setInitialChatId] = useState<string | null>(null);
+
+    // Comment Sheet State
+    const [activePostId, setActivePostId] = useState<string | null>(null);
+    const [isCommentSheetOpen, setIsCommentSheetOpen] = useState(false);
 
     // Initial Data Fetch
     useEffect(() => {
@@ -225,7 +230,15 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                             >
                                                 <div className="relative">
                                                     <div className="absolute -left-4 top-0 bottom-0 w-[1px] bg-white/5 group-hover:bg-white/10 transition-colors hidden xl:block" />
-                                                    <ResponsivePostCard post={post} currentUserId={currentUser?._id} onNavigate={onNavigate} />
+                                                    <ResponsivePostCard
+                                                        post={post}
+                                                        currentUserId={currentUser?._id}
+                                                        onNavigate={onNavigate}
+                                                        onCommentClick={() => {
+                                                            setActivePostId(post._id);
+                                                            setIsCommentSheetOpen(true);
+                                                        }}
+                                                    />
                                                 </div>
                                             </motion.div>
                                         ))}
@@ -317,6 +330,16 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
 
             {/* Direct Messages Overlay */}
             < DirectMessages isOpen={isDMOpen} onClose={() => { setIsDMOpen(false); setInitialChatId(null); }} initialChatUserId={initialChatId || undefined} />
+
+            {/* Comment Sheet (Shared) */}
+            {activePostId && (
+                <CommentSheet
+                    isOpen={isCommentSheetOpen}
+                    onClose={() => setIsCommentSheetOpen(false)}
+                    postId={activePostId}
+                    currentUser={currentUser}
+                />
+            )}
         </div >
     );
 };

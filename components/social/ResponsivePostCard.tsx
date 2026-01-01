@@ -7,6 +7,7 @@ interface ResponsivePostCardProps {
     post: SocialPost;
     currentUserId?: string;
     onNavigate?: (view: any, data?: any) => void;
+    onCommentClick?: () => void;
 }
 
 export const ResponsivePostCard: React.FC<ResponsivePostCardProps> = memo((props) => {
@@ -14,12 +15,12 @@ export const ResponsivePostCard: React.FC<ResponsivePostCardProps> = memo((props
         <div className="w-full">
             {/* Mobile View */}
             <div className="md:hidden">
-                <MobilePostCard {...props} />
+                <MobilePostCard {...props} onCommentClick={props.onCommentClick} />
             </div>
 
             {/* Desktop View */}
             <div className="hidden md:block">
-                <PostCard {...props} />
+                <PostCard {...props} onCommentClick={props.onCommentClick} />
             </div>
         </div>
     );

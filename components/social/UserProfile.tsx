@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { User, Grid, Bike, FolderHeart, Settings, MapPin, Gauge, Trophy, Package, LogOut, Edit3, X, Image as ImageIcon, LayoutDashboard, Shield } from 'lucide-react';
+import { User, Grid, Bike, FolderHeart, Settings, MapPin, Gauge, Trophy, Package, LogOut, Edit3, X, Image as ImageIcon, LayoutDashboard, Shield, Plus } from 'lucide-react';
 import { SocialPost, SocialProfile, User as UserType, Order, ViewState, ColorTheme, UserBike } from '../../types';
 import { UserAvatar } from '../ui/UserAvatar';
 import { Button } from '../ui/Button';
@@ -214,41 +214,51 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout, onUpda
                 </div>
             </div>
 
-            {/* The Garage (Horizontal Scroll) */}
-            <div className="mb-16">
-                <div className="max-w-7xl mx-auto px-4 mb-6 flex items-center justify-between">
-                    <h2 className="text-xl font-display font-bold flex items-center gap-2 text-white">
-                        <Bike className="w-5 h-5 text-moto-accent" /> THE GARAGE
-                    </h2>
-                    <span className="text-xs text-gray-500 font-mono hidden md:block">{myBikes.length} BIKES IN COLLECTION</span>
+            {/* The Garage (Minimalist Grid) */}
+            <div className="max-w-7xl mx-auto px-4 lg:px-8 mb-24">
+                <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-4">
+                    <h2 className="text-sm font-bold tracking-widest text-gray-400 uppercase">My Garage</h2>
+                    <span className="text-xs font-mono text-gray-600">{myBikes.length} MACHINES</span>
                 </div>
 
-                <div className="flex gap-6 overflow-x-auto pb-8 px-4 md:px-8 no-scrollbar snap-x snap-mandatory max-w-7xl mx-auto">
-                    {/* Add Button */}
-                    <motion.div
-                        className="min-w-[280px] h-[350px] bg-white/5 border border-dashed border-white/20 rounded-3xl flex flex-col items-center justify-center text-gray-500 hover:bg-white/10 hover:text-white transition-colors cursor-pointer snap-center shrink-0"
-                        whileHover={{ scale: 0.98 }}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {/* Add Button - Minimal Dashed */}
+                    <motion.button
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
                         onClick={() => setSelectedBike({ _id: '', brand: '', model: '', year: '', km: '', color: '', image: '', maintenance: [], modifications: [], isPublic: true } as UserBike)}
+                        className="group relative h-[300px] rounded-xl border border-dashed border-zinc-800 hover:border-zinc-600 hover:bg-zinc-900/30 transition-all flex flex-col items-center justify-center gap-3 text-zinc-600 hover:text-zinc-300"
                     >
-                        <Settings className="w-10 h-10 mb-2 opacity-50" />
-                        <span className="text-xs font-bold uppercase tracking-widest">Add Machine</span>
-                    </motion.div>
+                        <div className="p-3 rounded-full bg-zinc-900 group-hover:bg-zinc-800 transition-colors">
+                            <Plus className="w-6 h-6" />
+                        </div>
+                        <span className="text-xs font-medium uppercase tracking-wider">Add Motorcycle</span>
+                    </motion.button>
 
+                    {/* Bike Cards - Minimal */}
                     {myBikes.map((bike) => (
                         <motion.div
                             key={bike._id}
-                            className="min-w-[280px] md:min-w-[320px] h-[350px] bg-gradient-to-br from-gray-900 to-black border border-white/10 rounded-3xl overflow-hidden relative group snap-center shadow-lg cursor-pointer shrink-0"
-                            whileHover={{ y: -10 }}
+                            layoutId={`bike-${bike._id}`}
                             onClick={() => setSelectedBike(bike)}
+                            className="group relative h-[300px] rounded-xl bg-zinc-900/20 hover:bg-zinc-900/40 border border-white/5 hover:border-white/10 transition-all overflow-hidden cursor-pointer"
                         >
-                            <img src={bike.image} alt={bike.model} className="w-full h-3/5 object-cover" />
-                            <div className="p-6">
-                                <h3 className="text-lg font-bold font-display uppercase leading-tight mb-1 text-white">{bike.brand}</h3>
-                                <p className="text-2xl font-black text-white font-display uppercase text-moto-accent">{bike.model}</p>
-
-                                <div className="mt-4 flex items-center justify-between text-xs text-gray-400 font-mono">
-                                    <span className="flex items-center gap-1"><Grid className="w-3 h-3" /> {bike.year}</span>
-                                    <span className="flex items-center gap-1"><Gauge className="w-3 h-3" /> {bike.km} KM</span>
+                            <div className="h-2/3 w-full overflow-hidden">
+                                <img
+                                    src={bike.image}
+                                    alt={bike.model}
+                                    className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+                                />
+                            </div>
+                            <div className="p-5">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider mb-1">{bike.brand}</h3>
+                                        <p className="text-lg font-medium text-white tracking-tight">{bike.model}</p>
+                                    </div>
+                                    <div className="p-2 rounded-full bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <Settings className="w-4 h-4 text-white" />
+                                    </div>
                                 </div>
                             </div>
                         </motion.div>

@@ -12,8 +12,8 @@ router.post('/login', userController.loginUser);
 router.get('/', userController.getAllUsers);
 router.get('/:id', userController.getProfile);
 router.put('/profile', protect, userController.updateProfile);
-router.put('/update-settings', userController.updateSettings);
-router.patch('/update-password', userController.updatePassword);
+router.put('/update-settings', protect, userController.updateSettings);
+router.patch('/update-password', protect, userController.updatePassword);
 
 // Social Actions (Protected)
 router.use(protect);

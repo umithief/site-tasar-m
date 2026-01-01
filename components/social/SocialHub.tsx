@@ -9,6 +9,7 @@ import { SocialPost, ViewState } from '../../types';
 import { UserAvatar } from '../ui/UserAvatar';
 import { Button } from '../ui/Button';
 import { CommentSheet } from './CommentSheet';
+import { PullToRefresh } from '../mobile/PullToRefresh';
 
 // Feature Components
 import { MotoVlogMap } from '../MotoVlogMap';
@@ -255,40 +256,67 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                             </AnimatePresence>
 
                             {/* Feed Stream */}
-                            <div className="space-y-12">
-                                {data?.pages.map((page, i) => (
-                                    <React.Fragment key={i}>
-                                        {page?.map((post: SocialPost) => (
-                                            <motion.div
-                                                key={post._id}
-                                                initial={{ opacity: 0, y: 50 }}
-                                                whileInView={{ opacity: 1, y: 0 }}
-                                                viewport={{ once: true, margin: "-10%" }}
-                                                className="group"
+                            <PullToRefresh onRefresh={async () => { await fetchNextPage(); }} isMobile={true}>
+                                <div className="space-y-12">
+                                    {/* Empty State */}
+                                    {!isFetchingNextPage && data?.pages?.[0]?.length === 0 && (
+                                        <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
+                                            <div className="w-20 h-20 bg-zinc-900 rounded-full flex items-center justify-center mb-6 border border-zinc-800">
+                                                <Users className="w-10 h-10 text-moto-accent" />
+                                            </div>
+                                            <h3 className="text-2xl font-bold text-white mb-2">Akışın Sessiz Duruyor</h3>
+                                            <p className="text-gray-400 mb-8 max-w-xs mx-auto">Daha fazla sürücü takip ederek akışını hareketlendir.</p>
+                                            <Button
+                                                variant="primary"
+                                                className="shadow-[0_0_20px_rgba(255,87,34,0.3)] animate-pulse"
+                                                onClick={() => {
+                                                    // Functionality to open "Suggested Riders" or navigate to search
+                                                    const searchInput = document.querySelector('input[type="text"]') as HTMLInputElement;
+                                                    if (searchInput) {
+                                                        searchInput.focus();
+                                                        setSearchQuery(' '); // Trigger search suggestions logic if needed
+                                                    }
+                                                }}
                                             >
-                                                <div className="relative">
-                                                    <div className="absolute -left-4 top-0 bottom-0 w-[1px] bg-white/5 group-hover:bg-white/10 transition-colors hidden xl:block" />
-                                                    <ResponsivePostCard
-                                                        post={post}
-                                                        currentUserId={currentUser?._id}
-                                                        onNavigate={onNavigate}
-                                                        onCommentClick={() => {
-                                                            setActivePostId(post._id);
-                                                            setIsCommentSheetOpen(true);
-                                                        }}
-                                                    />
-                                                </div>
-                                            </motion.div>
-                                        ))}
-                                    </React.Fragment>
-                                ))}
-                                {isFetchingNextPage && <div className="flex justify-center py-8"><div className="w-8 h-8 border-2 border-moto-accent border-t-transparent rounded-full animate-spin" /></div>}
-                                {hasNextPage && (
-                                    <div className="flex justify-center pt-8">
-                                        <button onClick={() => fetchNextPage()} className="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-white transition-colors">Daha Fazla Yükle</button>
-                                    </div>
-                                )}
-                            </div>
+                                                Sürücüleri Keşfet
+                                            </Button>
+                                        </div>
+                                    )}
+
+                                    {data?.pages.map((page, i) => (
+                                        <React.Fragment key={i}>
+                                            {page?.map((post: SocialPost) => (
+                                                <motion.div
+                                                    key={post._id}
+                                                    initial={{ opacity: 0, y: 50 }}
+                                                    whileInView={{ opacity: 1, y: 0 }}
+                                                    viewport={{ once: true, margin: "-10%" }}
+                                                    className="group"
+                                                >
+                                                    <div className="relative">
+                                                        <div className="absolute -left-4 top-0 bottom-0 w-[1px] bg-white/5 group-hover:bg-white/10 transition-colors hidden xl:block" />
+                                                        <ResponsivePostCard
+                                                            post={post}
+                                                            currentUserId={currentUser?._id}
+                                                            onNavigate={onNavigate}
+                                                            onCommentClick={() => {
+                                                                setActivePostId(post._id);
+                                                                setIsCommentSheetOpen(true);
+                                                            }}
+                                                        />
+                                                    </div>
+                                                </motion.div>
+                                            ))}
+                                        </React.Fragment>
+                                    ))}
+                                    {isFetchingNextPage && <div className="flex justify-center py-8"><div className="w-8 h-8 border-2 border-moto-accent border-t-transparent rounded-full animate-spin" /></div>}
+                                    {hasNextPage && (
+                                        <div className="flex justify-center pt-8">
+                                            <button onClick={() => fetchNextPage()} className="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-white transition-colors">Daha Fazla Yükle</button>
+                                        </div>
+                                    )}
+                                </div>
+                            </PullToRefresh>
                         </>
                     ) : (
                         /* WIDE VIEW AREA (Map/Routes/Events) */

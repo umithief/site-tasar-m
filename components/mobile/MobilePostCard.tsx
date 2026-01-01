@@ -20,9 +20,11 @@ interface MobilePostCardProps {
 
 export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, currentUserId, onCommentClick }) => {
     const [isLiked, setIsLiked] = useState(post.isLiked);
-    // Safe access for likes count
+    // Safe access for likes count with fallback
     const [likeCount, setLikeCount] = useState(
-        typeof post.likes === 'number' ? post.likes : (Array.isArray(post.likes) ? post.likes.length : 0)
+        typeof (post.likes as any) === 'number'
+            ? (post.likes as number)
+            : (Array.isArray(post.likes) ? (post.likes as any[]).length : 0)
     );
     const [lastTap, setLastTap] = useState(0);
     const [showHeartOverlay, setShowHeartOverlay] = useState(false);
@@ -95,7 +97,10 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                                         toggleFollow({ targetUserId: post.userId, isCurrentlyFollowing: isFollowing });
                                     }}
                                     disabled={isPending}
-                                    className={`text-xs font-bold transition-colors ${isFollowing ? 'text-gray-500' : 'text-moto-accent'}`}
+                                    className={`ml-2 px-3 py-1 rounded-full text-[10px] font-bold tracking-wide transition-all border
+                                    ${isFollowing
+                                            ? 'bg-zinc-800 border-zinc-800 text-zinc-400'
+                                            : 'bg-transparent border-moto-accent text-moto-accent hover:bg-moto-accent hover:text-black'}`}
                                 >
                                     {isPending ? '...' : (isFollowing ? 'Takip Ediliyor' : 'Takip Et')}
                                 </button>

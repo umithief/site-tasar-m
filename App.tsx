@@ -399,7 +399,7 @@ export const App: React.FC = () => {
 
     return (
         <SocketProvider>
-            <div key={animKey} className={`flex flex-col min-h-[100dvh] bg-[#f9fafb] text-gray-900 transition-colors duration-1000 ${isFullScreenMode ? 'overflow-hidden h-screen bg-black text-white' : ''}`}>
+            <div key={animKey} className={`flex flex-col min-h-[100dvh] bg-[#0f0f0f] text-gray-100 transition-colors duration-1000 ${isFullScreenMode ? 'overflow-hidden h-screen bg-black text-white' : ''}`}>
 
                 <div className="bg-noise opacity-5"></div>
 
@@ -538,8 +538,8 @@ export const App: React.FC = () => {
                         {/* Main Content Area - Adjusted for Sidebar */}
                         <main
                             className={`min-h-screen pt-20 transition-all duration-300 ${!isMobile
-                                    ? (isSidebarOpen ? 'md:pl-64' : 'md:pl-24')
-                                    : 'pt-20 pb-20' /* Mobile Padding */
+                                ? (isSidebarOpen ? 'md:pl-64' : 'md:pl-24')
+                                : 'pt-20 pb-20' /* Mobile Padding */
                                 }`}
                         >
                             <AnimatePresence mode="wait">

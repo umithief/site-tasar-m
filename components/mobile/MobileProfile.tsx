@@ -1,282 +1,318 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { Settings, Share2, MapPin, Calendar, Grid, Bookmark, Map as MapIcon, Edit2, LogOut, Camera } from 'lucide-react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { ChevronLeft, MoreVertical, MessageCircle, Settings, MapPin, Grid, Calendar, Map as MapIcon, Share2 } from 'lucide-react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useAuthStore } from '../../store/authStore';
-import { api } from '../../services/api';
-import { garageService, GarageVehicle } from '../../services/garageService';
-import GarageCard from './GarageCard';
-import { notify } from '../../services/notificationService';
+import { socialService } from '../../services/socialService';
+import { useFollow } from '../../hooks/useFollow';
+import { UserAvatar } from '../ui/UserAvatar';
 
-// Placeholder Components for Tabs
-const ContentGrid = ({ userId }: { userId: string }) => (
-    <div className="grid grid-cols-3 gap-0.5 pb-20">
-        {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((item) => (
-            <div key={item} className="aspect-square bg-zinc-900 relative">
-                <img
-                    src={`https://images.unsplash.com/photo-${1550000000000 + item}?auto=format&fit=crop&w=400&q=80`}
-                    className="w-full h-full object-cover"
-                    alt="Post"
-                />
-            </div>
-        ))}
-    </div>
-);
-
-const MobileProfile = () => {
-    const { username } = useParams();
+export const MobileProfile = () => {
+    const { username } = useParams<{ username: string }>(); // or ID, flexible
     const navigate = useNavigate();
-    const { user: authUser, logout } = useAuthStore();
+    const { user: currentUser } = useAuthStore();
+
+    // State
     const [profileUser, setProfileUser] = useState<any>(null);
-    const [garage, setGarage] = useState<GarageVehicle[]>([]);
-    const [activeTab, setActiveTab] = useState<'posts' | 'routes' | 'saved'>('posts');
+    const [posts, setPosts] = useState<any[]>([]);
     const [isLoading, setIsLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState<'posts' | 'garage' | 'routes'>('posts');
+    const [isFollowing, setIsFollowing] = useState(false);
 
-    // Parallax logic
+    // Scroll Animations
     const containerRef = useRef<HTMLDivElement>(null);
-    const { scrollY } = useScroll({ container: containerRef }); // If we had a scrollable container context
-    // Since we likely scroll the window or a main layout, we might need global window scroll.
-    // For now, assuming this component is inside a scrollable div in layout or we use document scroll.
-    // Simplifying parallax to just CSS or basic motion for this context if accurate scroll target isn't easily grabbed without more context.
+    const { scrollY } = useScroll({ container: containerRef });
 
-    const isOwner = !username || (authUser?.username === username);
+    // Parallax logic (Adjusted for typical mobile scroll behavior)
+    // Note: useScroll targeting containerRef works best if the container itself scrolls.
+    // If window scrolls, we'd use no ref. Assuming main layout handles scroll or we are in a full-height overflow container.
+    const headerHeight = 280;
+    const backgroundY = useTransform(scrollY, [0, headerHeight], [0, headerHeight * 0.5]);
+    const avatarScale = useTransform(scrollY, [0, 100], [1, 0.8]);
+    const avatarY = useTransform(scrollY, [0, 100], [0, 20]);
+    const blurAmount = useTransform(scrollY, [0, 200], [0, 10]);
 
+    // Fetch Data
     useEffect(() => {
         const fetchProfile = async () => {
+            if (!username) return;
             setIsLoading(true);
             try {
-                // Determine ID or Username to fetch. 
-                // If it's "me", use authUser ID. If param exists, find by ID/Username.
-                // Our API `getProfile` expects an ID currently. 
-                // We might need to adjust logic if we want to fetch by username.
-                // For simplified "My Profile" flow, we use authUser.
+                // Fetch profile data (which now includes posts)
+                let data = await socialService.getUserProfile(username);
 
-                let targetId = authUser?._id;
-
-                // Real-world: Should fetch by username if provided. 
-                // For this demo, we'll assume we are viewing the logged-in user if isOwner.
-                if (!isOwner && username) {
-                    // Need an endpoint to resolve username -> id or update fetching
-                    // Skipping for "My Profile" focus as per prompt instructions
+                // Fallback for "Me" if API fails or special handling needed
+                if (!data && currentUser && (currentUser.username === username || currentUser._id === username || username === 'me')) {
+                    // Since backend getProfile is updated, this might not be needed if API call succeeds.
+                    // But keeps robust fallback.
+                    // Note: socialService.getUserProfile creates the fetch call.
                 }
 
-                if (targetId) {
-                    const res = await api.get(`/users/${targetId}`);
-                    setProfileUser(res.data.data.user);
-                    setGarage(res.data.data.user.garage || []);
+                if (data) {
+                    setProfileUser(data.user || data); // Handle potential data.user wrapper
+                    setPosts(data.user?.posts || data.posts || []);
+
+                    // Check follow status (if looking at someone else)
+                    if (currentUser && data.user?.followers) {
+                        const isFollowingBool = data.user.followers.some((f: any) =>
+                            (typeof f === 'string' ? f : f._id) === currentUser._id
+                        );
+                        setIsFollowing(isFollowingBool);
+                    }
                 }
             } catch (error) {
-                console.error("Profile fetch error", error);
+                console.error('Profile Load Error:', error);
             } finally {
                 setIsLoading(false);
             }
         };
 
-        if (authUser) fetchProfile();
-    }, [authUser, username, isOwner]);
+        fetchProfile();
+    }, [username, currentUser]);
 
-    const handleAddVehicle = async () => {
-        // In a real app, this would open a modal form.
-        // For demo, we add a mock bike.
-        try {
-            const mockBike = {
-                brand: "Yamaha",
-                model: "R1M",
-                year: 2024,
-                image: "https://images.unsplash.com/photo-1599819811279-d5ad9cccf838?auto=format&fit=crop&q=80&w=800"
-            };
-            const res = await garageService.addToGarage(mockBike);
-            setGarage(res.data.data.garage);
-            notify.success("Motosiklet garaja eklendi!");
-        } catch (error) {
-            notify.error("Hata oluştu.");
-        }
+    // Live Follow Hook
+    const { mutate: toggleFollow, isPending: isFollowPending } = useFollow();
+
+    const handleFollow = () => {
+        if (!currentUser || !profileUser) return;
+        toggleFollow({ targetUserId: profileUser._id, isCurrentlyFollowing: isFollowing });
+        setIsFollowing(!isFollowing); // Optimistic local toggle
     };
 
-    const handleRemoveVehicle = async (id: string) => {
-        if (!confirm('Silmek istediğine emin misin?')) return;
-        try {
-            const res = await garageService.removeFromGarage(id);
-            setGarage(res.data.data.garage);
-            notify.success("Motosiklet silindi.");
-        } catch (error) {
-            notify.error("Silinemedi.");
-        }
-    };
-
-    if (isLoading || !profileUser) {
-        return <div className="h-screen bg-black flex items-center justify-center"><div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" /></div>;
+    if (isLoading) {
+        return (
+            <div className="flex items-center justify-center min-h-screen bg-black">
+                <div className="w-8 h-8 border-2 border-moto-accent border-t-transparent rounded-full animate-spin" />
+            </div>
+        );
     }
 
-    return (
-        <div className="min-h-screen bg-black text-white pb-20 overflow-x-hidden">
-            {/* Parallax Hero */}
-            <div className="relative h-64 w-full overflow-hidden">
-                <motion.div
-                    className="absolute inset-0"
+    if (!profileUser) {
+        return <div className="min-h-screen bg-black text-white p-8 text-center pt-20">Kullanıcı bulunamadı.</div>;
+    }
 
+    const isOwnProfile = currentUser?._id === profileUser._id;
+
+    return (
+        <div ref={containerRef} className="h-screen overflow-y-auto bg-[#09090b] text-white scroll-smooth no-scrollbar">
+
+            {/* --- HERO SECTION --- */}
+            <div className="relative w-full h-[280px]">
+                {/* Parallax Cover */}
+                <motion.div
+                    style={{ y: backgroundY, filter: `blur(${blurAmount}px)` }}
+                    className="absolute inset-0 z-0"
                 >
                     <img
-                        src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80&w=1920"
-                        alt="Cover"
-                        className="w-full h-full object-cover opacity-60"
+                        src={profileUser.coverImage || "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80"}
+                        className="w-full h-full object-cover opacity-80"
+                        alt="cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent via-black/20 to-black" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-[#09090b]" />
                 </motion.div>
 
-                {/* Top Nav Actions */}
-                <div className="absolute top-4 right-4 flex gap-3 z-10">
-                    <button className="p-2 bg-black/30 backdrop-blur-md rounded-full text-white/80 hover:bg-white/10">
-                        <Share2 size={20} />
+                {/* Navbar (Absolute) */}
+                <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-center z-50 pt-12">
+                    <button onClick={() => navigate(-1)} className="p-2 bg-black/20 backdrop-blur-md rounded-full text-white hover:bg-white/10">
+                        <ChevronLeft className="w-6 h-6" />
                     </button>
-                    {isOwner && (
-                        <button
-                            onClick={logout}
-                            className="p-2 bg-black/30 backdrop-blur-md rounded-full text-white/80 hover:bg-red-500/20 hover:text-red-500"
-                        >
-                            <LogOut size={20} />
+                    {isOwnProfile && (
+                        <button className="p-2 bg-black/20 backdrop-blur-md rounded-full text-white hover:bg-white/10">
+                            <Settings className="w-5 h-5" />
+                        </button>
+                    )}
+                    {!isOwnProfile && (
+                        <button className="p-2 bg-black/20 backdrop-blur-md rounded-full text-white hover:bg-white/10">
+                            <MoreVertical className="w-5 h-5" />
                         </button>
                     )}
                 </div>
-            </div>
 
-            {/* Profile Info (Floating) */}
-            <div className="px-4 -mt-20 relative z-10 mb-6">
-                <div className="flex justify-between items-end mb-4">
-                    <div className="relative">
-                        <div className="w-28 h-28 rounded-full p-1 bg-black ring-2 ring-orange-500 shadow-[0_0_20px_rgba(249,115,22,0.4)] overflow-hidden">
-                            <img
-                                src={profileUser.avatar || "https://ui-avatars.com/api/?background=random"}
-                                alt="Avatar"
-                                className="w-full h-full rounded-full object-cover"
-                            />
-                        </div>
-                        {isOwner && (
-                            <div className="absolute bottom-0 right-0 bg-zinc-800 p-1.5 rounded-full border border-black cursor-pointer hover:bg-orange-500 transition-colors">
-                                <Camera size={14} className="text-white" />
+                {/* Avatar & Identity Overlap */}
+                <motion.div
+                    style={{ scale: avatarScale, y: avatarY }}
+                    className="absolute -bottom-12 left-6 z-20"
+                >
+                    <div className="relative w-24 h-24 rounded-full border-[3px] border-moto-accent p-1 bg-[#09090b]">
+                        <UserAvatar
+                            src={profileUser.profileImage || profileUser.avatar}
+                            name={profileUser.name}
+                            size={86} // Inner size
+                            className="w-full h-full rounded-full"
+                        />
+                        {profileUser.rank && (
+                            <div className="absolute -bottom-2 -right-2 bg-moto-accent text-black text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter">
+                                {profileUser.rank}
                             </div>
                         )}
                     </div>
-
-                    {isOwner ? (
-                        <button className="bg-zinc-800 hover:bg-zinc-700 text-white px-5 py-2 rounded-full text-sm font-medium transition-colors border border-white/10 flex items-center gap-2">
-                            <Edit2 size={14} /> Düzenle
-                        </button>
-                    ) : (
-                        <button className="bg-orange-600 hover:bg-orange-700 text-white px-8 py-2 rounded-full text-sm font-bold shadow-[0_0_15px_-5px_orange] transition-all">
-                            Takip Et
-                        </button>
-                    )}
-                </div>
-
-                <div className="space-y-1">
-                    <h1 className="text-2xl font-bold tracking-wide">{profileUser.name}</h1>
-                    <p className="text-zinc-400 text-sm">@{profileUser.username || 'rider'}</p>
-                </div>
-
-                <p className="mt-3 text-zinc-300 text-sm leading-relaxed max-w-sm">
-                    {profileUser.bio || "Yolun sonu görünüyorsa, yeterince hızlı gitmiyorsun demektir. 🏍️💨"}
-                </p>
-
-                <div className="flex gap-4 mt-4 text-xs text-zinc-500">
-                    <div className="flex items-center gap-1">
-                        <MapPin size={12} strokeWidth={2.5} />
-                        <span>{profileUser.location || "İstanbul, TR"}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                        <Calendar size={12} strokeWidth={2.5} />
-                        <span>Katıldı {profileUser.joinDate || "2024"}</span>
-                    </div>
-                </div>
+                </motion.div>
             </div>
 
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-2 px-4 mb-8">
-                <div className="bg-zinc-900/50 rounded-xl p-3 text-center border border-white/5">
-                    <div className="text-lg font-mono font-bold text-white">{profileUser.followersCount || 0}</div>
-                    <div className="text-[10px] text-zinc-500 uppercase tracking-wider font-bold">Takipçi</div>
-                </div>
-                <div className="bg-zinc-900/50 rounded-xl p-3 text-center border border-white/5">
-                    <div className="text-lg font-mono font-bold text-white">{profileUser.followingCount || 0}</div>
-                    <div className="text-[10px] text-zinc-500 uppercase tracking-wider font-bold">Takip</div>
-                </div>
-                <div className="bg-zinc-900/50 rounded-xl p-3 text-center border border-white/5">
-                    <div className="text-lg font-mono font-bold text-white">{profileUser.points || 0}</div>
-                    <div className="text-[10px] text-zinc-500 uppercase tracking-wider font-bold">Puan</div>
-                </div>
-            </div>
+            {/* --- IDENTITY & BIO --- */}
+            <div className="mt-14 px-6 relative z-10">
+                <div className="flex justify-between items-start">
+                    <div>
+                        <h1 className="text-2xl font-bold text-white tracking-tight">{profileUser.name}</h1>
+                        <p className="text-gray-400 text-sm font-medium">@{profileUser.username || profileUser.name.toLowerCase().replace(/\s/g, '')}</p>
+                    </div>
 
-            {/* THE GARAGE */}
-            <div className="mb-8">
-                <div className="px-4 mb-4 flex items-center justify-between">
-                    <h2 className="text-md font-bold tracking-widest text-zinc-400 flex items-center gap-2">
-                        <div className="w-1 h-4 bg-orange-500 rounded-full" />
-                        GARAJ
-                    </h2>
-                    <span className="text-xs text-zinc-600 font-mono">{garage.length} ARAÇ</span>
+                    {/* Interaction Buttons */}
+                    <div className="flex gap-2">
+                        {isOwnProfile ? (
+                            <button className="px-6 py-2 rounded-xl bg-white/5 border border-white/10 font-bold text-sm backdrop-blur-md hover:bg-white/10 transition-all">
+                                Profili Düzenle
+                            </button>
+                        ) : (
+                            <>
+                                <button
+                                    onClick={handleFollow}
+                                    disabled={isFollowPending}
+                                    className={`px-6 py-2 rounded-xl font-bold text-sm transition-all shadow-lg active:scale-95
+                                    ${isFollowing
+                                            ? 'bg-zinc-800 text-gray-400 border border-white/5'
+                                            : 'bg-moto-accent text-black shadow-moto-accent/20'}`}
+                                >
+                                    {isFollowing ? 'Takip Ediliyor' : 'Takip Et'}
+                                </button>
+                                <button className="p-2 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10">
+                                    <MessageCircle className="w-5 h-5" />
+                                </button>
+                            </>
+                        )}
+                    </div>
                 </div>
 
-                <div className="flex overflow-x-auto gap-4 px-4 pb-4 scrollbar-hide snap-x">
-                    {garage.map((bike) => (
-                        <div key={bike._id} className="snap-start">
-                            <GarageCard
-                                vehicle={bike}
-                                isOwner={isOwner}
-                                onRemove={handleRemoveVehicle}
-                            />
+                {/* Bio */}
+                {profileUser.bio && (
+                    <p className="mt-4 text-gray-300 text-sm leading-relaxed font-light">
+                        {profileUser.bio}
+                    </p>
+                )}
+
+                {/* Location & Meta */}
+                <div className="flex items-center gap-4 mt-4 text-gray-500 text-xs font-medium">
+                    {profileUser.location && (
+                        <div className="flex items-center gap-1">
+                            <MapPin className="w-3 h-3 text-moto-accent" />
+                            {profileUser.location}
                         </div>
+                    )}
+                    <div className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        Katıldı: {profileUser.joinDate}
+                    </div>
+                </div>
+            </div>
+
+            {/* --- STATS DASHBOARD --- */}
+            <div className="mt-8 px-4 grid grid-cols-3 gap-3">
+                {[
+                    { label: 'Takipçi', value: profileUser.followersCount || 0 },
+                    { label: 'Takip', value: profileUser.followingCount || 0 },
+                    { label: 'Sürüş', value: profileUser.totalRides || profileUser.posts?.length || 0 }
+                ].map((stat, i) => (
+                    <div key={i} className="bg-[#111] border border-white/5 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer hover:border-white/10 transition-colors">
+                        <span className="font-mono text-xl font-bold text-white mb-1">{stat.value}</span>
+                        <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">{stat.label}</span>
+                    </div>
+                ))}
+            </div>
+
+            {/* --- DIGITAL GARAGE --- */}
+            {profileUser.garage && profileUser.garage.length > 0 && (
+                <div className="mt-10 pl-6">
+                    <div className="flex items-center justify-between pr-6 mb-4">
+                        <h3 className="text-sm font-bold tracking-widest text-gray-400 flex items-center gap-2">
+                            THE GARAGE <div className="h-[1px] w-8 bg-moto-accent" />
+                        </h3>
+                    </div>
+                    <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 pr-6">
+                        {profileUser.garage.map((bike: any, i: number) => (
+                            <div key={i} className="flex-shrink-0 w-64 aspect-[16/9] relative rounded-xl overflow-hidden group border border-white/10">
+                                <img src={bike.image} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
+                                <div className="absolute bottom-3 left-3">
+                                    <div className="text-white font-bold text-sm">{bike.brand} {bike.model}</div>
+                                    <div className="text-moto-accent text-xs font-mono">{bike.year}</div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+            {/* --- CONTENT TABS --- */}
+            <div className="sticky top-0 z-40 bg-[#09090b]/90 backdrop-blur-xl mt-8 border-b border-white/10">
+                <div className="flex">
+                    {[
+                        { id: 'posts', icon: Grid, label: 'Gönderiler' },
+                        { id: 'garage', icon: MapIcon, label: 'Rota' }, // Repurposing garage tab logic if needed, or keeping simpler
+                        { id: 'routes', icon: Share2, label: 'Tag' },
+                    ].map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id as any)}
+                            className={`flex-1 py-4 flex flex-col items-center gap-1 transition-colors relative
+                            ${activeTab === tab.id ? 'text-white' : 'text-gray-600 hover:text-gray-400'}`}
+                        >
+                            <tab.icon className={`w-5 h-5 ${activeTab === tab.id ? 'stroke-[2.5px]' : ''}`} />
+                            {activeTab === tab.id && (
+                                <motion.div
+                                    layoutId="activeTab"
+                                    className="absolute bottom-0 w-12 h-1 bg-moto-accent rounded-t-full"
+                                />
+                            )}
+                        </button>
                     ))}
-                    {isOwner && (
-                        <div className="snap-start">
-                            <GarageCard isAddCard onAdd={handleAddVehicle} />
-                        </div>
-                    )}
                 </div>
             </div>
 
-            {/* Tabs & Content */}
-            <div className="bg-black sticky top-0 z-20 border-b border-white/10 backdrop-blur-xl bg-black/80">
-                <div className="flex gap-8 px-4">
-                    <button
-                        onClick={() => setActiveTab('posts')}
-                        className={`py-4 relative text-sm font-bold tracking-wide transition-colors ${activeTab === 'posts' ? 'text-white' : 'text-zinc-500'}`}
-                    >
-                        GÖNDERİLER
-                        {activeTab === 'posts' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-500 shadow-[0_0_10px_orange]" />}
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('routes')}
-                        className={`py-4 relative text-sm font-bold tracking-wide transition-colors ${activeTab === 'routes' ? 'text-white' : 'text-zinc-500'}`}
-                    >
-                        ROTALAR
-                        {activeTab === 'routes' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-500 shadow-[0_0_10px_orange]" />}
-                    </button>
-                    <button
-                        onClick={() => setActiveTab('saved')}
-                        className={`py-4 relative text-sm font-bold tracking-wide transition-colors ${activeTab === 'saved' ? 'text-white' : 'text-zinc-500'}`}
-                    >
-                        KAYDEDİLENLER
-                        {activeTab === 'saved' && <motion.div layoutId="tab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-orange-500 shadow-[0_0_10px_orange]" />}
-                    </button>
-                </div>
-            </div>
-
-            <div className="min-h-[300px]">
-                {activeTab === 'posts' && <ContentGrid userId={profileUser._id} />}
-                {activeTab === 'routes' && (
-                    <div className="p-8 text-center text-zinc-600">
-                        <MapIcon className="mx-auto mb-3 opacity-50" size={32} />
-                        <p>Henüz paylaşılan rota yok.</p>
+            {/* --- CONTENT GRID --- */}
+            <div className="min-h-[500px] bg-[#09090b]">
+                {activeTab === 'posts' && (
+                    <div className="p-1">
+                        {posts.length > 0 ? (
+                            <div className="columns-2 xs:columns-3 gap-1 space-y-1">
+                                {posts.map((post, i) => (
+                                    <motion.div
+                                        key={post._id}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        transition={{ delay: i * 0.05 }}
+                                        className="relative aspect-[4/5] bg-[#111] overflow-hidden group cursor-pointer"
+                                        onClick={() => navigate(`/post/${post._id}`)} // Or open modal
+                                    >
+                                        <img
+                                            src={post.images?.[0] || post.mediaUrl || post.image}
+                                            className="w-full h-full object-cover"
+                                            loading="lazy"
+                                        />
+                                        {post.images && post.images.length > 1 && (
+                                            <div className="absolute top-2 right-2">
+                                                <Grid className="w-4 h-4 text-white drop-shadow-md" />
+                                            </div>
+                                        )}
+                                    </motion.div>
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="py-20 text-center text-gray-500 flex flex-col items-center">
+                                <Grid className="w-12 h-12 mb-4 opacity-20" />
+                                <p>Henüz gönderi yok.</p>
+                            </div>
+                        )}
                     </div>
                 )}
-                {activeTab === 'saved' && (
-                    <div className="p-8 text-center text-zinc-600">
-                        <Bookmark className="mx-auto mb-3 opacity-50" size={32} />
-                        <p>Kaydedilen içerik yok.</p>
+                {activeTab !== 'posts' && (
+                    <div className="py-20 text-center text-gray-500">
+                        <p>Bu özellik yakında geliyor.</p>
                     </div>
                 )}
             </div>
 
+            {/* Bottom Padding for Nav */}
+            <div className="h-20" />
         </div>
     );
 };

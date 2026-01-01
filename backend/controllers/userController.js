@@ -157,30 +157,46 @@ export const toggleFollow = catchAsync(async (req, res, next) => {
     }
 });
 
+
+import Post from '../models/Post.js'; // Import Post model
+
 export const getProfile = catchAsync(async (req, res, next) => {
-    // Validate ID format to prevent CastError
-    if (!mongoose.isValidObjectId(req.params.id)) {
-        return next(new AppError('Kullanıcı bulunamadı (Geçersiz ID)', 404));
+    let query;
+
+    // Determine if param is ID or Username
+    if (mongoose.isValidObjectId(req.params.id)) {
+        query = { _id: req.params.id };
+    } else {
+        query = { username: req.params.id };
     }
 
-    const user = await User.findById(req.params.id)
-        .populate('followers', 'name avatar')
-        .populate('following', 'name avatar')
+    const user = await User.findOne(query)
+        .select('-password')
+        .populate('followers', 'name avatar username')
+        .populate('following', 'name avatar username')
         .populate('garage');
 
     if (!user) {
         return next(new AppError('Kullanıcı bulunamadı', 404));
     }
 
+    // Fetch posts for this user
+    const posts = await Post.find({ user: user._id })
+        .sort({ createdAt: -1 })
+        .lean();
+
     const userObj = user.toObject();
     userObj.followersCount = user.followers.length;
     userObj.followingCount = user.following.length;
+    userObj.posts = posts; // Attach posts to response
+    userObj.totalRides = posts.length; // Simple metric for "Total Rides" based on posts for now, or use a field if available
 
     res.status(200).json({
         status: 'success',
         data: { user: userObj }
     });
 });
+
 
 export const updateProfile = catchAsync(async (req, res, next) => {
     // 1) Create error if user POSTs password data

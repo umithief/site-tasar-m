@@ -198,3 +198,33 @@ export const getUserPosts = catchAsync(async (req, res, next) => {
         data: { posts: postsWithLikeStatus }
     });
 });
+
+export const search = catchAsync(async (req, res, next) => {
+    const { q } = req.query;
+
+    if (!q) {
+        return next(new AppError('Arama terimi gereklidir.', 400));
+    }
+
+    // Search Users
+    const users = await User.find({
+        $or: [
+            { name: { $regex: q, $options: 'i' } },
+            { username: { $regex: q, $options: 'i' } }
+        ]
+    }).select('name username avatar profileImage bike rank').limit(10);
+
+    // Search Posts (Hashtags) - Simple implementation: Find posts with content matching #query
+    // For now, just regex on content
+    /* 
+    const posts = await Post.find({
+        content: { $regex: `#${q}`, $options: 'i' }
+    }).limit(5);
+    */
+
+    res.status(200).json({
+        status: 'success',
+        users,
+        hashtags: [] // Placeholder for now
+    });
+});

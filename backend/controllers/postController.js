@@ -95,6 +95,7 @@ export const toggleLike = catchAsync(async (req, res, next) => {
 
         // Notify Post Owner (if not self)
         if (post.user.toString() !== req.user.id.toString()) {
+            const { sendNotification } = await import('../socket.js');
             sendNotification(post.user, 'like', {
                 senderId: req.user.id,
                 senderName: req.user.name,

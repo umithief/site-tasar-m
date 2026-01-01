@@ -89,67 +89,42 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
             {/* Background Ambient */}
             <div className="fixed top-0 left-0 w-full h-[50vh] bg-gradient-to-b from-purple-900/10 to-transparent pointer-events-none" />
 
-            <div className="max-w-[1600px] mx-auto px-4 lg:px-8 grid grid-cols-1 lg:grid-cols-[280px_1fr_320px] gap-8 relative items-start">
-
-                {/* --- LEFT NAVIGATION DOCK --- */}
-                <div className="hidden lg:block sticky top-28 h-[calc(100vh-140px)]">
-                    <div className="flex flex-col h-full bg-[#111] rounded-[2rem] border border-white/5 p-4 shadow-2xl relative overflow-hidden backdrop-blur-xl">
-                        {/* Profile Mini Header */}
-                        <div
-                            className="flex items-center gap-3 p-3 mb-6 rounded-2xl hover:bg-white/5 cursor-pointer transition-colors group"
-                            onClick={() => onNavigate && onNavigate('my-profile')}
-                        >
-                            <UserAvatar src={currentUser?.profileImage} name={currentUser?.name} size={48} className="ring-2 ring-black group-hover:ring-moto-accent transition-all" />
-                            <div className="flex-1 min-w-0">
-                                <h3 className="font-bold text-sm truncate">{currentUser?.name}</h3>
-                                <p className="text-[10px] text-gray-500 font-mono">@{currentUser?.username || 'rider'}</p>
-                            </div>
-                        </div>
-
-                        <nav className="space-y-1">
-                            {[
-                                { id: 'feed', icon: Home, label: 'Akış' },
-                                { id: 'vlog', icon: MapIcon, label: 'MotoVlog Haritası', badge: 'CANLI' },
-                                { id: 'routes', icon: Navigation, label: 'Rota Keşfi' },
-                                { id: 'events', icon: Calendar, label: 'Buluşmalar' },
-                                { id: 'discover', icon: Compass, label: 'Keşfet', action: () => onNavigate && onNavigate('riders') },
-                                { id: 'messages', icon: MessageSquare, label: 'Mesajlar', action: () => setIsDMOpen(true) },
-                            ].map((item: any) => (
-                                <Button
-                                    key={item.id}
-                                    onClick={item.action ? item.action : () => setView(item.id as HubView)}
-                                    variant={view === item.id ? 'cyber' : 'ghost'}
-                                    className={`w-full justify-start px-6 py-4 rounded-2xl border transition-all duration-300 group overflow-hidden ${view === item.id
-                                        ? 'font-bold shadow-[0_0_25px_rgba(242,166,25,0.6)] border-yellow-300/50 scale-[1.02] ring-2 ring-yellow-400/20'
-                                        : 'bg-white/5 border-transparent hover:bg-white/10 hover:border-white/10 text-gray-400 hover:text-white hover:shadow-lg hover:shadow-white/5 hover:translate-x-1'}`}
-                                >
-                                    {view === item.id && (
-                                        <div className="absolute inset-0 bg-white/20 animate-pulse pointer-events-none mix-blend-overlay"></div>
-                                    )}
-                                    <div className="flex items-center gap-4 relative z-10 w-full">
-                                        <item.icon className={`w-5 h-5 ${view === item.id ? 'stroke-[2.5]' : 'group-hover:scale-110 transition-transform duration-300'}`} />
-                                        <span className="flex-1 text-left">{item.label}</span>
-                                        {item.badge && (
-                                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full relative z-10 ml-auto ${view === item.id ? 'bg-black text-moto-accent' : 'bg-red-500 text-white shadow-red-500/50 shadow-lg'}`}>{item.badge}</span>
-                                        )}
-                                    </div>
-                                </Button>
-                            ))}
-                        </nav>
-
-                        {/* Create Button */}
-                        <button
-                            onClick={() => setIsCreateOpen(!isCreateOpen)}
-                            className="mt-6 w-full py-4 bg-gradient-to-r from-moto-accent to-yellow-400 text-black font-black rounded-xl shadow-lg hover:shadow-moto-accent/30 transition-all flex items-center justify-center gap-2"
-                        >
-                            <Plus className="w-5 h-5" />
-                            <span>GÖNDERİ OLUŞTUR</span>
-                        </button>
-                    </div>
-                </div>
+            <div className="max-w-[1400px] mx-auto px-4 lg:px-8 grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 relative items-start">
 
                 {/* --- MAIN FEED STREAM --- */}
                 <div className="min-h-screen">
+                    {/* Top Navigation Tabs */}
+                    <div className="sticky top-20 z-40 bg-[#09090b]/80 backdrop-blur-xl mb-6 py-2 border-b border-white/5 -mx-4 px-4 lg:mx-0 lg:px-0 lg:bg-transparent lg:backdrop-blur-none lg:border-none lg:static">
+                        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+                            {[
+                                { id: 'feed', icon: Home, label: 'Akış' },
+                                { id: 'vlog', icon: MapIcon, label: 'Map', badge: 'CANLI' },
+                                { id: 'routes', icon: Navigation, label: 'Rotalar' },
+                                { id: 'events', icon: Calendar, label: 'Buluşmalar' },
+                            ].map((item: any) => (
+                                <button
+                                    key={item.id}
+                                    onClick={() => setView(item.id as HubView)}
+                                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all whitespace-nowrap
+                                    ${view === item.id
+                                            ? 'bg-white text-black font-bold shadow-[0_0_20px_rgba(255,255,255,0.3)]'
+                                            : 'bg-[#18181b] text-zinc-400 hover:bg-[#27272a] hover:text-white border border-white/5'}`}
+                                >
+                                    <item.icon className={`w-4 h-4 ${view === item.id ? 'fill-current' : ''}`} />
+                                    <span>{item.label}</span>
+                                    {item.badge && (
+                                        <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-sm ml-1 ${view === item.id ? 'bg-black text-white' : 'bg-red-500 text-white'}`}>{item.badge}</span>
+                                    )}
+                                </button>
+                            ))}
+                            <button
+                                onClick={() => setIsCreateOpen(!isCreateOpen)}
+                                className="ml-auto bg-moto-accent/10 text-moto-accent p-2.5 rounded-full hover:bg-moto-accent hover:text-black transition-all border border-moto-accent/20"
+                            >
+                                <Plus className="w-5 h-5" />
+                            </button>
+                        </div>
+                    </div>
                     {/* View Switcher */}
                     {view === 'feed' ? (
                         <>

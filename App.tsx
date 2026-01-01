@@ -303,18 +303,29 @@ export const App: React.FC = () => {
             case 'auth': return isMobile ? (
                 <MobileAuth
                     onClose={() => navigateTo('home')}
-                    onSuccess={() => {
-                        authService.getCurrentUser().then(u => {
-                            if (u) {
-                                setUser(u);
-                                addToast('success', `Hoş geldin, ${u.name}`);
-                                if (!u.garage || u.garage.length === 0) {
-                                    navigateTo('onboarding');
-                                } else {
-                                    navigateTo('home');
-                                }
+                    onSuccess={(user) => {
+                        if (user) {
+                            setUser(user);
+                            addToast('success', `Hoş geldin, ${user.name}`);
+                            if (!user.garage || user.garage.length === 0) {
+                                navigateTo('onboarding');
+                            } else {
+                                navigateTo('home');
                             }
-                        });
+                        } else {
+                            // Fallback
+                            authService.getCurrentUser().then(u => {
+                                if (u) {
+                                    setUser(u);
+                                    addToast('success', `Hoş geldin, ${u.name}`);
+                                    if (!u.garage || u.garage.length === 0) {
+                                        navigateTo('onboarding');
+                                    } else {
+                                        navigateTo('home');
+                                    }
+                                }
+                            });
+                        }
                     }}
                 />
             ) : (
@@ -428,15 +439,21 @@ export const App: React.FC = () => {
                     isAuthOpen && (
                         <MobileAuth
                             onClose={() => setIsAuthOpen(false)}
-                            onSuccess={() => {
+                            onSuccess={(user) => {
                                 setIsAuthOpen(false);
-                                authService.getCurrentUser().then(u => {
-                                    if (u) {
-                                        setUser(u);
-                                        addToast('success', `Hoş geldin, ${u.name}`);
-                                        navigateTo('home');
-                                    }
-                                });
+                                if (user) {
+                                    setUser(user);
+                                    addToast('success', `Hoş geldin, ${user.name}`);
+                                    navigateTo('home'); // Or stay on current page? Usually close modal is enough, but user might expect refresh
+                                } else {
+                                    authService.getCurrentUser().then(u => {
+                                        if (u) {
+                                            setUser(u);
+                                            addToast('success', `Hoş geldin, ${u.name}`);
+                                            navigateTo('home');
+                                        }
+                                    });
+                                }
                             }}
                         />
                     )

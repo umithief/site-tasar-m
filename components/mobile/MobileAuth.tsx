@@ -7,7 +7,7 @@ import { useAuthStore } from '../../store/authStore';
 
 interface MobileAuthProps {
     onClose?: () => void;
-    onSuccess?: () => void;
+    onSuccess?: (user?: any) => void;
 }
 
 export const MobileAuth: React.FC<MobileAuthProps> = ({ onClose, onSuccess }) => {
@@ -32,10 +32,11 @@ export const MobileAuth: React.FC<MobileAuthProps> = ({ onClose, onSuccess }) =>
         console.log('Mobile Auth Attempt:', { email, passwordLength: password.length });
 
         try {
+            let user;
             if (isLogin) {
-                await login(email, password);
+                user = await login(email, password);
             } else {
-                await useAuthStore.getState().register({
+                user = await useAuthStore.getState().register({
                     name: data.name.trim(),
                     email: email,
                     password: password,
@@ -43,7 +44,7 @@ export const MobileAuth: React.FC<MobileAuthProps> = ({ onClose, onSuccess }) =>
                 });
             }
 
-            if (onSuccess) onSuccess();
+            if (onSuccess) onSuccess(user); // Pass user object
             // User garage check will be handled in onSuccess prop callback in App.tsx
             if (onClose) onClose();
         } catch (error: any) {

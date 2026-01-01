@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Product, CartItem, ProductCategory, User, AuthMode, Route as RouteType, ViewState, ColorTheme } from './types';
 import { Navbar } from './components/layout/Navbar';
-import { Sidebar } from './components/layout/Sidebar';
+import { MotovibeSidebar } from './components/layout/MotovibeSidebar';
 import { BottomNav } from './components/layout/BottomNav';
 import { CartDrawer } from './components/layout/CartDrawer';
 import { AuthModal } from './components/AuthModal';
@@ -527,18 +527,18 @@ export const App: React.FC = () => {
                                 onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
                             />
 
-                            <Sidebar
+                            <MotovibeSidebar
                                 activeView={view}
                                 onNavigate={navigateTo}
-                                isOpen={isSidebarOpen}
-                                isMobile={false}
+                                isExpanded={isSidebarOpen}
+                                onToggleExpand={() => setIsSidebarOpen(!isSidebarOpen)}
                             />
                         </div>
 
                         {/* Main Content Area - Adjusted for Sidebar */}
                         <main
                             className={`min-h-screen pt-20 transition-all duration-300 ${!isMobile
-                                ? (isSidebarOpen ? 'md:pl-64' : 'md:pl-24')
+                                ? (isSidebarOpen ? 'md:pl-[260px]' : 'md:pl-[80px]')
                                 : 'pt-20 pb-20' /* Mobile Padding */
                                 }`}
                         >

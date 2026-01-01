@@ -32,7 +32,16 @@ export const MobileShop = ({ onNavigate, initialCategory = 'ALL' }: { onNavigate
                 </div>
 
                 {/* Search Bar */}
-
+                <div className="relative mb-4">
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500" size={18} />
+                    <input
+                        type="text"
+                        placeholder="Parça veya SKU ara..."
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl py-3 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-orange-500/50 transition-colors placeholder:text-zinc-600"
+                    />
+                </div>
 
                 {/* Categories */}
                 <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-4 px-4">

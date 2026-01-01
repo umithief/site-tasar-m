@@ -84,12 +84,34 @@ export const authService = {
         } else {
             // REAL BACKEND
             const response = await api.post('/users/login', { email, password });
-            const { token, data } = response.data;
+
+            // Handle potential double-encoding or string response
+            let responseData = response.data;
+            if (typeof responseData === 'string') {
+                try {
+                    responseData = JSON.parse(responseData);
+                } catch (e) {
+                    console.error('Failed to parse login response', e);
+                }
+            }
+
+            const { token, data, status } = responseData;
+
+            if (status === 'fail' || status === 'error') {
+                throw new Error(responseData.message || 'Giriş başarısız.');
+            }
+
             const user = data?.user || data;
+
+            if (!user) {
+                console.error('Login response missing user data:', responseData);
+                throw new Error('Sunucudan kullanıcı bilgisi alınamadı.');
+            }
 
             if (token) {
                 localStorage.setItem('token', token);
             }
+
             this.setSession(user, rememberMe);
             return user;
         }

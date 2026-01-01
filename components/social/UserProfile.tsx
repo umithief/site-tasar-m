@@ -70,7 +70,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout, onUpda
         phone: user.phone || ''
     });
 
-    const isOwnProfile = !propProfile || propProfile._id === user._id || propProfile.id === user.id;
+    const isOwnProfile = !propProfile || propProfile._id === user._id;
 
     // Determine profile data (User or Prop)
     const displayProfile: any = propProfile || {
@@ -267,7 +267,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout, onUpda
                 {activeTab === 'orders' && (
                     <div className="space-y-4">
                         {orders.length > 0 ? orders.map(order => (
-                            <div key={order.id} className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-colors">
+                            <div key={order._id} className="bg-white/5 border border-white/10 rounded-2xl p-6 hover:bg-white/10 transition-colors">
                                 <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 border-b border-white/5 pb-4">
                                     <div className="flex items-center gap-3">
                                         <div className="p-3 bg-white/5 rounded-xl text-moto-accent">
@@ -275,7 +275,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout, onUpda
                                         </div>
                                         <div>
                                             <div className="text-xs text-gray-500 font-bold uppercase tracking-wider">Order No</div>
-                                            <div className="text-white font-mono font-bold text-sm">#{order.id}</div>
+                                            <div className="text-white font-mono font-bold text-sm">#{order._id}</div>
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-4">
@@ -361,7 +361,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout, onUpda
                                     <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
                                         <div className="flex items-center justify-between mb-4">
                                             <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Core Theme</span>
-                                            <div className="w-2 h-2 rounded-full shadow-[0_0_8px_currentColor]" style={{ backgroundColor: colorTheme === 'orange' ? '#F2A619' : colorTheme === 'red' ? '#EF4444' : colorTheme === 'blue' ? '#3B82F6' : colorTheme === 'green' ? '#22C55E' : colorTheme === 'purple' ? '#A855F7' : colorTheme === 'cyan' ? '#06B6D4' : '#EAB308' }} />
+                                            <div className="w-2 h-2 rounded-full shadow-[0_0_8px_currentColor]" style={{ backgroundColor: colorTheme === 'orange' ? '#F2A619' : colorTheme === 'red' ? '#EF4444' : colorTheme === 'blue' ? '#3B82F6' : colorTheme === 'green' ? '#22C55E' : colorTheme === 'purple' ? '#A855F7' : colorTheme === 'cyan' ? '#06B6D4' : colorTheme === 'yellow' ? '#EAB308' : '#EAB308' }} />
                                         </div>
                                         <div className="grid grid-cols-7 gap-2">
                                             {[

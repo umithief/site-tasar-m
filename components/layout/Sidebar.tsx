@@ -23,7 +23,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, onNavigate, isOpen
     ];
 
     const youItems = [
-        { icon: User, label: 'Kanalınız', id: 'profile' },
         { icon: History, label: 'Geçmiş', id: 'history' }, // Placeholder view
         { icon: PlaySquare, label: 'Videolarınız', id: 'my-videos' }, // Placeholder view
     ];
@@ -100,9 +99,8 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, onNavigate, isOpen
 
                     {/* You Section */}
                     <div className="border-b border-white/10 pb-3 mb-3">
-                        <div className="px-3 py-2 flex items-center gap-2 text-base font-bold text-white cursor-pointer hover:bg-[#272727] rounded-lg group" onClick={() => onNavigate('profile')}>
+                        <div className="px-3 py-2 flex items-center gap-2 text-base font-bold text-white">
                             <span>Siz</span>
-                            <ChevronRight className="w-4 h-4 text-white group-hover:block hidden" />
                         </div>
                         {youItems.map(item => (
                             <SidebarItem

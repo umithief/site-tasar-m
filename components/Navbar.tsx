@@ -152,12 +152,11 @@ export const Navbar: React.FC<NavbarProps> = ({
 
                         {/* User Profile */}
                         {user ? (
-                            <button
-                                onClick={() => onNavigate('profile')}
-                                className="hidden md:block rounded-full border-2 border-transparent hover:border-moto-accent transition-all hover:shadow-[0_0_15px_rgba(242,166,25,0.5)]"
+                            <div
+                                className="hidden md:block rounded-full border-2 border-transparent"
                             >
                                 <UserAvatar name={user.name} size={40} />
-                            </button>
+                            </div>
                         ) : (
                             <Button
                                 onClick={onOpenAuth}

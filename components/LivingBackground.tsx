@@ -7,7 +7,7 @@ export const LivingBackground: React.FC = () => {
     return (
         <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden transition-all duration-[3000ms]">
             {/* Base Color Transition - ALWAYS DARK */}
-            <div className="absolute inset-0 bg-[#020202]"></div>
+            <div className="absolute inset-0 bg-[#0f0f0f]"></div>
 
             {/* --- NIGHT MODE EFFECTS --- */}
             <div className={`absolute inset-0 transition-opacity duration-[3000ms] opacity-100`}>

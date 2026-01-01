@@ -91,7 +91,15 @@ export const useAuthStore = create<AuthState>()(
         {
             name: 'auth-storage', // unique name
             storage: createJSONStorage(() => localStorage),
-            partialize: (state) => ({ user: state.user, token: state.token, isAuthenticated: state.isAuthenticated }), // Only persist these
+            partialize: (state) => ({
+                user: state.user ? {
+                    ...state.user,
+                    followers: [], // Don't persist large arrays
+                    following: []  // Don't persist large arrays
+                } : null,
+                token: state.token,
+                isAuthenticated: state.isAuthenticated
+            }),
         }
     )
 );

@@ -88,13 +88,15 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                             <span className="text-white font-bold text-sm leading-none">{post.userName}</span>
                             <span className="text-gray-500 text-[10px]">•</span>
 
-                            {/* Follow Button - Live Data */}
-                            {currentUserId !== post.userId && (
+                            {/* Follow Button - Live Data - Safe Check */}
+                            {currentUserId && post.userId && currentUserId !== post.userId && (
                                 <button
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        if (!currentUserId) return;
-                                        toggleFollow({ targetUserId: post.userId, isCurrentlyFollowing: isFollowing });
+                                        if (!currentUserId || !post.userId) return;
+                                        // Ensure userId is string
+                                        const targetId = typeof post.userId === 'object' ? (post.userId as any).toString() : post.userId;
+                                        toggleFollow({ targetUserId: targetId, isCurrentlyFollowing: isFollowing });
                                     }}
                                     disabled={isPending}
                                     className={`ml-2 px-3 py-1 rounded-full text-[10px] font-bold tracking-wide transition-all border

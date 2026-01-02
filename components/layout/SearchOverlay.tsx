@@ -88,7 +88,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose, o
                             >
                                 <div className="flex items-center gap-2 mb-6 text-orange-500/80 font-bold tracking-widest text-xs">
                                     <TrendingUp className="w-4 h-4" />
-                                    TRENDING NOW
+                                    TRENDLER
                                 </div>
                                 <div className="flex flex-wrap gap-3">
                                     {trendingKeywords.map((tag) => (
@@ -110,7 +110,7 @@ export const SearchOverlay: React.FC<SearchOverlayProps> = ({ isOpen, onClose, o
                             >
                                 <div className="flex items-center gap-2 mb-6 text-white/40 font-bold tracking-widest text-xs uppercase">
                                     <Clock className="w-4 h-4" />
-                                    Recent Searches
+                                    Son Aramalar
                                 </div>
                                 <div className="space-y-4">
                                     <div className="flex items-center justify-between text-white/60 hover:text-white cursor-pointer group">

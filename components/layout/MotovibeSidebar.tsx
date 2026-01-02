@@ -32,19 +32,19 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
         {
             title: 'MAIN',
             items: [
-                { id: 'home', icon: Home, label: 'Feed' },
-                { id: 'showcase', icon: Layers, label: 'Showcase' }, // Added Showcase
-                { id: 'explore', icon: Compass, label: 'Explore' },
-                { id: 'reels', icon: Zap, label: 'Velocity Reels' },
-                { id: 'shop', icon: ShoppingBag, label: 'Premium Shop' },
-                { id: 'routes', icon: Map, label: 'Routes' },
+                { id: 'home', icon: Home, label: 'Akış' },
+                { id: 'showcase', icon: Layers, label: 'Vitrin' }, // Added Showcase
+                { id: 'explore', icon: Compass, label: 'Keşfet' },
+                { id: 'reels', icon: Zap, label: 'Reels' },
+                { id: 'shop', icon: ShoppingBag, label: 'Mağaza' },
+                { id: 'routes', icon: Map, label: 'Rotalar' },
             ]
         },
         {
             title: 'PERSONAL',
             items: [
-                { id: 'favorites', icon: Heart, label: 'Favorites' },
-                { id: 'settings', icon: Settings, label: 'Settings' },
+                { id: 'favorites', icon: Heart, label: 'Favoriler' },
+                { id: 'settings', icon: Settings, label: 'Ayarlar' },
             ]
         }
     ];

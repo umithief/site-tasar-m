@@ -74,8 +74,12 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
         e?.preventDefault();
         setIsLoading(true);
         try {
-            // Optimistic update
-            updateProfile(formData);
+            // Optimistic update - Exclude large base64 strings to prevent localStorage quota exceeded
+            const optimisticData = { ...formData };
+            if (optimisticData.avatar?.startsWith('data:')) delete (optimisticData as any).avatar;
+            if (optimisticData.coverImage?.startsWith('data:')) delete (optimisticData as any).coverImage;
+
+            updateProfile(optimisticData);
 
             // API Call
             const response = await api.put('/users/profile', formData);

@@ -95,7 +95,10 @@ export const useAuthStore = create<AuthState>()(
                 user: state.user ? {
                     ...state.user,
                     followers: [], // Don't persist large arrays
-                    following: []  // Don't persist large arrays
+                    following: [],  // Don't persist large arrays
+                    // Safety: Don't persist huge base64 strings if they slip in
+                    avatar: state.user.avatar?.length > 2000 ? undefined : state.user.avatar,
+                    coverImage: state.user.coverImage?.length > 5000 ? undefined : state.user.coverImage
                 } : null,
                 token: state.token,
                 isAuthenticated: state.isAuthenticated

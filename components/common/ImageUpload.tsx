@@ -21,15 +21,49 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
     const inputRef = useRef<HTMLInputElement>(null);
 
     const processFile = (file: File) => {
-        // Simulate upload delay
+        // Validation
+        if (file.size > 10 * 1024 * 1024) { // 10MB limit
+            alert('File is too large! Max 10MB.');
+            return;
+        }
+
         const reader = new FileReader();
-        reader.onload = () => {
-            if (file.size > 5000000) {
-                alert('File is too large! (Simulated)');
-                return;
-            }
-            if (reader.result) {
-                onChange(reader.result as string);
+        reader.onload = (event) => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+
+                // Resize logic
+                const MAX_WIDTH = 1000;
+                const MAX_HEIGHT = 1000;
+
+                if (width > height) {
+                    if (width > MAX_WIDTH) {
+                        height *= MAX_WIDTH / width;
+                        width = MAX_WIDTH;
+                    }
+                } else {
+                    if (height > MAX_HEIGHT) {
+                        width *= MAX_HEIGHT / height;
+                        height = MAX_HEIGHT;
+                    }
+                }
+
+                canvas.width = width;
+                canvas.height = height;
+
+                const ctx = canvas.getContext('2d');
+                ctx?.drawImage(img, 0, 0, width, height);
+
+                // Compress to JPEG with 0.7 quality
+                // This significantly reduces size compared to raw PNG/base64
+                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                onChange(compressedBase64);
+            };
+            if (event.target?.result) {
+                img.src = event.target.result as string;
             }
         };
         reader.readAsDataURL(file);

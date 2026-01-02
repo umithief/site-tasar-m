@@ -13,8 +13,10 @@ const getApiUrl = () => {
         }
     }
 
-    // Local Development
-    return import.meta.env.VITE_API_URL || `http://${hostname}:5000/api`;
+    // Local Development - Force Production API for Cloud Sync
+    // Change this back to localhost if you have a local backend running
+    return 'https://motovibe-api.onrender.com/api';
+    // return import.meta.env.VITE_API_URL || `http://${hostname}:5000/api`;
 };
 
 export const API_URL = getApiUrl();

@@ -5,7 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 interface ImageUploadProps {
     label: string;
     value?: string;
-    onChange: (url: string) => void;
+    onChange: (url: string, file?: File) => void;
     className?: string; // Additional classes
     aspectRatio?: 'square' | 'video' | 'cover';
 }
@@ -57,10 +57,17 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                 const ctx = canvas.getContext('2d');
                 ctx?.drawImage(img, 0, 0, width, height);
 
-                // Compress to JPEG with 0.7 quality
-                // This significantly reduces size compared to raw PNG/base64
-                const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
-                onChange(compressedBase64);
+                canvas.toBlob((blob) => {
+                    if (blob) {
+                        const compressedFile = new File([blob], file.name, {
+                            type: 'image/jpeg',
+                            lastModified: Date.now(),
+                        });
+                        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                        onChange(compressedBase64, compressedFile);
+                    }
+                }, 'image/jpeg', 0.7);
+
             };
             if (event.target?.result) {
                 img.src = event.target.result as string;

@@ -35,6 +35,10 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
         coverImage: ''
     });
 
+    // Determine if we have new files to upload
+    const [avatarFile, setAvatarFile] = useState<File | null>(null);
+    const [coverFile, setCoverFile] = useState<File | null>(null);
+
     const [securityData, setSecurityData] = useState({
         currentPassword: '',
         newPassword: '',
@@ -58,11 +62,10 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                 name: user.name || '',
                 username: user.username || '',
                 bio: user.bio || '',
-                location: user.location || user.address || '', // Fallback mapping based on schema differences
+                location: user.location || user.address || '',
                 avatar: user.avatar || '',
                 coverImage: user.coverImage || ''
             });
-            // Load settings if available in user object, else default
             if ((user as any).privacy) {
                 setSettings(prev => ({ ...prev, ...(user as any).privacy, notifications: (user as any).notifications || prev.notifications }));
             }
@@ -74,18 +77,63 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
         e?.preventDefault();
         setIsLoading(true);
         try {
-            // Optimistic update - Exclude large base64 strings to prevent localStorage quota exceeded
-            const optimisticData = { ...formData };
-            if (optimisticData.avatar?.startsWith('data:')) delete (optimisticData as any).avatar;
-            if (optimisticData.coverImage?.startsWith('data:')) delete (optimisticData as any).coverImage;
+            let finalAvatarUrl = formData.avatar;
+            let finalCoverUrl = formData.coverImage;
 
+            // 1. Upload Avatar if selected
+            if (avatarFile) {
+                const uploadFormData = new FormData();
+                uploadFormData.append('file', avatarFile);
+
+                try {
+                    // Using the direct API call similar to how useUpload or storageService works
+                    const res = await api.post('/upload', uploadFormData, {
+                        headers: { 'Content-Type': 'multipart/form-data' }
+                    });
+                    if (res.data.success && res.data.url) {
+                        finalAvatarUrl = res.data.url;
+                    }
+                } catch (err) {
+                    console.error('Avatar upload failed', err);
+                    notify.error('Avatar yüklenemedi');
+                    setIsLoading(false);
+                    return;
+                }
+            }
+
+            // 2. Upload Cover if selected
+            if (coverFile) {
+                const uploadFormData = new FormData();
+                uploadFormData.append('file', coverFile);
+
+                try {
+                    const res = await api.post('/upload', uploadFormData, {
+                        headers: { 'Content-Type': 'multipart/form-data' }
+                    });
+                    if (res.data.success && res.data.url) {
+                        finalCoverUrl = res.data.url;
+                    }
+                } catch (err) {
+                    console.error('Cover upload failed', err);
+                    notify.error('Kapak fotoğrafı yüklenemedi');
+                    setIsLoading(false);
+                    return;
+                }
+            }
+
+
+            // Optimistic update
+            const optimisticData = { ...formData, avatar: finalAvatarUrl, coverImage: finalCoverUrl };
             updateProfile(optimisticData);
 
-            // API Call
-            const response = await api.put('/users/profile', formData);
+            // API Call with URLs (no base64)
+            const response = await api.put('/users/profile', optimisticData);
             if (response.data.status === 'success') {
                 setUser(response.data.data.user);
                 notify.success('Profil güncellendi');
+                // Clear files after success
+                setAvatarFile(null);
+                setCoverFile(null);
             }
         } catch (error) {
             console.error(error);
@@ -239,7 +287,10 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                                             <ImageUpload
                                                 label="Kapak Fotoğrafı"
                                                 value={formData.coverImage}
-                                                onChange={(url) => setFormData({ ...formData, coverImage: url })}
+                                                onChange={(url, file) => {
+                                                    setFormData({ ...formData, coverImage: url });
+                                                    if (file) setCoverFile(file);
+                                                }}
                                                 aspectRatio="cover"
                                             />
                                         </div>
@@ -247,7 +298,10 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                                             <ImageUpload
                                                 label="Avatar"
                                                 value={formData.avatar}
-                                                onChange={(url) => setFormData({ ...formData, avatar: url })}
+                                                onChange={(url, file) => {
+                                                    setFormData({ ...formData, avatar: url });
+                                                    if (file) setAvatarFile(file);
+                                                }}
                                                 aspectRatio="square"
                                             />
                                         </div>

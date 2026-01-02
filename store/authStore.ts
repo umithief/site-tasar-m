@@ -79,12 +79,20 @@ export const useAuthStore = create<AuthState>()(
                 if (!token) return;
 
                 try {
-                    // Start loading silently
-                    // set({ isLoading: true });
-                    // Verify token validity or fetch fresh user data
-                    // For now, trust the persisted state or decode token if we had jwt-decode
+                    // Fetch fresh user data from server to ensure we have the latest profile
+                    // This handles the case where localStorage has filtered data (no base64 avatars)
+                    const response = await api.get('/users/profile');
+                    const user = response.data?.data?.user || response.data?.user || response.data;
+
+                    if (user) {
+                        set({ user, isAuthenticated: true });
+                    }
                 } catch (error) {
-                    get().logout();
+                    console.error('Session validation failed:', error);
+                    // If 401, token is invalid
+                    if ((error as any).response?.status === 401) {
+                        get().logout();
+                    }
                 }
             }
         }),

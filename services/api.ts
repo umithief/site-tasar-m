@@ -13,15 +13,17 @@ export const api = axios.create({
 api.interceptors.request.use(
     (config) => {
         const token = localStorage.getItem('token');
-        if (token) {
+        if (token && token !== 'null' && token !== 'undefined') {
             config.headers.Authorization = `Bearer ${token}`;
             // System Audit Tracer
             if (process.env.NODE_ENV === 'development') {
                 console.debug('🔐 [API] Attaching Token:', token.substring(0, 10) + '...');
             }
         } else {
+            // Ensure no invalid Authorization header is sent
+            delete config.headers.Authorization;
             if (process.env.NODE_ENV === 'development') {
-                console.warn('⚠️ [API] No token found in localStorage');
+                console.warn('⚠️ [API] No valid token found in localStorage');
             }
         }
         return config;

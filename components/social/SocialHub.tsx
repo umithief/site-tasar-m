@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Compass, Home, MessageSquare, Calendar, User, Search, Map as MapIcon, Navigation, Plus, Image, Grid, Users, Bell, ShoppingBag, Settings, LogOut, PlusCircle } from 'lucide-react';
+import { Compass, Home, MessageSquare, Calendar, User, Search, Map as MapIcon, Navigation, Plus, Image, Grid, Users, Bell, ShoppingBag, Settings, LogOut, PlusCircle, Archive, Heart, MessageCircle } from 'lucide-react';
 import { ResponsivePostCard } from './ResponsivePostCard';
 import { FollowButton } from './FollowButton';
 import { DirectMessages } from './DirectMessages';

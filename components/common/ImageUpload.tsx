@@ -27,6 +27,18 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
             return;
         }
 
+        // Optimization: Skip compression for files < 2MB to preserve original quality
+        if (file.size < 2 * 1024 * 1024) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                if (e.target?.result) {
+                    onChange(e.target.result as string, file);
+                }
+            };
+            reader.readAsDataURL(file);
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = (event) => {
             const img = new Image();
@@ -36,8 +48,15 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                 let height = img.height;
 
                 // Resize logic
-                const MAX_WIDTH = 1000;
-                const MAX_HEIGHT = 1000;
+                let MAX_WIDTH = 1200;
+                let MAX_HEIGHT = 1200;
+                let QUALITY = 0.8;
+
+                if (aspectRatio === 'cover') {
+                    MAX_WIDTH = 3840; // 4K for covers
+                    MAX_HEIGHT = 2160;
+                    QUALITY = 0.92; // High quality
+                }
 
                 if (width > height) {
                     if (width > MAX_WIDTH) {
@@ -63,10 +82,10 @@ export const ImageUpload: React.FC<ImageUploadProps> = ({
                             type: 'image/jpeg',
                             lastModified: Date.now(),
                         });
-                        const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                        const compressedBase64 = canvas.toDataURL('image/jpeg', QUALITY);
                         onChange(compressedBase64, compressedFile);
                     }
-                }, 'image/jpeg', 0.7);
+                }, 'image/jpeg', QUALITY);
 
             };
             if (event.target?.result) {

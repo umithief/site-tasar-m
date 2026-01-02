@@ -166,6 +166,12 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                 >
                                     <Plus className="w-5 h-5" />
                                 </button>
+                                <button
+                                    onClick={() => onNavigate && onNavigate('my-profile')}
+                                    className="bg-white/5 text-white p-2.5 rounded-full hover:bg-white/10 transition-all border border-white/5"
+                                >
+                                    <User className="w-5 h-5" />
+                                </button>
                             </div>
                         </div>
                     </div>

@@ -173,6 +173,14 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
                                         className="rounded-2xl"
                                     />
                                 </div>
+                                {isOwnProfile && (
+                                    <button
+                                        onClick={() => onNavigate('settings' as any)}
+                                        className="absolute -right-3 -top-3 p-2 bg-moto-accent text-black rounded-full shadow-lg hover:scale-110 transition-transform z-20 border-2 border-black"
+                                    >
+                                        <Settings className="w-5 h-5" />
+                                    </button>
+                                )}
                             </div>
 
                             <div className="mb-2 space-y-1">

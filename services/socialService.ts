@@ -4,11 +4,14 @@ import { SocialPost } from '../types';
 export const socialService = {
     async getFeed(): Promise<SocialPost[]> {
         const token = localStorage.getItem('token');
+        const headers: HeadersInit = {};
+        if (token && token !== 'null' && token !== 'undefined') {
+            headers['Authorization'] = `Bearer ${token}`;
+        }
+
         try {
             const response = await fetch(`${CONFIG.API_URL}/social/feed`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
+                headers
             });
             if (!response.ok) throw new Error('Failed to fetch feed');
             const data = await response.json();
@@ -31,6 +34,8 @@ export const socialService = {
 
     async createPost(postData: Partial<SocialPost>): Promise<SocialPost | null> {
         const token = localStorage.getItem('token');
+        if (!token) return null; // Auth required
+
         try {
             const response = await fetch(`${CONFIG.API_URL}/social`, {
                 method: 'POST',
@@ -50,6 +55,8 @@ export const socialService = {
 
     async likePost(postId: string, userId: string): Promise<SocialPost | null> {
         const token = localStorage.getItem('token');
+        if (!token) return null;
+
         try {
             const response = await fetch(`${CONFIG.API_URL}/social/${postId}/like`, {
                 method: 'POST',
@@ -69,6 +76,8 @@ export const socialService = {
 
     async commentPost(postId: string, content: string): Promise<any> {
         const token = localStorage.getItem('token');
+        if (!token) return null;
+
         try {
             const response = await fetch(`${CONFIG.API_URL}/social/${postId}/comment`, {
                 method: 'POST',
@@ -88,9 +97,12 @@ export const socialService = {
 
     async getComments(postId: string): Promise<any[]> {
         const token = localStorage.getItem('token');
+        const headers: HeadersInit = {};
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
         try {
             const response = await fetch(`${CONFIG.API_URL}/social/${postId}/comments`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers
             });
             if (!response.ok) throw new Error('Get Comments Failed');
             const data = await response.json();
@@ -103,9 +115,12 @@ export const socialService = {
 
     async getUserProfile(userId: string): Promise<any> {
         const token = localStorage.getItem('token');
+        const headers: HeadersInit = {};
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
         try {
             const response = await fetch(`${CONFIG.API_URL}/users/${userId}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers
             });
             if (!response.ok) throw new Error('Failed to fetch user profile');
             const data = await response.json();
@@ -118,9 +133,12 @@ export const socialService = {
 
     async getUserPosts(userId: string): Promise<SocialPost[]> {
         const token = localStorage.getItem('token');
+        const headers: HeadersInit = {};
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
         try {
             const response = await fetch(`${CONFIG.API_URL}/social/user/${userId}/posts`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers
             });
             if (!response.ok) throw new Error('Failed to fetch user posts');
             const data = await response.json();
@@ -144,6 +162,8 @@ export const socialService = {
     },
     async toggleFollow(targetUserId: string): Promise<{ isFollowing: boolean } | null> {
         const token = localStorage.getItem('token');
+        if (!token) return null;
+
         try {
             const response = await fetch(`${CONFIG.API_URL}/users/follow/${targetUserId}`, {
                 method: 'POST',
@@ -163,10 +183,13 @@ export const socialService = {
 
     async getSuggestedRiders(): Promise<any[]> {
         const token = localStorage.getItem('token');
+        const headers: HeadersInit = {};
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
         try {
             // Fetch users, perhaps exclude current user on backend or frontend
             const response = await fetch(`${CONFIG.API_URL}/users`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers
             });
             if (!response.ok) throw new Error('Failed to fetch suggestions');
             const data = await response.json();
@@ -188,9 +211,12 @@ export const socialService = {
 
     async search(query: string): Promise<{ users: any[], hashtags: string[] }> {
         const token = localStorage.getItem('token');
+        const headers: HeadersInit = {};
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
         try {
             const response = await fetch(`${CONFIG.API_URL}/social/search?q=${encodeURIComponent(query)}`, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers
             });
             if (!response.ok) throw new Error('Search Failed');
             const data = await response.json();
@@ -206,6 +232,9 @@ export const socialService = {
 
     async getExploreFeed(cursor: number = 0, category?: string): Promise<SocialPost[]> {
         const token = localStorage.getItem('token');
+        const headers: HeadersInit = {};
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
         try {
             let url = `${CONFIG.API_URL}/social/explore?cursor=${cursor}`;
             if (category && category !== 'ALL') {
@@ -213,7 +242,7 @@ export const socialService = {
             }
 
             const response = await fetch(url, {
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers
             });
 
             if (!response.ok) {
@@ -240,6 +269,8 @@ export const socialService = {
 
     async deletePost(postId: string): Promise<boolean> {
         const token = localStorage.getItem('token');
+        if (!token) return false;
+
         try {
             const response = await fetch(`${CONFIG.API_URL}/social/${postId}`, {
                 method: 'DELETE',

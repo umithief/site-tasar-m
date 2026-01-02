@@ -115,17 +115,22 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
         });
     };
 
+
+    const [isNotificationOpen, setIsNotificationOpen] = useState(false);
+    const notifications = useNotificationStore((state) => state.notifications);
+    const markAsRead = useNotificationStore((state) => state.markAsRead);
+
     return (
-        <div className="bg-[#09090b] min-h-screen text-white pt-20 lg:pt-24 pb-0 font-sans selection:bg-moto-accent/30 relative">
+        <div className="bg-[#09090b] min-h-screen text-white pt-0 pb-0 font-sans selection:bg-moto-accent/30 relative">
             {/* Background Ambient */}
             <div className="fixed top-0 left-0 w-full h-[50vh] bg-gradient-to-b from-purple-900/10 to-transparent pointer-events-none" />
 
-            <div className="w-full mx-auto px-0 lg:px-4 grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-4 relative items-start">
+            <div className="w-full mx-auto grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-0 relative items-start">
 
                 {/* --- MAIN FEED STREAM --- */}
-                <div className="min-h-screen">
+                <div className="min-h-screen border-r border-white/5 bg-[#09090b]">
                     {/* Top Navigation Tabs */}
-                    <div className="sticky top-0 lg:top-8 z-40 bg-[#09090b]/95 backdrop-blur-xl mb-6 py-4 border-b border-white/5 -mx-4 px-4 lg:mx-0 lg:px-6 lg:bg-[#111]/90 lg:rounded-2xl lg:border lg:shadow-xl lg:static transition-all">
+                    <div className="sticky top-0 z-40 bg-[#09090b]/95 backdrop-blur-xl border-b border-white/5 px-4 lg:px-6 py-3 flex items-center justify-between">
                         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
                             {[
                                 { id: 'feed', icon: Home, label: 'Akış' },
@@ -137,80 +142,106 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                 <button
                                     key={item.id}
                                     onClick={() => setView(item.id as HubView)}
-                                    className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-medium transition-all whitespace-nowrap
+                                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap
                                     ${view === item.id
                                             ? 'bg-white text-black font-bold shadow-[0_0_20px_rgba(255,255,255,0.3)]'
                                             : 'bg-[#18181b] text-zinc-400 hover:bg-[#27272a] hover:text-white border border-white/5'}`}
                                 >
-                                    <item.icon className={`w-4 h-4 ${view === item.id ? 'fill-current' : ''}`} />
+                                    <item.icon className={`w-3.5 h-3.5 ${view === item.id ? 'fill-current' : ''}`} />
                                     <span>{item.label}</span>
                                     {item.badge && (
                                         <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-sm ml-1 ${view === item.id ? 'bg-black text-white' : 'bg-red-500 text-white'}`}>{item.badge}</span>
                                     )}
                                 </button>
                             ))}
+                        </div>
 
-                            {/* Right Actions (Replaced Navbar) */}
-                            <div className="ml-auto flex items-center gap-2 pl-4 border-l border-white/10">
-                                {/* Notifications */}
+                        {/* Right Actions */}
+                        <div className="flex items-center gap-3 pl-4 border-l border-white/10 ml-4">
+                            {/* Notifications */}
+                            <div className="relative">
                                 <button
-                                    onClick={() => onNavigate && onNavigate('notifications', {})}
-                                    className="relative bg-[#18181b] text-zinc-400 p-2.5 rounded-full hover:bg-[#27272a] hover:text-white transition-all border border-white/5"
+                                    onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+                                    className={`relative p-2 rounded-full transition-all border ${isNotificationOpen ? 'bg-white text-black border-white' : 'bg-[#18181b] text-zinc-400 border-white/5 hover:text-white'}`}
                                 >
-                                    <Bell className="w-5 h-5" />
+                                    <Bell className={`w-5 h-5 ${isNotificationOpen ? 'fill-current' : ''}`} />
                                     {useNotificationStore.getState().unreadCount > 0 && (
-                                        <span className="absolute top-2 right-2.5 w-2 h-2 bg-moto-accent rounded-full animate-pulse shadow-[0_0_10px_#ff5722]" />
+                                        <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse ring-2 ring-[#09090b]" />
                                     )}
                                 </button>
 
-                                {/* Cart */}
+                                {/* Notification Dropdown */}
+                                <AnimatePresence>
+                                    {isNotificationOpen && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            className="absolute top-full right-0 mt-2 w-80 bg-[#18181b] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-[60]"
+                                        >
+                                            <div className="p-3 border-b border-white/5 flex justify-between items-center">
+                                                <h4 className="font-bold text-sm">Bildirimler</h4>
+                                                <span className="text-[10px] text-zinc-500 cursor-pointer hover:text-white">Tümünü Okundu İşaretle</span>
+                                            </div>
+                                            <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
+                                                {notifications.length > 0 ? (
+                                                    notifications.map((notif: any) => (
+                                                        <div key={notif.id} className={`p-3 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer ${!notif.read ? 'bg-white/5' : ''}`}>
+                                                            <div className="flex gap-3">
+                                                                <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center flex-shrink-0">
+                                                                    <Bell className="w-4 h-4 text-moto-accent" />
+                                                                </div>
+                                                                <div>
+                                                                    <p className="text-xs text-zinc-300 leading-snug">{notif.message}</p>
+                                                                    <span className="text-[10px] text-zinc-500 mt-1 block">{notif.time || 'Az önce'}</span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))
+                                                ) : (
+                                                    <div className="p-8 text-center text-zinc-500 text-xs">
+                                                        Bildiriminiz yok.
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
+                            </div>
+
+                            {/* Profile Menu */}
+                            <div className="relative z-50">
                                 <button
-                                    onClick={onCartClick}
-                                    className="relative bg-[#18181b] text-zinc-400 p-2.5 rounded-full hover:bg-[#27272a] hover:text-white transition-all border border-white/5"
+                                    onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                                    className="bg-white/5 text-white p-0.5 rounded-full hover:bg-white/10 transition-all border border-white/5 ring-offset-2 ring-offset-[#09090b] focus:ring-2 focus:ring-white/20"
                                 >
-                                    <ShoppingBag className="w-5 h-5" />
-                                    {cartCount > 0 && (
-                                        <span className="absolute -top-1 -right-1 bg-[#cc0000] text-white text-[10px] font-bold min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full border-2 border-[#0f0f0f]">
-                                            {cartCount}
-                                        </span>
-                                    )}
+                                    <UserAvatar src={currentUser?.profileImage || currentUser?.avatar} name={currentUser?.name} size={32} />
                                 </button>
 
-                                {/* Profile Menu */}
-                                <div className="relative">
-                                    <button
-                                        onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                                        className="bg-white/5 text-white p-1 rounded-full hover:bg-white/10 transition-all border border-white/5"
-                                    >
-                                        <UserAvatar src={currentUser?.profileImage || currentUser?.avatar} name={currentUser?.name} size={36} />
-                                    </button>
-
-                                    <AnimatePresence>
-                                        {isProfileMenuOpen && (
-                                            <motion.div
-                                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                                animate={{ opacity: 1, y: 0, scale: 1 }}
-                                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                                className="absolute top-full right-0 mt-2 w-64 bg-[#18181b] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50 py-2"
-                                            >
-                                                <div className="px-4 py-3 border-b border-white/5">
-                                                    <p className="text-white font-medium text-sm truncate">{currentUser?.name}</p>
-                                                    <p className="text-zinc-500 text-xs truncate">@{currentUser?.username}</p>
-                                                </div>
-                                                <button onClick={() => { onNavigate && onNavigate('my-profile'); setIsProfileMenuOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white flex items-center gap-2">
+                                <AnimatePresence>
+                                    {isProfileMenuOpen && (
+                                        <motion.div
+                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            animate={{ opacity: 1, y: 0, scale: 1 }}
+                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                            className="absolute top-full right-0 mt-3 w-64 bg-[#18181b] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-[100] ring-1 ring-white/10"
+                                        >
+                                            <div className="px-4 py-4 border-b border-white/5 bg-white/5">
+                                                <p className="text-white font-bold text-sm truncate">{currentUser?.name}</p>
+                                                <p className="text-zinc-400 text-xs truncate mt-0.5">@{currentUser?.username}</p>
+                                            </div>
+                                            <div className="p-1">
+                                                <button onClick={() => { onNavigate && onNavigate('my-profile'); setIsProfileMenuOpen(false); }} className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:bg-white/10 hover:text-white flex items-center gap-2 rounded-lg transition-colors">
                                                     <User className="w-4 h-4" /> Profilim
                                                 </button>
-                                                <button onClick={() => { onNavigate && onNavigate('settings' as any); setIsProfileMenuOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white flex items-center gap-2">
-                                                    <Settings className="w-4 h-4" /> Ayarlar
-                                                </button>
-                                                <div className="my-1 border-t border-white/5" />
-                                                <button onClick={() => { logout?.(); setIsProfileMenuOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 flex items-center gap-2">
+                                                <div className="h-px bg-white/5 my-1" />
+                                                <button onClick={() => { logout?.(); setIsProfileMenuOpen(false); }} className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 flex items-center gap-2 rounded-lg transition-colors">
                                                     <LogOut className="w-4 h-4" /> Çıkış Yap
                                                 </button>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </div>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
                         </div>
                     </div>
@@ -376,7 +407,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                 </div >
 
                 {/* --- RIGHT SIDEBAR (Context) --- */}
-                < div className="hidden lg:block sticky top-28 h-fit space-y-8" >
+                <div className="hidden lg:block sticky top-0 h-screen overflow-y-auto custom-scrollbar p-6 space-y-8 border-l border-white/5 bg-[#09090b]">
 
                     {/* Search Field */}
                     <div className="relative group z-50">

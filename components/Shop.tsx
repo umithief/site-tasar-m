@@ -13,6 +13,7 @@ interface ShopProps {
     onQuickView: (product: Product) => void; // WebShop handles quick view internally but maybe we want to sync?
     onNavigate: (view: any) => void;
     initialCategory?: ProductCategory | 'ALL';
+    onCartClick?: () => void;
 }
 
 export const Shop: React.FC<ShopProps> = ({
@@ -23,7 +24,8 @@ export const Shop: React.FC<ShopProps> = ({
     onToggleFavorite,
     onQuickView,
     onNavigate,
-    initialCategory = 'ALL'
+    initialCategory = 'ALL',
+    onCartClick
 }) => {
     // We delegate completely to WebShop for the desktop experience
     return (
@@ -32,6 +34,8 @@ export const Shop: React.FC<ShopProps> = ({
             onAddToCart={onAddToCart}
             onToggleFavorite={onToggleFavorite}
             favoriteIds={favoriteIds}
+            onCartClick={onCartClick}
+            onNavigate={onNavigate}
         />
     );
 };

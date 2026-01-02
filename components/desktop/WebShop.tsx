@@ -13,13 +13,17 @@ interface WebShopProps {
     onAddToCart: (product: Product) => void;
     onToggleFavorite: (product: Product) => void;
     favoriteIds: string[];
+    onCartClick?: () => void;
+    onNavigate?: (view: any) => void;
 }
 
 export const WebShop: React.FC<WebShopProps> = ({
     products,
     onAddToCart,
     onToggleFavorite,
-    favoriteIds
+    favoriteIds,
+    onCartClick,
+    onNavigate
 }) => {
     // const [products, setProducts] = useState<Product[]>([]); // Removed: Using prop
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
@@ -118,6 +122,24 @@ export const WebShop: React.FC<WebShopProps> = ({
                             <p className="text-zinc-500 font-mono text-sm uppercase tracking-widest">
                                 {filteredProducts.length} Premium Parça Listelendi
                             </p>
+                        </div>
+
+                        {/* Top Right Actions (Moved from Global Navbar) */}
+                        <div className="flex items-center gap-4">
+                            {/* Simple Cart access */}
+                            <button
+                                onClick={onCartClick}
+                                className="relative bg-[#111] border border-white/10 p-3 rounded-full hover:bg-white hover:text-black transition-all group"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="group-hover:stroke-black"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><path d="M3 6h18" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
+                            </button>
+                            {/* Profile/Home */}
+                            <button
+                                onClick={() => onNavigate && onNavigate('social-hub')}
+                                className="bg-[#111] border border-white/10 p-3 rounded-full hover:bg-white hover:text-black transition-all group"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" /><polyline points="9 22 9 12 15 12 15 22" /></svg>
+                            </button>
                         </div>
 
                         {/* Sort or additional tools can go here */}

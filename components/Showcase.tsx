@@ -30,6 +30,7 @@ interface ShowcaseProps {
     onQuickView: (product: Product) => void;
     onNavigate: (view: ViewState, data?: any) => void;
     onToggleMenu: () => void;
+    onCartClick?: () => void;
 }
 
 export const Showcase: React.FC<ShowcaseProps> = ({
@@ -40,7 +41,8 @@ export const Showcase: React.FC<ShowcaseProps> = ({
     onToggleFavorite,
     onQuickView,
     onNavigate,
-    onToggleMenu
+    onToggleMenu,
+    onCartClick
 }) => {
     const { t } = useLanguage();
     const [user, setUser] = useState<User | null>(null);
@@ -127,6 +129,16 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                             size="icon"
                         >
                             {isSearchOpen ? <X className="w-5 h-5" /> : <Search className="w-5 h-5" />}
+                        </Button>
+
+                        {/* Cart Button */}
+                        <Button
+                            onClick={onCartClick}
+                            className="bg-gray-100 text-gray-600 border-2 border-transparent rounded-full hover:bg-moto-accent hover:text-black hover:shadow-lg transition-all"
+                            variant="ghost"
+                            size="icon"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><path d="M3 6h18" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
                         </Button>
 
                         <Button

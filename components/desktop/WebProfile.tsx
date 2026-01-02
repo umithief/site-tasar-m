@@ -28,8 +28,13 @@ const TABS = [
     { id: 'achievements', label: 'BAŞARILAR', icon: Award },
 ];
 
-export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogout, isOwnProfile = false }) => {
+export const WebProfile: React.FC<WebProfileProps> = ({ user: initialUser, onNavigate, onLogout, isOwnProfile: propIsOwnProfile = false }) => {
     const { user: currentUser } = useAuthStore();
+
+    // State to hold the displayed user data, starting with prompt but updating with full fetch
+    const [profileUser, setProfileUser] = useState<any>(initialUser);
+    const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+
     const [activeTab, setActiveTab] = useState('feed');
     const [posts, setPosts] = useState<SocialPost[]>([]);
     const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
@@ -40,6 +45,9 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
         garageValue: '₺850.000', // Mock
     });
 
+    // Determine ownership robustly
+    const isOwnProfile = propIsOwnProfile || (currentUser && profileUser && currentUser._id === profileUser._id);
+
     // Modal State
     const [isUserListOpen, setIsUserListOpen] = useState(false);
     const [userListTitle, setUserListTitle] = useState('');
@@ -48,9 +56,9 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
     // Follow Logic
     const { mutate: toggleFollow, isPending: isFollowPending } = useFollow();
 
-    // Derive isFollowing properly from the current user's data
+    // Derive isFollowing
     const isFollowing = currentUser?.following?.some((f: any) =>
-        (typeof f === 'string' ? f : f._id) === user._id
+        (typeof f === 'string' ? f : f._id) === profileUser._id
     ) ?? false;
 
     const handleFollow = () => {
@@ -60,9 +68,9 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
         }
 
         const newStatus = !isFollowing;
-        toggleFollow({ targetUserId: user._id, isCurrentlyFollowing: isFollowing });
+        toggleFollow({ targetUserId: profileUser._id, isCurrentlyFollowing: isFollowing });
 
-        // Optimistic Update for displayed stats
+        // Optimistic Update
         setProfileStats(prev => ({
             ...prev,
             followers: (typeof prev.followers === 'number' ? prev.followers : 0) + (newStatus ? 1 : -1)
@@ -70,7 +78,7 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
     };
 
     const handleStatClick = (type: 'followers' | 'following') => {
-        const list = type === 'followers' ? user.followers : user.following;
+        const list = type === 'followers' ? profileUser.followers : profileUser.following;
         const normalizedList = Array.isArray(list) ? list.map((u: any) => typeof u === 'string' ? { _id: u, name: 'User', avatar: '' } : u) : [];
 
         setUserListUsers(normalizedList);
@@ -78,27 +86,47 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
         setIsUserListOpen(true);
     };
 
-    // Fetch Extra Data
+    // Fetch Extra Data & Full Profile
     useEffect(() => {
         const loadData = async () => {
-            if (user._id) {
+            if (initialUser._id) {
+                // Determine if we need to fetch full profile (e.g. if we don't have garage or detailed stats)
+                // For consistency, we try to fetch fresh data mostly
                 try {
-                    const fetchedPosts = await socialService.getUserPosts(user._id);
+                    // Fetch Full Profile
+                    setIsLoadingProfile(true);
+                    const fullProfile = await socialService.getUserProfile(initialUser._id);
+                    if (fullProfile) {
+                        setProfileUser(fullProfile);
+
+                        // Update stats from full profile
+                        setProfileStats(prev => ({
+                            ...prev,
+                            followers: fullProfile.followersCount || (Array.isArray(fullProfile.followers) ? fullProfile.followers.length : 0),
+                            following: fullProfile.followingCount || (Array.isArray(fullProfile.following) ? fullProfile.following.length : 0),
+                        }));
+                    }
+
+                    // Fetch Posts
+                    const fetchedPosts = await socialService.getUserPosts(initialUser._id);
                     setPosts(fetchedPosts);
                 } catch (e) {
-                    console.error("Failed to load posts", e);
+                    console.error("Failed to load profile data", e);
+                } finally {
+                    setIsLoadingProfile(false);
                 }
+            } else {
+                // Fallback stats from initialUser if _id missing (unlikely)
+                setProfileStats({
+                    followers: (initialUser as any).followersCount || 0,
+                    following: (initialUser as any).followingCount || 0,
+                    totalKm: 12500,
+                    garageValue: '₺850.000'
+                });
             }
-
-            setProfileStats({
-                followers: user.followersCount || (Array.isArray(user.followers) ? user.followers.length : 0),
-                following: user.followingCount || (Array.isArray(user.following) ? user.following.length : 0),
-                totalKm: 12500,
-                garageValue: '₺850.000'
-            });
         };
         loadData();
-    }, [user, isOwnProfile]);
+    }, [initialUser, initialUser._id]); // Re-run if prop changes
 
 
     // Animation Variants
@@ -113,8 +141,8 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
     };
 
     const getAvatarSrc = () => {
-        if ('profileImage' in user) return (user as any).profileImage;
-        return user.avatar;
+        if ('profileImage' in profileUser) return (profileUser as any).profileImage;
+        return profileUser.avatar;
     };
 
     return (
@@ -141,7 +169,7 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
                 {/* Hero Banner (Parallax) */}
                 <div className="relative h-[450px] w-full overflow-hidden">
                     <img
-                        src={user.coverImage || "https://images.unsplash.com/photo-1625043484555-47841a752840?q=80&w=2000"}
+                        src={profileUser.coverImage || "https://images.unsplash.com/photo-1625043484555-47841a752840?q=80&w=2000"}
                         alt="Cover"
                         className="w-full h-full object-cover fixed-parallax-effect"
                     />
@@ -168,7 +196,7 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
                                 <div className="relative p-1 bg-[#050505]/50 backdrop-blur-xl border border-white/10 rounded-3xl">
                                     <UserAvatar
                                         src={getAvatarSrc()}
-                                        name={user.name}
+                                        name={profileUser.name}
                                         size={140}
                                         className="rounded-2xl"
                                     />
@@ -185,19 +213,19 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
 
                             <div className="mb-2 space-y-1">
                                 <h1 className="text-3xl md:text-5xl font-display font-black uppercase tracking-tighter italic text-white flex items-center gap-4">
-                                    {user.name}
-                                    {user.rank && (
+                                    {profileUser.name}
+                                    {profileUser.rank && (
                                         <span className="text-sm not-italic font-bold bg-moto-accent text-black px-2 py-1 rounded-sm tracking-normal">
-                                            {user.rank}
+                                            {profileUser.rank}
                                         </span>
                                     )}
                                 </h1>
                                 <p className="text-gray-400 font-mono text-xs md:text-sm max-w-md">
-                                    @{user.username || 'rider'} • {user.bio || 'Adrenaline Junkie • Track Day Enthusiast'}
+                                    @{profileUser.username || 'rider'} • {profileUser.bio || 'Adrenaline Junkie • Track Day Enthusiast'}
                                 </p>
                                 <div className="flex items-center gap-4 text-xs text-gray-500 font-bold uppercase tracking-wider mt-2">
-                                    <span className="flex items-center gap-1"><MapPin className="w-3 h-3 text-moto-accent" /> {user.address || 'Istanbul, TR'}</span>
-                                    <span className="flex items-center gap-1"><Calendar className="w-3 h-3 text-moto-accent" /> Member since {user.joinDate ? new Date(user.joinDate).getFullYear() : '2024'}</span>
+                                    <span className="flex items-center gap-1"><MapPin className="w-3 h-3 text-moto-accent" /> {profileUser.address || 'Istanbul, TR'}</span>
+                                    <span className="flex items-center gap-1"><Calendar className="w-3 h-3 text-moto-accent" /> Member since {profileUser.joinDate ? new Date(profileUser.joinDate).getFullYear() : '2024'}</span>
                                 </div>
                             </div>
                         </motion.div>
@@ -331,7 +359,7 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
                                 animate="visible"
                                 className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8 pb-24"
                             >
-                                {user.garage && user.garage.length > 0 ? user.garage.map(bike => (
+                                {profileUser.garage && profileUser.garage.length > 0 ? profileUser.garage.map((bike: any) => (
                                     <WebGarageCard
                                         key={bike._id}
                                         bike={bike}

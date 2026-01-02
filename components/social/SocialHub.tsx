@@ -118,11 +118,11 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
     };
 
     return (
-        <div className="bg-[#09090b] min-h-screen text-white pt-24 pb-20 lg:pb-0 font-sans selection:bg-moto-accent/30">
+        <div className="bg-[#09090b] min-h-screen text-white pt-20 lg:pt-24 pb-0 font-sans selection:bg-moto-accent/30">
             {/* Background Ambient */}
             <div className="fixed top-0 left-0 w-full h-[50vh] bg-gradient-to-b from-purple-900/10 to-transparent pointer-events-none" />
 
-            <div className="max-w-[1400px] mx-auto px-4 lg:px-8 grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-8 relative items-start">
+            <div className="w-full mx-auto px-0 lg:px-4 grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-4 relative items-start">
 
                 {/* --- MAIN FEED STREAM --- */}
                 <div className="min-h-screen">

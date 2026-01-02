@@ -400,7 +400,7 @@ export const App: React.FC = () => {
             case 'about': return <About onNavigate={navigateTo} />;
             case 'ai-assistant': return <AIAssistantPage />;
             case 'forum': return <Forum user={user} onOpenAuth={() => navigateTo('auth')} onViewProfile={handleViewProfile} onOpenPro={() => setIsProModalOpen(true)} />;
-            case 'social-hub': return <SocialHub user={user} onNavigate={navigateTo} onLogout={handleLogout} onUpdateUser={setUser} initialData={socialHubData} />;
+            case 'social-hub': return <SocialHub user={user} onNavigate={navigateTo} onLogout={handleLogout} onUpdateUser={setUser} initialData={socialHubData} cartCount={cartItems.reduce((a, b) => a + b.quantity, 0)} onCartClick={() => setIsCartOpen(true)} />;
             case 'riders': return <RidersDirectory onViewProfile={handleViewProfile} onNavigate={navigateTo} />;
             case 'reels': return <ReelsPage onNavigate={navigateTo} />;
             case 'explore': return <MobileExplore onNavigate={navigateTo} />;
@@ -472,7 +472,7 @@ export const App: React.FC = () => {
                         />
                     ))}
 
-                    {showTour && <OnboardingTour onComplete={handleTourComplete} />}
+                    {/* {showTour && <OnboardingTour onComplete={handleTourComplete} />} */}
                 </AnimatePresence>
 
                 {isMobile ? (
@@ -573,7 +573,8 @@ export const App: React.FC = () => {
                     >
                         {/* Desktop Header & Sidebar */}
                         <div className="hidden md:block">
-                            <Navbar
+                            {/* Navbar Removed as per user request */}
+                            {/* <Navbar
                                 cartCount={cartItems.reduce((a, b) => a + b.quantity, 0)}
                                 favoritesCount={favoriteIds.length}
                                 onCartClick={() => setIsCartOpen(true)}
@@ -584,7 +585,7 @@ export const App: React.FC = () => {
                                 currentView={view}
                                 colorTheme={colorTheme}
                                 onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
-                            />
+                            /> */}
 
                             <MotovibeSidebar
                                 activeView={view}

@@ -1,7 +1,6 @@
-// ... imports ...
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Compass, Home, MessageSquare, Calendar, User, Search, Map as MapIcon, Navigation, Plus, Image, Grid, Users, Bell, PlusCircle } from 'lucide-react';
+import { Compass, Home, MessageSquare, Calendar, User, Search, Map as MapIcon, Navigation, Plus, Image, Grid, Users, Bell, ShoppingBag, Settings, LogOut, PlusCircle } from 'lucide-react';
 import { ResponsivePostCard } from './ResponsivePostCard';
 import { FollowButton } from './FollowButton';
 import { DirectMessages } from './DirectMessages';
@@ -10,8 +9,6 @@ import { UserAvatar } from '../ui/UserAvatar';
 import { Button } from '../ui/Button';
 import { CommentSheet } from './CommentSheet';
 import { PullToRefresh } from '../mobile/PullToRefresh';
-
-// Feature Components
 import { MotoVlogMap } from '../MotoVlogMap';
 import { RouteExplorer } from '../RouteExplorer';
 import { MotoMeetup } from '../MotoMeetup';
@@ -28,12 +25,14 @@ interface SocialHubProps {
     onLogout?: () => void;
     onUpdateUser?: (user: any) => void;
     initialData?: any;
+    cartCount?: number;
+    onCartClick?: () => void;
 }
 
 type HubView = 'feed' | 'stories' | 'vlog' | 'routes' | 'events' | 'explore';
 
-export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate, initialData }) => {
-    const { user: globalUser } = useAuthStore();
+export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate, initialData, cartCount = 0, onCartClick }) => {
+    const { user: globalUser, logout } = useAuthStore();
     const currentUser = globalUser || propUser;
 
     const [isDMOpen, setIsDMOpen] = useState(false);
@@ -41,6 +40,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
     const [newPostContent, setNewPostContent] = useState('');
     const [mediaUrl, setMediaUrl] = useState<string | null>(null);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
+    const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = usePosts();
     const { mutate: createPost } = useCreatePost();
@@ -75,8 +75,6 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
 
         return () => clearTimeout(timer);
     }, [searchQuery]);
-
-
 
     // Initial Data Fetch
     useEffect(() => {
@@ -118,7 +116,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
     };
 
     return (
-        <div className="bg-[#09090b] min-h-screen text-white pt-20 lg:pt-24 pb-0 font-sans selection:bg-moto-accent/30">
+        <div className="bg-[#09090b] min-h-screen text-white pt-20 lg:pt-24 pb-0 font-sans selection:bg-moto-accent/30 relative">
             {/* Background Ambient */}
             <div className="fixed top-0 left-0 w-full h-[50vh] bg-gradient-to-b from-purple-900/10 to-transparent pointer-events-none" />
 
@@ -127,7 +125,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                 {/* --- MAIN FEED STREAM --- */}
                 <div className="min-h-screen">
                     {/* Top Navigation Tabs */}
-                    <div className="sticky top-20 z-40 bg-[#09090b]/80 backdrop-blur-xl mb-6 py-2 border-b border-white/5 -mx-4 px-4 lg:mx-0 lg:px-0 lg:bg-transparent lg:backdrop-blur-none lg:border-none lg:static">
+                    <div className="sticky top-0 lg:top-8 z-40 bg-[#09090b]/95 backdrop-blur-xl mb-6 py-4 border-b border-white/5 -mx-4 px-4 lg:mx-0 lg:px-6 lg:bg-[#111]/90 lg:rounded-2xl lg:border lg:shadow-xl lg:static transition-all">
                         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
                             {[
                                 { id: 'feed', icon: Home, label: 'Akış' },
@@ -151,7 +149,10 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                     )}
                                 </button>
                             ))}
-                            <div className="ml-auto flex items-center gap-2">
+
+                            {/* Right Actions (Replaced Navbar) */}
+                            <div className="ml-auto flex items-center gap-2 pl-4 border-l border-white/10">
+                                {/* Notifications */}
                                 <button
                                     onClick={() => onNavigate && onNavigate('notifications', {})}
                                     className="relative bg-[#18181b] text-zinc-400 p-2.5 rounded-full hover:bg-[#27272a] hover:text-white transition-all border border-white/5"
@@ -161,18 +162,55 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                         <span className="absolute top-2 right-2.5 w-2 h-2 bg-moto-accent rounded-full animate-pulse shadow-[0_0_10px_#ff5722]" />
                                     )}
                                 </button>
+
+                                {/* Cart */}
                                 <button
-                                    onClick={() => setIsCreateOpen(!isCreateOpen)}
-                                    className="bg-moto-accent/10 text-moto-accent p-2.5 rounded-full hover:bg-moto-accent hover:text-black transition-all border border-moto-accent/20"
+                                    onClick={onCartClick}
+                                    className="relative bg-[#18181b] text-zinc-400 p-2.5 rounded-full hover:bg-[#27272a] hover:text-white transition-all border border-white/5"
                                 >
-                                    <Plus className="w-5 h-5" />
+                                    <ShoppingBag className="w-5 h-5" />
+                                    {cartCount > 0 && (
+                                        <span className="absolute -top-1 -right-1 bg-[#cc0000] text-white text-[10px] font-bold min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full border-2 border-[#0f0f0f]">
+                                            {cartCount}
+                                        </span>
+                                    )}
                                 </button>
-                                <button
-                                    onClick={() => onNavigate && onNavigate('my-profile')}
-                                    className="bg-white/5 text-white p-2.5 rounded-full hover:bg-white/10 transition-all border border-white/5"
-                                >
-                                    <User className="w-5 h-5" />
-                                </button>
+
+                                {/* Profile Menu */}
+                                <div className="relative">
+                                    <button
+                                        onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                                        className="bg-white/5 text-white p-1 rounded-full hover:bg-white/10 transition-all border border-white/5"
+                                    >
+                                        <UserAvatar src={currentUser?.profileImage || currentUser?.avatar} name={currentUser?.name} size={36} />
+                                    </button>
+
+                                    <AnimatePresence>
+                                        {isProfileMenuOpen && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                className="absolute top-full right-0 mt-2 w-64 bg-[#18181b] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50 py-2"
+                                            >
+                                                <div className="px-4 py-3 border-b border-white/5">
+                                                    <p className="text-white font-medium text-sm truncate">{currentUser?.name}</p>
+                                                    <p className="text-zinc-500 text-xs truncate">@{currentUser?.username}</p>
+                                                </div>
+                                                <button onClick={() => { onNavigate && onNavigate('my-profile'); setIsProfileMenuOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white flex items-center gap-2">
+                                                    <User className="w-4 h-4" /> Profilim
+                                                </button>
+                                                <button onClick={() => { onNavigate && onNavigate('settings' as any); setIsProfileMenuOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm text-zinc-300 hover:bg-white/5 hover:text-white flex items-center gap-2">
+                                                    <Settings className="w-4 h-4" /> Ayarlar
+                                                </button>
+                                                <div className="my-1 border-t border-white/5" />
+                                                <button onClick={() => { logout?.(); setIsProfileMenuOpen(false); }} className="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 flex items-center gap-2">
+                                                    <LogOut className="w-4 h-4" /> Çıkış Yap
+                                                </button>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
                             </div>
                         </div>
                     </div>

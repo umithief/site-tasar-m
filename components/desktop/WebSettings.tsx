@@ -5,7 +5,6 @@ import {
     Grid, Bell, Key, LogOut, ChevronRight, Save, Plus, Trash2, Smartphone
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
-import { MotovibeSidebar } from '../layout/MotovibeSidebar';
 import { ImageUpload } from '../common/ImageUpload';
 import { UserAvatar } from '../ui/UserAvatar';
 import { socialService } from '../../services/socialService';
@@ -23,7 +22,6 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
     const { user, setUser, updateProfile } = useAuthStore();
     const [activeTab, setActiveTab] = useState<TabType>('profile');
     const [isLoading, setIsLoading] = useState(false);
-    const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
 
     // Form States
     const [formData, setFormData] = useState({
@@ -220,15 +218,8 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
         <div className="flex bg-[#050505] min-h-screen text-white font-sans selection:bg-moto-accent selection:text-black">
 
             {/* 1. Sidebar */}
-            <MotovibeSidebar
-                activeView="settings" // Or whatever view state maps to settings
-                onNavigate={onNavigate}
-                isExpanded={isSidebarExpanded}
-                onToggleExpand={() => setIsSidebarExpanded(!isSidebarExpanded)}
-            />
-
             {/* 2. Main Content Area */}
-            <main className={`flex-1 flex overflow-hidden transition-all duration-300 ${isSidebarExpanded ? 'md:ml-[260px]' : 'md:ml-[80px]'} ml-0`}>
+            <main className="flex-1 flex overflow-hidden h-[calc(100vh-80px)] md:h-screen">
 
                 {/* SETTINGS MENU (Inner Sidebar) */}
                 <div className="w-64 border-r border-white/5 bg-[#09090b] flex flex-col pt-12">

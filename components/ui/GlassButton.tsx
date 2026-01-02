@@ -1,8 +1,8 @@
 import React from 'react';
-import { motion } from 'framer-motion';
+import { motion, HTMLMotionProps } from 'framer-motion';
 import { LucideIcon } from 'lucide-react';
 
-interface GlassButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface GlassButtonProps extends Omit<HTMLMotionProps<"button">, "ref"> {
     variant?: 'primary' | 'secondary' | 'ghost' | 'glass' | 'neon';
     size?: 'sm' | 'md' | 'lg';
     icon?: LucideIcon;
@@ -51,7 +51,7 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
             {/* Content */}
             <span className="relative z-10 flex items-center justify-center gap-2">
                 {Icon && iconPosition === 'left' && <Icon className="w-4 h-4" />}
-                {children}
+                {children as React.ReactNode}
                 {Icon && iconPosition === 'right' && <Icon className="w-4 h-4" />}
             </span>
         </motion.button>

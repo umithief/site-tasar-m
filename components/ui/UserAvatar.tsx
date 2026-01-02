@@ -8,7 +8,6 @@ interface UserAvatarProps {
   size?: number;
   variant?: 'beam' | 'marble' | 'pixel' | 'sunset' | 'ring' | 'bauhaus';
   className?: string;
-  src?: string;
   onClick?: () => void;
 }
 

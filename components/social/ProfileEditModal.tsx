@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dialog } from '../ui/dialog';
+
 import { X, Save, Camera, User, FileText, MapPin } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuthStore } from '../../store/authStore';
@@ -11,7 +11,7 @@ interface ProfileEditModalProps {
 }
 
 export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onClose }) => {
-    const { user, updateUser } = useAuthStore();
+    const { user, updateProfile } = useAuthStore();
     const [isLoading, setIsLoading] = useState(false);
     const [formData, setFormData] = useState({
         name: user?.name || '',
@@ -27,7 +27,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
 
         // Simulate API Update
         setTimeout(() => {
-            updateUser({ ...user, ...formData } as any);
+            updateProfile({ ...user, ...formData } as any);
             notify.success("Profil başarıyla güncellendi.");
             setIsLoading(false);
             onClose();

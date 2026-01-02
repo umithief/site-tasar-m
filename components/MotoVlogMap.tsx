@@ -331,7 +331,7 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
                                             <h4 className="text-[10px] font-bold text-gray-500 uppercase mb-3">Kullanılan Ekipmanlar</h4>
                                             <div className="space-y-2">
                                                 {relatedProducts.map(p => (
-                                                    <div key={p.id} onClick={() => onProductClick(p)} className="flex items-center gap-3 p-2 rounded-xl bg-white/5 hover:bg-white/10 cursor-pointer">
+                                                    <div key={p._id} onClick={() => onProductClick(p)} className="flex items-center gap-3 p-2 rounded-xl bg-white/5 hover:bg-white/10 cursor-pointer">
                                                         <img src={p.image} className="w-10 h-10 object-contain bg-white rounded-lg p-1" />
                                                         <div className="flex-1 min-w-0">
                                                             <div className="text-xs font-bold text-white truncate">{p.name}</div>

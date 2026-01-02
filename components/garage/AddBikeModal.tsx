@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '../ui/dialog';
+
 import { X, Bike, Camera, Save, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { UserBike } from '../../types';

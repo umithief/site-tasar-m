@@ -93,7 +93,9 @@ export const RouteList: React.FC<RouteListProps> = ({
                         <RouteCard
                             key={route._id}
                             route={route}
-                            onClick={onSelectRoute}
+                            onClick={() => onSelectRoute(route)}
+                            onNavigate={() => onSelectRoute(route)}
+                            onDetails={() => onSelectRoute(route)}
                         />
                     ))}
                 </div>

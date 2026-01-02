@@ -91,7 +91,7 @@ export interface MotoVlog {
   coordinates: { lat: number; lng: number };
   videoUrl: string; // YouTube URL
   thumbnail: string;
-  productsUsed: number[]; // IDs of products used in the video
+  productsUsed: string[]; // IDs of products used in the video
   views: string;
 }
 
@@ -366,6 +366,7 @@ export interface MusicTrack {
   title: string;
   artist: string;
   url: string; // Direct Audio URL
+  thumbnail?: string;
   addedAt: string;
 }
 

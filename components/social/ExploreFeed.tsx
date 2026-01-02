@@ -21,9 +21,9 @@ export const ExploreFeed: React.FC<ExploreFeedProps> = ({ onNavigate, isEmbedded
             setLoading(true);
             try {
                 // Fetch posts, ideally an explore endpoint, but using getPosts for now
-                const data = await socialService.getPosts(1);
+                const data = await socialService.getExploreFeed(1);
                 // Shuffle for "explore" feel
-                const shuffled = data.posts.sort(() => 0.5 - Math.random());
+                const shuffled = data.sort(() => 0.5 - Math.random());
                 setPosts(shuffled);
             } catch (e) {
                 console.error(e);
@@ -97,9 +97,9 @@ export const ExploreFeed: React.FC<ExploreFeedProps> = ({ onNavigate, isEmbedded
                                     initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}
                                     className="break-inside-avoid bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/5 group hover:border-moto-accent/30 transition-all cursor-pointer relative"
                                 >
-                                    {post.image && (
+                                    {post.images && post.images.length > 0 && (
                                         <div className="relative">
-                                            <img src={post.image} className="w-full object-cover" />
+                                            <img src={post.images[0]} className="w-full object-cover" />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex items-end p-4">
                                                 <div className="flex items-center gap-4 text-white">
                                                     <span className="flex items-center gap-1 text-xs font-bold"><Heart className="w-4 h-4 text-moto-accent fill-moto-accent" /> {post.likes}</span>
@@ -109,7 +109,7 @@ export const ExploreFeed: React.FC<ExploreFeedProps> = ({ onNavigate, isEmbedded
                                         </div>
                                     )}
                                     <div className="p-4">
-                                        {!post.image && <p className="text-sm text-gray-300 mb-3 font-medium line-clamp-4">{post.content}</p>}
+                                        {!post.images?.length && <p className="text-sm text-gray-300 mb-3 font-medium line-clamp-4">{post.content}</p>}
                                         <div className="flex items-center gap-2 mt-2">
                                             <UserAvatar src={post.userAvatar} name={post.userName} size={24} />
                                             <span className="text-xs font-bold text-gray-400 truncate">{post.userName}</span>

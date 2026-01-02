@@ -181,21 +181,21 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                 {/* SETTINGS MENU (Inner Sidebar) */}
                 <div className="w-64 border-r border-white/5 bg-[#09090b] flex flex-col pt-12">
                     <div className="px-6 mb-8">
-                        <h2 className="text-xl font-display font-black italic tracking-tighter">SETTINGS</h2>
-                        <p className="text-xs text-gray-500 font-mono mt-1">Manage your identity</p>
+                        <h2 className="text-xl font-display font-black italic tracking-tighter">AYARLAR</h2>
+                        <p className="text-xs text-gray-500 font-mono mt-1">Kimliğini yönet</p>
                     </div>
 
                     <nav className="flex-1 space-y-1 px-4">
-                        <TabButton id="profile" icon={User} label="Profile & Identity" active={activeTab} onClick={setActiveTab} />
-                        <TabButton id="garage" icon={Bike} label="Digital Garage" active={activeTab} onClick={setActiveTab} />
-                        <TabButton id="content" icon={Grid} label="Content Manager" active={activeTab} onClick={setActiveTab} />
-                        <TabButton id="security" icon={Shield} label="Privacy & Security" active={activeTab} onClick={setActiveTab} />
+                        <TabButton id="profile" icon={User} label="Profil & Kimlik" active={activeTab} onClick={setActiveTab} />
+                        <TabButton id="garage" icon={Bike} label="Dijital Garaj" active={activeTab} onClick={setActiveTab} />
+                        <TabButton id="content" icon={Grid} label="İçerik Yöneticisi" active={activeTab} onClick={setActiveTab} />
+                        <TabButton id="security" icon={Shield} label="Gizlilik & Güvenlik" active={activeTab} onClick={setActiveTab} />
                     </nav>
 
                     <div className="p-4 border-t border-white/5">
                         <button className="flex items-center gap-3 text-red-500 text-sm font-bold opacity-60 hover:opacity-100 transition-opacity w-full p-2">
                             <LogOut className="w-4 h-4" />
-                            Sign Out
+                            Çıkış Yap
                         </button>
                     </div>
                 </div>
@@ -206,14 +206,14 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                     {/* Header */}
                     <header className="sticky top-0 z-20 bg-black/80 backdrop-blur-md border-b border-white/5 px-8 py-4 flex justify-between items-center">
                         <h3 className="text-lg font-bold text-white uppercase tracking-wider">
-                            {activeTab === 'profile' && 'Edit Profile'}
-                            {activeTab === 'garage' && 'My Garage'}
-                            {activeTab === 'content' && 'Post Manager'}
-                            {activeTab === 'security' && 'Security Zone'}
+                            {activeTab === 'profile' && 'Profili Düzenle'}
+                            {activeTab === 'garage' && 'Garajım'}
+                            {activeTab === 'content' && 'Gönderi Yöneticisi'}
+                            {activeTab === 'security' && 'Güvenlik Bölgesi'}
                         </h3>
                         <div className="flex gap-2">
                             <button onClick={() => handleProfileUpdate()} disabled={isLoading} className="flex items-center gap-2 px-6 py-2 bg-moto-accent text-black font-bold uppercase tracking-wider text-xs rounded hover:bg-orange-400 transition-colors">
-                                {isLoading ? 'Saving...' : <><Save className="w-4 h-4" /> Save Changes</>}
+                                {isLoading ? 'Kaydediliyor...' : <><Save className="w-4 h-4" /> Kaydet</>}
                             </button>
                         </div>
                     </header>
@@ -233,7 +233,7 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                                     <section className="grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
                                         <div className="md:col-span-2">
                                             <ImageUpload
-                                                label="Cover Photo"
+                                                label="Kapak Fotoğrafı"
                                                 value={formData.coverImage}
                                                 onChange={(url) => setFormData({ ...formData, coverImage: url })}
                                                 aspectRatio="cover"
@@ -252,18 +252,18 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                                     {/* Personal Info */}
                                     <section className="space-y-6">
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <InputGroup label="Display Name" value={formData.name} onChange={(v) => setFormData({ ...formData, name: v })} />
-                                            <InputGroup label="Username" value={formData.username} prefix="@" onChange={(v) => setFormData({ ...formData, username: v })} />
+                                            <InputGroup label="Görünen İsim" value={formData.name} onChange={(v) => setFormData({ ...formData, name: v })} />
+                                            <InputGroup label="Kullanıcı Adı" value={formData.username} prefix="@" onChange={(v) => setFormData({ ...formData, username: v })} />
                                         </div>
-                                        <InputGroup label="Location" value={formData.location} prefix="📍" onChange={(v) => setFormData({ ...formData, location: v })} />
+                                        <InputGroup label="Konum" value={formData.location} prefix="📍" onChange={(v) => setFormData({ ...formData, location: v })} />
 
                                         <div className="space-y-2">
-                                            <label className="text-xs font-bold uppercase text-gray-500">Bio</label>
+                                            <label className="text-xs font-bold uppercase text-gray-500">Hakkında</label>
                                             <textarea
                                                 rows={4}
                                                 maxLength={150}
                                                 className="w-full bg-white/5 border border-white/10 rounded-xl p-4 text-white placeholder-gray-600 focus:border-moto-accent outline-none font-mono text-sm"
-                                                placeholder="Tell short story about your ride life..."
+                                                placeholder="Sürüş hayatın hakkında kısa bir şeyler yaz..."
                                                 value={formData.bio}
                                                 onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                                             />
@@ -276,7 +276,7 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                                                 disabled={isLoading}
                                                 className="w-full md:w-auto px-8 py-3 bg-moto-accent text-black font-bold uppercase tracking-wider text-sm rounded-xl hover:bg-orange-400 transition-colors shadow-[0_0_20px_rgba(255,165,0,0.3)] hover:shadow-[0_0_30px_rgba(255,165,0,0.5)]"
                                             >
-                                                {isLoading ? 'Saving...' : 'Save Profile Changes'}
+                                                {isLoading ? 'Kaydediliyor...' : 'Tüm Değişiklikleri Kaydet'}
                                             </button>
                                         </div>
                                     </section>
@@ -295,7 +295,7 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                                                 <div className="flex-1">
                                                     <div className="flex items-center gap-2">
                                                         <h4 className="font-bold text-lg text-white">{bike.brand} {bike.model}</h4>
-                                                        {user.primaryBike === `${bike.brand} ${bike.model}` && <span className="px-2 py-0.5 bg-moto-accent text-black text-[10px] font-black uppercase rounded">Primary</span>}
+                                                        {user.primaryBike === `${bike.brand} ${bike.model}` && <span className="px-2 py-0.5 bg-moto-accent text-black text-[10px] font-black uppercase rounded">Birincil</span>}
                                                     </div>
                                                     <p className="text-sm text-gray-400 font-mono">{bike.year} • {bike.km || '0'} KM</p>
                                                 </div>
@@ -313,10 +313,10 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                                                             }}
                                                             className="p-2 hover:bg-white/10 rounded border border-white/5 text-xs font-bold uppercase"
                                                         >
-                                                            Set Primary
+                                                            Birincil Yap
                                                         </button>
                                                     )}
-                                                    <button onClick={() => notify.info('Edit spec functionality coming soon')} className="p-2 hover:bg-white/10 rounded border border-white/5 text-xs font-bold uppercase">Edit Specs</button>
+                                                    <button onClick={() => notify.info('Edit spec functionality coming soon')} className="p-2 hover:bg-white/10 rounded border border-white/5 text-xs font-bold uppercase">Özellikleri Düzenle</button>
                                                     <button onClick={() => handleRemoveBike(bike._id)} className="p-2 hover:bg-red-500/20 rounded border border-white/5 text-red-500">
                                                         <Trash2 className="w-4 h-4" />
                                                     </button>
@@ -327,22 +327,22 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                                         {/* Add New Bike Form */}
                                         {isAddingBike ? (
                                             <div className="bg-moto-accent/5 border border-moto-accent/20 rounded-2xl p-6 border-dashed animate-in fade-in zoom-in-95 duration-200">
-                                                <h4 className="font-bold text-moto-accent mb-4 uppercase tracking-widest text-xs">Add New Machine</h4>
+                                                <h4 className="font-bold text-moto-accent mb-4 uppercase tracking-widest text-xs">Yeni Makine Ekle</h4>
                                                 <div className="grid grid-cols-2 gap-4 mb-4">
-                                                    <InputGroup label="Brand" value={newBike.brand} onChange={(v) => setNewBike({ ...newBike, brand: v })} placeholder="e.g. Yamaha" />
-                                                    <InputGroup label="Model" value={newBike.model} onChange={(v) => setNewBike({ ...newBike, model: v })} placeholder="e.g. R6" />
-                                                    <InputGroup label="Year" value={newBike.year} onChange={(v) => setNewBike({ ...newBike, year: v })} />
-                                                    <InputGroup label="Image URL" value={newBike.image} onChange={(v) => setNewBike({ ...newBike, image: v })} />
+                                                    <InputGroup label="Marka" value={newBike.brand} onChange={(v) => setNewBike({ ...newBike, brand: v })} placeholder="örn. Yamaha" />
+                                                    <InputGroup label="Model" value={newBike.model} onChange={(v) => setNewBike({ ...newBike, model: v })} placeholder="örn. R6" />
+                                                    <InputGroup label="Yıl" value={newBike.year} onChange={(v) => setNewBike({ ...newBike, year: v })} />
+                                                    <InputGroup label="Resim URL" value={newBike.image} onChange={(v) => setNewBike({ ...newBike, image: v })} />
                                                 </div>
                                                 <div className="flex gap-2 justify-end">
-                                                    <button onClick={() => setIsAddingBike(false)} className="px-4 py-2 text-xs font-bold uppercase text-gray-500 hover:text-white">Cancel</button>
-                                                    <button onClick={handleAddBike} className="px-6 py-2 bg-moto-accent text-black font-bold text-xs uppercase rounded">Add Bike</button>
+                                                    <button onClick={() => setIsAddingBike(false)} className="px-4 py-2 text-xs font-bold uppercase text-gray-500 hover:text-white">İptal</button>
+                                                    <button onClick={handleAddBike} className="px-6 py-2 bg-moto-accent text-black font-bold text-xs uppercase rounded">Motor Ekle</button>
                                                 </div>
                                             </div>
                                         ) : (
                                             <button onClick={() => setIsAddingBike(true)} className="w-full py-8 border-2 border-dashed border-white/10 rounded-2xl flex flex-col items-center justify-center text-gray-500 hover:border-moto-accent hover:text-moto-accent transition-all group">
                                                 <Plus className="w-12 h-12 mb-2 group-hover:scale-110 transition-transform" />
-                                                <span className="font-bold uppercase tracking-widest text-xs">Add New Ride</span>
+                                                <span className="font-bold uppercase tracking-widest text-xs">Yeni Motor Ekle</span>
                                             </button>
                                         )}
                                     </div>
@@ -356,17 +356,17 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                                         <table className="w-full text-left">
                                             <thead className="bg-black/50 text-xs uppercase text-gray-500">
                                                 <tr>
-                                                    <th className="p-4">Post</th>
-                                                    <th className="p-4">Stats</th>
-                                                    <th className="p-4">Date</th>
-                                                    <th className="p-4 text-right">Actions</th>
+                                                    <th className="p-4">Gönderi</th>
+                                                    <th className="p-4">İstatistik</th>
+                                                    <th className="p-4">Tarih</th>
+                                                    <th className="p-4 text-right">İşlemler</th>
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-white/5">
                                                 {/* Mocking posts if not available in user object directly without fetch */}
                                                 <tr>
                                                     <td className="p-4 text-gray-500 italic text-center" colSpan={4}>
-                                                        Loading Content... (This would list user posts)
+                                                        İçerik Yükleniyor... (Kullanıcının gönderilerini listeler)
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -382,31 +382,31 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
 
                                     {/* Toggles */}
                                     <section className="space-y-6">
-                                        <h4 className="text-xl font-display font-bold italic">Privacy & Visibility</h4>
+                                        <h4 className="text-xl font-display font-bold italic">Gizlilik & Görünürlük</h4>
                                         <div className="space-y-4">
                                             <Toggle
-                                                label="Private Profile"
-                                                desc="Only approved followers can see your profile details."
+                                                label="Gizli Profil"
+                                                desc="Sadece onaylanmış takipçiler profil detaylarını görebilir."
                                                 checked={settings.isPrivate}
                                                 onChange={(v) => handleSettingsUpdate({ ...settings, isPrivate: v })}
                                             />
                                             <Toggle
-                                                label="Ghost Mode"
-                                                desc="Hide your real-time location on all maps and routes."
+                                                label="Hayalet Modu"
+                                                desc="Gerçek zamanlı konumunu tüm harita ve rotalarda gizle."
                                                 checked={settings.hideLocation}
                                                 onChange={(v) => handleSettingsUpdate({ ...settings, hideLocation: v })}
                                             />
                                         </div>
 
-                                        <h4 className="text-xl font-display font-bold italic mt-8">Notifications</h4>
+                                        <h4 className="text-xl font-display font-bold italic mt-8">Bildirimler</h4>
                                         <div className="space-y-4">
                                             <Toggle
-                                                label="New Followers"
+                                                label="Yeni Takipçiler"
                                                 checked={settings.notifications.follows}
                                                 onChange={(v) => handleSettingsUpdate({ ...settings, notifications: { ...settings.notifications, follows: v } })}
                                             />
                                             <Toggle
-                                                label="Likes & Comments"
+                                                label="Beğeni & Yorumlar"
                                                 checked={settings.notifications.likes}
                                                 onChange={(v) => handleSettingsUpdate({ ...settings, notifications: { ...settings.notifications, likes: v } })}
                                             />
@@ -415,23 +415,23 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
 
                                     {/* Password Change */}
                                     <section className="space-y-6 pt-8 border-t border-white/10">
-                                        <h4 className="text-xl font-display font-bold italic">Change Password</h4>
+                                        <h4 className="text-xl font-display font-bold italic">Şifre Değiştir</h4>
                                         <form onSubmit={handlePasswordChange} className="space-y-4 max-w-md">
                                             <InputGroup
-                                                label="Current Password"
+                                                label="Mevcut Şifre"
                                                 type="password"
                                                 value={securityData.currentPassword}
                                                 onChange={(v) => setSecurityData({ ...securityData, currentPassword: v })}
                                             />
                                             <InputGroup
-                                                label="New Password"
+                                                label="Yeni Şifre"
                                                 type="password"
                                                 value={securityData.newPassword}
                                                 onChange={(v) => setSecurityData({ ...securityData, newPassword: v })}
-                                                placeholder="Min. 8 characters"
+                                                placeholder="Min. 8 karakter"
                                             />
                                             <InputGroup
-                                                label="Confirm New Password"
+                                                label="Yeni Şifreyi Onayla"
                                                 type="password"
                                                 value={securityData.confirmPassword}
                                                 onChange={(v) => setSecurityData({ ...securityData, confirmPassword: v })}
@@ -440,7 +440,7 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                                                 type="submit"
                                                 className="w-full py-3 bg-white/10 border border-white/10 hover:bg-white/20 rounded-xl font-bold uppercase text-xs tracking-widest transition-colors"
                                             >
-                                                Update Password
+                                                Şifreyi Güncelle
                                             </button>
                                         </form>
                                     </section>

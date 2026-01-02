@@ -138,7 +138,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                                     <div className="py-2">
                                         {user.isAdmin && (
                                             <button onClick={() => { onNavigate('admin'); setIsProfileOpen(false); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-zinc-200 hover:bg-white/10">
-                                                <ShieldCheck className="w-5 h-5" /> Admin Panel
+                                                <ShieldCheck className="w-5 h-5" /> Yönetici Paneli
                                             </button>
                                         )}
                                         {/* Removed Profile/Garage links requested by user */}
@@ -149,7 +149,7 @@ export const Navbar: React.FC<NavbarProps> = ({
 
                                     <div className="border-t border-white/10 py-2">
                                         <button onClick={() => { logout(); setIsProfileOpen(false); }} className="w-full flex items-center gap-3 px-4 py-2 text-sm text-zinc-200 hover:bg-white/10">
-                                            <LogOut className="w-5 h-5" /> Oturumu kapat
+                                            <LogOut className="w-5 h-5" /> Çıkış Yap
                                         </button>
                                     </div>
                                 </motion.div>
@@ -162,7 +162,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                         className="ml-2 px-4 py-2 rounded-full border border-white/10 hover:bg-white/10 flex items-center gap-2 text-blue-400 font-medium text-sm transition-colors"
                     >
                         <UserIcon className="w-5 h-5 border rounded-full border-blue-400 p-0.5" />
-                        Oturum aç
+                        Giriş Yap
                     </button>
                 )}
             </div>

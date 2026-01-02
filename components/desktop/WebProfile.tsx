@@ -22,10 +22,10 @@ interface WebProfileProps {
 }
 
 const TABS = [
-    { id: 'feed', label: 'FEED', icon: Grid },
-    { id: 'garage', label: 'GARAGE', icon: Archive },
-    { id: 'routes', label: 'SAVED ROUTES', icon: Route },
-    { id: 'achievements', label: 'ACHIEVEMENTS', icon: Award },
+    { id: 'feed', label: 'AKIŞ', icon: Grid },
+    { id: 'garage', label: 'GARAJ', icon: Archive },
+    { id: 'routes', label: 'KAYDEDİLEN ROTALAR', icon: Route },
+    { id: 'achievements', label: 'BAŞARILAR', icon: Award },
 ];
 
 export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogout, isOwnProfile = false }) => {
@@ -209,13 +209,13 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
                             className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 flex flex-wrap items-center gap-8 xl:gap-12"
                         >
                             <StatItem
-                                label="Followers"
+                                label="Takipçi"
                                 value={profileStats.followers}
                                 onClick={() => handleStatClick('followers')}
                             />
                             <div className="w-px h-8 bg-white/10 hidden md:block" />
                             <StatItem
-                                label="Following"
+                                label="Takip Edilen"
                                 value={profileStats.following}
                                 onClick={() => handleStatClick('following')}
                             />
@@ -223,9 +223,9 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
                             {/* Desktop only dividers/stats for robustness */}
                             <div className="hidden md:flex items-center gap-12">
                                 <div className="w-px h-8 bg-white/10" />
-                                <StatItem label="Total KM" value="12.5k" isMono />
+                                <StatItem label="Toplam KM" value="12.5k" isMono />
                                 <div className="w-px h-8 bg-white/10" />
-                                <StatItem label="Garage Value" value={profileStats.garageValue} isMono highlight />
+                                <StatItem label="Garaj Değeri" value={profileStats.garageValue} isMono highlight />
                             </div>
 
                             {/* Actions */}
@@ -251,7 +251,7 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
                                             : 'bg-moto-accent text-black hover:bg-orange-400'
                                             }`}
                                     >
-                                        {isFollowPending ? '...' : (isFollowing ? 'Following' : 'Follow')}
+                                        {isFollowPending ? '...' : (isFollowing ? 'Takip Ediliyor' : 'Takip Et')}
                                     </button>
                                 )}
                             </div>
@@ -315,7 +315,7 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
                                                     {post.comments}
                                                 </div>
                                             </div>
-                                            <span className="text-moto-accent text-xs font-black uppercase tracking-widest border-b border-moto-accent pb-1">View Post</span>
+                                            <span className="text-moto-accent text-xs font-black uppercase tracking-widest border-b border-moto-accent pb-1">Gönderiyi Gör</span>
                                         </div>
                                     </motion.div>
                                 ))}
@@ -339,7 +339,7 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
                                     />
                                 )) : (
                                     <div className="col-span-full py-20 text-center border border-dashed border-white/10 rounded-3xl bg-white/5">
-                                        <p className="text-gray-400 font-mono">Garage is empty.</p>
+                                        <p className="text-gray-400 font-mono">Garaj boş.</p>
                                     </div>
                                 )}
                             </motion.div>
@@ -348,7 +348,7 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user, onNavigate, onLogo
                         {/* OTHER TABS (Placeholders) */}
                         {(activeTab === 'routes' || activeTab === 'achievements') && (
                             <motion.div key="placeholder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-20 text-center text-gray-500 font-mono uppercase tracking-widest">
-                                Work in Progress • {activeTab}
+                                Yapım Aşamasında • {activeTab}
                             </motion.div>
                         )}
 

@@ -30,7 +30,7 @@ interface SocialHubProps {
     initialData?: any;
 }
 
-type HubView = 'feed' | 'vlog' | 'routes' | 'events' | 'explore';
+type HubView = 'feed' | 'stories' | 'vlog' | 'routes' | 'events' | 'explore';
 
 export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate, initialData }) => {
     const { user: globalUser } = useAuthStore();
@@ -131,6 +131,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
                             {[
                                 { id: 'feed', icon: Home, label: 'Akış' },
+                                { id: 'stories', icon: Image, label: 'Hikayeler' },
                                 { id: 'vlog', icon: MapIcon, label: 'Map', badge: 'CANLI' },
                                 { id: 'routes', icon: Navigation, label: 'Rotalar' },
                                 { id: 'events', icon: Calendar, label: 'Buluşmalar' },
@@ -176,28 +177,30 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                         </div>
                     </div>
                     {/* View Switcher */}
+                    {view === 'stories' && (
+                        /* Stories Rail - Moved from Feed */
+                        <div className="mb-8 overflow-x-auto no-scrollbar pb-2">
+                            <div className="flex gap-4">
+                                {/* Add Story */}
+                                <div className="flex-shrink-0 w-24 h-40 bg-[#111] rounded-2xl border border-white/10 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-moto-accent/50 transition-colors group relative overflow-hidden">
+                                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80 z-0" />
+                                    <UserAvatar src={currentUser?.profileImage} name={currentUser?.name} size={40} className="z-10 border-2 border-black" />
+                                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 bg-moto-accent rounded-full p-1"><Plus className="w-3 h-3 text-black" /></div>
+                                </div>
+                                {/* Mock Stories */}
+                                {['story1.jpg', 'story2.jpg', 'story3.jpg', 'story4.jpg'].map((_, i) => (
+                                    <div key={i} className="flex-shrink-0 w-24 h-40 rounded-2xl bg-gray-800 relative overflow-hidden cursor-pointer ring-2 ring-transparent hover:ring-moto-accent transition-all">
+                                        <img src={`https://source.unsplash.com/random/200x400?motorcycle&sig=${i}`} className="w-full h-full object-cover" />
+                                        <div className="absolute inset-0 bg-gradient-to-b from-black/0 via-black/0 to-black/80" />
+                                        <div className="absolute bottom-2 left-2 text-[10px] font-bold truncate max-w-[90%]">Rider {i + 1}</div>
+                                        <div className="absolute top-2 left-2 w-8 h-8 rounded-full border-2 border-moto-accent p-0.5"><img src={`https://source.unsplash.com/random/50x50?face&sig=${i}`} className="w-full h-full rounded-full object-cover" /></div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
                     {view === 'feed' ? (
                         <>
-                            {/* Stories Rail */}
-                            <div className="mb-8 overflow-x-auto no-scrollbar pb-2">
-                                <div className="flex gap-4">
-                                    {/* Add Story */}
-                                    <div className="flex-shrink-0 w-24 h-40 bg-[#111] rounded-2xl border border-white/10 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-moto-accent/50 transition-colors group relative overflow-hidden">
-                                        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80 z-0" />
-                                        <UserAvatar src={currentUser?.profileImage} name={currentUser?.name} size={40} className="z-10 border-2 border-black" />
-                                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 bg-moto-accent rounded-full p-1"><Plus className="w-3 h-3 text-black" /></div>
-                                    </div>
-                                    {/* Mock Stories */}
-                                    {['story1.jpg', 'story2.jpg', 'story3.jpg', 'story4.jpg'].map((_, i) => (
-                                        <div key={i} className="flex-shrink-0 w-24 h-40 rounded-2xl bg-gray-800 relative overflow-hidden cursor-pointer ring-2 ring-transparent hover:ring-moto-accent transition-all">
-                                            <img src={`https://source.unsplash.com/random/200x400?motorcycle&sig=${i}`} className="w-full h-full object-cover" />
-                                            <div className="absolute inset-0 bg-gradient-to-b from-black/0 via-black/0 to-black/80" />
-                                            <div className="absolute bottom-2 left-2 text-[10px] font-bold truncate max-w-[90%]">Rider {i + 1}</div>
-                                            <div className="absolute top-2 left-2 w-8 h-8 rounded-full border-2 border-moto-accent p-0.5"><img src={`https://source.unsplash.com/random/50x50?face&sig=${i}`} className="w-full h-full rounded-full object-cover" /></div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
 
                             {/* Community CTA (if not logged in) */}
                             {!currentUser && (

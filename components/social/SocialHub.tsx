@@ -213,7 +213,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                             <div className="relative z-50">
                                 <button
                                     onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                                    className="bg-white/5 text-white p-0.5 rounded-full hover:bg-white/10 transition-all border border-white/5 ring-offset-2 ring-offset-[#09090b] focus:ring-2 focus:ring-white/20"
+                                    className="bg-zinc-800/50 text-white p-0.5 rounded-full hover:bg-zinc-700/50 transition-all border border-white/5 ring-2 ring-transparent focus:ring-moto-accent/50"
                                 >
                                     <UserAvatar src={currentUser?.profileImage || currentUser?.avatar} name={currentUser?.name} size={32} />
                                 </button>
@@ -224,19 +224,81 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                             initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                             animate={{ opacity: 1, y: 0, scale: 1 }}
                                             exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            className="absolute top-full right-0 mt-3 w-64 bg-[#18181b] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-[100] ring-1 ring-white/10"
+                                            transition={{ duration: 0.15, ease: "easeOut" }}
+                                            className="absolute top-full right-0 mt-4 w-72 bg-[#121214] border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-[100] ring-1 ring-white/5"
                                         >
-                                            <div className="px-4 py-4 border-b border-white/5 bg-white/5">
-                                                <p className="text-white font-bold text-sm truncate">{currentUser?.name}</p>
-                                                <p className="text-zinc-400 text-xs truncate mt-0.5">@{currentUser?.username}</p>
+                                            {/* Header */}
+                                            <div className="relative p-6 pt-8 pb-6 border-b border-white/5 overflow-hidden group">
+                                                <div className="absolute inset-0 bg-gradient-to-br from-moto-accent/10 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
+                                                <div className="relative z-10 flex items-center gap-4">
+                                                    <div className="ring-2 ring-white/10 rounded-full p-0.5 bg-black">
+                                                        <UserAvatar src={currentUser?.profileImage || currentUser?.avatar} name={currentUser?.name} size={48} />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <h4 className="text-white font-bold text-base truncate">{currentUser?.name || "Misafir"}</h4>
+                                                        <p className="text-zinc-500 text-xs font-mono truncate">@{currentUser?.username || "guest"}</p>
+                                                        {currentUser?.rank && (
+                                                            <span className="inline-flex items-center mt-1.5 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-zinc-800 text-zinc-300 border border-white/5">
+                                                                {currentUser.rank}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                </div>
                                             </div>
-                                            <div className="p-1">
-                                                <button onClick={() => { onNavigate && onNavigate('my-profile'); setIsProfileMenuOpen(false); }} className="w-full text-left px-3 py-2 text-sm text-zinc-300 hover:bg-white/10 hover:text-white flex items-center gap-2 rounded-lg transition-colors">
-                                                    <User className="w-4 h-4" /> Profilim
+
+                                            {/* Menu Items */}
+                                            <div className="p-2 space-y-0.5">
+                                                <button
+                                                    onClick={() => { onNavigate && onNavigate('my-profile'); setIsProfileMenuOpen(false); }}
+                                                    className="w-full text-left px-4 py-3 text-sm font-medium text-zinc-300 hover:bg-zinc-800/50 hover:text-white flex items-center gap-3 rounded-xl transition-all group"
+                                                >
+                                                    <div className="p-1.5 rounded-lg bg-zinc-800/50 text-zinc-400 group-hover:bg-moto-accent group-hover:text-black transition-colors">
+                                                        <User className="w-4 h-4" />
+                                                    </div>
+                                                    Profil Görüntüle
                                                 </button>
-                                                <div className="h-px bg-white/5 my-1" />
-                                                <button onClick={() => { logout?.(); setIsProfileMenuOpen(false); }} className="w-full text-left px-3 py-2 text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 flex items-center gap-2 rounded-lg transition-colors">
-                                                    <LogOut className="w-4 h-4" /> Çıkış Yap
+
+                                                <button
+                                                    onClick={() => { onNavigate && onNavigate('garage' as any); setIsProfileMenuOpen(false); }}
+                                                    className="w-full text-left px-4 py-3 text-sm font-medium text-zinc-300 hover:bg-zinc-800/50 hover:text-white flex items-center gap-3 rounded-xl transition-all group"
+                                                >
+                                                    <div className="p-1.5 rounded-lg bg-zinc-800/50 text-zinc-400 group-hover:bg-moto-accent group-hover:text-black transition-colors">
+                                                        <Archive className="w-4 h-4" />
+                                                    </div>
+                                                    Garajım
+                                                </button>
+
+                                                <button
+                                                    onClick={() => { onNavigate && onNavigate('settings' as any); setIsProfileMenuOpen(false); }}
+                                                    className="w-full text-left px-4 py-3 text-sm font-medium text-zinc-300 hover:bg-zinc-800/50 hover:text-white flex items-center gap-3 rounded-xl transition-all group"
+                                                >
+                                                    <div className="p-1.5 rounded-lg bg-zinc-800/50 text-zinc-400 group-hover:bg-moto-accent group-hover:text-black transition-colors">
+                                                        <Settings className="w-4 h-4" />
+                                                    </div>
+                                                    Ayarlar
+                                                </button>
+                                            </div>
+
+                                            <div className="h-px bg-white/5 mx-4 my-1" />
+
+                                            {/* Logout Section */}
+                                            <div className="p-2">
+                                                <button
+                                                    onClick={() => {
+                                                        setIsProfileMenuOpen(false);
+                                                        if (logout) {
+                                                            logout();
+                                                            // Force close interactions
+                                                            setTimeout(() => {
+                                                                if (onNavigate) onNavigate('auth' as any); // Explicitly go to auth
+                                                                else window.location.reload(); // Fallback hard reload
+                                                            }, 100);
+                                                        }
+                                                    }}
+                                                    className="w-full text-left px-4 py-3 text-xs font-bold uppercase tracking-wider text-red-500 hover:bg-red-500/10 hover:text-red-400 flex items-center gap-3 rounded-xl transition-all"
+                                                >
+                                                    <LogOut className="w-4 h-4" />
+                                                    Oturumu Kapat
                                                 </button>
                                             </div>
                                         </motion.div>

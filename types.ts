@@ -464,7 +464,7 @@ export interface NegotiationOffer {
   date: string;
 }
 
-export type ColorTheme = 'orange' | 'red' | 'blue' | 'green' | 'purple' | 'cyan' | 'yellow';
+
 
 export type FeedbackType = 'bug' | 'feature' | 'general' | 'other';
 

@@ -5,6 +5,7 @@ import {
     Grid, Bell, Key, LogOut, ChevronRight, Save, Plus, Trash2, Smartphone
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import { ThemeToggle } from '../ui/ThemeToggle';
 import { ImageUpload } from '../common/ImageUpload';
 import { UserAvatar } from '../ui/UserAvatar';
 import { socialService } from '../../services/socialService';
@@ -431,7 +432,16 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
 
                                     {/* Toggles */}
                                     <section className="space-y-6">
-                                        <h4 className="text-xl font-display font-bold italic">Gizlilik & Görünürlük</h4>
+                                        <h4 className="text-xl font-display font-bold italic">Görünüm</h4>
+                                        <div className="flex items-center justify-between p-4 bg-white/5 border border-white/5 rounded-xl">
+                                            <div>
+                                                <div className="font-bold text-white">Tema Modu</div>
+                                                <div className="text-xs text-gray-500 mt-1">Aydınlık veya karanlık modu seçin.</div>
+                                            </div>
+                                            <ThemeToggle />
+                                        </div>
+
+                                        <h4 className="text-xl font-display font-bold italic mt-8">Gizlilik & Görünürlük</h4>
                                         <div className="space-y-4">
                                             <Toggle
                                                 label="Gizli Profil"

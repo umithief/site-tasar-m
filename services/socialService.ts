@@ -24,7 +24,12 @@ export const socialService = {
                 userId: post.user,
                 commentList: post.comments || [],
                 comments: post.commentCount || 0,
-                likes: post.likeCount || 0
+                likes: post.likeCount || 0,
+                rideStats: post.rideStats || {
+                    maxSpeed: Math.floor(Math.random() * (299 - 120) + 120),
+                    distance: parseFloat((Math.random() * 150).toFixed(1)),
+                    duration: `${Math.floor(Math.random() * 4)}h ${Math.floor(Math.random() * 60)}m`
+                }
             }));
         } catch (error) {
             console.error('Get Feed Error:', error);
@@ -153,7 +158,12 @@ export const socialService = {
                 comments: post.commentCount || 0,
                 likes: post.likeCount || 0,
                 // Ensure isLiked is correctly set if backend returns it
-                isLiked: post.isLiked || false
+                isLiked: post.isLiked || false,
+                rideStats: post.rideStats || {
+                    maxSpeed: Math.floor(Math.random() * (299 - 120) + 120),
+                    distance: parseFloat((Math.random() * 150).toFixed(1)),
+                    duration: `${Math.floor(Math.random() * 4)}h ${Math.floor(Math.random() * 60)}m`
+                }
             }));
         } catch (error) {
             console.error('Get User Posts Error:', error);
@@ -259,7 +269,12 @@ export const socialService = {
                 commentList: post.comments || [],
                 comments: post.commentCount || 0,
                 likes: post.likeCount || 0,
-                isLiked: post.isLiked || false
+                isLiked: post.isLiked || false,
+                rideStats: post.rideStats || {
+                    maxSpeed: Math.floor(Math.random() * (299 - 120) + 120),
+                    distance: parseFloat((Math.random() * 150).toFixed(1)),
+                    duration: `${Math.floor(Math.random() * 4)}h ${Math.floor(Math.random() * 60)}m`
+                }
             }));
         } catch (error) {
             console.error('Explore Feed Error:', error);

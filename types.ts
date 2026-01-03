@@ -229,6 +229,12 @@ export interface SocialPost {
   timestamp: string;
   isLiked?: boolean;
   commentList?: ForumComment[];
+  rideStats?: {
+    maxSpeed: number;
+    distance: number;
+    duration: string;
+    routeSvg?: string; // For the mini route map
+  };
 }
 
 export interface SocialProfile extends User {

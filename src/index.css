@@ -153,6 +153,8 @@ body {
 
 /* Global Button Reset for Feel */
 button {
-    @apply cursor-pointer select-none touch-manipulation;
+    cursor: pointer;
+    user-select: none;
+    touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
 }

@@ -1,6 +1,6 @@
-const RideActivity = require('../models/RideActivity');
+import RideActivity from '../models/RideActivity.js';
 
-exports.getLatestActivity = async (req, res) => {
+export const getLatestActivity = async (req, res) => {
     try {
         const userId = req.user.userId;
         const latestRide = await RideActivity.findOne({ userId }).sort({ startTime: -1 });
@@ -15,7 +15,7 @@ exports.getLatestActivity = async (req, res) => {
     }
 };
 
-exports.createActivity = async (req, res) => {
+export const createActivity = async (req, res) => {
     try {
         const newRide = new RideActivity({
             ...req.body,

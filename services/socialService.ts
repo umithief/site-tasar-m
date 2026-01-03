@@ -296,5 +296,22 @@ export const socialService = {
             console.error('Delete Post Error:', error);
             return false;
         }
+    },
+
+    // Mock integration with Ride Mode
+    async getLatestRideActivity(): Promise<any | null> {
+        // In a real scenario, this would fetch from /api/rides/latest
+        // simulating a fetch
+        return new Promise(resolve => {
+            setTimeout(() => {
+                resolve({
+                    id: 'ride-' + Math.random().toString(36).substr(2, 9),
+                    maxSpeed: Math.floor(Math.random() * (220 - 80) + 80),
+                    distance: parseFloat((Math.random() * 50).toFixed(1)),
+                    duration: '45m',
+                    date: new Date().toISOString()
+                });
+            }, 500);
+        });
     }
 };

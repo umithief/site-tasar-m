@@ -25,6 +25,15 @@ const postSchema = new mongoose.Schema({
     location: String,
     hashtags: [String],
 
+    // Ride Stats Integration
+    rideStats: {
+        maxSpeed: Number,
+        distance: Number,
+        duration: String,
+        routeSvg: String,
+        rideId: { type: mongoose.Schema.Types.ObjectId, ref: 'Route' } // Link to actual route if needed
+    },
+
     // Counters (managed via hooks or controllers for perf)
     likeCount: { type: Number, default: 0 },
     commentCount: { type: Number, default: 0 }

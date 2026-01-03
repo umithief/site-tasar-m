@@ -41,6 +41,8 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
     const [mediaUrl, setMediaUrl] = useState<string | null>(null);
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
+    const [recentRide, setRecentRide] = useState<any>(null);
+    const [attachRide, setAttachRide] = useState(true);
 
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = usePosts();
     const { mutate: createPost } = useCreatePost();
@@ -105,7 +107,8 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
             content: newPostContent,
             images: mediaUrl ? [mediaUrl] : [],
             bikeModel: currentUser.garage && currentUser.garage.length > 0 ? `${currentUser.garage[0].brand} ${currentUser.garage[0].model}` : 'Bilinmeyen Motor',
-            userRank: currentUser.rank || 'Yeni Üye'
+            userRank: currentUser.rank || 'Yeni Üye',
+            rideStats: (attachRide && recentRide) ? recentRide : undefined
         }, {
             onSuccess: () => {
                 setNewPostContent('');
@@ -114,6 +117,14 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
             }
         });
     };
+
+    useEffect(() => {
+        if (isCreateOpen && !recentRide) {
+            socialService.getLatestRideActivity().then(ride => {
+                if (ride) setRecentRide(ride);
+            });
+        }
+    }, [isCreateOpen]);
 
 
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -168,6 +179,13 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                     {useNotificationStore.getState().unreadCount > 0 && (
                                         <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse ring-2 ring-[#09090b]" />
                                     )}
+                                </button>
+
+                                <button
+                                    onClick={() => setIsCreateOpen(!isCreateOpen)}
+                                    className={`relative p-2 rounded-full transition-all border ml-2 ${isCreateOpen ? 'bg-moto-accent text-black border-moto-accent' : 'bg-[#18181b] text-zinc-400 border-white/5 hover:text-white'}`}
+                                >
+                                    <PlusCircle className="w-5 h-5" />
                                 </button>
 
                                 {/* Notification Dropdown */}
@@ -378,7 +396,16 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                                     <div className="flex justify-between items-center mt-6 pt-4 border-t border-white/5">
                                                         <div className="flex gap-4 text-moto-accent">
                                                             <MediaUploader onUploadComplete={setMediaUrl} onUploadError={(e) => alert(e)} />
+                                                            <MediaUploader onUploadComplete={setMediaUrl} onUploadError={(e) => alert(e)} />
                                                             <MapIcon className="w-5 h-5 cursor-pointer hover:text-white transition-colors" />
+                                                            {recentRide && (
+                                                                <button
+                                                                    onClick={() => setAttachRide(!attachRide)}
+                                                                    className={`text-xs px-2 py-1 rounded border transition-colors ${attachRide ? 'bg-moto-accent text-black border-moto-accent' : 'bg-transparent text-gray-500 border-gray-700'}`}
+                                                                >
+                                                                    {attachRide ? 'Sürüş Eklendi' : 'Sürüş Ekle'}
+                                                                </button>
+                                                            )}
                                                         </div>
                                                         <button
                                                             onClick={handleCreatePost}
@@ -397,7 +424,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
 
                             {/* Feed Stream */}
                             <PullToRefresh onRefresh={async () => { await fetchNextPage(); }} isMobile={true}>
-                                <div className="space-y-12">
+                                <div className="space-y-6 pt-4">
                                     {/* Empty State */}
                                     {!isFetchingNextPage && data?.pages?.[0]?.length === 0 && (
                                         <div className="flex flex-col items-center justify-center py-20 px-6 text-center">

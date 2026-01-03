@@ -85,15 +85,15 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = ({ post, currentUse
             {post.rideStats && (
                 <div className="grid grid-cols-3 gap-2 px-2 mt-3 mb-1">
                     <div className="bg-white/5 rounded-xl p-2 flex flex-col items-center justify-center border border-white/5">
-                        <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">MAX KM/H</span>
+                        <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">MAKS KM/H</span>
                         <span className="text-lg font-mono font-bold text-white">{post.rideStats.maxSpeed}</span>
                     </div>
                     <div className="bg-white/5 rounded-xl p-2 flex flex-col items-center justify-center border border-white/5">
-                        <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">DIST (KM)</span>
+                        <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">MESAFE (KM)</span>
                         <span className="text-lg font-mono font-bold text-white">{post.rideStats.distance}</span>
                     </div>
                     <div className="bg-white/5 rounded-xl p-2 flex flex-col items-center justify-center border border-white/5 relative overflow-hidden">
-                        <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider relative z-10">ROUTE</span>
+                        <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider relative z-10">ROTA</span>
                         <svg viewBox="0 0 100 50" className="absolute inset-0 w-full h-full opacity-30 stroke-[#E2FF3B]" fill="none" strokeWidth="2">
                             <path d="M10,40 C30,40 30,10 50,10 C70,10 70,40 90,40" />
                         </svg>
@@ -128,7 +128,7 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = ({ post, currentUse
                         <span className="text-gray-200">{post.content}</span>
                     </div>
                     <button className="text-xs text-gray-500 mt-1 uppercase tracking-wide">
-                        {post.timestamp || 'Just now'}
+                        {post.timestamp || 'Az önce'}
                     </button>
                 </div>
             </div>

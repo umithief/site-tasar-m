@@ -61,7 +61,7 @@ const RouteCard = ({ delay }: { delay: number }) => (
         className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-2 relative overflow-hidden group hover:border-[#E2FF3B]/50 transition-colors flex items-center justify-center"
     >
         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
-        <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400 absolute top-2 left-2">Route</div>
+        <div className="text-[10px] font-bold uppercase tracking-wider text-gray-400 absolute top-2 left-2">ROTA</div>
         <svg viewBox="0 0 100 50" className="w-full h-full opacity-60 group-hover:opacity-100 transition-opacity stroke-[#E2FF3B]" fill="none" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M10,40 C30,40 30,10 50,10 C70,10 70,40 90,40" pathLength="1" className="animate-[dash_3s_ease-in-out_infinite]" />
         </svg>
@@ -107,7 +107,7 @@ export const PostCard: React.FC<PostCardProps> = memo(({ post, currentUserId, on
             initial={{ opacity: 0, scale: 0.95 }}
             whileInView={{ opacity: 1, scale: 1 }}
             viewport={{ once: true, margin: "-50px" }}
-            className="w-full max-w-lg mx-auto mb-8 bg-[#0A0A0A] rounded-[32px] p-6 border border-[#222] relative shadow-2xl overflow-hidden font-sans"
+            className="w-full max-w-2xl mx-auto mb-8 bg-[#0A0A0A] rounded-[32px] p-6 border border-[#222] relative shadow-2xl overflow-hidden font-sans"
         >
             {/* Header */}
             <div className="flex items-center justify-between mb-4 z-20 relative">
@@ -115,7 +115,7 @@ export const PostCard: React.FC<PostCardProps> = memo(({ post, currentUserId, on
                     <UserAvatar name={post.userName} src={post.userAvatar} size={42} className="ring-2 ring-white/10" />
                     <div>
                         <h3 className="text-white font-bold text-sm leading-none">{post.userName}</h3>
-                        <p className="text-gray-500 text-[10px] font-mono mt-1 uppercase tracking-wide">{post.timestamp ? new Date(post.timestamp).toLocaleDateString() : 'JUST NOW'}</p>
+                        <p className="text-gray-500 text-[10px] font-mono mt-1 uppercase tracking-wide">{post.timestamp ? new Date(post.timestamp).toLocaleDateString() : 'AZ ÖNCE'}</p>
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
@@ -180,14 +180,14 @@ export const PostCard: React.FC<PostCardProps> = memo(({ post, currentUserId, on
             {/* Data Cards - Bento Grid Area 2 */}
             <div className="grid grid-cols-3 gap-3 mb-5">
                 <DataCard
-                    label="MAX SPEED"
+                    label="MAKS HIZ"
                     value={stats.maxSpeed}
                     unit="KM/H"
                     icon={Gauge}
                     delay={0.1}
                 />
                 <DataCard
-                    label="DISTANCE"
+                    label="MESAFE"
                     value={stats.distance}
                     unit="KM"
                     icon={MapPin}

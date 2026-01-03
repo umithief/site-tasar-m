@@ -30,7 +30,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
     return (
         <motion.div
             layoutId={`product-${product._id}`}
-            className="group relative bg-[#121214] rounded-xl overflow-hidden border border-white/5 hover:border-moto-accent/30 transition-all duration-300"
+            className="group relative bg-white dark:bg-[#121214] rounded-xl overflow-hidden border border-gray-200 dark:border-white/5 hover:border-moto-accent/30 dark:hover:border-moto-accent/30 transition-all duration-300 shadow-lg dark:shadow-none"
             whileHover={{ y: -5 }}
         >
             {/* Image Container */}
@@ -94,7 +94,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                         {product.brand}
                     </span>
                     <h3
-                        className="text-white font-medium line-clamp-1 cursor-pointer hover:text-moto-accent transition-colors"
+                        className="text-zinc-900 dark:text-white font-medium line-clamp-1 cursor-pointer hover:text-moto-accent dark:hover:text-moto-accent transition-colors"
                         onClick={() => onProductClick(product)}
                     >
                         {product.name}
@@ -108,7 +108,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                                 {product.price.toLocaleString('tr-TR')} ₺
                             </span>
                         )}
-                        <span className="text-lg font-bold text-white">
+                        <span className="text-lg font-bold text-zinc-900 dark:text-white">
                             {(product.discountPrice || product.price).toLocaleString('tr-TR')} ₺
                         </span>
                     </div>
@@ -120,8 +120,8 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                         }}
                         disabled={product.stock === 0}
                         className={`p-3 rounded-lg flex items-center justify-center transition-all ${product.stock === 0
-                                ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
-                                : 'bg-moto-accent text-black hover:bg-white hover:shadow-[0_0_15px_rgba(255,255,255,0.3)]'
+                            ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
+                            : 'bg-moto-accent text-black hover:bg-white hover:shadow-[0_0_15px_rgba(255,255,255,0.3)]'
                             }`}
                     >
                         <ShoppingCart size={20} />

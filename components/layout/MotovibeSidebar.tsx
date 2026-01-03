@@ -52,7 +52,7 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
     return (
         <motion.aside
             layout
-            className={`hidden md:flex flex-col h-screen fixed left-0 top-0 z-[1000] bg-black/95 backdrop-blur-2xl border-r border-white/5 ${className}`}
+            className={`hidden md:flex flex-col h-screen fixed left-0 top-0 z-[1000] bg-white/95 dark:bg-black/95 backdrop-blur-2xl border-r border-gray-200 dark:border-white/5 ${className}`}
             initial={false}
             animate={{ width: isExpanded ? 260 : 80 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
@@ -61,7 +61,7 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
             <div className="h-20 flex items-center justify-center relative">
                 <button
                     onClick={onToggleExpand}
-                    className="absolute left-[22px] p-2 rounded-full hover:bg-white/5 transition-colors text-white/80 hover:text-white"
+                    className="absolute left-[22px] p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/5 transition-colors text-zinc-600 dark:text-white/80 hover:text-black dark:hover:text-white"
                 >
                     <Menu strokeWidth={1} className="w-6 h-6" />
                 </button>
@@ -72,7 +72,7 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: -10 }}
-                            className="ml-12 font-display font-black text-xl tracking-[0.2em] text-white"
+                            className="ml-12 font-display font-black text-xl tracking-[0.2em] text-zinc-900 dark:text-white"
                         >
                             MOTO<span className="text-orange-500">VIBE</span>
                         </motion.div>
@@ -89,7 +89,7 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 exit={{ opacity: 0 }}
-                                className="px-4 mb-2 text-[10px] font-bold text-white/30 tracking-[0.2em] uppercase"
+                                className="px-4 mb-2 text-[10px] font-bold text-gray-500 dark:text-white/30 tracking-[0.2em] uppercase"
                             >
                                 {group.title}
                             </motion.h3>
@@ -130,7 +130,7 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
                                                     x: hoveredId === item.id ? 4 : 0,
                                                     scale: hoveredId === item.id ? 1.1 : 1
                                                 }}
-                                                className={`p-2 rounded-lg transition-colors z-10 ${isActive ? 'text-orange-500' : 'text-white/60 group-hover:text-white'}`}
+                                                className={`p-2 rounded-lg transition-colors z-10 ${isActive ? 'text-orange-500' : 'text-gray-500 dark:text-white/60 group-hover:text-zinc-900 dark:group-hover:text-white'}`}
                                             >
                                                 <item.icon
                                                     strokeWidth={1}
@@ -146,7 +146,7 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
                                                         animate={{ opacity: 1, x: 0 }}
                                                         exit={{ opacity: 0, x: -10 }}
                                                         transition={{ duration: 0.2, delay: 0.05 }}
-                                                        className={`ml-3 text-sm font-medium tracking-wide whitespace-nowrap ${isActive ? 'text-white font-bold' : 'text-zinc-400 group-hover:text-zinc-200'
+                                                        className={`ml-3 text-sm font-medium tracking-wide whitespace-nowrap ${isActive ? 'text-zinc-900 dark:text-white font-bold' : 'text-gray-500 dark:text-zinc-400 group-hover:text-zinc-900 dark:group-hover:text-zinc-200'
                                                             }`}
                                                     >
                                                         {item.label}

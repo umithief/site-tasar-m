@@ -95,20 +95,20 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                     <div className="flex items-center gap-3">
                         <div onClick={() => onNavigate(user ? 'profile' : 'auth' as any)} className="relative cursor-pointer group">
                             {user ? (
-                                <UserAvatar name={user.name || 'User'} size={48} className="border-2 border-white shadow-md" />
+                                <UserAvatar name={user.name || 'User'} size={48} className="border-2 border-white dark:border-zinc-800 shadow-md" />
                             ) : (
-                                <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center border-2 border-white shadow-sm">
-                                    <span className="text-sm font-bold text-gray-500">?</span>
+                                <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-zinc-800 flex items-center justify-center border-2 border-white dark:border-zinc-700 shadow-sm">
+                                    <span className="text-sm font-bold text-gray-500 dark:text-gray-400">?</span>
                                 </div>
                             )}
                             <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"></div>
                         </div>
                         <div>
-                            <p className="text-[10px] text-gray-500 font-bold uppercase tracking-wider flex items-center gap-1 mb-0.5">
+                            <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider flex items-center gap-1 mb-0.5">
                                 <Sun className="w-3 h-3 text-yellow-500" />
                                 {greeting}
                             </p>
-                            <h2 className="text-xl font-black text-gray-900 leading-none tracking-tight">{user && user.name ? user.name.split(' ')[0] : t('home.guest')}</h2>
+                            <h2 className="text-xl font-black text-gray-900 dark:text-white leading-none tracking-tight">{user && user.name ? user.name.split(' ')[0] : t('home.guest')}</h2>
                         </div>
                     </div>
 
@@ -134,7 +134,7 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                         {/* Cart Button */}
                         <Button
                             onClick={onCartClick}
-                            className="bg-gray-100 text-gray-600 border-2 border-transparent rounded-full hover:bg-moto-accent hover:text-black hover:shadow-lg transition-all"
+                            className="bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-300 border-2 border-transparent rounded-full hover:bg-moto-accent hover:text-black hover:shadow-lg transition-all"
                             variant="ghost"
                             size="icon"
                         >
@@ -218,7 +218,7 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     onClick={() => onNavigate('vlog-map')}
-                    className="max-w-[1800px] mx-auto bg-white border border-gray-200 rounded-3xl p-0 relative overflow-hidden cursor-pointer hover:border-red-500 transition-all group shadow-xl"
+                    className="max-w-[1800px] mx-auto bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 rounded-3xl p-0 relative overflow-hidden cursor-pointer hover:border-red-500 transition-all group shadow-xl"
                 >
                     <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 pointer-events-none"></div>
 
@@ -227,10 +227,10 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                             <div className="flex items-center gap-2 text-xs font-bold text-red-600 uppercase tracking-widest mb-3">
                                 <Film className="w-4 h-4" /> İnteraktif Harita
                             </div>
-                            <h3 className="text-3xl md:text-5xl font-display font-black text-gray-900 mb-4 leading-none">
+                            <h3 className="text-3xl md:text-5xl font-display font-black text-gray-900 dark:text-white mb-4 leading-none">
                                 {t('home.vlog_map').split(' ')[0]} <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-500">{t('home.vlog_map').split(' ')[1]}</span>
                             </h3>
-                            <p className="text-gray-600 text-sm md:text-base max-w-lg mb-6">
+                            <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base max-w-lg mb-6">
                                 {t('home.vlog_desc')}
                             </p>
 
@@ -255,13 +255,15 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                 </motion.div>
             </div>
 
+
+
             <div className="px-4 md:px-8 py-4 relative z-10">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     onClick={() => onNavigate('valuation')}
-                    className="max-w-[1800px] mx-auto bg-gradient-to-r from-orange-50 to-white border border-gray-200 rounded-3xl p-6 md:p-10 relative overflow-hidden cursor-pointer hover:border-moto-accent transition-all group shadow-lg"
+                    className="max-w-[1800px] mx-auto bg-gradient-to-r from-orange-50 to-white dark:from-zinc-900 dark:to-black border border-gray-200 dark:border-white/10 rounded-3xl p-6 md:p-10 relative overflow-hidden cursor-pointer hover:border-moto-accent transition-all group shadow-lg"
                 >
                     <div className="absolute top-0 right-0 w-64 h-64 bg-moto-accent/10 rounded-full blur-[80px] pointer-events-none group-hover:bg-moto-accent/20 transition-colors"></div>
 
@@ -270,17 +272,17 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                             <div className="flex items-center gap-2 text-xs font-bold text-moto-accent uppercase tracking-widest mb-2">
                                 <Sparkles className="w-4 h-4" /> Yeni Özellik
                             </div>
-                            <h3 className="text-2xl md:text-4xl font-display font-bold text-gray-900 mb-2 leading-tight">
+                            <h3 className="text-2xl md:text-4xl font-display font-bold text-gray-900 dark:text-white mb-2 leading-tight">
                                 {t('home.valuation')}
                             </h3>
-                            <p className="text-gray-600 text-sm md:text-base max-w-lg">
+                            <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base max-w-lg">
                                 {t('home.valuation_desc')}
                             </p>
                         </div>
 
                         <Button
                             onClick={() => onNavigate('valuation')}
-                            className="bg-black text-white px-6 py-3 rounded-xl font-bold text-sm shadow-xl hover:bg-moto-accent hover:text-black border border-transparent hover:border-black/10 gap-2"
+                            className="bg-black dark:bg-white text-white dark:text-black px-6 py-3 rounded-xl font-bold text-sm shadow-xl hover:bg-moto-accent hover:text-black border border-transparent hover:border-black/10 gap-2"
                             variant="secondary"
                         >
                             <Calculator className="w-4 h-4" />
@@ -291,7 +293,7 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                 </motion.div>
             </div>
 
-            <section className="relative py-8 md:py-24 overflow-hidden border-t border-gray-200 bg-white">
+            <section className="relative py-8 md:py-24 overflow-hidden border-t border-gray-200 dark:border-zinc-800 bg-white dark:bg-black">
                 <div className="absolute top-0 right-0 w-[300px] md:w-[600px] h-[300px] md:h-[600px] bg-moto-accent/5 rounded-full blur-[80px] md:blur-[120px] pointer-events-none translate-x-1/3 -translate-y-1/3"></div>
 
                 <div className="max-w-[1800px] mx-auto px-4 lg:px-8 relative z-10">
@@ -306,7 +308,7 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                                 <Award className="w-3 h-3 md:w-4 md:h-4" />
                                 <span>Curated Selection</span>
                             </div>
-                            <h2 className="text-2xl md:text-7xl font-display font-black text-gray-900 leading-[0.9] tracking-tight">
+                            <h2 className="text-2xl md:text-7xl font-display font-black text-gray-900 dark:text-white leading-[0.9] tracking-tight">
                                 {t('home.editors_choice').split(' ')[0]} <br />
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-moto-accent via-orange-500 to-moto-accent bg-[length:200%_auto] animate-shine">
                                     {t('home.editors_choice').split(' ').slice(1).join(' ')}
@@ -320,7 +322,7 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                             variant="ghost"
                         >
                             {t('common.view_all')}
-                            <div className="w-8 h-[2px] bg-black group-hover:bg-moto-accent transition-colors"></div>
+                            <div className="w-8 h-[2px] bg-black dark:bg-white group-hover:bg-moto-accent transition-colors"></div>
                             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                         </Button>
                     </div>

@@ -47,7 +47,7 @@ export const ShopFilters: React.FC<ShopFiltersProps> = ({
                     placeholder={t('common.search_placeholder')}
                     value={filters.search}
                     onChange={(e) => onChange({ ...filters, search: e.target.value })}
-                    className="w-full bg-[#1A1A1C] border border-white/10 rounded-lg px-4 py-2 pl-10 text-sm focus:border-moto-accent focus:outline-none transition-colors"
+                    className="w-full bg-white dark:bg-[#1A1A1C] border border-gray-200 dark:border-white/10 rounded-lg px-4 py-2 pl-10 text-sm text-zinc-900 dark:text-white focus:border-moto-accent focus:outline-none transition-colors"
                 />
                 <Search size={16} className="absolute left-3 top-2.5 text-gray-500" />
             </div>
@@ -64,14 +64,14 @@ export const ShopFilters: React.FC<ShopFiltersProps> = ({
                             className="flex items-center gap-3 cursor-pointer group"
                         >
                             <div className={`w-5 h-5 rounded border flex items-center justify-center transition-colors ${filters.categories.includes(category)
-                                    ? 'bg-moto-accent border-moto-accent'
-                                    : 'border-white/20 group-hover:border-white/40'
+                                ? 'bg-moto-accent border-moto-accent'
+                                : 'border-gray-300 dark:border-white/20 group-hover:border-gray-400 dark:group-hover:border-white/40'
                                 }`}>
                                 {filters.categories.includes(category) && (
                                     <span className="text-black text-xs font-bold">✓</span>
                                 )}
                             </div>
-                            <span className={`text-sm transition-colors ${filters.categories.includes(category) ? 'text-white' : 'text-gray-400 group-hover:text-gray-300'
+                            <span className={`text-sm transition-colors ${filters.categories.includes(category) ? 'text-zinc-900 dark:text-white font-medium' : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-700 dark:group-hover:text-gray-300'
                                 }`}>
                                 {category}
                             </span>
@@ -98,7 +98,7 @@ export const ShopFilters: React.FC<ShopFiltersProps> = ({
                             value={filters.minPrice}
                             onChange={(e) => onChange({ ...filters, minPrice: Number(e.target.value) })}
                             placeholder="Min"
-                            className="w-full bg-[#1A1A1C] border border-white/10 rounded px-3 py-2 text-sm text-center"
+                            className="w-full bg-white dark:bg-[#1A1A1C] border border-gray-200 dark:border-white/10 rounded px-3 py-2 text-sm text-center text-zinc-900 dark:text-white"
                         />
                         <span className="text-gray-500">-</span>
                         <input
@@ -106,7 +106,7 @@ export const ShopFilters: React.FC<ShopFiltersProps> = ({
                             value={filters.maxPrice}
                             onChange={(e) => onChange({ ...filters, maxPrice: Number(e.target.value) })}
                             placeholder="Max"
-                            className="w-full bg-[#1A1A1C] border border-white/10 rounded px-3 py-2 text-sm text-center"
+                            className="w-full bg-white dark:bg-[#1A1A1C] border border-gray-200 dark:border-white/10 rounded px-3 py-2 text-sm text-center text-zinc-900 dark:text-white"
                         />
                     </div>
                     {/* Range Slider could be added here */}
@@ -121,7 +121,7 @@ export const ShopFilters: React.FC<ShopFiltersProps> = ({
                 <select
                     value={filters.sortBy}
                     onChange={(e) => onChange({ ...filters, sortBy: e.target.value as any })}
-                    className="w-full bg-[#1A1A1C] border border-white/10 rounded-lg px-4 py-2 text-sm focus:border-moto-accent focus:outline-none cursor-pointer"
+                    className="w-full bg-white dark:bg-[#1A1A1C] border border-gray-200 dark:border-white/10 rounded-lg px-4 py-2 text-sm text-zinc-900 dark:text-white focus:border-moto-accent focus:outline-none cursor-pointer"
                 >
                     <option value="featured">{t('shop.recommended')}</option>
                     <option value="price-asc">{t('shop.price_low_high')}</option>

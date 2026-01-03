@@ -228,14 +228,15 @@ export interface SocialPost {
   shares: number;
   timestamp: string;
   isLiked?: boolean;
+  location?: string;
   commentList?: ForumComment[];
   rideStats?: {
     maxSpeed: number;
-    avgSpeed?: number;
-    leanAngle?: number;
     distance: number;
     duration: string;
     routeSvg?: string; // For the mini route map
+    avgSpeed?: number;
+    leanAngle?: number;
   };
 }
 

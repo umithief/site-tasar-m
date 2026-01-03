@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Compass, Home, MessageSquare, Calendar, User, Search, Map as MapIcon, Navigation, Plus, Image, Grid, Users, Bell, ShoppingBag, Settings, LogOut, PlusCircle, Archive, Heart, MessageCircle } from 'lucide-react';
+import { Compass, Home, MessageSquare, Calendar, User, Search, Map as MapIcon, Navigation, Plus, Image, Grid, Users, Bell, ShoppingBag, Settings, LogOut, PlusCircle, Archive, Heart, MessageCircle, Sun, Moon, Gauge } from 'lucide-react';
 import { ResponsivePostCard } from './ResponsivePostCard';
 import { PostComposer } from './PostComposer';
 import { FollowButton } from './FollowButton';
@@ -19,6 +19,7 @@ import { usePosts, useCreatePost } from '../../hooks/usePosts';
 import { MediaUploader } from '../ui/MediaUploader';
 import { useAuthStore } from '../../store/authStore';
 import { useNotificationStore } from '../../store/useNotificationStore';
+import { useThemeStore } from '../../store/useThemeStore';
 
 interface SocialHubProps {
     user: any;
@@ -123,19 +124,19 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
 
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const notifications = useNotificationStore((state) => state.notifications);
-    const markAsRead = useNotificationStore((state) => state.markAsRead);
+    const { theme, toggleTheme } = useThemeStore();
 
     return (
-        <div className="bg-[#09090b] min-h-screen text-white pt-0 pb-0 font-sans selection:bg-moto-accent/30 relative">
+        <div className="bg-[#09090b] dark:bg-[#09090b] bg-gray-50 min-h-screen text-white dark:text-white text-zinc-900 pt-0 pb-0 font-sans selection:bg-moto-accent/30 relative transition-colors duration-300">
             {/* Background Ambient */}
-            <div className="fixed top-0 left-0 w-full h-[50vh] bg-gradient-to-b from-purple-900/10 to-transparent pointer-events-none" />
+            <div className="fixed top-0 left-0 w-full h-[50vh] bg-gradient-to-b from-purple-900/10 to-transparent pointer-events-none dark:block hidden" />
 
             <div className="w-full mx-auto grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-0 relative items-start">
 
                 {/* --- MAIN FEED STREAM --- */}
-                <div className="min-h-screen border-r border-white/5 bg-[#09090b]">
+                <div className="min-h-screen border-r border-white/5 bg-[#09090b] dark:bg-[#09090b] bg-white transition-colors duration-300">
                     {/* Top Navigation Tabs */}
-                    <div className="sticky top-0 z-40 bg-[#09090b]/95 backdrop-blur-xl border-b border-white/5 px-4 lg:px-6 py-3 flex items-center justify-between">
+                    <div className="sticky top-0 z-40 bg-[#09090b]/95 dark:bg-[#09090b]/95 bg-white/95 backdrop-blur-xl border-b border-white/5 px-4 lg:px-6 py-3 flex items-center justify-between">
                         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
                             {[
                                 { id: 'feed', icon: Home, label: 'Akış' },
@@ -163,6 +164,14 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
 
                         {/* Right Actions */}
                         <div className="flex items-center gap-3 pl-4 border-l border-white/10 ml-4">
+                            {/* Theme Toggle */}
+                            <button
+                                onClick={toggleTheme}
+                                className="p-2 rounded-full transition-all border bg-[#18181b] dark:bg-[#18181b] bg-gray-100 text-zinc-400 border-white/5 hover:text-white hover:bg-zinc-700"
+                            >
+                                {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5 text-zinc-700" />}
+                            </button>
+
                             {/* Notifications */}
                             <div className="relative">
                                 <button
@@ -371,7 +380,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
 
                             {/* Feed Stream */}
                             <PullToRefresh onRefresh={async () => { await fetchNextPage(); }} isMobile={true}>
-                                <div className="space-y-6 pt-4">
+                                <div className="space-y-6 pt-0">
                                     {/* Empty State */}
                                     {!isFetchingNextPage && data?.pages?.[0]?.length === 0 && (
                                         <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
@@ -443,7 +452,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                 </div >
 
                 {/* --- RIGHT SIDEBAR (Context) --- */}
-                <div className="hidden lg:block sticky top-0 h-screen overflow-y-auto custom-scrollbar p-6 space-y-8 border-l border-white/5 bg-[#09090b]">
+                <div className="hidden lg:block sticky top-0 h-screen overflow-y-auto custom-scrollbar p-6 space-y-8 border-l border-white/5 bg-[#09090b] dark:bg-[#09090b] bg-white transition-colors duration-300">
 
                     {/* Search Field */}
                     <div className="relative group z-50">
@@ -496,8 +505,37 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                         </AnimatePresence>
                     </div>
 
+                    {/* Live Stats Widget */}
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="bg-[#111] dark:bg-[#111] bg-white rounded-3xl p-6 border border-white/5 shadow-xl relative overflow-hidden group"
+                    >
+                        <div className="absolute top-0 right-0 w-24 h-24 bg-moto-accent/10 blur-[40px] rounded-full pointer-events-none group-hover:bg-moto-accent/20 transition-colors" />
+                        <h3 className="font-bold text-white dark:text-white text-zinc-900 tracking-wide text-sm mb-4 flex items-center gap-2">
+                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
+                            CANLI VERİLER
+                        </h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="bg-white/5 rounded-xl p-3">
+                                <span className="text-[10px] text-gray-500 uppercase font-bold block mb-1">Anlık Hız</span>
+                                <div className="flex items-baseline gap-1">
+                                    <span className="text-2xl font-mono font-bold text-white dark:text-white text-zinc-900">124</span>
+                                    <span className="text-[10px] text-moto-accent font-bold">km/h</span>
+                                </div>
+                            </div>
+                            <div className="bg-white/5 rounded-xl p-3">
+                                <span className="text-[10px] text-gray-500 uppercase font-bold block mb-1">Mesafe</span>
+                                <div className="flex items-baseline gap-1">
+                                    <span className="text-2xl font-mono font-bold text-white dark:text-white text-zinc-900">42.8</span>
+                                    <span className="text-[10px] text-moto-accent font-bold">km</span>
+                                </div>
+                            </div>
+                        </div>
+                    </motion.div>
+
                     {/* Active Squads (Chats) */}
-                    < div className="bg-[#111] rounded-3xl p-6 border border-white/5 shadow-xl" >
+                    < div className="bg-[#111] dark:bg-[#111] bg-white rounded-3xl p-6 border border-white/5 shadow-xl" >
                         <div className="flex items-center justify-between mb-6">
                             <h3 className="font-bold text-white tracking-wide text-sm">AKTİF SOHBETLER</h3>
                             <span className="bg-green-500/20 text-green-500 text-[10px] px-2 py-1 rounded-full font-bold">{activeThreads.length}</span>
@@ -519,7 +557,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                     </div >
 
                     {/* Trending Riders */}
-                    < div className="bg-[#111] rounded-3xl p-6 border border-white/5 shadow-xl relative overflow-hidden" >
+                    < div className="bg-[#111] dark:bg-[#111] bg-white rounded-3xl p-6 border border-white/5 shadow-xl relative overflow-hidden" >
                         <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 blur-[60px] rounded-full pointer-events-none" />
                         <h3 className="font-bold text-white tracking-wide text-sm mb-6 relative z-10">ÖNERİLEN SÜRÜCÜLER</h3>
                         <div className="space-y-5 relative z-10">

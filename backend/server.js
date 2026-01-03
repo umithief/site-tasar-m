@@ -25,6 +25,7 @@ import negotiationRoutes from './routes/negotiationRoutes.js';
 import feedbackRoutes from './routes/feedbackRoutes.js';
 import showcaseRoutes from './routes/showcaseRoutes.js';
 import analyticsRoutes from './routes/analyticsRoutes.js';
+import activityRoutes from './routes/activityRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import reelRoutes from './routes/reelRoutes.js';
 import postRoutes from './routes/postRoutes.js';
@@ -575,6 +576,7 @@ app.use('/api/messages', messageRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/showcase', showcaseRoutes);
 app.use('/api/analytics', analyticsRoutes);
+app.use('/api/activities', activityRoutes);
 
 app.use('/api/music', musicRoutes);
 app.use('/api/models', modelRoutes);

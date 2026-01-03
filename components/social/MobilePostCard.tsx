@@ -32,20 +32,20 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = ({ post, currentUse
     };
 
     return (
-        <div className="w-full bg-black mb-6 relative">
+        <div className="w-full bg-white dark:bg-black mb-6 relative shadow-sm dark:shadow-none border-b border-gray-100 dark:border-none">
             {/* Header */}
             <div className="flex items-center justify-between px-4 py-3">
                 <div className="flex items-center gap-3">
                     <UserAvatar name={post.userName} src={post.userAvatar} size={36} />
                     <div>
-                        <h3 className="text-white text-sm font-bold">{post.userName}</h3>
+                        <h3 className="text-zinc-900 dark:text-white text-sm font-bold">{post.userName}</h3>
                         {post.bikeModel && (
                             <p className="text-xs text-gray-500">{post.bikeModel}</p>
                         )}
                     </div>
                 </div>
-                <button className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
-                    <MoreVertical className="w-5 h-5 text-gray-400" />
+                <button className="w-8 h-8 rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
+                    <MoreVertical className="w-5 h-5 text-gray-500 dark:text-gray-400" />
                 </button>
             </div>
 
@@ -61,7 +61,7 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = ({ post, currentUse
                         className="w-full h-full object-cover"
                     />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-700">
+                    <div className="w-full h-full flex items-center justify-center text-gray-700 bg-gray-100 dark:bg-gray-900">
                         No Image
                     </div>
                 )}
@@ -84,16 +84,16 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = ({ post, currentUse
             {/* Ride Stats Grid - NEW */}
             {post.rideStats && (
                 <div className="grid grid-cols-3 gap-2 px-2 mt-3 mb-1">
-                    <div className="bg-white/5 rounded-xl p-2 flex flex-col items-center justify-center border border-white/5">
-                        <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">MAKS KM/H</span>
-                        <span className="text-lg font-mono font-bold text-white">{post.rideStats.maxSpeed}</span>
+                    <div className="bg-gray-50 dark:bg-white/5 rounded-xl p-2 flex flex-col items-center justify-center border border-gray-100 dark:border-white/5">
+                        <span className="text-[10px] text-gray-500 dark:text-gray-400 uppercase font-bold tracking-wider">MAKS KM/H</span>
+                        <span className="text-lg font-mono font-bold text-zinc-900 dark:text-white">{post.rideStats.maxSpeed}</span>
                     </div>
-                    <div className="bg-white/5 rounded-xl p-2 flex flex-col items-center justify-center border border-white/5">
-                        <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">MESAFE (KM)</span>
-                        <span className="text-lg font-mono font-bold text-white">{post.rideStats.distance}</span>
+                    <div className="bg-gray-50 dark:bg-white/5 rounded-xl p-2 flex flex-col items-center justify-center border border-gray-100 dark:border-white/5">
+                        <span className="text-[10px] text-gray-500 dark:text-gray-400 uppercase font-bold tracking-wider">MESAFE (KM)</span>
+                        <span className="text-lg font-mono font-bold text-zinc-900 dark:text-white">{post.rideStats.distance}</span>
                     </div>
-                    <div className="bg-white/5 rounded-xl p-2 flex flex-col items-center justify-center border border-white/5 relative overflow-hidden">
-                        <span className="text-[10px] text-gray-400 uppercase font-bold tracking-wider relative z-10">ROTA</span>
+                    <div className="bg-gray-50 dark:bg-white/5 rounded-xl p-2 flex flex-col items-center justify-center border border-gray-100 dark:border-white/5 relative overflow-hidden">
+                        <span className="text-[10px] text-gray-500 dark:text-gray-400 uppercase font-bold tracking-wider relative z-10">ROTA</span>
                         <svg viewBox="0 0 100 50" className="absolute inset-0 w-full h-full opacity-30 stroke-[#E2FF3B]" fill="none" strokeWidth="2">
                             <path d="M10,40 C30,40 30,10 50,10 C70,10 70,40 90,40" />
                         </svg>
@@ -105,27 +105,27 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = ({ post, currentUse
             <div className="px-4 py-3 pb-1">
                 <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-6">
-                        <button onClick={handleLike} className="group w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
-                            <Heart className={`w-6 h-6 transition-colors ${isLiked ? 'text-red-500 fill-red-500' : 'text-white group-active:scale-90'}`} />
+                        <button onClick={handleLike} className="group w-10 h-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                            <Heart className={`w-6 h-6 transition-colors ${isLiked ? 'text-red-500 fill-red-500' : 'text-zinc-900 dark:text-white group-active:scale-90'}`} />
                         </button>
-                        <button onClick={() => onComment && onComment(post._id)} className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
-                            <MessageCircle className="w-6 h-6 text-white" />
+                        <button onClick={() => onComment && onComment(post._id)} className="w-10 h-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                            <MessageCircle className="w-6 h-6 text-zinc-900 dark:text-white" />
                         </button>
-                        <button className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors">
-                            <Share2 className="w-6 h-6 text-white" />
+                        <button className="w-10 h-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-white/10 transition-colors">
+                            <Share2 className="w-6 h-6 text-zinc-900 dark:text-white" />
                         </button>
                     </div>
-                    <button className="w-10 h-10 rounded-full bg-white/5 flex items-center justify-center hover:bg-white/10 transition-colors active:scale-95">
-                        <Bookmark className="w-6 h-6 text-white" />
+                    <button className="w-10 h-10 rounded-full bg-gray-50 dark:bg-white/5 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-white/10 transition-colors active:scale-95">
+                        <Bookmark className="w-6 h-6 text-zinc-900 dark:text-white" />
                     </button>
                 </div>
 
                 {/* Likes & Content */}
                 <div className="space-y-1">
-                    <p className="text-sm font-bold text-white">{likeCount} likes</p>
-                    <div className="text-sm text-white">
+                    <p className="text-sm font-bold text-zinc-900 dark:text-white">{likeCount} likes</p>
+                    <div className="text-sm text-zinc-900 dark:text-white">
                         <span className="font-bold mr-2">{post.userName}</span>
-                        <span className="text-gray-200">{post.content}</span>
+                        <span className="text-gray-600 dark:text-gray-200">{post.content}</span>
                     </div>
                     <button className="text-xs text-gray-500 mt-1 uppercase tracking-wide">
                         {post.timestamp || 'Az önce'}

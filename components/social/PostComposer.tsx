@@ -31,9 +31,14 @@ export const PostComposer: React.FC<PostComposerProps> = ({ currentUser, onPostC
         if (stats) {
             setStats(null);
         } else {
-            // Simulate fetching ride stats
             const rideData = await socialService.getLatestRideActivity();
-            if (rideData) setStats(rideData);
+            if (rideData && (rideData.distance || rideData.maxSpeed)) {
+                setStats(rideData);
+            } else {
+                // Fallback or notify user
+                // keeping simple for now, maybe set a "No recent ride" state
+                alert("Son sürüş bulunamadı!");
+            }
         }
     };
 
@@ -42,8 +47,27 @@ export const PostComposer: React.FC<PostComposerProps> = ({ currentUser, onPostC
         if (location) {
             setLocation(null);
         } else {
-            // Mock location for demo
-            setLocation("İstanbul, Türkiye");
+            if ("geolocation" in navigator) {
+                navigator.geolocation.getCurrentPosition(async (position) => {
+                    try {
+                        const { latitude, longitude } = position.coords;
+                        // Use OpenStreetMap Nominatim for free reverse geocoding
+                        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+                        const data = await response.json();
+                        const city = data.address.city || data.address.town || data.address.village || "Konum";
+                        const province = data.address.state || data.address.province || "";
+                        setLocation(`${city}, ${province}`);
+                    } catch (error) {
+                        console.error("Geocoding failed", error);
+                        setLocation(`${position.coords.latitude.toFixed(2)}, ${position.coords.longitude.toFixed(2)}`);
+                    }
+                }, (error) => {
+                    console.error("Geolocation error", error);
+                    alert("Konum alınamadı. Lütfen izinleri kontrol edin.");
+                });
+            } else {
+                alert("Tarayıcınız konum servisini desteklemiyor.");
+            }
         }
     };
 
@@ -67,7 +91,7 @@ export const PostComposer: React.FC<PostComposerProps> = ({ currentUser, onPostC
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="w-full max-w-2xl mx-auto bg-[#0F0F0F] border border-[#27272A] rounded-[2rem] p-6 mb-8 shadow-2xl relative overflow-hidden group"
+            className="w-full max-w-2xl mx-auto bg-[#0F0F0F] dark:bg-[#0F0F0F] bg-white border border-[#27272A] dark:border-[#27272A] border-gray-200 rounded-[2rem] p-6 mb-8 shadow-2xl dark:shadow-2xl shadow-gray-200/50 relative overflow-hidden group"
         >
             {/* Top Section */}
             <div className="flex gap-4 items-start">
@@ -78,7 +102,7 @@ export const PostComposer: React.FC<PostComposerProps> = ({ currentUser, onPostC
                         value={content}
                         onChange={(e) => setContent(e.target.value)}
                         placeholder="Sürüş hislerini paylaş..."
-                        className="w-full bg-transparent text-lg text-white placeholder-zinc-500 outline-none resize-none min-h-[60px] leading-relaxed max-h-[300px] overflow-y-auto custom-scrollbar"
+                        className="w-full bg-transparent text-lg text-white dark:text-white text-zinc-900 placeholder-zinc-500 outline-none resize-none min-h-[60px] leading-relaxed max-h-[300px] overflow-y-auto custom-scrollbar"
                     />
                 </div>
             </div>
@@ -109,17 +133,17 @@ export const PostComposer: React.FC<PostComposerProps> = ({ currentUser, onPostC
             <div className="flex flex-wrap gap-2 mt-4 pl-[64px] min-h-[28px]">
                 <AnimatePresence>
                     {location && (
-                        <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }} className="bg-zinc-800 border border-white/5 text-zinc-300 px-3 py-1 rounded-full text-xs flex items-center gap-1.5">
-                            <MapPin className="w-3 h-3 text-[#E2FF3B]" />
+                        <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }} className="bg-zinc-800 dark:bg-zinc-800 bg-gray-100 border border-white/5 dark:border-white/5 border-gray-200 text-zinc-300 dark:text-zinc-300 text-gray-700 px-3 py-1 rounded-full text-xs flex items-center gap-1.5">
+                            <MapPin className="w-3 h-3 text-[#E2FF3B] dark:text-[#E2FF3B] text-moto-accent" />
                             {location}
-                            <button onClick={() => setLocation(null)} className="ml-1 hover:text-white"><X className="w-3 h-3" /></button>
+                            <button onClick={() => setLocation(null)} className="ml-1 hover:text-white dark:hover:text-white hover:text-black"><X className="w-3 h-3" /></button>
                         </motion.div>
                     )}
                     {stats && (
-                        <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }} className="bg-zinc-800 border border-white/5 text-zinc-300 px-3 py-1 rounded-full text-xs flex items-center gap-1.5">
-                            <Gauge className="w-3 h-3 text-[#E2FF3B]" />
+                        <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.8, opacity: 0 }} className="bg-zinc-800 dark:bg-zinc-800 bg-gray-100 border border-white/5 dark:border-white/5 border-gray-200 text-zinc-300 dark:text-zinc-300 text-gray-700 px-3 py-1 rounded-full text-xs flex items-center gap-1.5">
+                            <Gauge className="w-3 h-3 text-[#E2FF3B] dark:text-[#E2FF3B] text-moto-accent" />
                             <span>{stats.distance}km • {stats.maxSpeed}km/h</span>
-                            <button onClick={() => setStats(null)} className="ml-1 hover:text-white"><X className="w-3 h-3" /></button>
+                            <button onClick={() => setStats(null)} className="ml-1 hover:text-white dark:hover:text-white hover:text-black"><X className="w-3 h-3" /></button>
                         </motion.div>
                     )}
                 </AnimatePresence>
@@ -137,7 +161,7 @@ export const PostComposer: React.FC<PostComposerProps> = ({ currentUser, onPostC
                             showPreview={false}
                             trigger={
                                 <button
-                                    className={`p-2 rounded-full transition-colors ${mediaUrl ? 'text-[#E2FF3B] bg-[#E2FF3B]/10' : 'text-zinc-500 hover:text-[#E2FF3B] hover:bg-white/5'}`}
+                                    className={`p-2 rounded-full transition-colors ${mediaUrl ? 'text-[#E2FF3B] bg-[#E2FF3B]/10' : 'text-zinc-500 dark:text-zinc-500 text-gray-400 hover:text-[#E2FF3B] hover:bg-white/5 dark:hover:bg-white/5 hover:bg-gray-100'}`}
                                     title="Fotoğraf Ekle"
                                 >
                                     <ImageIcon className="w-5 h-5" />
@@ -148,7 +172,7 @@ export const PostComposer: React.FC<PostComposerProps> = ({ currentUser, onPostC
 
                     <button
                         onClick={toggleLocation}
-                        className={`p-2 rounded-full transition-colors ${location ? 'text-[#E2FF3B] bg-[#E2FF3B]/10' : 'text-zinc-500 hover:text-[#E2FF3B] hover:bg-white/5'}`}
+                        className={`p-2 rounded-full transition-colors ${location ? 'text-[#E2FF3B] bg-[#E2FF3B]/10' : 'text-zinc-500 dark:text-zinc-500 text-gray-400 hover:text-[#E2FF3B] hover:bg-white/5 dark:hover:bg-white/5 hover:bg-gray-100'}`}
                         title="Konum Ekle"
                     >
                         <MapPin className="w-5 h-5" />
@@ -156,7 +180,7 @@ export const PostComposer: React.FC<PostComposerProps> = ({ currentUser, onPostC
 
                     <button
                         onClick={toggleStats}
-                        className={`p-2 rounded-full transition-colors ${stats ? 'text-[#E2FF3B] bg-[#E2FF3B]/10' : 'text-zinc-500 hover:text-[#E2FF3B] hover:bg-white/5'}`}
+                        className={`p-2 rounded-full transition-colors ${stats ? 'text-[#E2FF3B] bg-[#E2FF3B]/10' : 'text-zinc-500 dark:text-zinc-500 text-gray-400 hover:text-[#E2FF3B] hover:bg-white/5 dark:hover:bg-white/5 hover:bg-gray-100'}`}
                         title="Sürüş Verisi Ekle"
                     >
                         <Gauge className="w-5 h-5" />

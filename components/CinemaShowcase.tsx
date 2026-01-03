@@ -60,10 +60,14 @@ export const CinemaShowcase: React.FC = () => {
             } as any;
 
             // Create a single item order
-            await orderService.createOrder(currentUser, [{
-                ...product,
-                quantity: 1
-            }], product.price);
+            await orderService.createOrder({
+                user: currentUser,
+                items: [{
+                    ...product,
+                    quantity: 1
+                }],
+                totalPrice: product.price
+            });
 
             notify.success(`${product.name} için ön sipariş talebiniz alındı!`);
         } catch (error) {
@@ -75,7 +79,7 @@ export const CinemaShowcase: React.FC = () => {
     const [previewProduct, setPreviewProduct] = useState<Product | null>(null);
 
     return (
-        <section className="relative py-24 md:py-32 bg-[#050505] overflow-hidden">
+        <section className="relative py-24 md:py-32 bg-white dark:bg-[#050505] overflow-hidden transition-colors duration-500">
             {/* ... (Existing Background Elements) ... */}
             <div className="absolute inset-0 z-0">
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(var(--moto-accent-rgb),0.05)_0%,transparent_70%)]" />
@@ -117,9 +121,9 @@ export const CinemaShowcase: React.FC = () => {
                     <motion.h2
                         initial={{ opacity: 0, y: 30 }}
                         whileInView={{ opacity: 1, y: 0 }}
-                        className="text-5xl md:text-8xl font-black text-white tracking-tighter"
+                        className="text-5xl md:text-8xl font-black text-zinc-900 dark:text-white tracking-tighter"
                     >
-                        GÜÇ & <span className="text-white/10 italic">ESTETİK</span>
+                        GÜÇ & <span className="text-zinc-400 dark:text-white/10 italic">ESTETİK</span>
                     </motion.h2>
                 </div>
 

@@ -306,18 +306,18 @@ export const socialService = {
 
     // Mock integration with Ride Mode
     async getLatestRideActivity(): Promise<any | null> {
-        // In a real scenario, this would fetch from /api/rides/latest
-        // simulating a fetch
-        return new Promise(resolve => {
-            setTimeout(() => {
-                resolve({
-                    id: 'ride-' + Math.random().toString(36).substr(2, 9),
-                    maxSpeed: Math.floor(Math.random() * (220 - 80) + 80),
-                    distance: parseFloat((Math.random() * 50).toFixed(1)),
-                    duration: '45m',
-                    date: new Date().toISOString()
-                });
-            }, 500);
-        });
+        const token = localStorage.getItem('token');
+        if (!token) return null;
+
+        try {
+            const response = await fetch(`${CONFIG.API_URL}/activities/latest`, {
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            if (!response.ok) return null;
+            return await response.json();
+        } catch (error) {
+            console.error('Get Latest Ride Error:', error);
+            return null;
+        }
     }
 };

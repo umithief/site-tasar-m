@@ -113,7 +113,7 @@ export const Shop: React.FC<ShopProps> = ({
 
                 {/* Mobile Filter Toggle */}
                 <button
-                    className="lg:hidden flex items-center justify-center gap-2 bg-[#1A1A1C] p-3 rounded-lg border border-white/10 text-white font-medium"
+                    className="lg:hidden flex items-center justify-center gap-2 bg-white dark:bg-[#1A1A1C] p-3 rounded-lg border border-gray-200 dark:border-white/10 text-zinc-900 dark:text-white font-medium shadow-sm"
                     onClick={() => setIsMobileFiltersOpen(!isMobileFiltersOpen)}
                 >
                     <Filter size={20} />
@@ -144,7 +144,7 @@ export const Shop: React.FC<ShopProps> = ({
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 20 }}
-                            className="lg:hidden bg-[#121214] p-6 rounded-xl border border-white/10 mb-6"
+                            className="lg:hidden bg-white dark:bg-[#121214] p-6 rounded-xl border border-gray-200 dark:border-white/10 mb-6 shadow-xl"
                         >
                             <ShopFilters
                                 filters={filters}
@@ -180,16 +180,16 @@ export const Shop: React.FC<ShopProps> = ({
                     {loading ? (
                         <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-6">
                             {[...Array(6)].map((_, i) => (
-                                <div key={i} className="bg-[#121214] rounded-xl aspect-[4/5] animate-pulse" />
+                                <div key={i} className="bg-gray-200 dark:bg-[#121214] rounded-xl aspect-[4/5] animate-pulse" />
                             ))}
                         </div>
                     ) : filteredProducts.length === 0 ? (
                         <div className="flex flex-col items-center justify-center py-20 text-center">
-                            <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mb-4 text-3xl">
+                            <div className="w-16 h-16 bg-gray-100 dark:bg-white/5 rounded-full flex items-center justify-center mb-4 text-3xl">
                                 🔍
                             </div>
-                            <h3 className="text-xl font-bold text-white mb-2">{t('shop.no_results')}</h3>
-                            <p className="text-gray-400 max-w-sm">
+                            <h3 className="text-xl font-bold text-zinc-900 dark:text-white mb-2">{t('shop.no_results')}</h3>
+                            <p className="text-gray-500 dark:text-gray-400 max-w-sm">
                                 Arama kriterlerinize uygun ürün bulunamadı. Filtreleri temizlemeyi deneyin.
                             </p>
                             <button

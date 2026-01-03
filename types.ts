@@ -466,6 +466,8 @@ export interface NegotiationOffer {
 
 
 
+export type ColorTheme = 'dark' | 'light';
+
 export type FeedbackType = 'bug' | 'feature' | 'general' | 'other';
 
 export interface Feedback {

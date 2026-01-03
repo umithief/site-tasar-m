@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, Grid, Bike, FolderHeart, Settings, MapPin, Gauge, Trophy, Package, LogOut, Edit3, X, Image as ImageIcon, LayoutDashboard, Shield, Plus } from 'lucide-react';
-import { SocialPost, SocialProfile, User as UserType, Order, ViewState, ColorTheme, UserBike } from '../../types';
+import { SocialPost, SocialProfile, User as UserType, Order, ViewState, UserBike } from '../../types';
 import { UserAvatar } from '../ui/UserAvatar';
 import { Button } from '../ui/Button';
 import { orderService } from '../../services/orderService';
@@ -21,9 +21,7 @@ interface UserProfileProps {
     user: UserType; // Current Logged in User
     onLogout?: () => void;
     onUpdateUser?: (user: UserType) => void;
-    onNavigate?: (view: ViewState) => void;
-    colorTheme?: ColorTheme;
-    onColorChange?: (theme: ColorTheme) => void;
+    onNavigate: (view: ViewState) => void;
     profile?: SocialProfile; // Target Profile to view
 }
 

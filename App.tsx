@@ -79,6 +79,7 @@ export const App: React.FC = () => {
     const [view, setView] = useState<ViewState>('home');
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [isCartOpen, setIsCartOpen] = useState(false);
+    const [isPaymentOpen, setIsPaymentOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);

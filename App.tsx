@@ -109,7 +109,7 @@ export const App: React.FC = () => {
     const [activeRoute, setActiveRoute] = useState<RouteType | null>(null);
     const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
-    const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+
 
     const [isProModalOpen, setIsProModalOpen] = useState(false);
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);

@@ -46,7 +46,6 @@ import { tourService } from './services/tourService';
 import { recordingService } from './services/recordingService';
 import { notify } from './services/notificationService';
 import { gamificationService } from './services/gamificationService';
-import { gamificationService } from './services/gamificationService';
 import { useAuthStore } from './store/authStore';
 import { useThemeStore } from './store/useThemeStore';
 

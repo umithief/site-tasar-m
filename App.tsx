@@ -118,7 +118,13 @@ export const App: React.FC = () => {
     const [socialHubData, setSocialHubData] = useState<any>(null); // Placeholder for initial data
     const { theme } = useThemeStore();
 
-
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            const root = window.document.documentElement;
+            root.classList.remove('light', 'dark');
+            root.classList.add(theme);
+        }
+    }, [theme]);
 
     // GLOBAL AUTH SYNC: Listen to store changes to keep local state updated (e.g. from Settings)
     const authUser = useAuthStore((state) => state.user);

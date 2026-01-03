@@ -167,5 +167,48 @@ button {
     cursor: pointer;
     user-select: none;
     touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-}
+
+    /* Map Styles */
+    .neon-polyline {
+        filter: drop-shadow(0 0 8px #E2FF3B) drop-shadow(0 0 15px #E2FF3B);
+        stroke-linecap: round;
+    }
+
+    .custom-marker {
+        background: transparent;
+        border: none;
+    }
+
+    @keyframes pulse {
+        0% {
+            transform: scale(1);
+            opacity: 0.8;
+        }
+
+        100% {
+            transform: scale(3);
+            opacity: 0;
+        }
+    }
+
+    .pulse-ring {
+        animation: pulse 2s infinite;
+    }
+
+    /* Premium Popup */
+    .leaflet-popup-content-wrapper {
+        background: rgba(10, 10, 10, 0.95) !important;
+        backdrop-filter: blur(12px);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 12px !important;
+        color: white !important;
+        padding: 0 !important;
+    }
+
+    .leaflet-popup-tip {
+        background: rgba(10, 10, 10, 0.95) !important;
+    }
+
+    .leaflet-container {
+        background-color: #050505 !important;
+    }

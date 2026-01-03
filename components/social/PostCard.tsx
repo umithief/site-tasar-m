@@ -116,7 +116,6 @@ export const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onNavig
 
                         <button
                             onClick={onCommentClick}
-                            onClick={onCommentClick}
                             className="group/comment flex items-center gap-1.5 text-zinc-500 hover:text-white transition-colors"
                         >
                             <div className="p-2 rounded-full bg-white/5 group-hover/comment:bg-white/10 transition-colors">

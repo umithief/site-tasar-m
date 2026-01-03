@@ -55,9 +55,9 @@ body {
 }
 
 :root {
-    color-scheme: light dark;
+    color-scheme: dark;
 
-    /* Default (Dark) Variables */
+    /* Permanent Dark Mode Variables */
     --bg-primary: #09090b;
     --text-primary: #ffffff;
     --scrollbar-track: #09090b;
@@ -67,22 +67,6 @@ body {
     --moto-accent: #F2A619;
     --moto-accent-hover: #d98e04;
     --moto-accent-rgb: 242 166 25;
-}
-
-:root.light {
-    --bg-primary: #f4f4f5;
-    --text-primary: #18181b;
-    --scrollbar-track: #f4f4f5;
-    --scrollbar-thumb: #d4d4d8;
-    --scrollbar-thumb-hover: #a1a1aa;
-}
-
-:root.dark {
-    --bg-primary: #09090b;
-    --text-primary: #ffffff;
-    --scrollbar-track: #09090b;
-    --scrollbar-thumb: #27272a;
-    --scrollbar-thumb-hover: #3f3f46;
 }
 
 /* Consistent Map Styles */

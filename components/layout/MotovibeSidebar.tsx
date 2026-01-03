@@ -8,7 +8,6 @@ import {
 import { useAuthStore } from '../../store/authStore';
 import { ViewState } from '../../types';
 import { UserAvatar } from '../ui/UserAvatar';
-import { ThemeToggle } from '../ui/ThemeToggle';
 
 interface MotovibeSidebarProps {
     activeView: ViewState;
@@ -165,10 +164,6 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
 
             {/* 3. Bottom User Profile (Removed) */}
             {/* <div className="p-4 border-t border-white/5">...</div> */}
-
-            <div className="p-4 flex justify-center border-t border-white/5">
-                <ThemeToggle />
-            </div>
         </motion.aside>
     );
 };

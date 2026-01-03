@@ -47,7 +47,6 @@ import { recordingService } from './services/recordingService';
 import { notify } from './services/notificationService';
 import { gamificationService } from './services/gamificationService';
 import { useAuthStore } from './store/authStore';
-import { useThemeStore } from './store/useThemeStore';
 
 import { useAppSounds } from './hooks/useAppSounds';
 import { ArrowUp, Zap, Instagram, Twitter, Youtube, Facebook, MapPin, Phone, Mail } from 'lucide-react';
@@ -118,16 +117,13 @@ export const App: React.FC = () => {
 
     const [socialHubData, setSocialHubData] = useState<any>(null); // Placeholder for initial data
 
-    // Theme Management
-    const theme = useThemeStore((state) => state.theme);
-
+    // Force Dark Mode
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            const root = document.documentElement;
-            root.classList.remove('light', 'dark');
-            root.classList.add(theme);
+            document.documentElement.classList.remove('light');
+            document.documentElement.classList.add('dark');
         }
-    }, [theme]);
+    }, []);
 
     // GLOBAL AUTH SYNC: Listen to store changes to keep local state updated (e.g. from Settings)
     const authUser = useAuthStore((state) => state.user);

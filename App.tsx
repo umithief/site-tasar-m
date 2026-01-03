@@ -1,6 +1,6 @@
 // Main Application Component
 import React, { useState, useEffect, useRef } from 'react';
-import { Product, CartItem, ProductCategory, User, AuthMode, Route as RouteType, ViewState, ColorTheme } from './types';
+import { Product, CartItem, ProductCategory, User, AuthMode, Route as RouteType, ViewState } from './types';
 import { Navbar } from './components/layout/Navbar';
 import { MotovibeSidebar } from './components/layout/MotovibeSidebar';
 import { BottomNav } from './components/layout/BottomNav';
@@ -31,7 +31,7 @@ import { ScrollProgress } from './components/ScrollProgress';
 import { ProModal } from './components/ProModal';
 import { FeedbackModal } from './components/FeedbackModal';
 import { MotoValuation } from './components/MotoValuation';
-import { ThemeModal } from './components/ThemeModal';
+
 import { HelmetQRGenerator } from './components/HelmetQRGenerator';
 import { MotoVlogMap } from './components/MotoVlogMap';
 import { LifeSaver } from './components/LifeSaver';
@@ -47,7 +47,7 @@ import { recordingService } from './services/recordingService';
 import { notify } from './services/notificationService';
 import { gamificationService } from './services/gamificationService';
 import { useAuthStore } from './store/authStore';
-import { useThemeStore } from './store/useThemeStore';
+
 import { useAppSounds } from './hooks/useAppSounds';
 import { ArrowUp, Zap, Instagram, Twitter, Youtube, Facebook, MapPin, Phone, Mail } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
@@ -110,21 +110,19 @@ export const App: React.FC = () => {
     const [toasts, setToasts] = useState<ToastMessage[]>([]);
 
     const [isPaymentOpen, setIsPaymentOpen] = useState(false);
-    const [isThemeModalOpen, setIsThemeModalOpen] = useState(false);
-    const [colorTheme, setColorTheme] = useState<ColorTheme>('orange');
+    const [isPaymentOpen, setIsPaymentOpen] = useState(false);
     const [isProModalOpen, setIsProModalOpen] = useState(false);
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
 
     const [socialHubData, setSocialHubData] = useState<any>(null); // Placeholder for initial data
-    const { theme } = useThemeStore();
 
+    // Force Dark Mode
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            const root = window.document.documentElement;
-            root.classList.remove('light');
-            root.classList.add('dark');
+            document.documentElement.classList.remove('light');
+            document.documentElement.classList.add('dark');
         }
-    }, [theme]);
+    }, []);
 
     // GLOBAL AUTH SYNC: Listen to store changes to keep local state updated (e.g. from Settings)
     const authUser = useAuthStore((state) => state.user);
@@ -549,12 +547,7 @@ export const App: React.FC = () => {
                     onPaymentComplete={handlePaymentComplete}
                 />
 
-                <ThemeModal
-                    isOpen={isThemeModalOpen}
-                    onClose={() => setIsThemeModalOpen(false)}
-                    currentTheme={colorTheme}
-                    onThemeChange={setColorTheme}
-                />
+
 
                 {isFullScreenMode ? (
                     <main className="w-full h-full relative z-10 bg-black">

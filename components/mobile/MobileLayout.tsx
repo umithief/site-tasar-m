@@ -23,7 +23,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
     cartCount,
     onOpenAuth,
     onOpenFeedback,
-    onOpenFeedback
+
 }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [showTopBar, setShowTopBar] = useState(true);
@@ -97,7 +97,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
                 onOpenAuth={onOpenAuth}
                 onOpenFeedback={onOpenFeedback}
                 onToggle={() => setIsMenuOpen(!isMenuOpen)}
-                onToggle={() => setIsMenuOpen(!isMenuOpen)}
+
             />
         </div>
     );

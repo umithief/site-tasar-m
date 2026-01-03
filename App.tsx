@@ -579,7 +579,7 @@ export const App: React.FC = () => {
                         cartCount={cartItems.reduce((a, b) => a + b.quantity, 0)}
                         onOpenAuth={() => setIsAuthOpen(true)}
                         onOpenFeedback={() => setIsFeedbackOpen(true)}
-                        onOpenFeedback={() => setIsFeedbackOpen(true)}
+
                     >
                         {/* Desktop Header & Sidebar */}
                         <div className="hidden md:block">

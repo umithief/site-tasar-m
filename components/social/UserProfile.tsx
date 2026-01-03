@@ -54,7 +54,7 @@ const MOCK_USER_POSTS: SocialPost[] = [
     }
 ];
 
-export const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout, onUpdateUser, onNavigate, colorTheme, onColorChange, profile: propProfile }) => {
+export const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout, onUpdateUser, onNavigate, profile: propProfile }) => {
     const { t } = useLanguage();
     const [activeTab, setActiveTab] = useState<'posts' | 'media' | 'tagged' | 'orders'>('posts');
     const [orders, setOrders] = useState<Order[]>([]);
@@ -414,30 +414,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({ user, onLogout, onUpda
                                 </div>
 
                                 <div className="mt-auto w-full pt-8">
-                                    <div className="bg-white/5 rounded-2xl p-4 border border-white/10">
-                                        <div className="flex items-center justify-between mb-4">
-                                            <span className="text-[10px] font-black text-gray-500 uppercase tracking-widest">Core Theme</span>
-                                            <div className="w-2 h-2 rounded-full shadow-[0_0_8px_currentColor]" style={{ backgroundColor: colorTheme === 'orange' ? '#F2A619' : colorTheme === 'red' ? '#EF4444' : colorTheme === 'blue' ? '#3B82F6' : colorTheme === 'green' ? '#22C55E' : colorTheme === 'purple' ? '#A855F7' : colorTheme === 'cyan' ? '#06B6D4' : colorTheme === 'yellow' ? '#EAB308' : '#EAB308' }} />
-                                        </div>
-                                        <div className="grid grid-cols-7 gap-2">
-                                            {[
-                                                { id: 'orange', color: '#F2A619' },
-                                                { id: 'red', color: '#EF4444' },
-                                                { id: 'blue', color: '#3B82F6' },
-                                                { id: 'green', color: '#22C55E' },
-                                                { id: 'purple', color: '#A855F7' },
-                                                { id: 'cyan', color: '#06B6D4' },
-                                                { id: 'yellow', color: '#EAB308' },
-                                            ].map(theme => (
-                                                <button
-                                                    key={theme.id}
-                                                    onClick={() => onColorChange && onColorChange(theme.id as any)}
-                                                    className={`w-full aspect-square rounded-lg flex items-center justify-center transition-all hover:scale-110 active:scale-90 ${colorTheme === theme.id ? 'ring-2 ring-white ring-offset-4 ring-offset-zinc-900 scale-110 shadow-lg' : 'opacity-40 grayscale-[0.5] hover:opacity-100 hover:grayscale-0'}`}
-                                                    style={{ backgroundColor: theme.color }}
-                                                />
-                                            ))}
-                                        </div>
-                                    </div>
+
                                 </div>
                             </div>
 

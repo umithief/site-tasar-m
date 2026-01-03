@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Navigation, MapPin, X, Layers, Wind, Zap, Users } from 'lucide-react';
+// No leaflet imports here, pure UI.
 
 // --- Overlay Components ---
 

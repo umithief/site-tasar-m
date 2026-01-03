@@ -6,7 +6,7 @@ import { Search, Navigation, MapPin, X, Layers, Wind, Zap, Users } from 'lucide-
 
 export const DiscoverySidebar = ({ routes, onSelectRoute }: any) => {
     return (
-        <div className="absolute top-4 bottom-24 left-4 w-80 z-[1000] hidden md:flex flex-col gap-4 pointer-events-none">
+        <div className="absolute top-4 bottom-24 left-4 lg:left-24 w-80 z-[900] hidden md:flex flex-col gap-4 pointer-events-none">
             {/* Glass Panel */}
             <div className="flex-1 bg-black/40 backdrop-blur-xl border border-white/5 rounded-3xl overflow-hidden pointer-events-auto flex flex-col">
                 <div className="p-6 border-b border-white/10 bg-gradient-to-br from-white/5 to-transparent">
@@ -27,7 +27,7 @@ export const DiscoverySidebar = ({ routes, onSelectRoute }: any) => {
                             <div className="flex justify-between items-start mb-2">
                                 <h3 className="font-bold text-white group-hover:text-lime-400 transition-colors">{route.title}</h3>
                                 <div className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${route.difficulty === 'Hard' ? 'bg-red-500/20 text-red-500' :
-                                        route.difficulty === 'Medium' ? 'bg-yellow-500/20 text-yellow-500' : 'bg-green-500/20 text-green-500'
+                                    route.difficulty === 'Medium' ? 'bg-yellow-500/20 text-yellow-500' : 'bg-green-500/20 text-green-500'
                                     }`}>
                                     {route.difficulty}
                                 </div>

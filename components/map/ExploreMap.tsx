@@ -55,7 +55,7 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
     };
 
     return (
-        <div className="relative w-full h-full bg-[#050505] overflow-hidden">
+        <div className="relative w-full h-[85vh] bg-[#050505] overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
             {/* Overlays */}
             <FloatingSearch />
             <DiscoverySidebar routes={MOCK_ROUTES} onSelectRoute={handleRouteSelect} />

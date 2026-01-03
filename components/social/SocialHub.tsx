@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Compass, Home, MessageSquare, Calendar, User, Search, Map as MapIcon, Navigation, Plus, Image, Grid, Users, Bell, ShoppingBag, Settings, LogOut, PlusCircle, Archive, Heart, MessageCircle } from 'lucide-react';
 import { ResponsivePostCard } from './ResponsivePostCard';
+import { PostComposer } from './PostComposer';
 import { FollowButton } from './FollowButton';
 import { DirectMessages } from './DirectMessages';
 import { SocialPost, ViewState } from '../../types';
@@ -37,12 +38,9 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
 
     const [isDMOpen, setIsDMOpen] = useState(false);
     const [view, setView] = useState<HubView>('feed');
-    const [newPostContent, setNewPostContent] = useState('');
-    const [mediaUrl, setMediaUrl] = useState<string | null>(null);
+
     const [isCreateOpen, setIsCreateOpen] = useState(false);
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
-    const [recentRide, setRecentRide] = useState<any>(null);
-    const [attachRide, setAttachRide] = useState(true);
 
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = usePosts();
     const { mutate: createPost } = useCreatePost();
@@ -98,33 +96,29 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
         }
     }, [initialData]);
 
-    const handleCreatePost = async () => {
-        if ((!newPostContent.trim() && !mediaUrl) || !currentUser) return;
-        createPost({
-            userId: currentUser._id || 'guest',
-            userName: currentUser.name || 'Guest',
-            userAvatar: currentUser.avatar || '',
-            content: newPostContent,
-            images: mediaUrl ? [mediaUrl] : [],
-            bikeModel: currentUser.garage && currentUser.garage.length > 0 ? `${currentUser.garage[0].brand} ${currentUser.garage[0].model}` : 'Bilinmeyen Motor',
-            userRank: currentUser.rank || 'Yeni Üye',
-            rideStats: (attachRide && recentRide) ? recentRide : undefined
-        }, {
-            onSuccess: () => {
-                setNewPostContent('');
-                setMediaUrl(null);
-                setIsCreateOpen(false);
-            }
+    const handlePostCreate = async (content: string, media: string | null, stats?: any, location?: string) => {
+        if (!currentUser) return;
+
+        await new Promise<void>((resolve, reject) => {
+            createPost({
+                userId: currentUser._id || 'guest',
+                userName: currentUser.name || 'Guest',
+                userAvatar: currentUser.avatar || '',
+                content: content,
+                images: media ? [media] : [],
+                bikeModel: currentUser.garage && currentUser.garage.length > 0 ? `${currentUser.garage[0].brand} ${currentUser.garage[0].model}` : 'Bilinmeyen Motor',
+                userRank: currentUser.rank || 'Yeni Üye',
+                rideStats: stats,
+                location: location
+            }, {
+                onSuccess: () => {
+                    resolve();
+                    setIsCreateOpen(false);
+                },
+                onError: (err) => reject(err)
+            });
         });
     };
-
-    useEffect(() => {
-        if (isCreateOpen && !recentRide) {
-            socialService.getLatestRideActivity().then(ride => {
-                if (ride) setRecentRide(ride);
-            });
-        }
-    }, [isCreateOpen]);
 
 
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
@@ -371,54 +365,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                             {/* Create Post Area */}
                             <AnimatePresence>
                                 {isCreateOpen && (
-                                    <motion.div
-                                        initial={{ height: 0, opacity: 0 }}
-                                        animate={{ height: 'auto', opacity: 1 }}
-                                        exit={{ height: 0, opacity: 0 }}
-                                        className="mb-8 overflow-hidden"
-                                    >
-                                        <div className="bg-[#111] border border-white/10 rounded-3xl p-6 shadow-2xl relative">
-                                            <div className="flex gap-4">
-                                                <UserAvatar src={currentUser?.profileImage} name={currentUser?.name} size={48} />
-                                                <div className="flex-1">
-                                                    <textarea
-                                                        value={newPostContent}
-                                                        onChange={(e) => setNewPostContent(e.target.value)}
-                                                        className="w-full bg-transparent text-xl font-light placeholder-gray-600 outline-none resize-none min-h-[100px]"
-                                                        placeholder="Sürüş nasıl geçti?"
-                                                    />
-                                                    {mediaUrl && (
-                                                        <div className="relative mt-4 w-full h-64 rounded-xl overflow-hidden group">
-                                                            <img src={mediaUrl} className="w-full h-full object-cover" />
-                                                            <button onClick={() => setMediaUrl(null)} className="absolute top-2 right-2 bg-black/50 p-2 rounded-full text-white hover:bg-black transition-colors"><Plus className="rotate-45" /></button>
-                                                        </div>
-                                                    )}
-                                                    <div className="flex justify-between items-center mt-6 pt-4 border-t border-white/5">
-                                                        <div className="flex gap-4 text-moto-accent">
-                                                            <MediaUploader onUploadComplete={setMediaUrl} onUploadError={(e) => alert(e)} />
-                                                            <MediaUploader onUploadComplete={setMediaUrl} onUploadError={(e) => alert(e)} />
-                                                            <MapIcon className="w-5 h-5 cursor-pointer hover:text-white transition-colors" />
-                                                            {recentRide && (
-                                                                <button
-                                                                    onClick={() => setAttachRide(!attachRide)}
-                                                                    className={`text-xs px-2 py-1 rounded border transition-colors ${attachRide ? 'bg-moto-accent text-black border-moto-accent' : 'bg-transparent text-gray-500 border-gray-700'}`}
-                                                                >
-                                                                    {attachRide ? 'Sürüş Eklendi' : 'Sürüş Ekle'}
-                                                                </button>
-                                                            )}
-                                                        </div>
-                                                        <button
-                                                            onClick={handleCreatePost}
-                                                            disabled={!newPostContent && !mediaUrl}
-                                                            className="bg-white text-black px-8 py-2.5 rounded-xl font-bold hover:scale-105 active:scale-95 transition-all disabled:opacity-50 disabled:scale-100"
-                                                        >
-                                                            PAYLAŞ
-                                                        </button>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </motion.div>
+                                    <PostComposer currentUser={currentUser} onPostCreate={handlePostCreate} />
                                 )}
                             </AnimatePresence>
 

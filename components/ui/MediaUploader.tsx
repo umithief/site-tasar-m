@@ -6,9 +6,11 @@ import { useUpload } from '../../hooks/useUpload';
 interface MediaUploaderProps {
     onUploadComplete: (url: string) => void;
     onUploadError?: (error: string) => void;
+    showPreview?: boolean;
+    trigger?: React.ReactNode;
 }
 
-export const MediaUploader: React.FC<MediaUploaderProps> = ({ onUploadComplete, onUploadError }) => {
+export const MediaUploader: React.FC<MediaUploaderProps> = ({ onUploadComplete, onUploadError, showPreview = true, trigger }) => {
     const { uploadFile, uploadProgress, isUploading, error, reset } = useUpload();
     const [preview, setPreview] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
@@ -38,7 +40,7 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({ onUploadComplete, 
     };
 
     return (
-        <div className="w-full">
+        <div className="w-full relative">
             <input
                 type="file"
                 ref={fileInputRef}
@@ -47,22 +49,27 @@ export const MediaUploader: React.FC<MediaUploaderProps> = ({ onUploadComplete, 
                 className="hidden"
             />
 
-            <AnimatePresence>
-                {!preview && (
-                    <motion.button
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-colors group relative"
-                        onClick={() => fileInputRef.current?.click()}
-                        disabled={isUploading}
-                    >
-                        <ImageIcon className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                    </motion.button>
+            <div onClick={() => !isUploading && fileInputRef.current?.click()} className={trigger ? "cursor-pointer" : ""}>
+                {trigger ? (
+                    trigger
+                ) : (
+                    <AnimatePresence>
+                        {(!preview || !showPreview) && (
+                            <motion.button
+                                initial={{ opacity: 0, scale: 0.9 }}
+                                animate={{ opacity: 1, scale: 1 }}
+                                className="p-2 text-gray-400 hover:text-white hover:bg-white/10 rounded-xl transition-colors group relative"
+                                disabled={isUploading}
+                            >
+                                <ImageIcon className="w-5 h-5 group-hover:scale-110 transition-transform" />
+                            </motion.button>
+                        )}
+                    </AnimatePresence>
                 )}
-            </AnimatePresence>
+            </div>
 
             <AnimatePresence>
-                {preview && (
+                {showPreview && preview && (
                     <motion.div
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}

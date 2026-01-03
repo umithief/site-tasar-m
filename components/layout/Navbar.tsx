@@ -4,7 +4,7 @@ import {
     Search, ShoppingBag, Bell, User as UserIcon,
     Settings, LogOut, Menu, Zap, ChevronDown, Warehouse, ShieldCheck
 } from 'lucide-react';
-import { ViewState, User as UserType, ColorTheme } from '../../types';
+import { ViewState, User as UserType } from '../../types';
 import { useAuthStore } from '../../store/authStore';
 import { useSocket } from '../../hooks/useSocket';
 import { useNotificationStore } from '../../store/useNotificationStore';
@@ -21,8 +21,6 @@ interface NavbarProps {
     onOpenAuth: () => void;
     onNavigate: (view: ViewState, data?: any) => void;
     currentView: ViewState;
-    colorTheme?: ColorTheme;
-    onColorChange?: (theme: ColorTheme) => void;
     onToggleMenu?: () => void; // Used for Mobile Menu
     onToggleSidebar?: () => void; // New prop for Desktop Sidebar
 }

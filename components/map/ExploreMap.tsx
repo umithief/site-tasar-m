@@ -89,21 +89,29 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
         if (!mapContainer.current) return;
 
         const token = import.meta.env.VITE_MAPBOX_TOKEN;
+
         if (!token) {
-            console.warn("Mapbox token missing! Map will not load tiles.");
-            // Fallback or just let it fail gracefully with no tiles
+            console.error("Mapbox token missing! Aborting map initialization.");
+            setLoading(false);
+            return;
         }
 
-        mapboxgl.accessToken = token || '';
+        mapboxgl.accessToken = token;
 
-        map.current = new mapboxgl.Map({
-            container: mapContainer.current,
-            style: 'mapbox://styles/mapbox/dark-v11', // Midnight Carbon base
-            center: [-74.0060, 40.7128],
-            zoom: 12,
-            attributionControl: false,
-            pitch: 45, // 3D feel
-        });
+        try {
+            map.current = new mapboxgl.Map({
+                container: mapContainer.current,
+                style: 'mapbox://styles/mapbox/dark-v11', // Midnight Carbon base
+                center: [-74.0060, 40.7128],
+                zoom: 12,
+                attributionControl: false,
+                pitch: 45, // 3D feel
+            });
+        } catch (err) {
+            console.error("Mapbox init failed:", err);
+            setLoading(false);
+            return;
+        }
 
         const m = map.current;
 

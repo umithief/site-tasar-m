@@ -121,8 +121,8 @@ export const App: React.FC = () => {
     useEffect(() => {
         if (typeof window !== 'undefined') {
             const root = window.document.documentElement;
-            root.classList.remove('light', 'dark');
-            root.classList.add(theme);
+            root.classList.remove('light');
+            root.classList.add('dark');
         }
     }, [theme]);
 

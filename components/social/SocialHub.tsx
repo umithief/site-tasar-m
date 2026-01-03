@@ -20,7 +20,6 @@ import { MediaUploader } from '../ui/MediaUploader';
 import { useAuthStore } from '../../store/authStore';
 import { useNotificationStore } from '../../store/useNotificationStore';
 import { useThemeStore } from '../../store/useThemeStore';
-import { ThemeToggle } from '../ui/ThemeToggle';
 
 interface SocialHubProps {
     user: any;
@@ -166,7 +165,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                         {/* Right Actions */}
                         <div className="flex items-center gap-3 pl-4 border-l border-white/10 ml-4">
                             {/* Theme Toggle */}
-                            <ThemeToggle />
+
 
                             {/* Notifications */}
                             <div className="relative">

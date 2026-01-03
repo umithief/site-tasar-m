@@ -11,22 +11,19 @@ export const useThemeStore = create<ThemeStore>()(
     persist(
         (set) => ({
             theme: 'dark',
-            toggleTheme: () => set((state) => {
-                const newTheme = state.theme === 'dark' ? 'light' : 'dark';
+            toggleTheme: () => set(() => {
                 if (typeof window !== 'undefined') {
-                    const root = window.document.documentElement;
-                    root.classList.remove('light', 'dark');
-                    root.classList.add(newTheme);
+                    document.documentElement.classList.remove('light');
+                    document.documentElement.classList.add('dark');
                 }
-                return { theme: newTheme };
+                return { theme: 'dark' };
             }),
-            setTheme: (theme) => set(() => {
+            setTheme: () => set(() => {
                 if (typeof window !== 'undefined') {
-                    const root = window.document.documentElement;
-                    root.classList.remove('light', 'dark');
-                    root.classList.add(theme);
+                    document.documentElement.classList.remove('light');
+                    document.documentElement.classList.add('dark');
                 }
-                return { theme };
+                return { theme: 'dark' };
             }),
         }),
         {

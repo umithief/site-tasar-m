@@ -11,22 +11,22 @@ export const useThemeStore = create<ThemeStore>()(
     persist(
         (set) => ({
             theme: 'dark',
-            toggleTheme: () => set(() => {
-                // Feature disabled: Always stay in dark mode
+            toggleTheme: () => set((state) => {
+                const newTheme = state.theme === 'dark' ? 'light' : 'dark';
                 if (typeof window !== 'undefined') {
                     const root = window.document.documentElement;
-                    root.classList.remove('light');
-                    root.classList.add('dark');
+                    root.classList.remove('light', 'dark');
+                    root.classList.add(newTheme);
                 }
-                return { theme: 'dark' };
+                return { theme: newTheme };
             }),
-            setTheme: () => set(() => {
+            setTheme: (theme) => set(() => {
                 if (typeof window !== 'undefined') {
                     const root = window.document.documentElement;
-                    root.classList.remove('light');
-                    root.classList.add('dark');
+                    root.classList.remove('light', 'dark');
+                    root.classList.add(theme);
                 }
-                return { theme: 'dark' };
+                return { theme };
             }),
         }),
         {

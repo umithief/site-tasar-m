@@ -14,7 +14,7 @@ interface SidebarProps {
     onOpenAuth: () => void;
     onOpenFeedback: () => void;
     onToggle: () => void;
-    onOpenThemeModal?: () => void;
+
 }
 
 export const BottomNav: React.FC<SidebarProps> = ({

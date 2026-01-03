@@ -231,6 +231,8 @@ export interface SocialPost {
   commentList?: ForumComment[];
   rideStats?: {
     maxSpeed: number;
+    avgSpeed?: number;
+    leanAngle?: number;
     distance: number;
     duration: string;
     routeSvg?: string; // For the mini route map

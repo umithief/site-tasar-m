@@ -27,6 +27,8 @@ export const socialService = {
                 likes: post.likeCount || 0,
                 rideStats: post.rideStats || {
                     maxSpeed: Math.floor(Math.random() * (299 - 120) + 120),
+                    avgSpeed: Math.floor(Math.random() * (100 - 60) + 60),
+                    leanAngle: Math.floor(Math.random() * (45 - 20) + 20),
                     distance: parseFloat((Math.random() * 150).toFixed(1)),
                     duration: `${Math.floor(Math.random() * 4)}h ${Math.floor(Math.random() * 60)}m`
                 }
@@ -161,6 +163,8 @@ export const socialService = {
                 isLiked: post.isLiked || false,
                 rideStats: post.rideStats || {
                     maxSpeed: Math.floor(Math.random() * (299 - 120) + 120),
+                    avgSpeed: Math.floor(Math.random() * (100 - 60) + 60),
+                    leanAngle: Math.floor(Math.random() * (45 - 20) + 20),
                     distance: parseFloat((Math.random() * 150).toFixed(1)),
                     duration: `${Math.floor(Math.random() * 4)}h ${Math.floor(Math.random() * 60)}m`
                 }
@@ -272,6 +276,8 @@ export const socialService = {
                 isLiked: post.isLiked || false,
                 rideStats: post.rideStats || {
                     maxSpeed: Math.floor(Math.random() * (299 - 120) + 120),
+                    avgSpeed: Math.floor(Math.random() * (100 - 60) + 60),
+                    leanAngle: Math.floor(Math.random() * (45 - 20) + 20),
                     distance: parseFloat((Math.random() * 150).toFixed(1)),
                     duration: `${Math.floor(Math.random() * 4)}h ${Math.floor(Math.random() * 60)}m`
                 }

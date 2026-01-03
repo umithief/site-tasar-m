@@ -124,7 +124,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
 
     const [isNotificationOpen, setIsNotificationOpen] = useState(false);
     const notifications = useNotificationStore((state) => state.notifications);
-    const { theme, toggleTheme } = useThemeStore();
+    const { theme } = useThemeStore();
 
     return (
         <div className="bg-[#09090b] dark:bg-[#09090b] bg-gray-50 min-h-screen text-white dark:text-white text-zinc-900 pt-0 pb-0 font-sans selection:bg-moto-accent/30 relative transition-colors duration-300">

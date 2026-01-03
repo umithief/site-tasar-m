@@ -60,7 +60,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
             >
                 <div className="flex items-center justify-between h-12">
                     {/* Logo */}
-                    <div className="flex items-center gap-2" onPress={() => onNavigate('home')}>
+                    <div className="flex items-center gap-2" onClick={() => onNavigate('home')}>
                         <span className="font-display font-black text-xl tracking-tighter text-white">
                             MOTO<span className="text-moto-accent">VIBE</span>
                         </span>

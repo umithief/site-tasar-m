@@ -196,20 +196,35 @@ button {
     animation: pulse 2s infinite;
 }
 
-/* Premium Popup */
-.leaflet-popup-content-wrapper {
+/* Premium Popup - Mapbox */
+.mapboxgl-popup-content {
     background: rgba(10, 10, 10, 0.95) !important;
     backdrop-filter: blur(12px);
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px !important;
     color: white !important;
     padding: 0 !important;
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
 }
 
-.leaflet-popup-tip {
-    background: rgba(10, 10, 10, 0.95) !important;
+.mapboxgl-popup-tip {
+    border-top-color: rgba(10, 10, 10, 0.95) !important;
 }
 
-.leaflet-container {
-    background-color: #050505 !important;
+/* Custom Animations */
+@keyframes ping-slow {
+
+    75%,
+    100% {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+.animate-ping-slow {
+    animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+.mapboxgl-canvas {
+    outline: none;
 }

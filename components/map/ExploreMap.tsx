@@ -39,6 +39,7 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
 
     // Real User Location Tracking
     const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+    const [navigationRouteCoords, setNavigationRouteCoords] = useState<any>(null); // New state for calculated path
     const watchId = useRef<number | null>(null);
 
     // --- 1. Fetch Data (Routes) ---
@@ -267,18 +268,37 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
         const updateRoutes = () => {
             if (!map.current || !map.current.getStyle() || !map.current.getSource('routes')) return;
 
-            const displayedRoutes = isNavigating && selectedRoute ? [selectedRoute] : routes;
+            let features: any[] = [];
 
-            const data: GeoJSON.FeatureCollection = {
-                type: 'FeatureCollection',
-                features: displayedRoutes.map(r => ({
+            if (isNavigating && navigationRouteCoords) {
+                // Show the real calculated path from User -> Destination
+                features = [{
+                    type: 'Feature',
+                    geometry: { type: 'LineString', coordinates: navigationRouteCoords },
+                    properties: { id: 'nav', title: 'Calculated Route' }
+                }];
+            } else if (selectedRoute) {
+                // Show single selected route
+                features = [{
+                    type: 'Feature',
+                    geometry: { type: 'LineString', coordinates: selectedRoute.coordinates },
+                    properties: { id: selectedRoute.id, title: selectedRoute.title }
+                }];
+            } else {
+                // Show all routes
+                features = routes.map(r => ({
                     type: 'Feature',
                     geometry: { type: 'LineString', coordinates: r.coordinates },
                     properties: { id: r.id, title: r.title }
-                }))
+                }));
+            }
+
+            const data: GeoJSON.FeatureCollection = {
+                type: 'FeatureCollection',
+                features: features
             };
 
-            (map.current.getSource('routes') as mapboxgl.GeoJSONSource).setData(data);
+            (map.current.getSource('routes') as mapboxgl.GeoJSONSource).setData(data); // Line 279 original logic replaced
 
             // Adjust Line Width for Navigation
             if (isNavigating) {
@@ -295,7 +315,7 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
         } else if (map.current) {
             map.current.on('style.load', updateRoutes);
         }
-    }, [routes, isNavigating, selectedRoute]);
+    }, [routes, isNavigating, selectedRoute, navigationRouteCoords]); // Added dep
 
 
     // --- 5. Interaction Handlers ---
@@ -377,6 +397,7 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
                         const json = await query.json();
                         const data = json.routes?.[0];
                         if (data) {
+                            setNavigationRouteCoords(data.geometry.coordinates);
                             setNavigationData({
                                 duration: Math.floor(data.duration / 60),
                                 distance: (data.distance / 1000).toFixed(1),
@@ -402,6 +423,7 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
     const handleStopNavigation = () => {
         setIsNavigating(false);
         setNavigationData(null);
+        setNavigationRouteCoords(null); // Clear calculated path
         setUserLocation(null);
         if (watchId.current) navigator.geolocation.clearWatch(watchId.current);
 

@@ -181,79 +181,105 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
         };
     }, []);
 
-    // Effect to update map data when routes change
+    // Effect to update map data when routes (or nav state) change
     useEffect(() => {
-        if (!map.current || !map.current.isStyleLoaded() || routes.length === 0) return;
+        if (!map.current) return;
 
-        const m = map.current;
-        const sourceId = 'routes';
+        const updateMapData = () => {
+            const m = map.current!;
+            if (!m.getStyle()) return; // Safety check
 
-        const geojson: GeoJSON.FeatureCollection = {
-            type: 'FeatureCollection',
-            features: routes.map(route => ({
-                type: 'Feature',
-                properties: {
-                    id: route.id,
-                    title: route.title,
-                    description: route.desc
-                },
-                geometry: {
-                    type: 'LineString',
-                    coordinates: route.coordinates
-                }
-            }))
+            const sourceId = 'routes';
+            // If navigating, only show the active route. Otherwise show all.
+            // We need to store the route being navigated, let's assume selectedRoute is kept or we store it elsewhere.
+            // For now, let's use a local variable or depend on the hook state.
+            // Note: We need a state for 'activeRoute' if we want to close the card but keep nav.
+
+            // FILTERING LOGIC:
+            // If isNavigating is true, we need to know WHICH route.
+            // Current logic clears selectedRoute on nav start. We should fix that in the handler first.
+            // But assuming we fix that, here is the render logic:
+
+            const displayedRoutes = isNavigating && selectedRoute ? [selectedRoute] : routes;
+
+            const geojson: GeoJSON.FeatureCollection = {
+                type: 'FeatureCollection',
+                features: displayedRoutes.map(route => ({
+                    type: 'Feature',
+                    properties: {
+                        id: route.id,
+                        title: route.title,
+                        description: route.desc,
+                        // Add interactive state for styling if needed
+                        isNavigating: isNavigating
+                    },
+                    geometry: {
+                        type: 'LineString',
+                        coordinates: route.coordinates
+                    }
+                }))
+            };
+
+            if (m.getSource(sourceId)) {
+                (m.getSource(sourceId) as mapboxgl.GeoJSONSource).setData(geojson);
+            } else {
+                m.addSource('routes', {
+                    type: 'geojson',
+                    data: geojson
+                });
+
+                // 1. Glow Layer
+                m.addLayer({
+                    id: 'routes-glow',
+                    type: 'line',
+                    source: 'routes',
+                    layout: { 'line-join': 'round', 'line-cap': 'round' },
+                    paint: {
+                        'line-color': '#E2FF3B',
+                        'line-width': isNavigating ? 12 : 8, // Thicker in nav mode
+                        'line-opacity': 0.4,
+                        'line-blur': 4
+                    }
+                });
+
+                // 2. Core Line Layer
+                m.addLayer({
+                    id: 'routes-core',
+                    type: 'line',
+                    source: 'routes',
+                    layout: { 'line-join': 'round', 'line-cap': 'round' },
+                    paint: {
+                        'line-color': '#E2FF3B',
+                        'line-width': isNavigating ? 6 : 3, // Thicker in nav mode
+                        'line-opacity': 1
+                    }
+                });
+
+                // Add click interaction
+                m.on('click', 'routes-core', (e) => {
+                    // Disable click when navigating?
+                    if (isNavigating) return;
+
+                    const feature = e.features?.[0];
+                    if (feature) {
+                        const routeId = feature.properties?.id;
+                        const route = routes.find(r => r.id === routeId);
+                        if (route) handleRouteSelect(route);
+                    }
+                });
+
+                m.on('mouseenter', 'routes-core', () => m.getCanvas().style.cursor = 'pointer');
+                m.on('mouseleave', 'routes-core', () => m.getCanvas().style.cursor = '');
+            }
         };
 
-        if (m.getSource(sourceId)) {
-            (m.getSource(sourceId) as mapboxgl.GeoJSONSource).setData(geojson);
+        if (map.current.isStyleLoaded()) {
+            updateMapData();
         } else {
-            m.addSource('routes', {
-                type: 'geojson',
-                data: geojson
-            });
-
-            // 1. Glow Layer
-            m.addLayer({
-                id: 'routes-glow',
-                type: 'line',
-                source: 'routes',
-                layout: { 'line-join': 'round', 'line-cap': 'round' },
-                paint: {
-                    'line-color': '#E2FF3B',
-                    'line-width': 8,
-                    'line-opacity': 0.4,
-                    'line-blur': 4
-                }
-            });
-
-            // 2. Core Line Layer
-            m.addLayer({
-                id: 'routes-core',
-                type: 'line',
-                source: 'routes',
-                layout: { 'line-join': 'round', 'line-cap': 'round' },
-                paint: {
-                    'line-color': '#E2FF3B',
-                    'line-width': 3,
-                    'line-opacity': 1
-                }
-            });
-
-            // Add click interaction
-            m.on('click', 'routes-core', (e) => {
-                const feature = e.features?.[0];
-                if (feature) {
-                    const routeId = feature.properties?.id;
-                    const route = routes.find(r => r.id === routeId);
-                    if (route) handleRouteSelect(route);
-                }
-            });
-
-            m.on('mouseenter', 'routes-core', () => m.getCanvas().style.cursor = 'pointer');
-            m.on('mouseleave', 'routes-core', () => m.getCanvas().style.cursor = '');
+            map.current.once('style.load', updateMapData);
         }
 
-    }, [routes, map.current]); // Update when routes state changes
+    }, [routes, isNavigating, selectedRoute]); // Re-render when these change
 
     const handleRouteSelect = useCallback((route: any) => {
         setSelectedRoute(route);
@@ -299,7 +325,8 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
                 bearing: 0, // Should calculate initial bearing of route ideally
                 duration: 2000
             });
-            setSelectedRoute(null); // Close the card
+            // Keep selectedRoute active so we know what to draw!
+            // The UI hides the RouteCard automatically via !isNavigating check
         }
     };
 

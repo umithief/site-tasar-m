@@ -44,6 +44,7 @@ import './models/User.js';
 import './models/Post.js'; // Registers 'SocialPost'
 import './models/Order.js';
 import './models/Message.js';
+import './models/Ride.js'; // Register Ride Model
 import MeetupEvent from './models/MeetupEvent.js';
 
 const __filename = fileURLToPath(import.meta.url);

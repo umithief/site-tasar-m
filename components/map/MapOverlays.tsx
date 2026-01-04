@@ -182,7 +182,19 @@ export const RouteCard = ({ route, onClose }: any) => {
                             </div>
                         </div>
 
-                        <button className="w-full py-4 bg-lime-400 hover:bg-lime-300 text-black font-black uppercase tracking-widest text-sm rounded-xl transition-colors shadow-[0_0_30px_rgba(226,255,59,0.2)] flex items-center justify-center gap-2">
+                        <button
+                            onClick={() => {
+                                const btn = document.activeElement as HTMLElement;
+                                if (btn) {
+                                    btn.innerHTML = '<span class="animate-pulse">Connecting to Sat-Link...</span>';
+                                    setTimeout(() => {
+                                        window.open(`https://www.google.com/maps/dir/?api=1&destination=${route.coordinates[route.coordinates.length - 1][1]},${route.coordinates[route.coordinates.length - 1][0]}&travelmode=driving`, '_blank');
+                                        onClose();
+                                    }, 1500);
+                                }
+                            }}
+                            className="w-full py-4 bg-lime-400 hover:bg-lime-300 text-black font-black uppercase tracking-widest text-sm rounded-xl transition-colors shadow-[0_0_30px_rgba(226,255,59,0.2)] flex items-center justify-center gap-2"
+                        >
                             <Navigation className="w-5 h-5 fill-current" />
                             Start Navigation
                         </button>

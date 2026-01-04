@@ -29,6 +29,7 @@ import activityRoutes from './routes/activityRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import reelRoutes from './routes/reelRoutes.js';
 import postRoutes from './routes/postRoutes.js';
+import rideRoutes from './routes/rideRoutes.js';
 
 // ... imports
 
@@ -583,6 +584,7 @@ app.use('/api/models', modelRoutes);
 app.use('/api/stolen-items', stolenRoutes);
 app.use('/api/negotiations', negotiationRoutes);
 app.use('/api/feedback', feedbackRoutes);
+app.use('/api/rides', rideRoutes);
 
 // --- GLOBAL ERROR HANDLER ---
 app.use((err, req, res, next) => {

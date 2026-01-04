@@ -13,6 +13,8 @@ import { PullToRefresh } from '../mobile/PullToRefresh';
 import { MotoVlogMap } from '../MotoVlogMap';
 import { RouteExplorer } from '../RouteExplorer';
 import { MotoMeetup } from '../MotoMeetup';
+import { rideService } from '../../services/rideService';
+import { RideCard } from '../ride/RideCard'; // Import RideCard
 import { socialService } from '../../services/socialService';
 import { messageService } from '../../services/messageService';
 import { usePosts, useCreatePost } from '../../hooks/usePosts';
@@ -31,7 +33,7 @@ interface SocialHubProps {
     onCartClick?: () => void;
 }
 
-type HubView = 'feed' | 'stories' | 'vlog' | 'routes' | 'events' | 'explore';
+type HubView = 'feed' | 'stories' | 'vlog' | 'routes' | 'events' | 'explore' | 'rides';
 
 export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate, initialData, cartCount = 0, onCartClick }) => {
     const { user: globalUser, logout } = useAuthStore();
@@ -77,15 +79,19 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
         return () => clearTimeout(timer);
     }, [searchQuery]);
 
+    const [activeRides, setActiveRides] = useState<any[]>([]);
+
     // Initial Data Fetch
     useEffect(() => {
         const fetchMiscData = async () => {
-            const [riders, threads] = await Promise.all([
+            const [riders, threads, rides] = await Promise.all([
                 socialService.getSuggestedRiders(),
-                messageService.getThreads()
+                messageService.getThreads(),
+                rideService.getRides().catch(() => []) // Fetch rides, handle error silently
             ]);
             setSuggestedRiders(riders);
             setActiveThreads(threads);
+            setActiveRides(rides);
         };
         fetchMiscData();
     }, []);
@@ -142,6 +148,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                 { id: 'feed', icon: Home, label: 'Akış' },
                                 { id: 'stories', icon: Image, label: 'Hikayeler' },
                                 { id: 'vlog', icon: MapIcon, label: 'Map', badge: 'CANLI' },
+                                { id: 'rides', icon: Users, label: 'Sürüşler' }, // New Tab
                                 { id: 'routes', icon: Navigation, label: 'Rotalar' },
                                 { id: 'events', icon: Calendar, label: 'Buluşmalar' },
                             ].map((item: any) => (
@@ -442,6 +449,25 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                             {view === 'vlog' && <MotoVlogMap user={currentUser} isEmbedded onNavigate={() => { }} onAddToCart={() => { }} onProductClick={() => { }} />}
                             {view === 'routes' && <RouteExplorer user={currentUser} isEmbedded />}
                             {view === 'events' && <MotoMeetup user={currentUser} isEmbedded />}
+
+                            {view === 'rides' && (
+                                <div className="p-6 h-full overflow-y-auto custom-scrollbar">
+                                    <h2 className="text-2xl font-black text-white italic uppercase tracking-tighter mb-6">Active Group Rides</h2>
+                                    {activeRides.length > 0 ? (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                            {activeRides.map(ride => (
+                                                <RideCard key={ride.id} ride={ride} />
+                                            ))}
+                                        </div>
+                                    ) : (
+                                        <div className="text-center text-gray-500 py-20">
+                                            <Users className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                                            <p className="text-xl font-bold">No Active Rides</p>
+                                            <p className="text-sm">Be the first to create one!</p>
+                                        </div>
+                                    )}
+                                </div>
+                            )}
                         </div>
                     )}
                 </div >

@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X, Map, Gauge, Users, Calendar, ChevronRight, Navigation, CheckCircle2 } from 'lucide-react';
-import { Product } from '../../types'; // Reusing types or define local interfaces
+import { Product } from '../../types';
+import { rideService } from '../../services/rideService'; // Reusing types or define local interfaces
 
 interface CreateRideModalProps {
     isOpen: boolean;
@@ -28,10 +29,34 @@ export const CreateRideModal: React.FC<CreateRideModalProps> = ({ isOpen, onClos
         return diff > 0 && diff < 3600000; // Within 1 hour
     };
 
-    const handleCreate = () => {
-        // Mock creation logic
-        console.log("Creating Ride:", { title, difficulty, date, time, pace });
-        onClose();
+    const [isLoading, setIsLoading] = useState(false);
+
+    // Import (ensure this is at top level in real file, but here swapping implementation)
+    // import { rideService } from '../../services/rideService'; 
+    // Since I can't add imports easily with replace_content without shifting lines, I will assum I need to add import at top.
+
+    const handleCreate = async () => {
+        try {
+            setIsLoading(true);
+            const isoDate = new Date(`${date}T${time}`).toISOString();
+
+            await rideService.createRide({
+                title,
+                description: "Group Ride", // Add description input if needed
+                startTime: isoDate,
+                difficulty,
+                maxParticipants: 10,
+                route: {}, // Mock route for now
+            });
+
+            onClose();
+            // Optional: Trigger refresh or toast
+        } catch (error) {
+            console.error(error);
+            alert('Failed to create ride');
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     // Close on Escape

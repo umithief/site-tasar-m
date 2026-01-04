@@ -1,4 +1,4 @@
-import { NextApiRequest, NextApiResponse } from 'next';
+import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { CreatePostSchema } from '../validations/schemas';
 import { z } from 'zod';
@@ -12,11 +12,7 @@ const requireAuth = (req: any) => {
     return { id: 'user_123' }; // Mock user
 };
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method !== 'POST') {
-        return res.status(405).json({ message: 'Method not allowed' });
-    }
-
+export const createPostHandler = async (req: Request, res: Response) => {
     try {
         // 1. Auth Check
         const user = requireAuth(req);
@@ -47,9 +43,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
     } catch (error) {
         if (error instanceof z.ZodError) {
-            return res.status(400).json({ errors: error.errors });
+            return res.status(400).json({ errors: error.issues });
         }
         console.error(error);
         return res.status(500).json({ message: 'Internal Server Error' });
     }
-}
+};

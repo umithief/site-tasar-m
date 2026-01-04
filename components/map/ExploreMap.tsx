@@ -283,6 +283,37 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
         }
     };
 
+    const [isNavigating, setIsNavigating] = useState(false);
+
+    // ... existing effects ...
+
+    const handleStartNavigation = () => {
+        setIsNavigating(true);
+        if (map.current && selectedRoute && selectedRoute.coordinates.length > 0) {
+            const start = selectedRoute.coordinates[0];
+            // Fly to start with driver POV
+            map.current.flyTo({
+                center: start,
+                zoom: 17,
+                pitch: 65, // Driver perspective
+                bearing: 0, // Should calculate initial bearing of route ideally
+                duration: 2000
+            });
+            setSelectedRoute(null); // Close the card
+        }
+    };
+
+    const handleStopNavigation = () => {
+        setIsNavigating(false);
+        if (map.current) {
+            map.current.flyTo({
+                pitch: 45,
+                zoom: 12,
+                duration: 2000
+            });
+        }
+    };
+
     return (
         <div className="relative w-full h-[85vh] bg-[#0A0A0A] overflow-hidden rounded-3xl border border-white/10 shadow-2xl group">
             {/* Loading Spinner */}
@@ -295,11 +326,62 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
                 </div>
             )}
 
-            {/* Overlays */}
-            <FloatingSearch />
-            <DiscoverySidebar routes={routes} onSelectRoute={handleRouteSelect} />
-            <MapHUD coords={map.current ? `${map.current.getCenter().lng.toFixed(4)}, ${map.current.getCenter().lat.toFixed(4)}` : "Loading..."} userCount={124} onRecenter={handleRecenter} />
-            <RouteCard route={selectedRoute} onClose={() => setSelectedRoute(null)} />
+            {/* Overlays - Hide Standard overlays when navigating */}
+            {!isNavigating && (
+                <>
+                    <FloatingSearch />
+                    <DiscoverySidebar routes={routes} onSelectRoute={handleRouteSelect} />
+                    <MapHUD coords={map.current ? `${map.current.getCenter().lng.toFixed(4)}, ${map.current.getCenter().lat.toFixed(4)}` : "Loading..."} userCount={124} onRecenter={handleRecenter} />
+                    <RouteCard
+                        route={selectedRoute}
+                        onClose={() => setSelectedRoute(null)}
+                        onStartNavigation={handleStartNavigation}
+                    />
+                </>
+            )}
+
+            {/* Navigation HUD */}
+            {isNavigating && (
+                <>
+                    {/* Top Bar - Turn Instructions */}
+                    <div className="absolute top-4 left-1/2 -translate-x-1/2 w-[90%] md:w-[400px] z-[1200] bg-black/90 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-2xl flex items-center gap-4">
+                        <div className="w-12 h-12 bg-lime-400 rounded-xl flex items-center justify-center text-black">
+                            <span className="text-2xl">↱</span>
+                        </div>
+                        <div>
+                            <div className="text-xs text-gray-400 font-bold uppercase tracking-widest">In 200 meters</div>
+                            <div className="text-xl font-black text-white leading-none">Turn Right</div>
+                        </div>
+                    </div>
+
+                    {/* Bottom Data Bar */}
+                    <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] md:w-[600px] z-[1200] grid grid-cols-3 gap-2">
+                        <div className="bg-black/90 backdrop-blur-xl border border-white/10 p-3 rounded-2xl text-center">
+                            <div className="text-xs text-gray-500 font-bold">ARRIVAL</div>
+                            <div className="text-xl font-black text-white">14:52</div>
+                        </div>
+                        <div className="bg-black/90 backdrop-blur-xl border border-white/10 p-3 rounded-2xl text-center">
+                            <div className="text-xs text-gray-500 font-bold">REMAINING</div>
+                            <div className="text-xl font-black text-lime-400">24 min</div>
+                        </div>
+                        <div className="bg-black/90 backdrop-blur-xl border border-white/10 p-3 rounded-2xl text-center">
+                            <div className="text-xs text-gray-500 font-bold">DISTANCE</div>
+                            <div className="text-xl font-black text-white">12 km</div>
+                        </div>
+                    </div>
+
+                    {/* Exit Button */}
+                    <button
+                        onClick={handleStopNavigation}
+                        className="absolute top-6 right-6 z-[1200] w-10 h-10 bg-red-500/20 text-red-500 border border-red-500/50 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"
+                    >
+                        <span className="font-bold">X</span>
+                    </button>
+
+                    {/* Perspective Effect Overlay */}
+                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/20 via-transparent to-transparent z-[1000]" />
+                </>
+            )}
 
             {/* Map Container */}
             <div ref={mapContainer} className="w-full h-full" />

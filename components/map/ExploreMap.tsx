@@ -37,6 +37,10 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
     // Live Rider Simulation Ref
     const ridersRef = useRef(INITIAL_RIDERS);
 
+    // Real User Location Tracking
+    const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
+    const watchId = useRef<number | null>(null);
+
     // --- 1. Fetch Data (Routes) ---
     useEffect(() => {
         const fetchRoutes = async () => {
@@ -373,10 +377,60 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
     const handleStopNavigation = () => {
         setIsNavigating(false);
         setNavigationData(null);
+        setUserLocation(null);
+        if (watchId.current) navigator.geolocation.clearWatch(watchId.current);
+
         if (map.current) {
             map.current.flyTo({ pitch: 45, zoom: 12, duration: 2000 });
         }
     };
+
+    // User Location Puck Layer
+    useEffect(() => {
+        if (!map.current || !map.current.isStyleLoaded()) return;
+        const m = map.current;
+        const sourceId = 'user-location';
+
+        const data = {
+            type: 'FeatureCollection',
+            features: userLocation ? [{
+                type: 'Feature',
+                geometry: { type: 'Point', coordinates: userLocation },
+                properties: {}
+            }] : []
+        } as GeoJSON.FeatureCollection;
+
+        if (m.getSource(sourceId)) {
+            (m.getSource(sourceId) as mapboxgl.GeoJSONSource).setData(data);
+        } else {
+            // Add Source
+            m.addSource(sourceId, { type: 'geojson', data });
+            // Glow
+            m.addLayer({
+                id: 'user-puck-glow',
+                type: 'circle',
+                source: sourceId,
+                paint: {
+                    'circle-radius': 20,
+                    'circle-color': '#3b82f6',
+                    'circle-opacity': 0.3,
+                    'circle-blur': 0.5
+                }
+            });
+            // Core
+            m.addLayer({
+                id: 'user-puck-core',
+                type: 'circle',
+                source: sourceId,
+                paint: {
+                    'circle-radius': 8,
+                    'circle-color': '#3b82f6',
+                    'circle-stroke-width': 3,
+                    'circle-stroke-color': '#ffffff'
+                }
+            });
+        }
+    }, [userLocation]);
 
     // Navigation Simulation Loop
     useEffect(() => {

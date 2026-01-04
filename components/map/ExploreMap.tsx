@@ -63,10 +63,13 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
                     id: r._id,
                     title: r.title,
                     desc: r.description,
-                    // Leaflet needs [Lat, Lng], GeoJSON is [Lng, Lat]. We must FLIP if source is GeoJSON.
-                    // Assuming API returns {lat, lng} objects or standard GeoJSON [lng, lat] arrays.
-                    // routeService usually returns objects with coords. Let's normalize to [Lat, Lng].
-                    coordinates: r.coordinates.map((c: any) => [c.lat, c.lng]),
+                    // Robust Coordinate Parsing: Handle {lat, lng} OR [lat, lng] OR [lng, lat] (GeoJSON)
+                    // Leaflet wants [Lat, Lng].
+                    coordinates: r.coordinates.map((c: any) => {
+                        if (Array.isArray(c)) return [c[1], c[0]]; // Assume GeoJSON [Lng, Lat] if array
+                        if (c.lat && c.lng) return [c.lat, c.lng]; // Object
+                        return [0, 0]; // Fallback
+                    }),
                     dist: r.distance,
                     difficulty: r.difficulty,
                     image: r.image,
@@ -74,6 +77,8 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
                     weather: r.weather,
                     riders: r.riders
                 }));
+                // debug
+                console.log("Mapped Routes:", transformedRoutes);
                 setRoutes(transformedRoutes);
             } catch (error) {
                 console.error("Failed to fetch routes", error);
@@ -233,20 +238,29 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
     };
 
     const fetchOSRMRoute = async (startLat: number, startLng: number) => {
-        if (!selectedRoute) return;
+        if (!selectedRoute || !selectedRoute.coordinates || selectedRoute.coordinates.length === 0) {
+            alert("Invalid destination coordinates");
+            handleStopNavigation();
+            return;
+        }
+
         const end = selectedRoute.coordinates[selectedRoute.coordinates.length - 1]; // [Lat, Lng]
         const endLat = end[0];
         const endLng = end[1];
 
         // OSRM expects Lng,Lat
         const url = `https://router.project-osrm.org/route/v1/driving/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson&steps=true`;
+        console.log("Fetching OSRM:", url);
 
         try {
             const res = await fetch(url);
             const json = await res.json();
 
+            console.log("OSRM Response:", json);
+
             if (json.code !== 'Ok' || !json.routes || json.routes.length === 0) {
-                alert("Route not found");
+                alert("Route not found by OSRM");
+                handleStopNavigation();
                 return;
             }
 
@@ -276,6 +290,7 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
         } catch (e) {
             console.error("OSRM Error", e);
             alert("Failed to calculate route");
+            handleStopNavigation();
         }
     };
 

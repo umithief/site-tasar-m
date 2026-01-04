@@ -116,8 +116,8 @@ export const CreateRideModal: React.FC<CreateRideModalProps> = ({ isOpen, onClos
                                                             key={level}
                                                             onClick={() => setDifficulty(level)}
                                                             className={`relative p-3 rounded-xl border flex flex-col items-center gap-2 transition-all ${difficulty === level
-                                                                    ? 'bg-[#E2FF3B]/10 border-[#E2FF3B] text-white shadow-[0_0_15px_rgba(226,255,59,0.2)]'
-                                                                    : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
+                                                                ? 'bg-[#E2FF3B]/10 border-[#E2FF3B] text-white shadow-[0_0_15px_rgba(226,255,59,0.2)]'
+                                                                : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
                                                                 }`}
                                                         >
                                                             {level === 'Easy' && <CheckCircle2 className={`w-5 h-5 ${difficulty === level ? 'text-[#E2FF3B]' : ''}`} />}
@@ -259,8 +259,8 @@ export const CreateRideModal: React.FC<CreateRideModalProps> = ({ isOpen, onClos
                                     <div className="flex flex-wrap gap-3">
                                         {difficulty && (
                                             <span className={`px-3 py-1 rounded border text-xs font-bold uppercase ${difficulty === 'Hard' ? 'border-red-500 text-red-500 bg-red-500/10' :
-                                                    difficulty === 'Moderate' ? 'border-yellow-500 text-yellow-500 bg-yellow-500/10' :
-                                                        'border-green-500 text-green-500 bg-green-500/10'
+                                                difficulty === 'Moderate' ? 'border-yellow-500 text-yellow-500 bg-yellow-500/10' :
+                                                    'border-green-500 text-green-500 bg-green-500/10'
                                                 }`}>
                                                 {difficulty}
                                             </span>
@@ -278,7 +278,7 @@ export const CreateRideModal: React.FC<CreateRideModalProps> = ({ isOpen, onClos
                                         <div className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Organizer</div>
                                         <div className="flex items-center gap-3">
                                             <div className="w-8 h-8 rounded-full bg-gray-700 overflow-hidden">
-                                                <img src={user?.avatar || "https://via.placeholder.com/150"} alt="User" className="w-full h-full object-cover" />
+                                                <img src={user?.avatar || "https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=400&auto=format&fit=crop&q=60"} alt="User" className="w-full h-full object-cover" />
                                             </div>
                                             <span className="text-white font-bold">{user?.name || 'You'}</span>
                                         </div>

@@ -23,7 +23,7 @@ export const createPostHandler = async (req: Request, res: Response) => {
 
         // 3. Image Upload (Mock Cloudinary/S3 Integration)
         // const imageUrl = await uploadToCloudinary(req.file); 
-        const imageUrl = "https://via.placeholder.com/600"; // Mock result
+        const imageUrl = "https://images.unsplash.com/photo-1558980394-4c7c9299fe96?w=800&auto=format&fit=crop&q=60"; // Mock result
 
         // 4. Save to DB
         const post = await prisma.post.create({

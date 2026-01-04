@@ -189,7 +189,7 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
         try {
             let videoUrl = uploadForm.videoUrl;
             if (uploadForm.videoFile) videoUrl = await storageService.uploadFile(uploadForm.videoFile);
-            let thumbUrl = uploadForm.thumbnail || 'https://via.placeholder.com/800';
+            let thumbUrl = uploadForm.thumbnail || 'https://images.unsplash.com/photo-1558980394-4c7c9299fe96?w=800&auto=format&fit=crop&q=60';
             if (uploadForm.thumbnailFile) thumbUrl = await storageService.uploadFile(uploadForm.thumbnailFile);
 
             if (isEditing && editingVlogId) {

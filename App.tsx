@@ -75,6 +75,7 @@ import { OrderTracking } from './components/checkout/OrderTracking';
 import { WebSettings } from './components/desktop/WebSettings';
 import { Garage } from './components/garage/Garage';
 import { ExploreMap } from './components/map/ExploreMap';
+import { CreateRideModal } from './components/ride/CreateRideModal';
 
 export const App: React.FC = () => {
     const [view, setView] = useState<ViewState>('home');
@@ -115,6 +116,7 @@ export const App: React.FC = () => {
 
     const [isProModalOpen, setIsProModalOpen] = useState(false);
     const [isFeedbackOpen, setIsFeedbackOpen] = useState(false);
+    const [isCreateRideOpen, setIsCreateRideOpen] = useState(false);
 
     const [socialHubData, setSocialHubData] = useState<any>(null); // Placeholder for initial data
 
@@ -575,6 +577,7 @@ export const App: React.FC = () => {
                         cartCount={cartItems.reduce((a, b) => a + b.quantity, 0)}
                         onOpenAuth={() => setIsAuthOpen(true)}
                         onOpenFeedback={() => setIsFeedbackOpen(true)}
+                        onCreateRide={() => setIsCreateRideOpen(true)}
 
                     >
                         {/* Desktop Header & Sidebar */}
@@ -653,6 +656,12 @@ export const App: React.FC = () => {
                         setSelectedProduct(null);
                         navigateTo('product-detail', product);
                     }}
+                />
+
+                <CreateRideModal
+                    isOpen={isCreateRideOpen}
+                    onClose={() => setIsCreateRideOpen(false)}
+                    user={user}
                 />
 
 

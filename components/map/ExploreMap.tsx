@@ -3,6 +3,7 @@ import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 import { DiscoverySidebar, FloatingSearch, MapHUD, RouteCard } from './MapOverlays';
 import { createRiderMarkerElement, createHotspotMarkerElement } from './MapMarkers';
+import { routeService } from '../../services/routeService';
 
 // --- Types ---
 interface ExploreMapProps {
@@ -81,7 +82,32 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
     const map = useRef<mapboxgl.Map | null>(null);
     const [selectedRoute, setSelectedRoute] = useState<any>(null);
     const [loading, setLoading] = useState(true);
+    const [routes, setRoutes] = useState<any[]>([]);
     const markersRef = useRef<mapboxgl.Marker[]>([]);
+
+    useEffect(() => {
+        const fetchRoutes = async () => {
+            try {
+                const data = await routeService.getRoutes();
+                // Transform Backend Data (lat/lng objects) to Mapbox ([lng, lat] arrays)
+                const transformedRoutes = data.map((r: any) => ({
+                    id: r._id,
+                    title: r.title,
+                    desc: r.description,
+                    coordinates: r.coordinates.map((c: any) => [c.lng, c.lat]),
+                    dist: r.distance,
+                    difficulty: r.difficulty
+                }));
+                setRoutes(transformedRoutes);
+            } catch (error) {
+                console.error("Failed to fetch routes", error);
+                // Keep MOCK_ROUTES as fallback if needed or empty
+                setRoutes(MOCK_ROUTES);
+            }
+        };
+
+        fetchRoutes();
+    }, []);
 
     // Initialize Map
     useEffect(() => {
@@ -91,7 +117,8 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
         const token = import.meta.env.VITE_MAPBOX_TOKEN;
 
         if (!token) {
-            console.error("Mapbox token missing! Aborting map initialization.");
+            console.error("Mapbox token check failed. Token is:", token);
+            console.warn("TIP: If you just added the token to .env, you MUST restart 'npm run dev' for it to take effect.");
             setLoading(false);
             return;
         }
@@ -102,8 +129,8 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
             map.current = new mapboxgl.Map({
                 container: mapContainer.current,
                 style: 'mapbox://styles/mapbox/dark-v11', // Midnight Carbon base
-                center: [-74.0060, 40.7128],
-                zoom: 12,
+                center: [29.6116, 41.1744], // Focus on Istanbul/Şile for demo
+                zoom: 9, // Zoom out to see context
                 attributionControl: false,
                 pitch: 45, // 3D feel
             });
@@ -126,78 +153,6 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
             });
             */
             // Better approach: use style filtering or accepted style, but 'dark-v11' is okay for now.
-
-            // --- Add Routes Source ---
-            const geojson: GeoJSON.FeatureCollection = {
-                type: 'FeatureCollection',
-                features: MOCK_ROUTES.map(route => ({
-                    type: 'Feature',
-                    properties: {
-                        id: route.id,
-                        title: route.title,
-                        description: route.desc
-                    },
-                    geometry: {
-                        type: 'LineString',
-                        coordinates: route.coordinates
-                    }
-                }))
-            };
-
-            m.addSource('routes', {
-                type: 'geojson',
-                data: geojson
-            });
-
-            // 1. Glow Layer (Blur)
-            m.addLayer({
-                id: 'routes-glow',
-                type: 'line',
-                source: 'routes',
-                layout: {
-                    'line-join': 'round',
-                    'line-cap': 'round'
-                },
-                paint: {
-                    'line-color': '#E2FF3B',
-                    'line-width': 8,
-                    'line-opacity': 0.4,
-                    'line-blur': 4
-                }
-            });
-
-            // 2. Core Line Layer
-            m.addLayer({
-                id: 'routes-core',
-                type: 'line',
-                source: 'routes',
-                layout: {
-                    'line-join': 'round',
-                    'line-cap': 'round'
-                },
-                paint: {
-                    'line-color': '#E2FF3B', // Electric Lime
-                    'line-width': 3,
-                    'line-opacity': 1
-                }
-            });
-
-            // Add click interaction for routes
-            m.on('click', 'routes-core', (e) => {
-                // Identify which route was clicked
-                // Ideally use feature id, but here we can match loosely or use props
-                // Simplified for mock: just picking the first feature found
-                const feature = e.features?.[0];
-                if (feature) {
-                    const routeId = feature.properties?.id;
-                    const route = MOCK_ROUTES.find(r => r.id === routeId);
-                    if (route) handleRouteSelect(route);
-                }
-            });
-
-            // Change cursor on hover
-            m.on('mouseenter', 'routes-core', () => m.getCanvas().style.cursor = 'pointer');
-            m.on('mouseleave', 'routes-core', () => m.getCanvas().style.cursor = '');
 
             // --- Add Markers ---
             MOCK_RIDERS.forEach(rider => {
@@ -225,6 +180,80 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
             markersRef.current = [];
         };
     }, []);
+
+    // Effect to update map data when routes change
+    useEffect(() => {
+        if (!map.current || !map.current.isStyleLoaded() || routes.length === 0) return;
+
+        const m = map.current;
+        const sourceId = 'routes';
+
+        const geojson: GeoJSON.FeatureCollection = {
+            type: 'FeatureCollection',
+            features: routes.map(route => ({
+                type: 'Feature',
+                properties: {
+                    id: route.id,
+                    title: route.title,
+                    description: route.desc
+                },
+                geometry: {
+                    type: 'LineString',
+                    coordinates: route.coordinates
+                }
+            }))
+        };
+
+        if (m.getSource(sourceId)) {
+            (m.getSource(sourceId) as mapboxgl.GeoJSONSource).setData(geojson);
+        } else {
+            m.addSource('routes', {
+                type: 'geojson',
+                data: geojson
+            });
+
+            // 1. Glow Layer
+            m.addLayer({
+                id: 'routes-glow',
+                type: 'line',
+                source: 'routes',
+                layout: { 'line-join': 'round', 'line-cap': 'round' },
+                paint: {
+                    'line-color': '#E2FF3B',
+                    'line-width': 8,
+                    'line-opacity': 0.4,
+                    'line-blur': 4
+                }
+            });
+
+            // 2. Core Line Layer
+            m.addLayer({
+                id: 'routes-core',
+                type: 'line',
+                source: 'routes',
+                layout: { 'line-join': 'round', 'line-cap': 'round' },
+                paint: {
+                    'line-color': '#E2FF3B',
+                    'line-width': 3,
+                    'line-opacity': 1
+                }
+            });
+
+            // Add click interaction
+            m.on('click', 'routes-core', (e) => {
+                const feature = e.features?.[0];
+                if (feature) {
+                    const routeId = feature.properties?.id;
+                    const route = routes.find(r => r.id === routeId);
+                    if (route) handleRouteSelect(route);
+                }
+            });
+
+            m.on('mouseenter', 'routes-core', () => m.getCanvas().style.cursor = 'pointer');
+            m.on('mouseleave', 'routes-core', () => m.getCanvas().style.cursor = '');
+        }
+
+    }, [routes, map.current]); // Update when routes state changes
 
     const handleRouteSelect = useCallback((route: any) => {
         setSelectedRoute(route);
@@ -268,7 +297,7 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
 
             {/* Overlays */}
             <FloatingSearch />
-            <DiscoverySidebar routes={MOCK_ROUTES} onSelectRoute={handleRouteSelect} />
+            <DiscoverySidebar routes={routes} onSelectRoute={handleRouteSelect} />
             <MapHUD coords={map.current ? `${map.current.getCenter().lng.toFixed(4)}, ${map.current.getCenter().lat.toFixed(4)}` : "Loading..."} userCount={124} onRecenter={handleRecenter} />
             <RouteCard route={selectedRoute} onClose={() => setSelectedRoute(null)} />
 

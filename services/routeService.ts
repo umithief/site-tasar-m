@@ -7,53 +7,10 @@ export const routeService = {
       const response = await api.get('/routes', {
         params: { filter }
       });
-
-      // SHIM: Check for incomplete data (single point coordinates) and enrich it
-      // This is a temporary fix for the "Live Demo" until backend seed is fixed
-      const shimmedData = response.data.map((r: Route) => {
-        if ((!r.coordinates || r.coordinates.length < 2) && (!r.path || r.path.length < 2)) {
-          // Determine which mock data to use based on title/location
-          if (r.title.includes('Şile') || r.location?.includes('Şile')) {
-            return {
-              ...r, coordinates: [
-                { lat: 41.1744, lng: 29.6116 },
-                { lat: 41.1780, lng: 29.6200 },
-                { lat: 41.1850, lng: 29.6300 },
-                { lat: 41.1900, lng: 29.6400 },
-                { lat: 41.1950, lng: 29.6500 }
-              ]
-            };
-          }
-          if (r.title.includes('Uludağ') || r.location?.includes('Bursa')) {
-            return {
-              ...r, coordinates: [
-                { lat: 40.1828, lng: 29.0669 },
-                { lat: 40.1500, lng: 29.0800 },
-                { lat: 40.1200, lng: 29.1000 },
-                { lat: 40.0900, lng: 29.1300 },
-                { lat: 40.0600, lng: 29.1500 }
-              ]
-            };
-          }
-          if (r.title.includes('Toros') || r.location?.includes('Antalya')) {
-            return {
-              ...r, coordinates: [
-                { lat: 36.8841, lng: 30.7056 }, // Antalya Merkez
-                { lat: 37.0000, lng: 30.8000 },
-                { lat: 37.1500, lng: 31.0000 },
-                { lat: 37.3000, lng: 31.2000 }, // Toros Dağları Yolu
-                { lat: 37.5000, lng: 31.4000 }
-              ]
-            };
-          }
-        }
-        return r;
-      });
-
-      return shimmedData;
+      return response.data;
     } catch (e) {
       console.warn('API getRoutes failed, using mock');
-      return (await routeService.seedRoutes()); // Fallback to full mock
+      return (await routeService.seedRoutes()); // Fallback to full mock if API fails
     }
   },
 

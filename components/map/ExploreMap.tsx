@@ -22,6 +22,7 @@ const USER_PUCK_HTML = `
 
 interface ExploreMapProps {
     onNavigate?: (view: any) => void;
+    variant?: 'desktop' | 'mobile';
 }
 
 const INITIAL_RIDERS = [
@@ -30,7 +31,7 @@ const INITIAL_RIDERS = [
     { id: 3, name: 'NightFury', lat: 41.1600, lng: 29.6000, speed: '0 km/h' },
 ];
 
-export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
+export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate, variant = 'desktop' }) => {
     const mapContainer = useRef<HTMLDivElement>(null);
     const map = useRef<L.Map | null>(null);
 
@@ -336,7 +337,10 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
     };
 
     return (
-        <div className="relative w-full h-[85vh] bg-[#0A0A0A] overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
+        <div className={`relative w-full bg-[#0A0A0A] overflow-hidden ${variant === 'mobile'
+                ? 'h-[100dvh] rounded-none border-none'
+                : 'h-[85vh] rounded-3xl border border-white/10 shadow-2xl'
+            }`}>
             {/* Map Container */}
             <div ref={mapContainer} className="w-full h-full z-0" />
 

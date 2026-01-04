@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Home, Search, Plus, Film, User, Zap, ShoppingBag, Map as MapIcon } from 'lucide-react';
+import { Home, Search, Plus, Film, User, Zap, ShoppingBag, Map as MapIcon, Compass } from 'lucide-react';
 import { ViewState, User as UserType } from '../../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageProvider';
@@ -29,7 +29,8 @@ export const BottomNav: React.FC<SidebarProps> = ({
     // For now, simple mapping.
     const getActiveTab = () => {
         if (currentView === 'home') return 'home';
-        if (currentView === 'shop' || currentView === 'explore' || currentView === 'product-detail') return 'shop';
+        if (currentView === 'shop' || currentView === 'product-detail') return 'shop';
+        if (currentView === 'explore') return 'explore';
         if (currentView === 'ride-mode') return 'ride-mode';
         if (currentView === 'profile' || currentView === 'my-profile' || currentView === 'auth') return 'profile';
         // 'create' is a modal/action, usually doesn't stay highlighted unless it's a dedicated view
@@ -40,10 +41,10 @@ export const BottomNav: React.FC<SidebarProps> = ({
 
     const navItems = [
         { id: 'home', icon: Home, label: 'Home', view: 'home' },
-        { id: 'shop', icon: ShoppingBag, label: 'Shop', view: 'shop' },
+        { id: 'explore', icon: Compass, label: 'Explore', view: 'explore' },
         { id: 'create', icon: Plus, label: 'Create', isFab: true },
 
-        // { id: 'profile', icon: User, label: 'Profile', view: user ? 'profile' : 'auth' },
+        { id: 'shop', icon: ShoppingBag, label: 'Shop', view: 'shop' },
         { id: 'onboarding', icon: Zap, label: 'Onboard', view: 'onboarding' },
     ];
 

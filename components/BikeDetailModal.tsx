@@ -14,16 +14,16 @@ interface BikeDetailModalProps {
     readonly?: boolean;
 }
 
-export const BikeDetailModal: React.FC<BikeDetailModalProps> = ({ 
-    isOpen, 
-    onClose, 
-    bike, 
+export const BikeDetailModal: React.FC<BikeDetailModalProps> = ({
+    isOpen,
+    onClose,
+    bike,
     onSave,
     readonly = false
 }) => {
     const [activeTab, setActiveTab] = useState<'general' | 'maintenance' | 'mods'>('general');
     const [editedBike, setEditedBike] = useState<UserBike>(bike);
-    
+
     // Form States
     const [newLog, setNewLog] = useState<Partial<MaintenanceLog>>({ type: 'Periyodik', date: new Date().toISOString().split('T')[0] });
     const [newMod, setNewMod] = useState<Partial<BikeModification>>({ type: 'Performans' });
@@ -47,7 +47,7 @@ export const BikeDetailModal: React.FC<BikeDetailModalProps> = ({
     const addLog = () => {
         if (!newLog.km || !newLog.type) return;
         const log: MaintenanceLog = {
-            id: `log-${Date.now()}`,
+            _id: `log-${Date.now()}`,
             date: newLog.date || new Date().toISOString().split('T')[0],
             type: newLog.type!,
             km: newLog.km,
@@ -63,7 +63,7 @@ export const BikeDetailModal: React.FC<BikeDetailModalProps> = ({
     const addMod = () => {
         if (!newMod.name || !newMod.brand) return;
         const mod: BikeModification = {
-            id: `mod-${Date.now()}`,
+            _id: `mod-${Date.now()}`,
             type: newMod.type || 'Performans',
             brand: newMod.brand,
             name: newMod.name,
@@ -76,18 +76,18 @@ export const BikeDetailModal: React.FC<BikeDetailModalProps> = ({
     };
 
     const removeLog = (id: string) => {
-        setEditedBike({ ...editedBike, maintenance: editedBike.maintenance?.filter(l => l.id !== id) });
+        setEditedBike({ ...editedBike, maintenance: editedBike.maintenance?.filter(l => l._id !== id) });
     };
 
     const removeMod = (id: string) => {
-        setEditedBike({ ...editedBike, modifications: editedBike.modifications?.filter(m => m.id !== id) });
+        setEditedBike({ ...editedBike, modifications: editedBike.modifications?.filter(m => m._id !== id) });
     };
 
     return createPortal(
         <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
             <div className="absolute inset-0 bg-black/90 backdrop-blur-sm transition-opacity" onClick={onClose}></div>
-            
-            <motion.div 
+
+            <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
@@ -108,14 +108,14 @@ export const BikeDetailModal: React.FC<BikeDetailModalProps> = ({
                             <p className="text-moto-accent text-sm font-bold uppercase">{editedBike.brand}</p>
                         </div>
                     </div>
-                    
+
                     <div className="p-6 space-y-6 flex-1 overflow-y-auto">
                         <div className="space-y-4">
                             {!readonly && (
                                 <div className="bg-white/5 p-3 rounded-xl border border-white/5 flex items-center justify-between">
                                     <span className="text-xs text-gray-400 font-bold uppercase">Herkese Açık</span>
-                                    <button 
-                                        onClick={() => setEditedBike({...editedBike, isPublic: !editedBike.isPublic})}
+                                    <button
+                                        onClick={() => setEditedBike({ ...editedBike, isPublic: !editedBike.isPublic })}
                                         className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${editedBike.isPublic ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'}`}
                                     >
                                         {editedBike.isPublic ? <><Eye className="w-3 h-3" /> EVET</> : <><EyeOff className="w-3 h-3" /> HAYIR</>}
@@ -141,11 +141,11 @@ export const BikeDetailModal: React.FC<BikeDetailModalProps> = ({
                             {!readonly && (
                                 <div>
                                     <label className="text-[10px] text-gray-500 uppercase font-bold mb-2 block">Notlar</label>
-                                    <textarea 
+                                    <textarea
                                         className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs text-white outline-none focus:border-moto-accent h-24 resize-none"
                                         placeholder="Motor hakkında notlar..."
                                         value={editedBike.notes || ''}
-                                        onChange={(e) => setEditedBike({...editedBike, notes: e.target.value})}
+                                        onChange={(e) => setEditedBike({ ...editedBike, notes: e.target.value })}
                                     />
                                 </div>
                             )}
@@ -178,26 +178,26 @@ export const BikeDetailModal: React.FC<BikeDetailModalProps> = ({
 
                     <div className="flex-1 overflow-y-auto p-6 bg-[#121212] relative">
                         <AnimatePresence mode="wait">
-                            
+
                             {/* MAINTENANCE TAB */}
                             {activeTab === 'maintenance' && (
                                 <motion.div key="maintenance" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6">
                                     <div className="flex justify-between items-center mb-4">
                                         <h3 className="text-lg font-bold text-white">Bakım Kayıtları</h3>
-                                        {!readonly && <button onClick={() => setIsAddingLog(!isAddingLog)} className="bg-moto-accent text-black px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-white transition-colors"><Plus className="w-3 h-3"/> KAYIT EKLE</button>}
+                                        {!readonly && <button onClick={() => setIsAddingLog(!isAddingLog)} className="bg-moto-accent text-black px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-white transition-colors"><Plus className="w-3 h-3" /> KAYIT EKLE</button>}
                                     </div>
 
                                     {isAddingLog && (
                                         <div className="bg-white/5 border border-white/10 p-4 rounded-xl mb-6 animate-in slide-in-from-top-2">
                                             <div className="grid grid-cols-2 gap-3 mb-3">
-                                                <input type="date" value={newLog.date} onChange={e => setNewLog({...newLog, date: e.target.value})} className="bg-black border border-white/10 rounded-lg p-2 text-xs text-white outline-none" />
-                                                <input type="text" placeholder="KM" value={newLog.km || ''} onChange={e => setNewLog({...newLog, km: e.target.value})} className="bg-black border border-white/10 rounded-lg p-2 text-xs text-white outline-none" />
-                                                <select value={newLog.type} onChange={e => setNewLog({...newLog, type: e.target.value})} className="bg-black border border-white/10 rounded-lg p-2 text-xs text-white outline-none">
+                                                <input type="date" value={newLog.date} onChange={e => setNewLog({ ...newLog, date: e.target.value })} className="bg-black border border-white/10 rounded-lg p-2 text-xs text-white outline-none" />
+                                                <input type="text" placeholder="KM" value={newLog.km || ''} onChange={e => setNewLog({ ...newLog, km: e.target.value })} className="bg-black border border-white/10 rounded-lg p-2 text-xs text-white outline-none" />
+                                                <select value={newLog.type} onChange={e => setNewLog({ ...newLog, type: e.target.value })} className="bg-black border border-white/10 rounded-lg p-2 text-xs text-white outline-none">
                                                     {['Periyodik', 'Lastik', 'Arıza', 'Aksesuar', 'Muayene'].map(t => <option key={t} value={t}>{t}</option>)}
                                                 </select>
-                                                <input type="text" placeholder="Maliyet (Opsiyonel)" value={newLog.cost || ''} onChange={e => setNewLog({...newLog, cost: e.target.value})} className="bg-black border border-white/10 rounded-lg p-2 text-xs text-white outline-none" />
+                                                <input type="text" placeholder="Maliyet (Opsiyonel)" value={newLog.cost || ''} onChange={e => setNewLog({ ...newLog, cost: e.target.value })} className="bg-black border border-white/10 rounded-lg p-2 text-xs text-white outline-none" />
                                             </div>
-                                            <textarea placeholder="Yapılan işlemler..." value={newLog.notes || ''} onChange={e => setNewLog({...newLog, notes: e.target.value})} className="w-full bg-black border border-white/10 rounded-lg p-2 text-xs text-white outline-none h-20 mb-3 resize-none" />
+                                            <textarea placeholder="Yapılan işlemler..." value={newLog.notes || ''} onChange={e => setNewLog({ ...newLog, notes: e.target.value })} className="w-full bg-black border border-white/10 rounded-lg p-2 text-xs text-white outline-none h-20 mb-3 resize-none" />
                                             <div className="flex justify-end gap-2">
                                                 <button onClick={() => setIsAddingLog(false)} className="px-4 py-2 text-xs font-bold text-gray-400 hover:text-white">İptal</button>
                                                 <button onClick={addLog} className="px-4 py-2 bg-green-600 text-white rounded-lg text-xs font-bold hover:bg-green-500">Kaydet</button>
@@ -207,7 +207,7 @@ export const BikeDetailModal: React.FC<BikeDetailModalProps> = ({
 
                                     <div className="space-y-4">
                                         {editedBike.maintenance?.map((log) => (
-                                            <div key={log.id} className="relative pl-6 border-l-2 border-white/10 py-1 group">
+                                            <div key={log._id} className="relative pl-6 border-l-2 border-white/10 py-1 group">
                                                 <div className="absolute -left-[5px] top-2 w-2.5 h-2.5 rounded-full bg-moto-accent border-2 border-[#121212]"></div>
                                                 <div className="bg-white/5 border border-white/5 rounded-xl p-4 hover:border-white/20 transition-colors">
                                                     <div className="flex justify-between items-start mb-2">
@@ -222,7 +222,7 @@ export const BikeDetailModal: React.FC<BikeDetailModalProps> = ({
                                                     </div>
                                                     <p className="text-sm text-gray-300">{log.notes}</p>
                                                     {!readonly && (
-                                                        <button onClick={() => removeLog(log.id)} className="absolute top-4 right-4 text-gray-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <button onClick={() => removeLog(log._id)} className="absolute top-4 right-4 text-gray-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
                                                             <Trash2 className="w-4 h-4" />
                                                         </button>
                                                     )}
@@ -241,19 +241,19 @@ export const BikeDetailModal: React.FC<BikeDetailModalProps> = ({
                                 <motion.div key="mods" initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className="space-y-6">
                                     <div className="flex justify-between items-center mb-4">
                                         <h3 className="text-lg font-bold text-white">Modifikasyonlar</h3>
-                                        {!readonly && <button onClick={() => setIsAddingMod(!isAddingMod)} className="bg-moto-accent text-black px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-white transition-colors"><Plus className="w-3 h-3"/> PARÇA EKLE</button>}
+                                        {!readonly && <button onClick={() => setIsAddingMod(!isAddingMod)} className="bg-moto-accent text-black px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-2 hover:bg-white transition-colors"><Plus className="w-3 h-3" /> PARÇA EKLE</button>}
                                     </div>
 
                                     {isAddingMod && (
                                         <div className="bg-white/5 border border-white/10 p-4 rounded-xl mb-6 animate-in slide-in-from-top-2">
                                             <div className="grid grid-cols-2 gap-3 mb-3">
-                                                <input type="text" placeholder="Parça Adı (örn: Akrapovic Egzoz)" value={newMod.name || ''} onChange={e => setNewMod({...newMod, name: e.target.value})} className="bg-black border border-white/10 rounded-lg p-2 text-xs text-white outline-none col-span-2" />
-                                                <input type="text" placeholder="Marka" value={newMod.brand || ''} onChange={e => setNewMod({...newMod, brand: e.target.value})} className="bg-black border border-white/10 rounded-lg p-2 text-xs text-white outline-none" />
-                                                <select value={newMod.type} onChange={e => setNewMod({...newMod, type: e.target.value})} className="bg-black border border-white/10 rounded-lg p-2 text-xs text-white outline-none">
+                                                <input type="text" placeholder="Parça Adı (örn: Akrapovic Egzoz)" value={newMod.name || ''} onChange={e => setNewMod({ ...newMod, name: e.target.value })} className="bg-black border border-white/10 rounded-lg p-2 text-xs text-white outline-none col-span-2" />
+                                                <input type="text" placeholder="Marka" value={newMod.brand || ''} onChange={e => setNewMod({ ...newMod, brand: e.target.value })} className="bg-black border border-white/10 rounded-lg p-2 text-xs text-white outline-none" />
+                                                <select value={newMod.type} onChange={e => setNewMod({ ...newMod, type: e.target.value })} className="bg-black border border-white/10 rounded-lg p-2 text-xs text-white outline-none">
                                                     {['Performans', 'Konfor', 'Koruma', 'Görsel', 'Elektronik'].map(t => <option key={t} value={t}>{t}</option>)}
                                                 </select>
                                             </div>
-                                            <textarea placeholder="Notlar..." value={newMod.notes || ''} onChange={e => setNewMod({...newMod, notes: e.target.value})} className="w-full bg-black border border-white/10 rounded-lg p-2 text-xs text-white outline-none h-16 mb-3 resize-none" />
+                                            <textarea placeholder="Notlar..." value={newMod.notes || ''} onChange={e => setNewMod({ ...newMod, notes: e.target.value })} className="w-full bg-black border border-white/10 rounded-lg p-2 text-xs text-white outline-none h-16 mb-3 resize-none" />
                                             <div className="flex justify-end gap-2">
                                                 <button onClick={() => setIsAddingMod(false)} className="px-4 py-2 text-xs font-bold text-gray-400 hover:text-white">İptal</button>
                                                 <button onClick={addMod} className="px-4 py-2 bg-green-600 text-white rounded-lg text-xs font-bold hover:bg-green-500">Ekle</button>
@@ -263,7 +263,7 @@ export const BikeDetailModal: React.FC<BikeDetailModalProps> = ({
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         {editedBike.modifications?.map((mod) => (
-                                            <div key={mod.id} className="bg-white/5 border border-white/10 rounded-xl p-4 hover:border-moto-accent/50 transition-all relative group">
+                                            <div key={mod._id} className="bg-white/5 border border-white/10 rounded-xl p-4 hover:border-moto-accent/50 transition-all relative group">
                                                 <div className="flex items-start justify-between mb-2">
                                                     <div className="flex items-center gap-2">
                                                         <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center border border-white/10">
@@ -275,7 +275,7 @@ export const BikeDetailModal: React.FC<BikeDetailModalProps> = ({
                                                         </div>
                                                     </div>
                                                     {!readonly && (
-                                                        <button onClick={() => removeMod(mod.id)} className="text-gray-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <button onClick={() => removeMod(mod._id)} className="text-gray-600 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity">
                                                             <Trash2 className="w-4 h-4" />
                                                         </button>
                                                     )}
@@ -296,7 +296,7 @@ export const BikeDetailModal: React.FC<BikeDetailModalProps> = ({
                     {!readonly && (
                         <div className="p-4 bg-[#0a0a0a] border-t border-white/5 flex justify-end gap-3">
                             <Button variant="outline" onClick={onClose} className="border-white/10 text-gray-400 hover:text-white">İPTAL</Button>
-                            <Button variant="primary" onClick={handleSave} className="px-8"><Save className="w-4 h-4 mr-2"/> DEĞİŞİKLİKLERİ KAYDET</Button>
+                            <Button variant="primary" onClick={handleSave} className="px-8"><Save className="w-4 h-4 mr-2" /> DEĞİŞİKLİKLERİ KAYDET</Button>
                         </div>
                     )}
                 </div>

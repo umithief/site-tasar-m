@@ -190,10 +190,11 @@ export const RouteCard = ({ route, onClose, onStartNavigation }: any) => {
                                     setTimeout(() => {
                                         if (onStartNavigation) {
                                             onStartNavigation();
-                                            // Do not close; parent handles UI switch and we need selectedRoute to remain active
+                                            // Do not close; parent handles UI switch
                                         } else {
-                                            // Fallback
-                                            window.open(`https://www.google.com/maps/dir/?api=1&destination=${route.coordinates[route.coordinates.length - 1][1]},${route.coordinates[route.coordinates.length - 1][0]}&travelmode=driving`, '_blank');
+                                            // Fallback to Google Maps
+                                            // Leaflet uses [Lat, Lng], so [0] is Lat, [1] is Lng directly.
+                                            window.open(`https://www.google.com/maps/dir/?api=1&destination=${route.coordinates[route.coordinates.length - 1][0]},${route.coordinates[route.coordinates.length - 1][1]}&travelmode=driving`, '_blank');
                                             onClose();
                                         }
                                     }, 1000);

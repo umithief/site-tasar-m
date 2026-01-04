@@ -26,6 +26,11 @@ export const rideService = {
 
         if (!response.ok) {
             const error = await response.json();
+            // Handle Zod validation errors
+            if (error.errors && Array.isArray(error.errors)) {
+                const messages = error.errors.map((err: any) => `${err.path.join('.')}: ${err.message}`).join('\n');
+                throw new Error(messages);
+            }
             throw new Error(error.message || 'Failed to create ride');
         }
 

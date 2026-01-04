@@ -29,7 +29,8 @@ export const createRide = async (req, res) => {
                 route: body.route,
                 maxParticipants: body.maxParticipants || 10,
                 // If user is set, use user.id, otherwise hardcode for dev/demo if allowed
-                creatorId: user ? user._id || user.id : 'user_123'
+                // If user is set, use user.id, otherwise find a fallback user or use a specific ID
+                creatorId: user ? (user._id || user.id) : (await prisma.user.findFirst())?.id || 'manual_fix_needed',
             },
             include: {
                 creator: true,

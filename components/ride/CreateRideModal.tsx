@@ -56,9 +56,9 @@ export const CreateRideModal: React.FC<CreateRideModalProps> = ({ isOpen, onClos
 
             onClose();
             // Optional: Trigger refresh or toast
-        } catch (error) {
+        } catch (error: any) {
             console.error(error);
-            alert('Failed to create ride');
+            alert(error.message || 'Failed to create ride');
         } finally {
             setIsLoading(false);
         }

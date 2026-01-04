@@ -1,28 +1,44 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import mapboxgl from 'mapbox-gl';
-import 'mapbox-gl/dist/mapbox-gl.css';
+import L from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Navigation, Users, Zap } from 'lucide-react';
-import { DiscoverySidebar, FloatingSearch, MapHUD, RouteCard } from './MapOverlays'; // Re-using your existing overlays
+import { DiscoverySidebar, FloatingSearch, MapHUD, RouteCard } from './MapOverlays';
 import { routeService } from '../../services/routeService';
 
-// --- Types ---
+// --- Styles for Custom Markers (Leaflet needs CSS classes) ---
+const PULSE_ICON_HTML = `
+  <div class="relative w-full h-full">
+    <div class="absolute inset-0 bg-cyan-400 rounded-full opacity-40 animate-ping"></div>
+    <div class="absolute inset-2 bg-cyan-400 rounded-full border-2 border-white shadow-[0_0_15px_rgba(34,211,238,0.6)]"></div>
+  </div>
+`;
+
+const USER_PUCK_HTML = `
+  <div class="relative w-full h-full">
+    <div class="absolute inset-[-10px] bg-blue-500 rounded-full opacity-30 animate-pulse"></div>
+    <div class="absolute inset-0 bg-blue-500 rounded-full border-2 border-white shadow-[0_0_20px_rgba(59,130,246,0.6)]"></div>
+  </div>
+`;
+
 interface ExploreMapProps {
     onNavigate?: (view: any) => void;
 }
 
-// --- Mock Data for Riders (Initial) ---
-// We will convert this to GeoJSON dynamically
 const INITIAL_RIDERS = [
     { id: 1, name: 'GhostRider', lat: 41.1744, lng: 29.6116, speed: '124 km/h' },
     { id: 2, name: 'ApexPredator', lat: 41.1800, lng: 29.6200, speed: '98 km/h' },
-    { id: 3, name: 'NightFury', lat: 41.1600, lng: 29.6000, speed: '0 km/h (Parking)' },
-    { id: 4, name: 'TurboTom', lat: 41.1700, lng: 29.6300, speed: '110 km/h' },
+    { id: 3, name: 'NightFury', lat: 41.1600, lng: 29.6000, speed: '0 km/h' },
 ];
 
 export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
     const mapContainer = useRef<HTMLDivElement>(null);
-    const map = useRef<mapboxgl.Map | null>(null);
+    const map = useRef<L.Map | null>(null);
+
+    // Layers
+    const ridersLayer = useRef<L.LayerGroup | null>(null);
+    const routesLayer = useRef<L.LayerGroup | null>(null);
+    const navLayer = useRef<L.LayerGroup | null>(null);
+    const userMarker = useRef<L.Marker | null>(null);
 
     // State
     const [loading, setLoading] = useState(true);
@@ -30,19 +46,15 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
     const [selectedRoute, setSelectedRoute] = useState<any>(null);
     const [isNavigating, setIsNavigating] = useState(false);
 
-    // Navigation Simulation State
+    // Navigation Data
     const [navigationData, setNavigationData] = useState<any>(null);
+    const [userLocation, setUserLocation] = useState<[number, number] | null>(null); // [Lat, Lng] for Leaflet
     const [currentStepIndex, setCurrentStepIndex] = useState(0);
 
-    // Live Rider Simulation Ref
+    const watchId = useRef<number | null>(null);
     const ridersRef = useRef(INITIAL_RIDERS);
 
-    // Real User Location Tracking
-    const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
-    const [navigationRouteCoords, setNavigationRouteCoords] = useState<any>(null); // New state for calculated path
-    const watchId = useRef<number | null>(null);
-
-    // --- 1. Fetch Data (Routes) ---
+    // --- 1. Fetch Routes ---
     useEffect(() => {
         const fetchRoutes = async () => {
             try {
@@ -51,7 +63,10 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
                     id: r._id,
                     title: r.title,
                     desc: r.description,
-                    coordinates: r.coordinates.map((c: any) => [c.lng, c.lat]),
+                    // Leaflet needs [Lat, Lng], GeoJSON is [Lng, Lat]. We must FLIP if source is GeoJSON.
+                    // Assuming API returns {lat, lng} objects or standard GeoJSON [lng, lat] arrays.
+                    // routeService usually returns objects with coords. Let's normalize to [Lat, Lng].
+                    coordinates: r.coordinates.map((c: any) => [c.lat, c.lng]),
                     dist: r.distance,
                     difficulty: r.difficulty,
                     image: r.image,
@@ -67,161 +82,30 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
         fetchRoutes();
     }, []);
 
-    // --- 2. Map Initialization & Architecture ---
+    // --- 2. Initialize Map (Leaflet) ---
     useEffect(() => {
-        if (map.current) return; // Ensure singleton
-        if (!mapContainer.current) return;
+        if (map.current || !mapContainer.current) return;
 
-        const token = import.meta.env.VITE_MAPBOX_TOKEN;
-        if (!token) {
-            console.error("Mapbox Token Missing");
-            setLoading(false);
-            return;
-        }
-
-        mapboxgl.accessToken = token;
-
-        map.current = new mapboxgl.Map({
-            container: mapContainer.current,
-            style: 'mapbox://styles/mapbox/dark-v11',
-            center: [29.6116, 41.1744], // Istanbul/Şile
-            zoom: 2, // Start zoomed out for Intro Fly-in
-            pitch: 0,
+        // Init Map
+        map.current = L.map(mapContainer.current, {
+            zoomControl: false,
             attributionControl: false,
+            center: [41.1744, 29.6116], // Istanbul
+            zoom: 13
         });
 
-        const m = map.current;
+        // Dark Matter Tiles (CartoDB) - Premium Look
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            maxZoom: 20,
+            subdomains: 'abcd',
+        }).addTo(map.current);
 
-        m.on('load', () => {
-            setLoading(false);
+        // Layer Groups
+        ridersLayer.current = L.layerGroup().addTo(map.current);
+        routesLayer.current = L.layerGroup().addTo(map.current);
+        navLayer.current = L.layerGroup().addTo(map.current); // Use for Nav Path
 
-            // --- Intro Fly-in Animation ---
-            m.flyTo({
-                center: [29.6116, 41.1744],
-                zoom: 13,
-                pitch: 45,
-                bearing: -10,
-                duration: 4000,
-                essential: true
-            });
-
-            // --- A. Riders Source (GeoJSON) ---
-            m.addSource('riders', {
-                type: 'geojson',
-                data: {
-                    type: 'FeatureCollection',
-                    features: INITIAL_RIDERS.map(rider => ({
-                        type: 'Feature',
-                        geometry: { type: 'Point', coordinates: [rider.lng, rider.lat] },
-                        properties: { ...rider }
-                    }))
-                }
-            });
-
-            // --- B. Riders Layer (Circle + Neon Glow) ---
-            // 1. Outer Glow
-            m.addLayer({
-                id: 'riders-glow',
-                type: 'circle',
-                source: 'riders',
-                paint: {
-                    'circle-radius': 15,
-                    'circle-color': '#06b6d4', // Cyan
-                    'circle-opacity': 0.4,
-                    'circle-blur': 0.5
-                }
-            });
-            // 2. Core Dot
-            m.addLayer({
-                id: 'riders-core',
-                type: 'circle',
-                source: 'riders',
-                paint: {
-                    'circle-radius': 6,
-                    'circle-color': '#ffffff',
-                    'circle-stroke-width': 2,
-                    'circle-stroke-color': '#06b6d4'
-                }
-            });
-
-            // --- C. Rider Interaction (Hover Popup) ---
-            const popup = new mapboxgl.Popup({
-                closeButton: false,
-                closeOnClick: false,
-                className: 'premium-popup',
-                offset: 20
-            });
-
-            m.on('mouseenter', 'riders-core', (e) => {
-                m.getCanvas().style.cursor = 'pointer';
-                if (!e.features || !e.features[0]) return;
-
-                const coordinates = (e.features[0].geometry as any).coordinates.slice();
-                const props = e.features[0].properties;
-
-                const popupContent = `
-                    <div class="p-3 bg-black/90 backdrop-blur-md rounded-lg border border-cyan-500/30 shadow-[0_0_15px_rgba(6,182,212,0.3)]">
-                        <div class="flex items-center gap-2 mb-1">
-                            <span class="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-                            <h3 class="text-white font-bold text-sm font-mono tracking-wide">${props.name}</h3>
-                        </div>
-                        <div class="text-cyan-400 text-xs font-black uppercase">${props.speed}</div>
-                    </div>
-                `;
-
-                popup.setLngLat(coordinates).setHTML(popupContent).addTo(m);
-            });
-
-            m.on('mouseleave', 'riders-core', () => {
-                m.getCanvas().style.cursor = '';
-                popup.remove();
-            });
-
-            // --- D. Routes Source (Placeholder initialization) ---
-            m.addSource('routes', {
-                type: 'geojson',
-                data: { type: 'FeatureCollection', features: [] }
-            });
-
-            // Route Layers (Glow + Core)
-            m.addLayer({
-                id: 'routes-glow',
-                type: 'line',
-                source: 'routes',
-                layout: { 'line-join': 'round', 'line-cap': 'round' },
-                paint: {
-                    'line-color': '#E2FF3B',
-                    'line-width': 8,
-                    'line-opacity': 0.4,
-                    'line-blur': 4
-                }
-            });
-            m.addLayer({
-                id: 'routes-core',
-                type: 'line',
-                source: 'routes',
-                layout: { 'line-join': 'round', 'line-cap': 'round' },
-                paint: {
-                    'line-color': '#E2FF3B',
-                    'line-width': 3,
-                    'line-opacity': 1
-                }
-            });
-
-            // Route Interaction
-            m.on('click', 'routes-core', (e) => {
-                if (isNavigating) return; // Lock clicks during nav
-                const feature = e.features?.[0];
-                if (feature) {
-                    const routeId = feature.properties?.id;
-                    // We need to find the route object from our state
-                    // This is tricky inside the closure. We'll handle this via a ref or event bubbling ideally.
-                    // For simply, we can emit a custom event or relying on React state update in 'click'.
-                }
-            });
-            m.on('mouseenter', 'routes-core', () => m.getCanvas().style.cursor = 'pointer');
-            m.on('mouseleave', 'routes-core', () => m.getCanvas().style.cursor = '');
-        });
+        setLoading(false);
 
         // Cleanup
         return () => {
@@ -230,286 +114,220 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
                 map.current = null;
             }
         };
-    }, []); // Run ONCE
-
-    // --- 3. Live Rider Simulation (Interval) ---
-    useEffect(() => {
-        if (!map.current) return;
-
-        const interval = setInterval(() => {
-            if (!map.current || !map.current.getSource('riders')) return;
-
-            // Jitter positions
-            ridersRef.current = ridersRef.current.map(rider => ({
-                ...rider,
-                lng: rider.lng + (Math.random() - 0.5) * 0.001,
-                lat: rider.lat + (Math.random() - 0.5) * 0.001
-            }));
-
-            const data: GeoJSON.FeatureCollection = {
-                type: 'FeatureCollection',
-                features: ridersRef.current.map(rider => ({
-                    type: 'Feature',
-                    geometry: { type: 'Point', coordinates: [rider.lng, rider.lat] },
-                    properties: { ...rider }
-                }))
-            };
-
-            (map.current.getSource('riders') as mapboxgl.GeoJSONSource).setData(data);
-
-        }, 3000); // Update every 3 seconds
-
-        return () => clearInterval(interval);
     }, []);
 
-    // --- 4. React to Data Changes (Routes) ---
-    // Separate effect to handle style loading race condition
+    // --- 3. Render Riders ---
     useEffect(() => {
-        const updateRoutes = () => {
-            if (!map.current || !map.current.getStyle() || !map.current.getSource('routes')) return;
+        if (!map.current || !ridersLayer.current) return;
 
-            let features: any[] = [];
+        // Clear existing
+        ridersLayer.current.clearLayers();
 
-            if (isNavigating && navigationRouteCoords) {
-                // Show the real calculated path from User -> Destination
-                features = [{
-                    type: 'Feature',
-                    geometry: { type: 'LineString', coordinates: navigationRouteCoords },
-                    properties: { id: 'nav', title: 'Calculated Route' }
-                }];
-            } else if (selectedRoute) {
-                // Show single selected route
-                features = [{
-                    type: 'Feature',
-                    geometry: { type: 'LineString', coordinates: selectedRoute.coordinates },
-                    properties: { id: selectedRoute.id, title: selectedRoute.title }
-                }];
-            } else {
-                // Show all routes
-                features = routes.map(r => ({
-                    type: 'Feature',
-                    geometry: { type: 'LineString', coordinates: r.coordinates },
-                    properties: { id: r.id, title: r.title }
-                }));
-            }
+        // Add Riders
+        ridersRef.current.forEach(rider => {
+            const icon = L.divIcon({
+                html: PULSE_ICON_HTML,
+                className: 'bg-transparent',
+                iconSize: [24, 24],
+                iconAnchor: [12, 12]
+            });
 
-            const data: GeoJSON.FeatureCollection = {
-                type: 'FeatureCollection',
-                features: features
-            };
+            L.marker([rider.lat, rider.lng], { icon })
+                .bindPopup(`
+                    <div class="p-2 bg-black text-white font-mono text-xs">
+                        <strong class="text-cyan-400">${rider.name}</strong><br/>
+                        ${rider.speed}
+                    </div>
+                `, { closeButton: false, className: 'leaflet-popup-dark' })
+                .addTo(ridersLayer.current!);
+        });
 
-            (map.current.getSource('routes') as mapboxgl.GeoJSONSource).setData(data); // Line 279 original logic replaced
+    }, [ridersRef.current]); // Re-run if riders update (add simulation interval later if needed)
 
-            // Adjust Line Width for Navigation
-            if (isNavigating) {
-                map.current.setPaintProperty('routes-core', 'line-width', 6);
-                map.current.setPaintProperty('routes-glow', 'line-width', 12);
-            } else {
-                map.current.setPaintProperty('routes-core', 'line-width', 3);
-                map.current.setPaintProperty('routes-glow', 'line-width', 8);
-            }
-        };
-
-        if (map.current && map.current.isStyleLoaded()) {
-            updateRoutes();
-        } else if (map.current) {
-            map.current.on('style.load', updateRoutes);
-        }
-    }, [routes, isNavigating, selectedRoute, navigationRouteCoords]); // Added dep
-
-
-    // --- 5. Interaction Handlers ---
-
-    // We need to re-bind the click event listener if routes change, OR simplify by using stored state access.
-    // Since map events are persistent, let's use a "selectedId" check inside the click handler or just find it from current Routes.
+    // --- 4. Render Routes Lines ---
     useEffect(() => {
-        if (!map.current) return;
-        const clickHandler = (e: mapboxgl.MapMouseEvent & any) => {
-            if (isNavigating) return;
-            const feature = map.current?.queryRenderedFeatures(e.point, { layers: ['routes-core'] })[0];
-            if (feature) {
-                const routeId = feature.properties?.id;
-                const route = routes.find(r => r.id === routeId);
-                if (route) handleRouteSelect(route);
-            }
-        };
-        map.current.on('click', clickHandler);
-        return () => { map.current?.off('click', clickHandler); };
-    }, [routes, isNavigating]);
+        if (!map.current || !routesLayer.current) return;
 
+        routesLayer.current.clearLayers();
 
-    const handleRouteSelect = useCallback((route: any) => {
+        // If navigating, we DON'T show all routes, we show the NAV path in a separate layer.
+        // But if user cancels nav, we show routes again.
+        if (isNavigating) return;
+
+        routes.forEach(route => {
+            // Check if is selected
+            const isSelected = selectedRoute?.id === route.id;
+
+            // Base Line (Outer Glow)
+            L.polyline(route.coordinates, {
+                color: isSelected ? '#E2FF3B' : '#E2FF3B',
+                weight: isSelected ? 8 : 4,
+                opacity: isSelected ? 0.6 : 0.3,
+                className: isSelected ? 'drop-shadow-[0_0_10px_rgba(226,255,59,0.5)]' : ''
+            }).addTo(routesLayer.current!);
+
+            // Core Line
+            const poly = L.polyline(route.coordinates, {
+                color: '#E2FF3B',
+                weight: isSelected ? 4 : 2,
+                opacity: 1
+            }).addTo(routesLayer.current!);
+
+            // Click Handler
+            poly.on('click', () => {
+                handleRouteSelect(route);
+            });
+        });
+
+    }, [routes, selectedRoute, isNavigating]);
+
+    const handleRouteSelect = (route: any) => {
         setSelectedRoute(route);
         if (map.current && route.coordinates.length > 0) {
-            map.current.flyTo({
-                center: route.coordinates[0],
-                zoom: 13.5,
-                pitch: 50,
-                bearing: 20,
-                duration: 2000
-            });
+            map.current.flyTo(route.coordinates[0], 14, { duration: 1.5 });
         }
-    }, []);
+    };
 
+    // --- 5. Navigation Logic (OSRM + GPS) ---
     const handleStartNavigation = () => {
-        if (!selectedRoute || !selectedRoute.coordinates || selectedRoute.coordinates.length === 0) return;
+        if (!selectedRoute) return;
 
-        // 1. Request GPS Permission & Location
+        // 1. Permission
         if (!navigator.geolocation) {
-            alert('Geolocation is not supported by your browser');
+            alert("Geolocation not supported");
             return;
         }
 
-        navigator.geolocation.getCurrentPosition(
-            (position) => {
-                const userPos: [number, number] = [position.coords.longitude, position.coords.latitude];
-                setUserLocation(userPos);
-                setIsNavigating(true);
-                setCurrentStepIndex(0);
+        // 2. Set State
+        setIsNavigating(true);
+        setCurrentStepIndex(0);
 
-                // Start tracking movement
-                watchId.current = navigator.geolocation.watchPosition((pos) => {
-                    const newPos: [number, number] = [pos.coords.longitude, pos.coords.latitude];
-                    setUserLocation(newPos);
+        // 3. Clear Static Routes
+        routesLayer.current?.clearLayers();
 
-                    // Update Map Camera to follow user
-                    if (map.current) {
-                        map.current.easeTo({
-                            center: newPos,
-                            bearing: pos.coords.heading || map.current.getBearing(),
-                            zoom: 17,
-                            pitch: 65,
-                            duration: 1000
-                        });
-                    }
-                }, (err) => console.error(err), { enableHighAccuracy: true, maximumAge: 1000 });
+        // 4. Get Position
+        navigator.geolocation.getCurrentPosition((pos) => {
+            const userLat = pos.coords.latitude;
+            const userLng = pos.coords.longitude;
+            setUserLocation([userLat, userLng]);
 
-                // Fetch Directions from USER LOCATION to END
-                const end = selectedRoute.coordinates[selectedRoute.coordinates.length - 1];
+            // Start Watch
+            watchId.current = navigator.geolocation.watchPosition(p => {
+                const lat = p.coords.latitude;
+                const lng = p.coords.longitude;
+                setUserLocation([lat, lng]);
 
-                // Fetch Directions from Mapbox
-                const fetchDir = async () => {
-                    try {
-                        const token = import.meta.env.VITE_MAPBOX_TOKEN;
-                        const query = await fetch(
-                            `https://api.mapbox.com/directions/v5/mapbox/driving/${userPos[0]},${userPos[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${token}`,
-                            { method: 'GET' }
-                        );
-                        const json = await query.json();
-                        if (json.code !== 'Ok') {
-                            alert(`Navigation Error: ${json.message || 'Could not calculate route'}`);
-                            console.error("Mapbox Error:", json);
-                            return;
-                        }
-                        const data = json.routes?.[0];
-                        if (data) {
-                            setNavigationRouteCoords(data.geometry.coordinates);
-                            setNavigationData({
-                                duration: Math.floor(data.duration / 60),
-                                distance: (data.distance / 1000).toFixed(1),
-                                steps: data.legs[0].steps
-                            });
-                        } else {
-                            alert("No route found between your location and the destination.");
-                        }
-                    } catch (e) {
-                        console.error("Nav fetch failed", e);
-                        alert("Failed to connect to navigation server.");
-                    }
-                };
-                fetchDir();
+                // Move Camera
+                if (map.current) map.current.panTo([lat, lng]);
 
-            },
-            (error) => {
-                console.error("GPS Denied", error);
-                alert("Location permission required for turn-by-turn navigation.");
-                setIsNavigating(false);
-            },
-            { enableHighAccuracy: true }
-        );
+            }, err => console.error(err), { enableHighAccuracy: true });
+
+            // 5. Fetch OSRM Route
+            fetchOSRMRoute(userLat, userLng);
+
+        }, (err) => {
+            console.error(err);
+            alert("Location permission denied");
+            handleStopNavigation();
+        });
+    };
+
+    const fetchOSRMRoute = async (startLat: number, startLng: number) => {
+        if (!selectedRoute) return;
+        const end = selectedRoute.coordinates[selectedRoute.coordinates.length - 1]; // [Lat, Lng]
+        const endLat = end[0];
+        const endLng = end[1];
+
+        // OSRM expects Lng,Lat
+        const url = `https://router.project-osrm.org/route/v1/driving/${startLng},${startLat};${endLng},${endLat}?overview=full&geometries=geojson&steps=true`;
+
+        try {
+            const res = await fetch(url);
+            const json = await res.json();
+
+            if (json.code !== 'Ok' || !json.routes || json.routes.length === 0) {
+                alert("Route not found");
+                return;
+            }
+
+            const routeData = json.routes[0];
+
+            // Set Navigation Data
+            setNavigationData({
+                duration: Math.floor(routeData.duration / 60), // min
+                distance: (routeData.distance / 1000).toFixed(1), // km
+                steps: routeData.legs[0].steps
+            });
+
+            // Draw Route Component (GeoJSON from OSRM is [Lng, Lat], Leaflet needs [Lat, Lng])
+            const coords = routeData.geometry.coordinates.map((c: number[]) => [c[1], c[0]]);
+
+            if (navLayer.current) {
+                navLayer.current.clearLayers();
+                // Draw Calculated Path
+                L.polyline(coords, {
+                    color: '#06b6d4', // Cyan for Navigation
+                    weight: 6,
+                    opacity: 0.9,
+                    className: 'drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]'
+                }).addTo(navLayer.current);
+            }
+
+        } catch (e) {
+            console.error("OSRM Error", e);
+            alert("Failed to calculate route");
+        }
     };
 
     const handleStopNavigation = () => {
         setIsNavigating(false);
-        setNavigationData(null);
-        setNavigationRouteCoords(null); // Clear calculated path
         setUserLocation(null);
+        setNavigationData(null);
         if (watchId.current) navigator.geolocation.clearWatch(watchId.current);
 
-        if (map.current) {
-            map.current.flyTo({ pitch: 45, zoom: 12, duration: 2000 });
+        if (navLayer.current) navLayer.current.clearLayers();
+        if (userMarker.current) {
+            userMarker.current.remove();
+            userMarker.current = null;
         }
+
+        // Reset View
+        if (map.current) map.current.flyTo([41.1744, 29.6116], 13);
     };
 
-    // User Location Puck Layer
+    // --- 6. Update User Puck ---
     useEffect(() => {
-        if (!map.current || !map.current.isStyleLoaded()) return;
-        const m = map.current;
-        const sourceId = 'user-location';
+        if (!map.current || !userLocation) return;
 
-        const data = {
-            type: 'FeatureCollection',
-            features: userLocation ? [{
-                type: 'Feature',
-                geometry: { type: 'Point', coordinates: userLocation },
-                properties: {}
-            }] : []
-        } as GeoJSON.FeatureCollection;
+        // Icon
+        const icon = L.divIcon({
+            html: USER_PUCK_HTML,
+            className: 'bg-transparent',
+            iconSize: [32, 32],
+            iconAnchor: [16, 16]
+        });
 
-        if (m.getSource(sourceId)) {
-            (m.getSource(sourceId) as mapboxgl.GeoJSONSource).setData(data);
+        if (userMarker.current) {
+            userMarker.current.setLatLng(userLocation);
         } else {
-            // Add Source
-            m.addSource(sourceId, { type: 'geojson', data });
-            // Glow
-            m.addLayer({
-                id: 'user-puck-glow',
-                type: 'circle',
-                source: sourceId,
-                paint: {
-                    'circle-radius': 20,
-                    'circle-color': '#3b82f6',
-                    'circle-opacity': 0.3,
-                    'circle-blur': 0.5
-                }
-            });
-            // Core
-            m.addLayer({
-                id: 'user-puck-core',
-                type: 'circle',
-                source: sourceId,
-                paint: {
-                    'circle-radius': 8,
-                    'circle-color': '#3b82f6',
-                    'circle-stroke-width': 3,
-                    'circle-stroke-color': '#ffffff'
-                }
-            });
+            userMarker.current = L.marker(userLocation, { icon }).addTo(map.current);
         }
+
     }, [userLocation]);
 
 
     const handleRecenter = () => {
-        map.current?.flyTo({ center: [29.6116, 41.1744], zoom: 13, pitch: 45, bearing: 0 });
+        if (map.current) map.current.flyTo([41.1744, 29.6116], 13);
     };
 
     return (
         <div className="relative w-full h-[85vh] bg-[#0A0A0A] overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
-            {/* GPS Status Toast */}
-            {isNavigating && !userLocation && (
-                <div className="absolute top-24 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur border border-lime-400/50 text-lime-400 px-6 py-3 rounded-full flex items-center gap-3 z-[1500] shadow-[0_0_30px_rgba(226,255,59,0.2)]">
-                    <div className="w-2 h-2 bg-lime-400 rounded-full animate-ping" />
-                    <span className="font-bold tracking-widest text-xs uppercase">Acquiring Sat-Link...</span>
-                </div>
-            )}
+            {/* Map Container */}
+            <div ref={mapContainer} className="w-full h-full z-0" />
 
-            {/* Loading */}
             {loading && (
                 <div className="absolute inset-0 z-50 bg-black flex items-center justify-center">
-                    <div className="flex flex-col items-center gap-4 animate-pulse">
-                        <div className="w-12 h-12 border-4 border-t-lime-400 border-white/10 rounded-full animate-spin"></div>
-                        <div className="text-lime-400 font-mono text-xs tracking-widest">INITIALIZING SATELLITE...</div>
-                    </div>
+                    <div className="text-lime-400 font-mono animate-pulse">SYSTEM INITIALIZING...</div>
                 </div>
             )}
 
@@ -517,9 +335,9 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
             {!isNavigating && (
                 <>
                     <FloatingSearch />
-                    <DiscoverySidebar routes={routes} onSelectRoute={handleRouteSelect} />
+                    <DiscoverySidebar routes={routes} onSelectRoute={(r: any) => handleRouteSelect(r)} />
                     <MapHUD
-                        coords={map.current ? `${map.current.getCenter().lng.toFixed(4)}, ${map.current.getCenter().lat.toFixed(4)}` : "Loading..."}
+                        coords={userLocation ? `${userLocation[0].toFixed(4)}, ${userLocation[1].toFixed(4)}` : "scanning..."}
                         userCount={124}
                         onRecenter={handleRecenter}
                     />
@@ -531,12 +349,12 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
                 </>
             )}
 
-            {/* Navigation HUD */}
+            {/* Nav HUD */}
             {isNavigating && navigationData && (
                 <>
                     {/* Top Bar - Turn Instructions */}
                     <div className="absolute top-4 left-1/2 -translate-x-1/2 w-[90%] md:w-[400px] z-[1200] bg-black/90 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-2xl flex items-center gap-4">
-                        <div className="w-12 h-12 bg-lime-400 rounded-xl flex items-center justify-center text-black shadow-[0_0_20px_rgba(226,255,59,0.3)] animate-pulse">
+                        <div className="w-12 h-12 bg-cyan-400 rounded-xl flex items-center justify-center text-black shadow-[0_0_20px_rgba(34,211,238,0.3)] animate-pulse">
                             <span className="text-2xl font-black">
                                 {navigationData.steps[currentStepIndex]?.maneuver?.type === 'arrive' ? '🏁' : '↱'}
                             </span>
@@ -544,7 +362,7 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
                         <div className="flex-1">
                             <div className="text-xs text-gray-400 font-bold uppercase tracking-widest flex justify-between">
                                 <span>Action</span>
-                                <span className="text-lime-400">{currentStepIndex + 1} / {navigationData.steps.length}</span>
+                                <span className="text-cyan-400">{currentStepIndex + 1} / {navigationData.steps.length}</span>
                             </div>
                             <div className="text-lg leading-tight font-black text-white mt-1">
                                 {navigationData.steps[currentStepIndex]?.maneuver?.instruction || "Proceed on route"}
@@ -555,18 +373,18 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
                     {/* Bottom Data Bar */}
                     <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] md:w-[600px] z-[1200] grid grid-cols-3 gap-2">
                         <div className="bg-black/90 backdrop-blur-xl border border-white/10 p-3 rounded-2xl text-center">
-                            <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Arrival</div>
+                            <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Estimated Arrival</div>
                             <div className="text-xl font-black text-white">
                                 {new Date(new Date().getTime() + navigationData.duration * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </div>
                         </div>
                         <div className="bg-black/90 backdrop-blur-xl border border-white/10 p-3 rounded-2xl text-center">
                             <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Remaining</div>
-                            <div className="text-xl font-black text-lime-400">{Math.max(0, navigationData.duration - (currentStepIndex * 2))} min</div>
+                            <div className="text-xl font-black text-cyan-400">{navigationData.duration} min</div>
                         </div>
                         <div className="bg-black/90 backdrop-blur-xl border border-white/10 p-3 rounded-2xl text-center">
-                            <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Speed limit</div>
-                            <div className="text-xl font-black text-white">70</div>
+                            <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Distance</div>
+                            <div className="text-xl font-black text-white">{navigationData.distance} km</div>
                         </div>
                     </div>
 
@@ -577,18 +395,13 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
                     >
                         <span className="font-bold">X</span>
                     </button>
-
-                    {/* Perspective Effect Overlay */}
-                    <div className="absolute inset-0 pointer-events-none bg-gradient-to-t from-black/20 via-transparent to-transparent z-[1000]" />
                 </>
             )}
 
-            <div ref={mapContainer} className="w-full h-full" />
-
-            {/* Error State */}
-            {!import.meta.env.VITE_MAPBOX_TOKEN && !loading && (
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-red-500/10 text-red-500 p-4 rounded-xl border border-red-500/50 backdrop-blur">
-                    Mapbox Token Missing
+            {isNavigating && !navigationData && (
+                <div className="absolute top-24 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur border border-cyan-400/50 text-cyan-400 px-6 py-3 rounded-full flex items-center gap-3 z-[1500] shadow-[0_0_30px_rgba(6,182,212,0.2)]">
+                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-ping" />
+                    <span className="font-bold tracking-widest text-xs uppercase">CALCULATING VECTOR...</span>
                 </div>
             )}
         </div>

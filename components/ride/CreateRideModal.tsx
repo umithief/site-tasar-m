@@ -38,6 +38,11 @@ export const CreateRideModal: React.FC<CreateRideModalProps> = ({ isOpen, onClos
     const handleCreate = async () => {
         try {
             setIsLoading(true);
+            if (!date || !time) {
+                alert("Please select both date and time");
+                setIsLoading(false);
+                return;
+            }
             const isoDate = new Date(`${date}T${time}`).toISOString();
 
             await rideService.createRide({

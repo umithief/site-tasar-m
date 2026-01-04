@@ -25,7 +25,11 @@ export const RideCard: React.FC<RideCardProps> = ({ ride }) => {
                 <div className="space-y-2 text-sm text-gray-400">
                     <div className="flex items-center gap-2">
                         <Calendar className="w-4 h-4 text-gray-500" />
-                        <span className="text-gray-300">{format(new Date(ride.startTime), 'MMM d, HH:mm')}</span>
+                        <span className="text-gray-300">
+                            {isNaN(new Date(ride.startTime).getTime())
+                                ? 'Date TBD'
+                                : format(new Date(ride.startTime), 'MMM d, HH:mm')}
+                        </span>
                     </div>
                     <div className="flex items-center gap-2">
                         <Users className="w-4 h-4 text-gray-500" />

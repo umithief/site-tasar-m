@@ -190,11 +190,12 @@ export const RouteCard = ({ route, onClose, onStartNavigation }: any) => {
                                     setTimeout(() => {
                                         if (onStartNavigation) {
                                             onStartNavigation();
+                                            // Do not close; parent handles UI switch and we need selectedRoute to remain active
                                         } else {
                                             // Fallback
                                             window.open(`https://www.google.com/maps/dir/?api=1&destination=${route.coordinates[route.coordinates.length - 1][1]},${route.coordinates[route.coordinates.length - 1][0]}&travelmode=driving`, '_blank');
+                                            onClose();
                                         }
-                                        onClose();
                                     }, 1000);
                                 }
                             }}

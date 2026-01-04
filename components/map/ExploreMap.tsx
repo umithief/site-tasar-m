@@ -464,6 +464,14 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
 
     return (
         <div className="relative w-full h-[85vh] bg-[#0A0A0A] overflow-hidden rounded-3xl border border-white/10 shadow-2xl">
+            {/* GPS Status Toast */}
+            {isNavigating && !userLocation && (
+                <div className="absolute top-24 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur border border-lime-400/50 text-lime-400 px-6 py-3 rounded-full flex items-center gap-3 z-[1500] shadow-[0_0_30px_rgba(226,255,59,0.2)]">
+                    <div className="w-2 h-2 bg-lime-400 rounded-full animate-ping" />
+                    <span className="font-bold tracking-widest text-xs uppercase">Acquiring Sat-Link...</span>
+                </div>
+            )}
+
             {/* Loading */}
             {loading && (
                 <div className="absolute inset-0 z-50 bg-black flex items-center justify-center">

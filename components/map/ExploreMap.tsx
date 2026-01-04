@@ -314,25 +314,97 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
 
     // ... existing effects ...
 
+    const [navigationData, setNavigationData] = useState<any>(null);
+    const [currentStepIndex, setCurrentStepIndex] = useState(0);
+
+    // Fetch Directions from Mapbox API
+    const getDirections = async (start: [number, number], end: [number, number]) => {
+        try {
+            const query = await fetch(
+                `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
+                { method: 'GET' }
+            );
+            const json = await query.json();
+            const data = json.routes[0];
+            const steps = data.legs[0].steps;
+
+            setNavigationData({
+                duration: Math.floor(data.duration / 60), // min
+                distance: (data.distance / 1000).toFixed(1), // km
+                steps: steps
+            });
+        } catch (error) {
+            console.warn("Failed to fetch Mapbox directions, using fallback simulation", error);
+            // Fallback if API fails or quota exceeded
+            setNavigationData({
+                duration: 45,
+                distance: "12.5",
+                steps: [
+                    { maneuver: { instruction: "Head north on Main St", type: "depart" }, distance: 500 },
+                    { maneuver: { instruction: "Turn right onto Coastal Hwy", type: "turn" }, distance: 2000 },
+                    { maneuver: { instruction: "Keep left at the fork", type: "fork" }, distance: 5000 },
+                    { maneuver: { instruction: "Arrive at destination", type: "arrive" }, distance: 0 }
+                ]
+            });
+        }
+    };
+
+    // Navigation Simulation Loop
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+        if (isNavigating && navigationData && navigationData.steps.length > 0) {
+            interval = setInterval(() => {
+                setCurrentStepIndex((prev) => {
+                    const next = prev + 1;
+                    if (next >= navigationData.steps.length) {
+                        return prev; // End of route
+                    }
+
+                    // Simulate camera movement along step if possible (advanced)
+                    // For now, just simulated bearing/pitch shift to feel dynamic
+                    if (map.current) {
+                        map.current.easeTo({
+                            bearing: map.current.getBearing() + (Math.random() * 10 - 5),
+                            pitch: 60 + (Math.random() * 10 - 5),
+                            duration: 4000
+                        });
+                    }
+
+                    return next;
+                });
+            }, 5000); // Advance step every 5 seconds for simulation
+        }
+        return () => clearInterval(interval);
+    }, [isNavigating, navigationData]);
+
+
     const handleStartNavigation = () => {
         setIsNavigating(true);
+        setCurrentStepIndex(0);
+
         if (map.current && selectedRoute && selectedRoute.coordinates.length > 0) {
-            const start = selectedRoute.coordinates[0];
-            // Fly to start with driver POV
+            const coords = selectedRoute.coordinates;
+            const start = coords[0];
+            const end = coords[coords.length - 1];
+
+            // 1. Fetch real directions
+            getDirections(start, end);
+
+            // 2. Fly to start 
             map.current.flyTo({
                 center: start,
                 zoom: 17,
-                pitch: 65, // Driver perspective
-                bearing: 0, // Should calculate initial bearing of route ideally
+                pitch: 65,
+                bearing: 0,
                 duration: 2000
             });
-            // Keep selectedRoute active so we know what to draw!
-            // The UI hides the RouteCard automatically via !isNavigating check
         }
     };
 
     const handleStopNavigation = () => {
         setIsNavigating(false);
+        setNavigationData(null);
+        setCurrentStepIndex(0);
         if (map.current) {
             map.current.flyTo({
                 pitch: 45,
@@ -369,32 +441,41 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
             )}
 
             {/* Navigation HUD */}
-            {isNavigating && (
+            {isNavigating && navigationData && (
                 <>
                     {/* Top Bar - Turn Instructions */}
                     <div className="absolute top-4 left-1/2 -translate-x-1/2 w-[90%] md:w-[400px] z-[1200] bg-black/90 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-2xl flex items-center gap-4">
-                        <div className="w-12 h-12 bg-lime-400 rounded-xl flex items-center justify-center text-black">
-                            <span className="text-2xl">↱</span>
+                        <div className="w-12 h-12 bg-lime-400 rounded-xl flex items-center justify-center text-black shadow-[0_0_20px_rgba(226,255,59,0.3)] animate-pulse">
+                            <span className="text-2xl font-black">
+                                {navigationData.steps[currentStepIndex]?.maneuver?.type === 'arrive' ? '🏁' : '↱'}
+                            </span>
                         </div>
-                        <div>
-                            <div className="text-xs text-gray-400 font-bold uppercase tracking-widest">In 200 meters</div>
-                            <div className="text-xl font-black text-white leading-none">Turn Right</div>
+                        <div className="flex-1">
+                            <div className="text-xs text-gray-400 font-bold uppercase tracking-widest flex justify-between">
+                                <span>Current Step</span>
+                                <span className="text-lime-400">{currentStepIndex + 1} / {navigationData.steps.length}</span>
+                            </div>
+                            <div className="text-lg leading-tight font-black text-white mt-1">
+                                {navigationData.steps[currentStepIndex]?.maneuver?.instruction || "Proceed to route"}
+                            </div>
                         </div>
                     </div>
 
                     {/* Bottom Data Bar */}
                     <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] md:w-[600px] z-[1200] grid grid-cols-3 gap-2">
                         <div className="bg-black/90 backdrop-blur-xl border border-white/10 p-3 rounded-2xl text-center">
-                            <div className="text-xs text-gray-500 font-bold">ARRIVAL</div>
-                            <div className="text-xl font-black text-white">14:52</div>
+                            <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Arrival</div>
+                            <div className="text-xl font-black text-white">
+                                {new Date(new Date().getTime() + navigationData.duration * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                            </div>
                         </div>
                         <div className="bg-black/90 backdrop-blur-xl border border-white/10 p-3 rounded-2xl text-center">
-                            <div className="text-xs text-gray-500 font-bold">REMAINING</div>
-                            <div className="text-xl font-black text-lime-400">24 min</div>
+                            <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Remaining</div>
+                            <div className="text-xl font-black text-lime-400">{Math.max(0, navigationData.duration - (currentStepIndex * 2))} min</div>
                         </div>
                         <div className="bg-black/90 backdrop-blur-xl border border-white/10 p-3 rounded-2xl text-center">
-                            <div className="text-xs text-gray-500 font-bold">DISTANCE</div>
-                            <div className="text-xl font-black text-white">12 km</div>
+                            <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Distance</div>
+                            <div className="text-xl font-black text-white">{navigationData.distance} km</div>
                         </div>
                     </div>
 

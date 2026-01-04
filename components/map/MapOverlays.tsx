@@ -5,24 +5,43 @@ import { Search, Navigation, MapPin, X, Layers, Wind, Zap, Users } from 'lucide-
 
 // --- Overlay Components ---
 
-export const DiscoverySidebar = ({ routes, onSelectRoute }: any) => {
+export const DiscoverySidebar = ({ routes, onSelectRoute, isOpen, onClose }: any) => {
     return (
-        <div className="absolute top-4 bottom-24 left-4 lg:left-24 w-80 z-[900] hidden md:flex flex-col gap-4 pointer-events-none">
+        <div className={`
+            fixed z-[900] transition-all duration-300 ease-in-out pointer-events-none
+            md:absolute md:top-4 md:bottom-24 md:left-4 md:lg:left-24 md:w-80 md:translate-y-0
+            left-0 right-0 bottom-0 top-auto w-full h-[60vh] rounded-t-3xl overflow-hidden
+            ${isOpen ? 'translate-y-0' : 'translate-y-[110%] md:translate-y-0'}
+        `}>
+            {/* Mobile Drag Handle / Close Header */}
+            <div className="md:hidden absolute top-0 left-0 right-0 h-8 bg-black/80 backdrop-blur-xl z-50 flex justify-center items-center rounded-t-3xl pointer-events-auto" onClick={onClose}>
+                <div className="w-12 h-1.5 bg-gray-600 rounded-full"></div>
+            </div>
+
             {/* Glass Panel */}
-            <div className="flex-1 bg-black/40 backdrop-blur-xl border border-white/5 rounded-3xl overflow-hidden pointer-events-auto flex flex-col">
-                <div className="p-6 border-b border-white/10 bg-gradient-to-br from-white/5 to-transparent">
-                    <div className="flex items-center gap-2 text-lime-400 mb-1">
-                        <Zap className="w-4 h-4 fill-current" />
-                        <span className="text-[10px] font-black uppercase tracking-widest">Trending</span>
+            <div className="w-full h-full bg-[#0a0a0a]/90 md:bg-black/40 backdrop-blur-xl md:border border-white/5 md:rounded-3xl pointer-events-auto flex flex-col pt-8 md:pt-0">
+                <div className="p-6 border-b border-white/10 bg-gradient-to-br from-white/5 to-transparent flex justify-between items-center">
+                    <div>
+                        <div className="flex items-center gap-2 text-lime-400 mb-1">
+                            <Zap className="w-4 h-4 fill-current" />
+                            <span className="text-[10px] font-black uppercase tracking-widest">Trending</span>
+                        </div>
+                        <h2 className="text-2xl font-black text-white italic tracking-tighter">POPULAR ROUTES</h2>
                     </div>
-                    <h2 className="text-2xl font-black text-white italic tracking-tighter">POPULAR ROUTES</h2>
+                    {/* Mobile Close Button */}
+                    <button onClick={onClose} className="md:hidden p-2 bg-white/10 rounded-full text-white">
+                        <X className="w-5 h-5" />
+                    </button>
                 </div>
 
-                <div className="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar">
+                <div className="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar pb-24 md:pb-4">
                     {routes.map((route: any) => (
                         <div
                             key={route.id}
-                            onClick={() => onSelectRoute(route)}
+                            onClick={() => {
+                                onSelectRoute(route);
+                                onClose && onClose(); // Close on mobile select
+                            }}
                             className="group relative p-4 bg-black/40 border border-white/10 hover:border-lime-400/50 rounded-2xl cursor-pointer transition-all active:scale-95"
                         >
                             <div className="flex justify-between items-start mb-2">

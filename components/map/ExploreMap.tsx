@@ -4,6 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DiscoverySidebar, FloatingSearch, MapHUD, RouteCard } from './MapOverlays';
 import { routeService } from '../../services/routeService';
+import { Layers } from 'lucide-react';
 
 // --- Styles for Custom Markers (Leaflet needs CSS classes) ---
 const PULSE_ICON_HTML = `
@@ -46,6 +47,7 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate, variant = 'd
     const [routes, setRoutes] = useState<any[]>([]);
     const [selectedRoute, setSelectedRoute] = useState<any>(null);
     const [isNavigating, setIsNavigating] = useState(false);
+    const [isMobileRoutesOpen, setIsMobileRoutesOpen] = useState(false);
 
     // Navigation Data
     const [navigationData, setNavigationData] = useState<any>(null);
@@ -338,8 +340,8 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate, variant = 'd
 
     return (
         <div className={`relative w-full bg-[#0A0A0A] overflow-hidden ${variant === 'mobile'
-                ? 'h-[100dvh] rounded-none border-none'
-                : 'h-[85vh] rounded-3xl border border-white/10 shadow-2xl'
+            ? 'h-[100dvh] rounded-none border-none'
+            : 'h-[85vh] rounded-3xl border border-white/10 shadow-2xl'
             }`}>
             {/* Map Container */}
             <div ref={mapContainer} className="w-full h-full z-0" />
@@ -354,7 +356,23 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate, variant = 'd
             {!isNavigating && (
                 <>
                     <FloatingSearch />
-                    <DiscoverySidebar routes={routes} onSelectRoute={(r: any) => handleRouteSelect(r)} />
+
+                    <DiscoverySidebar
+                        routes={routes}
+                        onSelectRoute={(r: any) => handleRouteSelect(r)}
+                        isOpen={isMobileRoutesOpen}
+                        onClose={() => setIsMobileRoutesOpen(false)}
+                    />
+
+                    {/* Mobile: Toggle Routes Button */}
+                    <button
+                        onClick={() => setIsMobileRoutesOpen(!isMobileRoutesOpen)}
+                        className="md:hidden absolute bottom-24 left-4 z-[950] bg-black/80 backdrop-blur border border-white/10 p-3 rounded-xl text-white shadow-lg flex items-center gap-2"
+                    >
+                        <Layers className="w-5 h-5 text-lime-400" />
+                        <span className="text-xs font-bold uppercase">Rotalar</span>
+                    </button>
+
                     <MapHUD
                         coords={userLocation ? `${userLocation[0].toFixed(4)}, ${userLocation[1].toFixed(4)}` : "scanning..."}
                         userCount={124}

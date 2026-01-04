@@ -432,21 +432,7 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
         }
     }, [userLocation]);
 
-    // Navigation Simulation Loop
-    useEffect(() => {
-        if (!isNavigating || !navigationData) return;
-        const interval = setInterval(() => {
-            setCurrentStepIndex(items => (items + 1) % navigationData.steps.length);
-            // Simulate subtle camera movement
-            if (map.current) {
-                map.current.easeTo({
-                    bearing: map.current.getBearing() + (Math.random() * 4 - 2),
-                    duration: 4000
-                });
-            }
-        }, 5000);
-        return () => clearInterval(interval);
-    }, [isNavigating, navigationData]);
+
 
 
     const handleRecenter = () => {

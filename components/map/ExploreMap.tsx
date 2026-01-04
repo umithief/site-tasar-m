@@ -390,11 +390,17 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
                 // Fetch Directions from Mapbox
                 const fetchDir = async () => {
                     try {
+                        const token = import.meta.env.VITE_MAPBOX_TOKEN;
                         const query = await fetch(
-                            `https://api.mapbox.com/directions/v5/mapbox/driving/${userPos[0]},${userPos[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
+                            `https://api.mapbox.com/directions/v5/mapbox/driving/${userPos[0]},${userPos[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${token}`,
                             { method: 'GET' }
                         );
                         const json = await query.json();
+                        if (json.code !== 'Ok') {
+                            alert(`Navigation Error: ${json.message || 'Could not calculate route'}`);
+                            console.error("Mapbox Error:", json);
+                            return;
+                        }
                         const data = json.routes?.[0];
                         if (data) {
                             setNavigationRouteCoords(data.geometry.coordinates);
@@ -403,9 +409,12 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
                                 distance: (data.distance / 1000).toFixed(1),
                                 steps: data.legs[0].steps
                             });
+                        } else {
+                            alert("No route found between your location and the destination.");
                         }
                     } catch (e) {
                         console.error("Nav fetch failed", e);
+                        alert("Failed to connect to navigation server.");
                     }
                 };
                 fetchDir();

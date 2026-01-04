@@ -83,6 +83,7 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
     const [selectedRoute, setSelectedRoute] = useState<any>(null);
     const [loading, setLoading] = useState(true);
     const [routes, setRoutes] = useState<any[]>([]);
+    const [isNavigating, setIsNavigating] = useState(false);
     const markersRef = useRef<mapboxgl.Marker[]>([]);
 
     useEffect(() => {

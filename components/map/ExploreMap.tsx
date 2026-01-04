@@ -310,7 +310,7 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
         }
     };
 
-    const [isNavigating, setIsNavigating] = useState(false);
+
 
     // ... existing effects ...
 

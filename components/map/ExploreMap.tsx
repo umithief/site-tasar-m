@@ -332,46 +332,71 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
     }, []);
 
     const handleStartNavigation = () => {
-        setIsNavigating(true);
-        setCurrentStepIndex(0);
+        if (!selectedRoute || !selectedRoute.coordinates || selectedRoute.coordinates.length === 0) return;
 
-        if (map.current && selectedRoute && selectedRoute.coordinates.length > 0) {
-            const coords = selectedRoute.coordinates;
-            const start = coords[0];
-            const end = coords[coords.length - 1];
-
-            // Real Navigation Data Fetch
-            const getDirections = async () => {
-                try {
-                    const query = await fetch(
-                        `https://api.mapbox.com/directions/v5/mapbox/driving/${start[0]},${start[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
-                        { method: 'GET' }
-                    );
-                    const json = await query.json();
-                    const data = json.routes[0];
-                    setNavigationData({
-                        duration: Math.floor(data.duration / 60),
-                        distance: (data.distance / 1000).toFixed(1),
-                        steps: data.legs[0].steps
-                    });
-                } catch (e) {
-                    console.error("Nav fetch failed", e);
-                    // Fallback
-                    setNavigationData({
-                        duration: 30, distance: "10", steps: [{ maneuver: { instruction: "Follow the neon line", type: "depart" } }]
-                    });
-                }
-            };
-            getDirections();
-
-            map.current.flyTo({
-                center: start,
-                zoom: 17,
-                pitch: 65,
-                bearing: 0,
-                duration: 2000
-            });
+        // 1. Request GPS Permission & Location
+        if (!navigator.geolocation) {
+            alert('Geolocation is not supported by your browser');
+            return;
         }
+
+        navigator.geolocation.getCurrentPosition(
+            (position) => {
+                const userPos: [number, number] = [position.coords.longitude, position.coords.latitude];
+                setUserLocation(userPos);
+                setIsNavigating(true);
+                setCurrentStepIndex(0);
+
+                // Start tracking movement
+                watchId.current = navigator.geolocation.watchPosition((pos) => {
+                    const newPos: [number, number] = [pos.coords.longitude, pos.coords.latitude];
+                    setUserLocation(newPos);
+
+                    // Update Map Camera to follow user
+                    if (map.current) {
+                        map.current.easeTo({
+                            center: newPos,
+                            bearing: pos.coords.heading || map.current.getBearing(),
+                            zoom: 17,
+                            pitch: 65,
+                            duration: 1000
+                        });
+                    }
+                }, (err) => console.error(err), { enableHighAccuracy: true, maximumAge: 1000 });
+
+                // Fetch Directions from USER LOCATION to END
+                const end = selectedRoute.coordinates[selectedRoute.coordinates.length - 1];
+
+                // Fetch Directions from Mapbox
+                const fetchDir = async () => {
+                    try {
+                        const query = await fetch(
+                            `https://api.mapbox.com/directions/v5/mapbox/driving/${userPos[0]},${userPos[1]};${end[0]},${end[1]}?steps=true&geometries=geojson&access_token=${mapboxgl.accessToken}`,
+                            { method: 'GET' }
+                        );
+                        const json = await query.json();
+                        const data = json.routes?.[0];
+                        if (data) {
+                            setNavigationData({
+                                duration: Math.floor(data.duration / 60),
+                                distance: (data.distance / 1000).toFixed(1),
+                                steps: data.legs[0].steps
+                            });
+                        }
+                    } catch (e) {
+                        console.error("Nav fetch failed", e);
+                    }
+                };
+                fetchDir();
+
+            },
+            (error) => {
+                console.error("GPS Denied", error);
+                alert("Location permission required for turn-by-turn navigation.");
+                setIsNavigating(false);
+            },
+            { enableHighAccuracy: true }
+        );
     };
 
     const handleStopNavigation = () => {
@@ -431,8 +456,6 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
             });
         }
     }, [userLocation]);
-
-
 
 
     const handleRecenter = () => {

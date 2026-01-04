@@ -304,7 +304,7 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate }) => {
     // Since map events are persistent, let's use a "selectedId" check inside the click handler or just find it from current Routes.
     useEffect(() => {
         if (!map.current) return;
-        const clickHandler = (e: mapboxgl.MapMouseEvent & mapboxgl.EventData) => {
+        const clickHandler = (e: mapboxgl.MapMouseEvent & any) => {
             if (isNavigating) return;
             const feature = map.current?.queryRenderedFeatures(e.point, { layers: ['routes-core'] })[0];
             if (feature) {

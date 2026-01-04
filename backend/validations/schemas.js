@@ -16,11 +16,11 @@ export const CreatePostSchema = z.object({
 
 // Ride Schema
 export const CreateRideSchema = z.object({
-    title: z.string().min(5),
+    title: z.string({ required_error: "Başlık zorunludur" }).min(3, "Başlık en az 3 karakter olmalıdır"),
     description: z.string().optional(),
-    startTime: z.string().datetime(), // ISO String
-    difficulty: z.enum(['Easy', 'Moderate', 'Hard']),
-    maxParticipants: z.number().min(2).max(100).default(10),
+    startTime: z.string({ required_error: "Başlangıç zamanı zorunludur" }).datetime({ message: "Geçersiz tarih formatı" }), // ISO String
+    difficulty: z.enum(['Easy', 'Moderate', 'Hard'], { required_error: "Zorluk seviyesi seçilmelidir" }),
+    maxParticipants: z.number().min(2, "En az 2 katılımcı olmalı").max(100, "En fazla 100 katılımcı olabilir").default(10),
     route: z.any(),
 });
 

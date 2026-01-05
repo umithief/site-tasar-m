@@ -46,6 +46,7 @@ import { tourService } from './services/tourService';
 import { recordingService } from './services/recordingService';
 import { notify } from './services/notificationService';
 import { gamificationService } from './services/gamificationService';
+import { TrophyRoom } from './components/achievements/TrophyRoom';
 import { useAuthStore } from './store/authStore';
 
 import { useAppSounds } from './hooks/useAppSounds';
@@ -434,6 +435,10 @@ export const App: React.FC = () => {
                         onToast={addToast}
                     />
                 );
+            case 'achievements':
+                return user
+                    ? <TrophyRoom userId={user._id} onClose={() => navigateTo('home')} />
+                    : <div className="pt-32 text-center text-gray-500">Lütfen giriş yapın.</div>;
             case 'order-tracking':
                 return lastOrderId ? (
                     <OrderTracking
@@ -459,7 +464,7 @@ export const App: React.FC = () => {
         return <IntroAnimation onComplete={handleIntroComplete} />;
     }
 
-    const isFullScreenMode = view === 'ride-mode' || view === 'mototool' || view === 'admin' || view === 'meetup' || view === 'events' || view === 'valuation' || view === 'qr-generator' || view === 'vlog-map' || view === 'lifesaver' || view === 'reels' || view === 'auth' || view === 'explore';
+    const isFullScreenMode = view === 'ride-mode' || view === 'mototool' || view === 'admin' || view === 'meetup' || view === 'events' || view === 'valuation' || view === 'qr-generator' || view === 'vlog-map' || view === 'lifesaver' || view === 'reels' || view === 'auth' || view === 'explore' || view === 'achievements';
 
     return (
         <SocketProvider>

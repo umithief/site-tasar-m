@@ -1,16 +1,14 @@
 generator client {
-  provider        = "prisma-client-js"
-  previewFeatures = ["postgresqlExtensions"] // Enable PostGIS support
+  provider = "prisma-client-js"
 }
 
 datasource db {
-  provider   = "postgresql"
-  url        = env("DATABASE_URL")
-  extensions = [postgis] // Enable the extension in the DB
+  provider = "mongodb"
+  url      = env("MONGO_URI") // Updated to use MONGO_URI
 }
 
 model User {
-  id        String   @id @default(uuid())
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
   username  String   @unique
   email     String   @unique
   avatar    String?
@@ -23,10 +21,11 @@ model User {
   posts        Post[]
   rides        Ride[]
   liveLocation LiveLocation?
+  achievements UserAchievement[]
 }
 
 model Bike {
-  id           String @id @default(uuid())
+  id           String @id @default(auto()) @map("_id") @db.ObjectId
   brand        String
   model        String
   year         Int
@@ -34,26 +33,26 @@ model Bike {
   image        String?
 
   // Relationships
-  userId String
+  userId String @db.ObjectId
   user   User   @relation(fields: [userId], references: [id])
 }
 
 model Post {
-  id           String   @id @default(uuid())
+  id           String   @id @default(auto()) @map("_id") @db.ObjectId
   content      String
   imageUrl     String?
   locationName String?
   createdAt    DateTime @default(now())
 
   // Relationships
-  userId String
+  userId String @db.ObjectId
   user   User   @relation(fields: [userId], references: [id])
-  rideId String?
+  rideId String? @db.ObjectId
   ride   Ride?   @relation(fields: [rideId], references: [id])
 }
 
 model Ride {
-  id              String   @id @default(uuid())
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
   title           String
   description     String?
   startTime       DateTime
@@ -63,30 +62,48 @@ model Ride {
   createdAt       DateTime @default(now())
 
   // Relationships
-  creatorId String
+  creatorId String @db.ObjectId
   creator   User   @relation(fields: [creatorId], references: [id])
   posts     Post[]
 }
 
 model LiveLocation {
-  id        String   @id @default(uuid())
-  userId    String   @unique
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String   @unique @db.ObjectId
   user      User     @relation(fields: [userId], references: [id])
   
-  // PostGIS types are supported via unsupported type for now in standard Prisma schema without raw SQL migrations,
-  // but logically we treat this as a geometry(Point, 4326).
-  // Ideally: location Unsupported("geometry(Point, 4326)")
-  // For simplicity and compatibility with standard JS handling here, we'll store lat/lng
-  // but strictly speaking, efficient querying requires the geometry column.
-  
-  // Implementing as per request for "Use PostGIS types if possible"
   latitude  Float
   longitude Float
-  
-  // In a real Postgres setup with PostGIS:
-  // coordinates Unsupported("geometry(Point, 4326)")? 
 
   updatedAt DateTime @updatedAt
+  
+  // MongoDB supports geospatial queries but Prisma has limited support.
+  // We'll rely on lat/lng or store generic Json for geo queries if needed.
+}
 
-  @@index([latitude, longitude], name: "location_idx") // Placeholder for spatial index
+model Achievement {
+  id              String   @id @default(auto()) @map("_id") @db.ObjectId
+  title           String
+  description     String
+  icon_key        String   
+  category        String   
+  requirement_type String  
+  requirement_value Int
+  
+  // Relationships
+  userAchievements UserAchievement[]
+}
+
+model UserAchievement {
+  id            String      @id @default(auto()) @map("_id") @db.ObjectId
+  unlockedAt    DateTime    @default(now())
+  currentProgress Int       @default(0) 
+  
+  // Relationships
+  userId        String      @db.ObjectId
+  user          User        @relation(fields: [userId], references: [id])
+  achievementId String      @db.ObjectId
+  achievement   Achievement @relation(fields: [achievementId], references: [id])
+
+  @@unique([userId, achievementId])
 }

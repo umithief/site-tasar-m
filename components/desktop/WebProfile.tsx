@@ -374,7 +374,29 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user: initialUser, onNav
                         )}
 
                         {/* OTHER TABS (Placeholders) */}
-                        {(activeTab === 'routes' || activeTab === 'achievements') && (
+                        {activeTab === 'achievements' && (
+                            <motion.div
+                                key="achievements"
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                className="flex justify-center py-20"
+                            >
+                                <div className="text-center p-8 bg-[#0D0D0D] border border-[#E2FF3B]/20 rounded-2xl max-w-md cursor-pointer group hover:border-[#E2FF3B]/50 transition-colors"
+                                    onClick={() => onNavigate('achievements' as any)}
+                                >
+                                    <div className="w-20 h-20 mx-auto bg-[#E2FF3B]/10 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
+                                        <Award className="w-10 h-10 text-[#E2FF3B]" />
+                                    </div>
+                                    <h3 className="text-2xl font-bold text-white mb-2">TROPHY ROOM</h3>
+                                    <p className="text-gray-400 mb-6">Badges, achievements and stats.</p>
+                                    <button className="px-6 py-2 bg-[#E2FF3B] text-black font-bold rounded-lg hover:bg-[#cbe62b] transition-colors uppercase tracking-wider">
+                                        Enter Room
+                                    </button>
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {activeTab === 'routes' && (
                             <motion.div key="placeholder" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="py-20 text-center text-gray-500 font-mono uppercase tracking-widest">
                                 Yapım Aşamasında • {activeTab}
                             </motion.div>

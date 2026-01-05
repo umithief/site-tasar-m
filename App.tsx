@@ -48,6 +48,7 @@ import { notify } from './services/notificationService';
 import { gamificationService } from './services/gamificationService';
 import { TrophyRoom } from './components/achievements/TrophyRoom';
 import { useAuthStore } from './store/authStore';
+import { useUIStore } from './store/useUIStore';
 
 import { useAppSounds } from './hooks/useAppSounds';
 import { ArrowUp, Zap, Instagram, Twitter, Youtube, Facebook, MapPin, Phone, Mail } from 'lucide-react';
@@ -121,12 +122,14 @@ export const App: React.FC = () => {
 
     const [socialHubData, setSocialHubData] = useState<any>(null); // Placeholder for initial data
 
-    // Force Dark Mode
+    // Force Dark Mode & Fetch UI Settings
     useEffect(() => {
         if (typeof window !== 'undefined') {
             document.documentElement.classList.remove('light');
             document.documentElement.classList.add('dark');
         }
+        // Fetch global UI settings
+        useUIStore.getState().fetchSettings();
     }, []);
 
     // GLOBAL AUTH SYNC: Listen to store changes to keep local state updated (e.g. from Settings)

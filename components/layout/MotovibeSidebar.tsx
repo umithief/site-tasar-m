@@ -3,7 +3,7 @@ import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import {
     Home, Compass, Zap, ShoppingBag, Map,
     Warehouse, Heart, Settings, User, LogOut,
-    ChevronRight, Layers, Menu
+    ChevronRight, Layers, Menu, Shield
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { ViewState } from '../../types';
@@ -46,7 +46,13 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
                 { id: 'favorites', icon: Heart, label: 'Favoriler' },
                 { id: 'settings', icon: Settings, label: 'Ayarlar' },
             ]
-        }
+        },
+        ...(user?.isAdmin ? [{
+            title: 'YÖNETİM',
+            items: [
+                { id: 'admin', icon: Shield, label: 'Admin Panel' }
+            ]
+        }] : [])
     ];
 
     return (

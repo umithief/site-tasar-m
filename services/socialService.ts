@@ -223,7 +223,7 @@ export const socialService = {
         }
     },
 
-    async search(query: string): Promise<{ users: any[], hashtags: string[] }> {
+    async search(query: string): Promise<{ users: any[], rides: any[], routes: any[], hashtags: string[] }> {
         const token = localStorage.getItem('token');
         const headers: HeadersInit = {};
         if (token) headers['Authorization'] = `Bearer ${token}`;
@@ -236,11 +236,13 @@ export const socialService = {
             const data = await response.json();
             return {
                 users: data.users || [],
+                rides: data.rides || [],
+                routes: data.routes || [],
                 hashtags: data.hashtags || []
             };
         } catch (error) {
             console.error('Search Error:', error);
-            return { users: [], hashtags: [] };
+            return { users: [], rides: [], routes: [], hashtags: [] };
         }
     },
 

@@ -170,19 +170,8 @@ const categorySchema = new mongoose.Schema({
 
 const Category = mongoose.models.Category || mongoose.model('Category', categorySchema);
 
-const routeSchema = new mongoose.Schema({
-    title: { type: String, required: true },
-    description: String,
-    image: String,
-    difficulty: String,
-    distance: String,
-    duration: String,
-    location: String,
-    bestSeason: String,
-    tags: [String]
-}, { versionKey: false });
-
-const Route = mongoose.models.Route || mongoose.model('Route', routeSchema);
+// Route Model moved to backend/models/Route.js
+import './models/Route.js';
 
 const forumCommentSchema = new mongoose.Schema({
     _id: String,

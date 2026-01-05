@@ -57,7 +57,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
 
     // Search State
     const [searchQuery, setSearchQuery] = useState('');
-    const [searchResults, setSearchResults] = useState<any[]>([]);
+    const [searchResults, setSearchResults] = useState<{ users?: any[], rides?: any[], routes?: any[] }>({});
     const [isSearching, setIsSearching] = useState(false);
     const [showSearchResults, setShowSearchResults] = useState(false);
 
@@ -67,11 +67,11 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
             if (searchQuery.length >= 2) {
                 setIsSearching(true);
                 const results = await socialService.search(searchQuery);
-                setSearchResults(results.users || []);
+                setSearchResults(results);
                 setIsSearching(false);
                 setShowSearchResults(true);
             } else {
-                setSearchResults([]);
+                setSearchResults({});
                 setShowSearchResults(false);
             }
         }, 500);
@@ -505,29 +505,88 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     exit={{ opacity: 0, y: 10 }}
-                                    className="absolute top-full left-0 right-0 mt-2 bg-[#18181b] border border-white/10 rounded-2xl shadow-xl overflow-hidden max-h-[400px] overflow-y-auto custom-scrollbar"
+                                    className="absolute top-full left-0 right-0 mt-2 bg-[#18181b] border border-white/10 rounded-2xl shadow-xl overflow-hidden max-h-[500px] overflow-y-auto custom-scrollbar"
                                 >
                                     {isSearching ? (
                                         <div className="p-4 text-center text-gray-500 text-xs">Aranıyor...</div>
-                                    ) : searchResults.length > 0 ? (
+                                    ) : (searchResults.users?.length > 0 || searchResults.rides?.length > 0 || searchResults.routes?.length > 0) ? (
                                         <div className="py-2">
-                                            {searchResults.map((user) => (
-                                                <div
-                                                    key={user._id}
-                                                    onClick={() => {
-                                                        onNavigate && onNavigate('public-profile', { _id: user._id });
-                                                        setShowSearchResults(false);
-                                                        setSearchQuery('');
-                                                    }}
-                                                    className="flex items-center gap-3 px-4 py-3 hover:bg-white/5 cursor-pointer transition-colors"
-                                                >
-                                                    <UserAvatar src={user.profileImage} name={user.name} size={32} />
-                                                    <div>
-                                                        <div className="text-white font-bold text-sm">{user.name}</div>
-                                                        <div className="text-gray-500 text-xs">{user.bike || 'Motosiklet Tutkunu'}</div>
-                                                    </div>
+                                            {/* Users Section */}
+                                            {searchResults.users?.length > 0 && (
+                                                <div className="mb-2">
+                                                    <div className="px-4 py-1 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Kullanıcılar</div>
+                                                    {searchResults.users.map((user: any) => (
+                                                        <div
+                                                            key={user._id}
+                                                            onClick={() => {
+                                                                onNavigate && onNavigate('public-profile', { _id: user._id });
+                                                                setShowSearchResults(false);
+                                                                setSearchQuery('');
+                                                            }}
+                                                            className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 cursor-pointer transition-colors"
+                                                        >
+                                                            <UserAvatar src={user.profileImage} name={user.name} size={32} />
+                                                            <div>
+                                                                <div className="text-white font-bold text-sm">{user.name}</div>
+                                                                <div className="text-gray-500 text-xs">{user.bike || 'Motosiklet Tutkunu'}</div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
                                                 </div>
-                                            ))}
+                                            )}
+
+                                            {/* Rides Section */}
+                                            {searchResults.rides?.length > 0 && (
+                                                <div className="mb-2 border-t border-white/5 pt-2">
+                                                    <div className="px-4 py-1 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Sürüşler</div>
+                                                    {searchResults.rides.map((ride: any) => (
+                                                        <div
+                                                            key={ride._id}
+                                                            onClick={() => {
+                                                                setView('rides'); // Switch to rides tab
+                                                                // Ideally scroll to ride or filter, but for now just switch view
+                                                                setShowSearchResults(false);
+                                                                setSearchQuery('');
+                                                            }}
+                                                            className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 cursor-pointer transition-colors"
+                                                        >
+                                                            <div className="w-8 h-8 rounded-full bg-moto-accent/20 flex items-center justify-center text-moto-accent">
+                                                                <Users className="w-4 h-4" />
+                                                            </div>
+                                                            <div>
+                                                                <div className="text-white font-bold text-sm">{ride.title}</div>
+                                                                <div className="text-gray-500 text-xs line-clamp-1">{ride.description}</div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+
+                                            {/* Routes Section */}
+                                            {searchResults.routes?.length > 0 && (
+                                                <div className="mb-2 border-t border-white/5 pt-2">
+                                                    <div className="px-4 py-1 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Rotalar</div>
+                                                    {searchResults.routes.map((route: any) => (
+                                                        <div
+                                                            key={route._id}
+                                                            onClick={() => {
+                                                                setView('routes'); // Switch to routes tab
+                                                                setShowSearchResults(false);
+                                                                setSearchQuery('');
+                                                            }}
+                                                            className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 cursor-pointer transition-colors"
+                                                        >
+                                                            <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-500">
+                                                                <Navigation className="w-4 h-4" />
+                                                            </div>
+                                                            <div>
+                                                                <div className="text-white font-bold text-sm">{route.title}</div>
+                                                                <div className="text-gray-500 text-xs">{route.location}</div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
                                         </div>
                                     ) : (
                                         <div className="p-4 text-center text-gray-500 text-xs">Sonuç bulunamadı</div>

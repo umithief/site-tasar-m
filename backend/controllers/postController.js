@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Post from '../models/Post.js';
 import User from '../models/User.js';
 import catchAsync from '../utils/catchAsync.js';
@@ -210,19 +211,31 @@ export const search = catchAsync(async (req, res, next) => {
             { name: { $regex: q, $options: 'i' } },
             { username: { $regex: q, $options: 'i' } }
         ]
-    }).select('name username avatar profileImage bike rank').limit(10);
+    }).select('name username avatar profileImage bike rank').limit(5);
 
-    // Search Posts (Hashtags) - Simple implementation: Find posts with content matching #query
-    // For now, just regex on content
-    /* 
-    const posts = await Post.find({
-        content: { $regex: `#${q}`, $options: 'i' }
+    // Search Rides (Group Rides)
+    const rides = await mongoose.model('Ride').find({
+        $or: [
+            { title: { $regex: q, $options: 'i' } },
+            { description: { $regex: q, $options: 'i' } },
+            { startLocation: { $regex: q, $options: 'i' } }
+        ]
+    }).populate('creator', 'name avatar').limit(5);
+
+    // Search Routes (Saved Routes)
+    const routes = await mongoose.model('Route').find({
+        $or: [
+            { title: { $regex: q, $options: 'i' } },
+            { location: { $regex: q, $options: 'i' } },
+            { tags: { $in: [new RegExp(q, "i")] } }
+        ]
     }).limit(5);
-    */
 
     res.status(200).json({
         status: 'success',
         users,
-        hashtags: [] // Placeholder for now
+        rides,
+        routes,
+        hashtags: []
     });
 });

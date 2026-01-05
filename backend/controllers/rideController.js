@@ -48,7 +48,7 @@ export const createRide = async (req, res) => {
 export const getRides = async (req, res) => {
     try {
         const rides = await Ride.find({
-            startTime: { $gte: new Date() }
+            startTime: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } // Show rides from last 24h
         })
             .sort({ startTime: 1 })
             .limit(50)

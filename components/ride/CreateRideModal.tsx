@@ -7,10 +7,12 @@ import { rideService } from '../../services/rideService'; // Reusing types or de
 interface CreateRideModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onSuccess?: () => void;
     user?: any; // Pass current user for context
 }
 
-export const CreateRideModal: React.FC<CreateRideModalProps> = ({ isOpen, onClose, user }) => {
+export const CreateRideModal: React.FC<CreateRideModalProps> = (props) => {
+    const { isOpen, onClose, user } = props;
     const [step, setStep] = useState(1);
 
     // Form State
@@ -55,7 +57,11 @@ export const CreateRideModal: React.FC<CreateRideModalProps> = ({ isOpen, onClos
             });
 
             onClose();
-            // Optional: Trigger refresh or toast
+            if (props.onSuccess) props.onSuccess();
+
+            // Dispatch event for other components to refresh
+            window.dispatchEvent(new Event('ride-created'));
+
         } catch (error: any) {
             console.error(error);
             alert(error.message || 'Failed to create ride');

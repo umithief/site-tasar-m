@@ -93,7 +93,18 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
             setActiveThreads(threads);
             setActiveRides(rides);
         };
-        fetchMiscData();
+
+
+        // Listen for new rides
+        const handleRideCreated = () => {
+            console.log("Refreshing rides...");
+            rideService.getRides().then(setActiveRides).catch(console.error);
+        };
+        window.addEventListener('ride-created', handleRideCreated);
+
+        return () => {
+            window.removeEventListener('ride-created', handleRideCreated);
+        };
     }, []);
 
     useEffect(() => {

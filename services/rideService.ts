@@ -11,7 +11,8 @@ interface CreateRideData {
     route: any;
 }
 
-const API_URL = 'http://localhost:5000/api'; // Adjust port if needed
+import { API_URL } from './config';
+// const API_URL = 'http://localhost:5000/api'; // Adjust port if needed
 
 export const rideService = {
     async createRide(data: CreateRideData): Promise<Ride> {

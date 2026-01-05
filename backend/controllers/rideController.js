@@ -1,4 +1,5 @@
 import Ride from '../models/Ride.js';
+import mongoose from 'mongoose';
 import User from '../models/User.js'; // Ensure User model is imported if needed for queries
 import { CreateRideSchema } from '../validations/schemas.js';
 import { z } from 'zod';
@@ -64,7 +65,8 @@ export const getRides = async (req, res) => {
 
         // Improve: Fetch creators manually to attach author info
         const creatorIds = [...new Set(rides.map(r => r.creatorId))];
-        const creators = await User.find({ _id: { $in: creatorIds } }).select('name avatar username');
+        const validCreatorIds = creatorIds.filter(id => mongoose.Types.ObjectId.isValid(id));
+        const creators = await User.find({ _id: { $in: validCreatorIds } }).select('name avatar username');
         const creatorMap = creators.reduce((acc, curr) => ({ ...acc, [curr._id]: curr }), {});
 
         const ridesWithCreator = rides.map(ride => ({

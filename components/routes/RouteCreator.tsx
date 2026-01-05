@@ -5,7 +5,22 @@ import { Button } from '../ui/Button';
 import { notify } from '../../services/notificationService';
 import { Route } from '../../types';
 
-declare const L: any;
+import L from 'leaflet';
+import 'leaflet-routing-machine';
+import 'leaflet-routing-machine/dist/leaflet-routing-machine.css';
+
+// Fix for default marker icons in Leaflet with webpack/vite
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
+
+let DefaultIcon = L.icon({
+    iconUrl: icon,
+    shadowUrl: iconShadow,
+    iconSize: [25, 41],
+    iconAnchor: [12, 41]
+});
+
+L.Marker.prototype.options.icon = DefaultIcon;
 
 interface RouteCreatorProps {
     onSave: (routeData: Partial<Route>) => Promise<void>;
@@ -35,7 +50,7 @@ export const RouteCreator: React.FC<RouteCreatorProps> = ({ onSave, onCancel }) 
     // Initialize Map
     useEffect(() => {
         if (!mapContainerRef.current || mapRef.current) return;
-        if (typeof L === 'undefined') return;
+        // if (typeof L === 'undefined') return; // validation removed as L is imported
 
         const map = L.map(mapContainerRef.current, { zoomControl: false }).setView([39.0, 35.0], 6); // Turkey center
 
@@ -100,12 +115,16 @@ export const RouteCreator: React.FC<RouteCreatorProps> = ({ onSave, onCancel }) 
         const control = L.Routing.control({
             waypoints: waypointsRef.current,
             router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1', profile: 'driving' }),
-            lineOptions: { styles: [{ color: '#F2A619', opacity: 0.8, weight: 6 }] },
+            lineOptions: {
+                styles: [{ color: '#F2A619', opacity: 0.8, weight: 6 }],
+                extendToWaypoints: false,
+                missingRouteTolerance: 0
+            },
             createMarker: () => null,
             addWaypoints: false,
             show: false,
             fitSelectedRoutes: true
-        }).addTo(map);
+        } as any).addTo(map);
 
         control.on('routesfound', (e: any) => {
             const r = e.routes[0];

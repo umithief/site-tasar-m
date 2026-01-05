@@ -58,8 +58,13 @@ export default {
                 'float': 'float 6s ease-in-out infinite',
                 'slide-up': 'slideUp 0.5s ease-out',
                 'fade-in': 'fadeIn 0.6s ease-out',
+                'shimmer': 'shimmer 1.5s infinite',
             },
             keyframes: {
+                shimmer: {
+                    '0%': { transform: 'translateX(-100%) skewX(-20deg)' },
+                    '100%': { transform: 'translateX(200%) skewX(-20deg)' },
+                },
                 shine: {
                     '0%': { transform: 'translateX(-100%)' },
                     '100%': { transform: 'translateX(100%)' },

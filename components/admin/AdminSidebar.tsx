@@ -1,8 +1,8 @@
 import React from 'react';
-import { LayoutDashboard, Package, ShoppingCart, Users, Grid, Map, Circle, MessageSquare, Image as ImageIcon, Box, Zap, Globe, LogOut, Calendar, Activity, Film } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Users, Grid, Map, Circle, MessageSquare, Image as ImageIcon, Box, Zap, Globe, LogOut, Calendar, Activity, Film, Palette } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'slider' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community' | 'paddock' | 'showcase' | 'vlogs' | 'reels';
+type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'slider' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community' | 'paddock' | 'showcase' | 'vlogs' | 'reels' | 'ui-settings';
 
 interface AdminSidebarProps {
     activeTab: AdminTab;
@@ -65,6 +65,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, setActive
                 <NavItem id="showcase" label="Vitrin (Cinema)" icon={Film} active={activeTab === 'showcase'} onClick={setActiveTab} />
                 <NavItem id="reels" label="Velocity Reels" icon={Film} active={activeTab === 'reels'} onClick={setActiveTab} />
                 <NavItem id="models" label="3D Modeller" icon={Box} active={activeTab === 'models'} onClick={setActiveTab} />
+                <NavItem id="ui-settings" label="UI Ayarları" icon={Palette} active={activeTab === 'ui-settings'} onClick={setActiveTab} />
             </div>
 
             {/* Footer Actions */}

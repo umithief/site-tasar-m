@@ -3,6 +3,7 @@ import { motion, HTMLMotionProps, useSpring, useMotionValue, useTransform } from
 import { Loader2, LucideIcon } from 'lucide-react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
+import { useUIStore } from '../../store/useUIStore';
 
 // Utility for class merging
 function cn(...inputs: ClassValue[]) {
@@ -73,7 +74,18 @@ export const VibeButton = React.forwardRef<HTMLButtonElement, VibeButtonProps>((
     ...props
 }, forwardedRef) => {
 
-    const { ref: magneticRef, x, y, handleMouseMove, handleMouseLeave } = useMagnetic(withMagnetic && !isLoading);
+    // --- GLOBAL SETTINGS ---
+    // --- GLOBAL SETTINGS ---
+    const { getComponentConfig } = useUIStore();
+    const config = getComponentConfig('VibeButton');
+
+    // Merge defaults with dynamic config
+    const globalMagnetStrength = config.magneticStrength ?? 0.2;
+    const globalRadius = config.borderRadius ?? '9999px';
+    const globalAnimSpeed = config.animationSpeed ?? 1.5;
+    const customPrimaryColor = config.primaryColor; // applied via style if present
+
+    const { ref: magneticRef, x, y, handleMouseMove, handleMouseLeave } = useMagnetic(withMagnetic && !isLoading && globalMagnetStrength > 0);
 
     // Combine refs
     const setRefs = (element: HTMLButtonElement) => {
@@ -84,7 +96,7 @@ export const VibeButton = React.forwardRef<HTMLButtonElement, VibeButtonProps>((
     };
 
     // --- STYLES ---
-    const baseStyles = "relative inline-flex items-center justify-center overflow-hidden transition-colors duration-300 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed";
+    const baseStyles = "relative inline-flex items-center justify-center overflow-hidden transition-all duration-300 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed";
 
     const sizeStyles = {
         sm: "px-4 py-2 text-xs",
@@ -111,12 +123,22 @@ export const VibeButton = React.forwardRef<HTMLButtonElement, VibeButtonProps>((
         `
     };
 
+    const dynamicStyle: React.CSSProperties = {
+        borderRadius: globalRadius,
+        ...(variant === 'primary' && customPrimaryColor ? {
+            backgroundColor: customPrimaryColor,
+            color: '#000', // Assuming black text for custom colors for now
+            boxShadow: `0 0 20px ${customPrimaryColor}80` // 50% opacity hex
+        } : {})
+    };
+
     const shimmerEffect = (
         <motion.div
             className="absolute inset-0 -translate-x-[100%] group-hover:animate-[shimmer_1.5s_infinite]"
             style={{
                 background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
-                transform: 'skewX(-20deg)'
+                transform: 'skewX(-20deg)',
+                animationDuration: `${globalAnimSpeed}s`
             }}
         />
     );
@@ -124,7 +146,7 @@ export const VibeButton = React.forwardRef<HTMLButtonElement, VibeButtonProps>((
     return (
         <motion.button
             ref={setRefs}
-            style={{ x, y }}
+            style={{ x, y, ...dynamicStyle }}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
             whileTap={{ scale: 0.95 }}

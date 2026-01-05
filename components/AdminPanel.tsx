@@ -14,7 +14,7 @@ interface AdminPanelProps {
     onNavigate: (view: any) => void;
 }
 
-type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'categories' | 'slider' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community' | 'paddock' | 'vlogs' | 'showcase' | 'reels';
+type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'categories' | 'slider' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community' | 'paddock' | 'vlogs' | 'showcase' | 'reels' | 'ui-settings';
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, onNavigate }) => {
     const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
@@ -209,8 +209,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
                         <AdminReelManager />
                     )}
 
+                    {activeTab === 'ui-settings' && (
+                        <AdminUISettings />
+                    )}
+
                     {activeTab !== 'dashboard' && activeTab !== 'products' && activeTab !== 'orders' &&
-                        activeTab !== 'users' && activeTab !== 'categories' && activeTab !== 'slider' && activeTab !== 'routes' &&
+                        activeTab !== 'users' && activeTab !== 'categories' && activeTab !== 'slider' && activeTab !== 'routes' && activeTab !== 'ui-settings' &&
                         !['stories', 'negotiations', 'models', 'events', 'community', 'paddock', 'vlogs', 'showcase', 'reels'].includes(activeTab) && (
                             <div className="p-20 text-center text-gray-500">
                                 Bu modül henüz aktif edilmedi: <b>{activeTab}</b>
@@ -253,6 +257,7 @@ import { AdminPaddock } from './admin/AdminPaddock';
 import { AdminShowcase } from './admin/AdminShowcase';
 import { AdminVlogs } from './admin/AdminVlogs';
 import { AdminReelManager } from './admin/AdminReelManager';
+import { AdminUISettings } from './admin/AdminUISettings';
 
 import { ProductModal } from './admin/modals/ProductModal';
 import { Product, Order } from '../types';

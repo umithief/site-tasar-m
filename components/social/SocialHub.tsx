@@ -94,6 +94,8 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
             setActiveRides(rides);
         };
 
+        fetchMiscData();
+
 
         // Listen for new rides
         const handleRideCreated = () => {

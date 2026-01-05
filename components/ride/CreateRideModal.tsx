@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Map, Gauge, Users, Calendar, ChevronRight, Navigation, CheckCircle2 } from 'lucide-react';
 import { Product } from '../../types';
 import { rideService } from '../../services/rideService'; // Reusing types or define local interfaces
+import { RouteCreator } from '../routes/RouteCreator';
 
 interface CreateRideModalProps {
     isOpen: boolean;
@@ -21,6 +22,18 @@ export const CreateRideModal: React.FC<CreateRideModalProps> = (props) => {
     const [date, setDate] = useState('');
     const [time, setTime] = useState('');
     const [pace, setPace] = useState([80, 120]); // Min-Max Speed
+
+    // Route Selection State
+    const [showRouteCreator, setShowRouteCreator] = useState(false);
+    const [routeData, setRouteData] = useState<any>(null);
+
+    const handleRouteSave = async (data: any) => {
+        setRouteData(data);
+        setShowRouteCreator(false);
+        // Auto-fill title details if available and empty
+        if (!title && data.title) setTitle(data.title);
+        if (data.difficulty) setDifficulty(data.difficulty as any);
+    };
 
     // Derived State
     const isLiveSoon = () => {
@@ -53,7 +66,7 @@ export const CreateRideModal: React.FC<CreateRideModalProps> = (props) => {
                 startTime: isoDate,
                 difficulty,
                 maxParticipants: 10,
-                route: {}, // Mock route for now
+                route: routeData || {}, // Use selected route data
             });
 
             onClose();
@@ -80,6 +93,19 @@ export const CreateRideModal: React.FC<CreateRideModalProps> = (props) => {
     }, [onClose]);
 
     if (!isOpen) return null;
+
+    if (!isOpen) return null;
+
+    if (showRouteCreator) {
+        return (
+            <div className="fixed inset-0 z-[2000] bg-black">
+                <RouteCreator
+                    onSave={handleRouteSave}
+                    onCancel={() => setShowRouteCreator(false)}
+                />
+            </div>
+        );
+    }
 
     return (
         <AnimatePresence>
@@ -235,19 +261,31 @@ export const CreateRideModal: React.FC<CreateRideModalProps> = (props) => {
                                                     <div className="w-12 h-12 bg-[#E2FF3B]/20 rounded-full flex items-center justify-center border border-[#E2FF3B] animate-pulse">
                                                         <Map className="w-6 h-6 text-[#E2FF3B]" />
                                                     </div>
-                                                    <span className="text-sm font-bold text-white uppercase tracking-wider">Select Route on Map</span>
-                                                    <button className="mt-2 text-xs text-gray-400 hover:text-white underline pb-1">Open Route Editor</button>
+                                                    <span className="text-sm font-bold text-white uppercase tracking-wider">
+                                                        {routeData ? "Route Selected" : "Select Route on Map"}
+                                                    </span>
+                                                    {routeData && (
+                                                        <div className="text-xs text-[#E2FF3B] font-mono font-bold bg-black/50 px-2 py-1 rounded">
+                                                            {routeData.distance} • {routeData.estimatedTime}
+                                                        </div>
+                                                    )}
+                                                    <button
+                                                        onClick={() => setShowRouteCreator(true)}
+                                                        className="mt-2 text-xs text-gray-400 hover:text-white underline pb-1"
+                                                    >
+                                                        {routeData ? "Edit Route" : "Open Route Editor"}
+                                                    </button>
                                                 </div>
                                             </div>
 
                                             <div className="grid grid-cols-2 gap-4">
                                                 <div className="bg-white/5 rounded-xl p-3 border border-white/5">
                                                     <div className="text-xs text-gray-500 uppercase font-bold mb-1">Duration</div>
-                                                    <div className="text-xl font-mono text-white">2h 45m</div>
+                                                    <div className="text-xl font-mono text-white">{routeData?.estimatedTime || '--'}</div>
                                                 </div>
                                                 <div className="bg-white/5 rounded-xl p-3 border border-white/5">
                                                     <div className="text-xs text-gray-500 uppercase font-bold mb-1">Distance</div>
-                                                    <div className="text-xl font-mono text-white">124 km</div>
+                                                    <div className="text-xl font-mono text-white">{routeData?.distance || '--'}</div>
                                                 </div>
                                             </div>
                                         </motion.div>
@@ -323,7 +361,7 @@ export const CreateRideModal: React.FC<CreateRideModalProps> = (props) => {
                                         <div className="text-gray-500 text-xs font-bold uppercase tracking-wider mb-1">Meeting Point</div>
                                         <div className="text-white font-bold flex items-center gap-2">
                                             <Map className="w-4 h-4 text-gray-400" />
-                                            <span>Select on Map</span>
+                                            <span>{routeData?.location || 'Select on Map'}</span>
                                         </div>
                                     </div>
                                 </div>

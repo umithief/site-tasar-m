@@ -28,7 +28,7 @@ const StorySection: React.FC = () => {
             <div className="container mx-auto px-4 md:px-8 mb-6 flex items-end justify-between">
                 <div>
                     <h2 className="text-3xl font-display font-black text-white leading-none tracking-tight">
-                        VELOCITY <span className="text-orange-600">REEL</span>
+                        VELOCITY <span className="text-[#E2FF3B]">REEL</span>
                     </h2>
                     <p className="text-gray-400 text-sm mt-2 font-medium tracking-wide">
                         RİTMİ YAKALA
@@ -37,7 +37,7 @@ const StorySection: React.FC = () => {
 
                 {/* Scroll hint / Controls could go here */}
                 <div className="hidden md:flex gap-2">
-                    <div className="w-2 h-2 rounded-full bg-orange-600"></div>
+                    <div className="w-2 h-2 rounded-full bg-[#E2FF3B]"></div>
                     <div className="w-2 h-2 rounded-full bg-gray-700"></div>
                     <div className="w-2 h-2 rounded-full bg-gray-700"></div>
                 </div>
@@ -88,7 +88,7 @@ const StoryCard: React.FC<{ story: Story; onClick: () => void }> = ({ story, onC
             onClick={onClick}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            className="relative flex-shrink-0 w-[200px] h-[300px] md:w-[260px] md:h-[390px] rounded-2xl cursor-pointer overflow-hidden snap-center group border border-white/5 hover:border-orange-500/50 transition-colors duration-300"
+            className="relative flex-shrink-0 w-[200px] h-[300px] md:w-[260px] md:h-[390px] rounded-2xl cursor-pointer overflow-hidden snap-center group border border-white/5 hover:border-[#E2FF3B]/50 transition-colors duration-300"
             whileHover={{ scale: 1.02 }}
         >
             {/* Background Media */}
@@ -122,7 +122,7 @@ const StoryCard: React.FC<{ story: Story; onClick: () => void }> = ({ story, onC
                         <motion.div
                             initial={{ opacity: 0, scale: 0.8 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            className="w-8 h-8 rounded-full bg-orange-600 flex items-center justify-center text-white"
+                            className="w-8 h-8 rounded-full bg-[#E2FF3B] flex items-center justify-center text-black"
                         >
                             <Play size={12} fill="currentColor" />
                         </motion.div>
@@ -130,11 +130,11 @@ const StoryCard: React.FC<{ story: Story; onClick: () => void }> = ({ story, onC
                 </div>
 
                 <div>
-                    <h3 className="text-white font-bold text-lg leading-tight uppercase font-display tracking-wide group-hover:text-orange-500 transition-colors">
+                    <h3 className="text-white font-bold text-lg leading-tight uppercase font-display tracking-wide group-hover:text-[#E2FF3B] transition-colors">
                         {story.title || story.label}
                     </h3>
                     <div className="flex items-center gap-2 mt-2">
-                        <Play size={12} className="text-orange-500 fill-orange-500" />
+                        <Play size={12} className="text-[#E2FF3B] fill-[#E2FF3B]" />
                         <span className="text-xs text-gray-300 font-medium">{story.duration}</span>
                     </div>
                 </div>
@@ -247,8 +247,8 @@ const FullScreenStory: React.FC<{ story: Story; onClose: () => void }> = ({ stor
                     </div>
 
                     <div className="flex flex-col gap-3 mt-auto">
-                        <button className="w-full py-4 bg-orange-600 hover:bg-orange-700 text-white font-bold rounded-xl flex items-center justify-center gap-2 transition-transform hover:scale-[1.02]">
-                            HEMEN İZLE <Play size={16} fill="white" />
+                        <button className="w-full py-4 bg-[#E2FF3B] hover:bg-[#cbf000] text-black font-bold rounded-xl flex items-center justify-center gap-2 transition-transform hover:scale-[1.02]">
+                            HEMEN İZLE <Play size={16} fill="black" />
                         </button>
                         <div className="flex gap-3">
                             <button className="flex-1 py-3 bg-white/5 hover:bg-white/10 text-white font-semibold rounded-xl flex items-center justify-center gap-2 transition-colors">

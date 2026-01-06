@@ -228,7 +228,7 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                                 <Film className="w-4 h-4" /> İnteraktif Harita
                             </div>
                             <h3 className="text-3xl md:text-5xl font-display font-black text-gray-900 dark:text-white mb-4 leading-none">
-                                {t('home.vlog_map').split(' ')[0]} <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-orange-500">{t('home.vlog_map').split(' ')[1]}</span>
+                                {t('home.vlog_map').split(' ')[0]} <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-[#E2FF3B]">{t('home.vlog_map').split(' ')[1]}</span>
                             </h3>
                             <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base max-w-lg mb-6">
                                 {t('home.vlog_desc')}
@@ -310,7 +310,7 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                             </div>
                             <h2 className="text-2xl md:text-7xl font-display font-black text-gray-900 dark:text-white leading-[0.9] tracking-tight">
                                 {t('home.editors_choice').split(' ')[0]} <br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-moto-accent via-orange-500 to-moto-accent bg-[length:200%_auto] animate-shine">
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-moto-accent via-[#E2FF3B] to-moto-accent bg-[length:200%_auto] animate-shine">
                                     {t('home.editors_choice').split(' ').slice(1).join(' ')}
                                 </span>
                             </h2>

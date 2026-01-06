@@ -62,7 +62,7 @@ export const MobileOnboarding: React.FC<MobileOnboardingProps> = ({ onNavigate }
             await garageService.addToGarage({
                 brand: selectedBrand,
                 model: selectedModel || 'Unknown Model',
-                year: parseInt(selectedYear) || new Date().getFullYear(),
+                year: selectedYear || new Date().getFullYear().toString(),
                 image: imagePreview || ''
             });
 
@@ -116,7 +116,7 @@ export const MobileOnboarding: React.FC<MobileOnboardingProps> = ({ onNavigate }
                                         setSelectedBrand(brand.name);
                                         setTimeout(handleNext, 300);
                                     }}
-                                    className={`aspect-square rounded-2xl border border-white/10 flex flex-col items-center justify-center gap-2 p-2 transition-all duration-300 ${selectedBrand === brand.name ? 'bg-[#FF4500]/20 border-[#FF4500] shadow-[0_0_15px_rgba(255,69,0,0.3)]' : 'bg-white/5 hover:bg-white/10'}`}
+                                    className={`aspect-square rounded-2xl border border-white/10 flex flex-col items-center justify-center gap-2 p-2 transition-all duration-300 ${selectedBrand === brand.name ? 'bg-[#E2FF3B]/20 border-[#E2FF3B] shadow-[0_0_15px_rgba(226,255,59,0.3)]' : 'bg-white/5 hover:bg-white/10'}`}
                                 >
                                     {/* Ideally we use images, for now fallback to text if image fails or use placeholder */}
                                     <div className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center font-bold text-xs overflow-hidden">
@@ -149,7 +149,7 @@ export const MobileOnboarding: React.FC<MobileOnboardingProps> = ({ onNavigate }
                                     value={selectedModel}
                                     onChange={(e) => setSelectedModel(e.target.value)}
                                     placeholder="Örn. MT-07, CBR650R..."
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-lg font-bold text-white focus:outline-none focus:border-[#FF4500] transition-colors"
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-lg font-bold text-white focus:outline-none focus:border-[#E2FF3B] transition-colors"
                                 />
                             </div>
 
@@ -159,7 +159,7 @@ export const MobileOnboarding: React.FC<MobileOnboardingProps> = ({ onNavigate }
                                     <select
                                         value={selectedYear}
                                         onChange={(e) => setSelectedYear(e.target.value)}
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-lg font-bold text-white appearance-none focus:outline-none focus:border-[#FF4500] transition-colors"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-4 text-lg font-bold text-white appearance-none focus:outline-none focus:border-[#E2FF3B] transition-colors"
                                     >
                                         <option value="" disabled>Seçiniz</option>
                                         {YEARS.map(year => (
@@ -177,7 +177,7 @@ export const MobileOnboarding: React.FC<MobileOnboardingProps> = ({ onNavigate }
                             <button
                                 onClick={handleNext}
                                 disabled={!selectedModel || !selectedYear}
-                                className="w-full bg-[#FF4500] text-black font-black uppercase text-lg py-4 rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition-colors"
+                                className="w-full bg-[#E2FF3B] text-black font-black uppercase text-lg py-4 rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-white transition-colors"
                             >
                                 Devam Et
                             </button>
@@ -205,8 +205,8 @@ export const MobileOnboarding: React.FC<MobileOnboardingProps> = ({ onNavigate }
                                 <img src={imagePreview} alt="Preview" className="w-full h-full object-cover" />
                             ) : (
                                 <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 bg-white/5 group-hover:bg-white/10 transition-colors">
-                                    <div className="w-16 h-16 rounded-full bg-[#FF4500]/10 flex items-center justify-center">
-                                        <Camera className="w-8 h-8 text-[#FF4500]" />
+                                    <div className="w-16 h-16 rounded-full bg-[#E2FF3B]/10 flex items-center justify-center">
+                                        <Camera className="w-8 h-8 text-[#E2FF3B]" />
                                     </div>
                                     <span className="text-sm font-bold text-zinc-400">Fotoğraf Yükle</span>
                                 </div>
@@ -227,7 +227,7 @@ export const MobileOnboarding: React.FC<MobileOnboardingProps> = ({ onNavigate }
                                 value={bikeName}
                                 onChange={(e) => setBikeName(e.target.value)}
                                 placeholder="Örn. Kara Şimşek"
-                                className="w-full bg-transparent border-b border-white/10 px-0 py-2 text-xl font-bold text-white focus:outline-none focus:border-[#FF4500] transition-colors placeholder:text-zinc-700"
+                                className="w-full bg-transparent border-b border-white/10 px-0 py-2 text-xl font-bold text-white focus:outline-none focus:border-[#E2FF3B] transition-colors placeholder:text-zinc-700"
                             />
                         </div>
 
@@ -235,7 +235,7 @@ export const MobileOnboarding: React.FC<MobileOnboardingProps> = ({ onNavigate }
                             <button
                                 onClick={handleNext}
                                 disabled={!imagePreview} // Require image? Yes, per "Hero Shot" implication
-                                className="w-full bg-white text-black font-black uppercase text-lg py-4 rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#FF4500] transition-colors"
+                                className="w-full bg-white text-black font-black uppercase text-lg py-4 rounded-2xl disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#E2FF3B] transition-colors"
                             >
                                 Son Adım
                             </button>
@@ -264,7 +264,7 @@ export const MobileOnboarding: React.FC<MobileOnboardingProps> = ({ onNavigate }
                                 transition={{ delay: 0.2 }}
                                 className="mb-8"
                             >
-                                <span className="text-[#FF4500] font-bold text-sm tracking-[0.2em] uppercase mb-2 block">Garaj Hazır</span>
+                                <span className="text-[#E2FF3B] font-bold text-sm tracking-[0.2em] uppercase mb-2 block">Garaj Hazır</span>
                                 <h1 className="text-5xl font-black font-display italic leading-none">
                                     {selectedBrand.toUpperCase()}<br />
                                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-zinc-500">
@@ -289,7 +289,7 @@ export const MobileOnboarding: React.FC<MobileOnboardingProps> = ({ onNavigate }
                                 whileTap={{ scale: 0.95 }}
                                 onClick={handleFinish}
                                 disabled={isSubmitting}
-                                className="w-full max-w-sm bg-[#FF4500] text-black font-black text-xl py-6 rounded-full shadow-[0_0_30px_#FF4500] hover:shadow-[0_0_50px_#FF4500] transition-all relative overflow-hidden group"
+                                className="w-full max-w-sm bg-[#E2FF3B] text-black font-black text-xl py-6 rounded-full shadow-[0_0_30px_#E2FF3B] hover:shadow-[0_0_50px_#E2FF3B] transition-all relative overflow-hidden group"
                             >
                                 <span className="relative z-10 flex items-center justify-center gap-2">
                                     {isSubmitting ? 'Yükleniyor...' : 'JOURNEY BAŞLASIN'} <ChevronRight className="w-6 h-6 border-2 border-black rounded-full" />

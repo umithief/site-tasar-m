@@ -146,9 +146,9 @@ const ReelItem: React.FC<ReelItemProps> = ({ data, isActive, isMuted, toggleMute
             {/* Admin/Featured Badge */}
             {data.isFeatured && (
                 <div className="absolute top-16 left-4 z-30">
-                    <div className="flex items-center gap-1 bg-moto-accent/90 backdrop-blur-md px-3 py-1 rounded-full shadow-[0_0_15px_rgba(255,102,0,0.5)]">
-                        <Sparkles className="w-3 h-3 text-white fill-white" />
-                        <span className="text-xs font-bold text-white uppercase tracking-wider">Featured</span>
+                    <div className="flex items-center gap-1 bg-moto-accent/90 backdrop-blur-md px-3 py-1 rounded-full shadow-[0_0_15px_rgba(226,255,59,0.5)]">
+                        <Sparkles className="w-3 h-3 text-black fill-black" />
+                        <span className="text-xs font-bold text-black uppercase tracking-wider">Featured</span>
                     </div>
                 </div>
             )}
@@ -285,7 +285,7 @@ const ReelItem: React.FC<ReelItemProps> = ({ data, isActive, isMuted, toggleMute
             {/* Progress Bar */}
             <div className="absolute bottom-0 left-0 w-full h-[2px] bg-white/20 z-40">
                 <div
-                    className="h-full bg-moto-accent transition-all duration-100 ease-linear shadow-[0_0_10px_#FFA500]"
+                    className="h-full bg-moto-accent transition-all duration-100 ease-linear shadow-[0_0_10px_#E2FF3B]"
                     style={{ width: `${progress}%` }}
                 />
             </div>

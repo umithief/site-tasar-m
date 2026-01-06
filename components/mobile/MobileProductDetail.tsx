@@ -149,7 +149,7 @@ export const MobileProductDetail: React.FC<MobileProductDetailProps> = ({
                         {images.map((_, idx) => (
                             <motion.div
                                 key={idx}
-                                className={`h-0.5 rounded-full transition-all duration-300 ${idx === currentImageIndex ? 'bg-orange-500 w-8 shadow-[0_0_10px_orange]' : 'bg-zinc-700 w-4'}`}
+                                className={`h-0.5 rounded-full transition-all duration-300 ${idx === currentImageIndex ? 'bg-[#E2FF3B] w-8 shadow-[0_0_10px_rgba(226,255,59,0.8)]' : 'bg-zinc-700 w-4'}`}
                                 layoutId="indicator"
                             />
                         ))}
@@ -188,9 +188,9 @@ export const MobileProductDetail: React.FC<MobileProductDetailProps> = ({
                 {/* Title & Price Header */}
                 <div className="mb-8">
                     <div className="flex justify-between items-start mb-2">
-                        <span className="text-orange-500 text-xs font-bold uppercase tracking-[0.2em] font-mono">{product.brand || 'MOTOBIKE'} // SERIES X</span>
+                        <span className="text-[#E2FF3B] text-xs font-bold uppercase tracking-[0.2em] font-mono">{product.brand || 'MOTOBIKE'} // SERIES X</span>
                         <div className="flex items-center gap-1.5">
-                            <Star className="w-4 h-4 text-orange-500 fill-orange-500" />
+                            <Star className="w-4 h-4 text-[#E2FF3B] fill-[#E2FF3B]" />
                             <span className="text-sm font-bold text-white">{product.rating}</span>
                         </div>
                     </div>
@@ -202,7 +202,7 @@ export const MobileProductDetail: React.FC<MobileProductDetailProps> = ({
                             ₺{currentPrice.toLocaleString('tr-TR')}
                         </span>
                         {activeOffer && (
-                            <span className="px-2 py-1 rounded bg-orange-500/10 border border-orange-500/20 text-orange-500 text-[10px] font-bold uppercase tracking-wider">
+                            <span className="px-2 py-1 rounded bg-[#E2FF3B]/10 border border-[#E2FF3B]/20 text-[#E2FF3B] text-[10px] font-bold uppercase tracking-wider">
                                 Teklif Fiyatı
                             </span>
                         )}
@@ -220,7 +220,7 @@ export const MobileProductDetail: React.FC<MobileProductDetailProps> = ({
                             { label: 'Garanti', value: '5 Yıl', icon: Check },
                         ].map((spec, i) => (
                             <div key={i} className="bg-zinc-900/50 border border-white/5 p-4 rounded-xl flex flex-col gap-2 hover:border-orange-500/30 transition-colors group">
-                                <spec.icon className="w-5 h-5 text-zinc-500 group-hover:text-orange-500 transition-colors" />
+                                <spec.icon className="w-5 h-5 text-zinc-500 group-hover:text-[#E2FF3B] transition-colors" />
                                 <div>
                                     <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider">{spec.label}</p>
                                     <p className="text-sm font-bold text-white font-mono">{spec.value}</p>
@@ -236,7 +236,7 @@ export const MobileProductDetail: React.FC<MobileProductDetailProps> = ({
                             className="w-full flex items-center justify-between p-4"
                         >
                             <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                                <Info className="w-4 h-4 text-orange-500" />
+                                <Info className="w-4 h-4 text-[#E2FF3B]" />
                                 Detaylı Açıklama
                             </span>
                             <ChevronDown className={`w-4 h-4 text-zinc-500 transition-transform ${expandedSection === 'deep' ? 'rotate-180' : ''}`} />
@@ -262,7 +262,7 @@ export const MobileProductDetail: React.FC<MobileProductDetailProps> = ({
                 <div className="mb-12">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-zinc-500 text-xs font-bold uppercase tracking-widest">Sürücü Galerisi</h3>
-                        <button className="text-orange-500 text-xs font-bold">Tümünü Gör</button>
+                        <button className="text-[#E2FF3B] text-xs font-bold">Tümünü Gör</button>
                     </div>
 
                     {/* "Spotted on the Road" Scroll */}
@@ -285,7 +285,7 @@ export const MobileProductDetail: React.FC<MobileProductDetailProps> = ({
             <div className="fixed bottom-0 left-0 right-0 p-4 pb-safe-bottom z-[100]">
                 {/* Glassmorphism Background with Gradient Border */}
                 <div className="absolute inset-0 bg-black/80 backdrop-blur-xl border-t border-white/10" />
-                <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-orange-500/50 to-transparent" />
+                <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-[#E2FF3B]/50 to-transparent" />
 
                 <div className="relative flex items-center gap-4 max-w-lg mx-auto">
                     <button
@@ -297,11 +297,11 @@ export const MobileProductDetail: React.FC<MobileProductDetailProps> = ({
 
                     <button
                         onClick={handleAddToCart}
-                        className="flex-1 h-14 rounded-2xl bg-gradient-to-r from-orange-600 to-orange-500 flex items-center justify-center gap-3 shadow-[0_0_30px_-5px_rgba(255,69,0,0.3)] active:scale-95 transition-all group overflow-hidden relative"
+                        className="flex-1 h-14 rounded-2xl bg-[#E2FF3B] text-black flex items-center justify-center gap-3 shadow-[0_0_30px_-5px_rgba(226,255,59,0.3)] hover:shadow-[0_0_40px_rgba(226,255,59,0.5)] active:scale-95 transition-all group overflow-hidden relative"
                     >
-                        <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
-                        <span className="text-white font-bold uppercase tracking-widest text-sm relative z-10">Garage'a Ekle</span>
-                        <ShoppingBag className="w-5 h-5 text-white relative z-10" />
+                        <div className="absolute inset-0 bg-white/40 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                        <span className="font-bold uppercase tracking-widest text-sm relative z-10">Garage'a Ekle</span>
+                        <ShoppingBag className="w-5 h-5 relative z-10" />
                     </button>
                 </div>
             </div>

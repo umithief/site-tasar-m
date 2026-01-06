@@ -49,13 +49,13 @@ export const VelocityReels: React.FC = () => {
     return (
         <section className="relative py-12 overflow-hidden">
             {/* Background Ambience */}
-            <div className="absolute inset-0 bg-gradient-to-r from-orange-500/5 via-transparent to-orange-500/0 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-r from-[#E2FF3B]/5 via-transparent to-[#E2FF3B]/0 pointer-events-none" />
 
             <div className="container mx-auto px-4 md:px-8 mb-8 flex items-end justify-between">
                 <div>
                     <h2 className="text-3xl md:text-5xl font-display font-black text-gray-900 tracking-tighter mb-2 flex items-center gap-3">
-                        VELOCITY <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-red-600">REELS</span>
-                        <Zap className="w-8 h-8 text-orange-500 fill-current animate-pulse" />
+                        VELOCITY <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E2FF3B] to-[#B8E600]">REELS</span>
+                        <Zap className="w-8 h-8 text-[#E2FF3B] fill-current animate-pulse" />
                     </h2>
                     <p className="text-gray-500 font-medium max-w-md">
                         En iyi anlarını paylaş, topluluğun ritmini yakala.
@@ -66,7 +66,7 @@ export const VelocityReels: React.FC = () => {
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
                     onClick={() => setIsUploadOpen(true)}
-                    className="hidden md:flex items-center gap-2 px-6 py-3 bg-black text-white rounded-full font-bold uppercase tracking-wider shadow-xl hover:shadow-orange-500/20 hover:bg-orange-600 transition-all"
+                    className="hidden md:flex items-center gap-2 px-6 py-3 bg-black text-white rounded-full font-bold uppercase tracking-wider shadow-xl hover:shadow-[0_0_20px_rgba(226,255,59,0.3)] hover:bg-[#E2FF3B] hover:text-black transition-all"
                 >
                     <Plus className="w-5 h-5" />
                     Reel Yükle
@@ -79,12 +79,12 @@ export const VelocityReels: React.FC = () => {
                 <motion.div
                     onClick={() => setIsUploadOpen(true)}
                     whileHover={{ scale: 0.98 }}
-                    className="flex-shrink-0 w-[200px] md:w-[240px] aspect-[9/16] snap-center bg-gray-100 rounded-3xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-orange-500 hover:bg-orange-50 transition-colors group"
+                    className="flex-shrink-0 w-[200px] md:w-[240px] aspect-[9/16] snap-center bg-gray-100 rounded-3xl border-2 border-dashed border-gray-300 flex flex-col items-center justify-center cursor-pointer hover:border-[#E2FF3B] hover:bg-[#E2FF3B]/10 transition-colors group"
                 >
-                    <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center text-orange-500 group-hover:scale-110 transition-transform mb-4">
+                    <div className="w-16 h-16 rounded-full bg-[#E2FF3B]/20 flex items-center justify-center text-[#E2FF3B] group-hover:scale-110 transition-transform mb-4">
                         <Plus className="w-8 h-8" />
                     </div>
-                    <span className="font-bold text-gray-400 group-hover:text-orange-600 uppercase tracking-widest text-xs">Yeni Paylaşım</span>
+                    <span className="font-bold text-gray-400 group-hover:text-[#E2FF3B] uppercase tracking-widest text-xs">Yeni Paylaşım</span>
                 </motion.div>
 
                 {reels.filter(r => r && r.videoUrl).map((reel, index) => (
@@ -102,7 +102,7 @@ export const VelocityReels: React.FC = () => {
                     >
                         {/* Video Preview */}
                         <video
-                            ref={el => videoRefs.current[index] = el}
+                            ref={(el) => { videoRefs.current[index] = el; }}
                             src={reel.videoUrl}
                             className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
                             muted
@@ -112,8 +112,8 @@ export const VelocityReels: React.FC = () => {
 
                         {/* Featured Badge */}
                         {reel.isFeatured && (
-                            <div className="absolute top-3 left-3 bg-orange-500 text-white text-[9px] font-black px-2 py-1 rounded-md uppercase tracking-wider shadow-lg flex items-center gap-1">
-                                <Zap className="w-3 h-3 fill-white" />
+                            <div className="absolute top-3 left-3 bg-[#E2FF3B] text-black text-[9px] font-black px-2 py-1 rounded-md uppercase tracking-wider shadow-lg flex items-center gap-1">
+                                <Zap className="w-3 h-3 fill-black" />
                                 MOTOVIBE CHOICE
                             </div>
                         )}

@@ -333,10 +333,10 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ items, total, onBack
                     <button
                         onClick={handlePlaceOrder}
                         disabled={loading}
-                        className="w-full bg-gradient-to-r from-orange-600 to-orange-500 text-white h-14 rounded-xl font-bold uppercase tracking-widest active:scale-95 transition-transform flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(255,69,0,0.4)]"
+                        className="w-full bg-[#E2FF3B] text-black h-14 rounded-xl font-bold uppercase tracking-widest active:scale-95 transition-all flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(226,255,59,0.4)] hover:shadow-[0_0_30px_rgba(226,255,59,0.6)] hover:bg-white"
                     >
                         {loading ? (
-                            <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                            <div className="w-5 h-5 border-2 border-black/30 border-t-black rounded-full animate-spin" />
                         ) : (
                             <>
                                 <span>₺{total.toLocaleString('tr-TR')} Öde</span>

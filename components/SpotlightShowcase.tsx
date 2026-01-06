@@ -144,7 +144,7 @@ const ProductCard: React.FC<{ product: Product, isRevealed: boolean }> = ({ prod
             {/* Content (Visible only when revealed ideally, or dimmed) */}
             <div className={`absolute inset-0 p-8 flex flex-col justify-end transition-opacity duration-300 ${isRevealed ? 'opacity-100' : 'opacity-0'}`}>
                 <div className="translate-y-4 group-hover:translate-y-0 transition-transform">
-                    <span className="text-orange-500 text-xs font-bold tracking-widest uppercase mb-2 block border-l-2 border-orange-500 pl-3">
+                    <span className="text-[#E2FF3B] text-xs font-bold tracking-widest uppercase mb-2 block border-l-2 border-[#E2FF3B] pl-3">
                         {product.category}
                     </span>
                     <h3 className="text-3xl font-black text-white italic tracking-tighter uppercase mb-1">
@@ -165,7 +165,7 @@ const InteractionCard: React.FC<{ product: Product }> = ({ product }) => {
         <div className={`group relative cursor-pointer ${product.className || ''} h-[300px] md:h-auto`}>
             {/* Center Floating Action Button (Only visible on hover) */}
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-30">
-                <button className="bg-orange-600 text-white px-6 py-3 rounded-full font-bold uppercase tracking-wider text-sm flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-all shadow-[0_0_30px_rgba(234,88,12,0.5)] border border-orange-400">
+                <button className="bg-[#E2FF3B] text-black px-6 py-3 rounded-full font-bold uppercase tracking-wider text-sm flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-all shadow-[0_0_30px_rgba(226,255,59,0.5)] border border-[#E2FF3B]">
                     <ShoppingCart size={16} />
                     Hızlı Ekle
                 </button>

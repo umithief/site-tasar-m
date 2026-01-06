@@ -8,8 +8,8 @@ interface CartDrawerProps {
     isOpen: boolean;
     onClose: () => void;
     items: CartItem[];
-    onUpdateQuantity: (id: number, delta: number) => void;
-    onRemoveItem: (id: number) => void;
+    onUpdateQuantity: (id: string, delta: number) => void;
+    onRemoveItem: (id: string) => void;
     onCheckout: () => Promise<void>;
     user: User | null;
 }
@@ -115,20 +115,20 @@ export const CartDrawer: React.FC<CartDrawerProps> = ({
                                 </div>
                             ) : (
                                 items.map(item => (
-                                    <div key={item.id} className="flex gap-4 bg-[#111] p-3 rounded-xl border border-white/5">
+                                    <div key={item._id} className="flex gap-4 bg-[#111] p-3 rounded-xl border border-white/5">
                                         <div className="w-20 h-20 bg-black rounded-lg overflow-hidden flex-shrink-0">
                                             <img src={item.image} className="w-full h-full object-cover" />
                                         </div>
                                         <div className="flex-1 flex flex-col justify-between">
                                             <div className="flex justify-between items-start">
                                                 <h3 className="text-sm font-bold text-white line-clamp-2">{item.name}</h3>
-                                                <button onClick={() => onRemoveItem(item.id)} className="p-2 bg-white/5 hover:bg-red-500/10 rounded-full text-gray-500 hover:text-red-500 transition-colors"><Trash2 className="w-4 h-4" /></button>
+                                                <button onClick={() => onRemoveItem(item._id)} className="p-2 bg-white/5 hover:bg-red-500/10 rounded-full text-gray-500 hover:text-red-500 transition-colors"><Trash2 className="w-4 h-4" /></button>
                                             </div>
                                             <div className="flex items-center justify-between">
-                                                <div className="flex items-center bg-black border border-white/10 rounded-lg h-8">
-                                                    <button onClick={() => onUpdateQuantity(item.id, -1)} className="px-2 text-gray-400 hover:text-white" disabled={item.quantity <= 1}><Minus className="w-3 h-3" /></button>
+                                                <div className="flex items-center bg-black border border-white/10 rounded-xl h-8">
+                                                    <button onClick={() => onUpdateQuantity(item._id, -1)} className="px-2 text-gray-400 hover:text-white" disabled={item.quantity <= 1}><Minus className="w-3 h-3" /></button>
                                                     <span className="text-xs font-bold text-white px-2">{item.quantity}</span>
-                                                    <button onClick={() => onUpdateQuantity(item.id, 1)} className="px-2 text-gray-400 hover:text-white"><Plus className="w-3 h-3" /></button>
+                                                    <button onClick={() => onUpdateQuantity(item._id, 1)} className="px-2 text-gray-400 hover:text-white"><Plus className="w-3 h-3" /></button>
                                                 </div>
                                                 <span className="text-sm font-mono font-bold text-moto-accent">₺{(item.price * item.quantity).toLocaleString('tr-TR')}</span>
                                             </div>

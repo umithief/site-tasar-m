@@ -82,11 +82,11 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                     <div className="relative z-10 p-8 md:p-12 flex flex-col md:flex-row justify-between items-end gap-6 h-full mt-20 md:mt-0">
                         <div>
                             <div className="flex items-center gap-2 mb-2">
-                                <span className="bg-orange-500 text-black text-[10px] font-black px-2 py-1 rounded uppercase tracking-widest">Premium</span>
+                                <span className="bg-[#E2FF3B] text-black text-[10px] font-black px-2 py-1 rounded uppercase tracking-widest">Premium</span>
                                 <span className="text-white/60 text-xs font-bold uppercase tracking-wider">Motosiklet Rotaları</span>
                             </div>
                             <h1 className="text-4xl md:text-6xl font-black text-white italic tracking-tighter uppercase mb-4 leading-none text-shadow-xl">
-                                Keşfet & <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-yellow-500">Sür</span>
+                                Keşfet & <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E2FF3B] to-[#B8E600]">Sür</span>
                             </h1>
                         </div>
 
@@ -100,7 +100,7 @@ export const RouteExplorer: React.FC<RouteExplorerProps> = ({ user, onOpenAuth, 
                                     setViewMode('create');
                                 }
                             }}
-                            className="py-4 px-8 rounded-2xl shadow-lg shadow-orange-500/20 text-base mb-2 md:mb-0"
+                            className="py-4 px-8 rounded-2xl shadow-lg shadow-[rgba(226,255,59,0.3)] text-base mb-2 md:mb-0"
                         >
                             <Plus className="w-6 h-6 mr-2" /> YENİ ROTA OLUŞTUR
                         </Button>

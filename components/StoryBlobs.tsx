@@ -18,7 +18,7 @@ const blobVariants = {
         ],
         transition: {
             duration: 4,
-            ease: "easeInOut",
+            ease: "easeInOut", // Cast if needed or use simple string
             repeat: Infinity,
         },
     },
@@ -44,7 +44,7 @@ const StoryBlobs: React.FC = () => {
                 {/* Title */}
                 <div className="mb-8 flex items-center justify-between">
                     <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
-                        Hikayeler <span className="text-orange-500 text-sm ml-2 align-top">🔥</span>
+                        Hikayeler <span className="text-[#E2FF3B] text-sm ml-2 align-top">🔥</span>
                     </h2>
                 </div>
 
@@ -92,8 +92,8 @@ const StoryBlob: React.FC<{ story: Story; onClick: () => void }> = ({ story, onC
                     variants={blobVariants}
                     className="absolute inset-0 border-[3px] border-transparent"
                     style={{
-                        borderColor: story.color || '#F2994A',
-                        boxShadow: `0 0 15px ${story.color || '#F2994A'}60`
+                        borderColor: story.color || '#E2FF3B',
+                        boxShadow: `0 0 15px ${story.color || '#E2FF3B'}60`
                     }}
                 />
 
@@ -173,7 +173,7 @@ const FullScreenStory: React.FC<{ story: Story; onClose: () => void }> = ({ stor
                 {/* Header */}
                 <div className="absolute top-4 left-0 right-0 z-30 px-4 flex items-center justify-between mt-2">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-orange-500 to-yellow-500 p-[2px]">
+                        <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-[#E2FF3B] to-[#B8E600] p-[2px]">
                             <img
                                 src="https://images.unsplash.com/photo-1549497557-d54cd2f0802a?fit=crop&w=100&h=100"
                                 className="w-full h-full rounded-full object-cover border border-white"
@@ -227,7 +227,7 @@ const FullScreenStory: React.FC<{ story: Story; onClose: () => void }> = ({ stor
                         </button>
                     </div>
 
-                    <button className="px-6 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-full font-bold text-sm flex items-center gap-2 transition-colors">
+                    <button className="px-6 py-2 bg-[#E2FF3B] hover:bg-[#cbf000] text-black rounded-full font-bold text-sm flex items-center gap-2 transition-colors">
                         İncele <ChevronRight size={16} />
                     </button>
                 </div>

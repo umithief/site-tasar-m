@@ -59,7 +59,7 @@ export const EventCard: React.FC<EventCardProps> = ({ event, onJoin }) => {
 
                     <button
                         onClick={() => onJoin(event)}
-                        className="w-full py-2.5 bg-white/5 hover:bg-moto-accent hover:text-black rounded-lg text-white text-sm font-bold transition-all flex items-center justify-center gap-2 group/btn"
+                        className="w-full py-2.5 bg-white/5 hover:bg-[#E2FF3B] hover:text-black rounded-xl text-white text-sm font-bold transition-all flex items-center justify-center gap-2 group/btn active:scale-95"
                     >
                         Katıl
                         <ArrowRight size={16} className="group-hover/btn:translate-x-1 transition-transform" />

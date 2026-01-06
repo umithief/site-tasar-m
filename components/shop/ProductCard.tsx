@@ -119,9 +119,9 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                             onAddToCart(product);
                         }}
                         disabled={product.stock === 0}
-                        className={`p-3 rounded-lg flex items-center justify-center transition-all ${product.stock === 0
+                        className={`p-3 rounded-xl flex items-center justify-center transition-all active:scale-95 ${product.stock === 0
                             ? 'bg-gray-800 text-gray-500 cursor-not-allowed'
-                            : 'bg-moto-accent text-black hover:bg-white hover:shadow-[0_0_15px_rgba(255,255,255,0.3)]'
+                            : 'bg-[#E2FF3B] text-black hover:bg-white hover:shadow-[0_0_15px_rgba(226,255,59,0.3)]'
                             }`}
                     >
                         <ShoppingCart size={20} />

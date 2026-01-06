@@ -322,7 +322,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
             // Add CSS for the neon line
             const style = document.createElement('style');
             style.innerHTML = `
-            .neon-polyline { filter: drop-shadow(0 0 8px #F2A619); }
+            .neon-polyline { filter: drop-shadow(0 0 8px #E2FF3B); }
             .trail-polyline { filter: drop-shadow(0 0 5px #00f3ff); }
             .leaflet-container { background: #000 !important; }
           `;
@@ -398,9 +398,9 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
         const html = `
         <div id="rider-icon" style="transition: transform 0.3s linear; transform-origin: center;">
             <div class="relative flex items-center justify-center">
-                <div class="absolute w-16 h-16 bg-moto-accent/20 rounded-full animate-ping opacity-50"></div>
-                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 0 10px #F2A619);">
-                    <path d="M12 2L4.5 20.29C4.21 21.01 4.96 21.72 5.67 21.37L12 18.25L18.33 21.37C19.04 21.72 19.79 21.01 19.5 20.29L12 2Z" fill="#F2A619" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+                <div class="absolute w-16 h-16 bg-[#E2FF3B]/20 rounded-full animate-ping opacity-50"></div>
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 0 10px #E2FF3B);">
+                    <path d="M12 2L4.5 20.29C4.21 21.01 4.96 21.72 5.67 21.37L12 18.25L18.33 21.37C19.04 21.72 19.79 21.01 19.5 20.29L12 2Z" fill="#E2FF3B" stroke="black" stroke-width="2" stroke-linejoin="round"/>
                 </svg>
             </div>
         </div>
@@ -558,7 +558,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                         waypoints: waypoints,
                         router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1', profile: 'driving' }),
                         lineOptions: {
-                            styles: [{ color: '#F2A619', opacity: 0.8, weight: 8, className: 'neon-polyline' }]
+                            styles: [{ color: '#E2FF3B', opacity: 0.8, weight: 8, className: 'neon-polyline' }]
                         },
                         show: false,
                         addWaypoints: false,
@@ -582,7 +582,8 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                     control.on('routingerror', (e: any) => {
                         console.error("OSRM Routing Error:", e);
                         // Fallback: Just draw the polyline if OSRM fails
-                        const polyline = L.polyline(points.map((p: any) => [p.lat, p.lng]), { color: '#F2A619', opacity: 0.8, weight: 8 }).addTo(mapRef.current);
+                        // Fallback: Just draw the polyline if OSRM fails
+                        const polyline = L.polyline(points.map((p: any) => [p.lat, p.lng]), { color: '#E2FF3B', opacity: 0.8, weight: 8 }).addTo(mapRef.current);
                         mapRef.current.fitBounds(polyline.getBounds());
                     });
 
@@ -590,7 +591,8 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                 } catch (e) {
                     console.error("Static Route Error", e);
                     // Fallback in catch
-                    const polyline = L.polyline(points.map((p: any) => [p.lat, p.lng]), { color: '#F2A619', opacity: 0.8, weight: 8 }).addTo(mapRef.current);
+                    // Fallback in catch
+                    const polyline = L.polyline(points.map((p: any) => [p.lat, p.lng]), { color: '#E2FF3B', opacity: 0.8, weight: 8 }).addTo(mapRef.current);
                     try { mapRef.current.fitBounds(polyline.getBounds()); } catch (ex) { }
                 }
             }
@@ -784,7 +786,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                                 </svg>
                                 {/* Active G-Dot */}
                                 <div
-                                    className="absolute w-4 h-4 bg-orange-500 rounded-full shadow-[0_0_10px_#F2A619] transition-all duration-100 ease-out"
+                                    className="absolute w-4 h-4 bg-[#E2FF3B] rounded-full shadow-[0_0_10px_#E2FF3B] transition-all duration-100 ease-out"
                                     style={{
                                         left: '50%',
                                         top: '50%',

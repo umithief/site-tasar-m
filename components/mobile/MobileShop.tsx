@@ -50,7 +50,7 @@ export const MobileShop = ({ onNavigate, initialCategory = 'ALL' }: { onNavigate
                             key={cat}
                             onClick={() => setActiveCategory(cat)}
                             className={`px-4 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all ${activeCategory === cat
-                                ? 'bg-orange-600 text-white shadow-[0_0_15px_-5px_orange]'
+                                ? 'bg-[#E2FF3B] text-black shadow-[0_0_15px_-5px_rgba(226,255,59,0.5)]'
                                 : 'bg-gray-200 dark:bg-zinc-900 text-zinc-600 dark:text-zinc-500 border border-gray-300 dark:border-zinc-800'
                                 }`}
                         >

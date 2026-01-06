@@ -24,7 +24,7 @@ export default {
                 'dark-elevated': '#1A1A1A',
 
                 // Premium Accent Colors
-                'moto-accent': '#FF4500',
+                'moto-accent': '#E2FF3B', // Refactored to Neon Lime
                 'moto-orange': {
                     400: '#FF6B35',
                     500: '#FF4500',

@@ -15,8 +15,8 @@ interface AdminSidebarProps {
 const NavItem = ({ id, label, icon: Icon, active, onClick }: any) => (
     <button
         onClick={() => onClick(id)}
-        className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all duration-200 group relative overflow-hidden ${active
-            ? 'bg-[#F2A619] text-black shadow-lg shadow-[#F2A619]/20 font-bold'
+        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group relative overflow-hidden ${active
+            ? 'bg-[#E2FF3B] text-black shadow-lg shadow-[#E2FF3B]/20 font-bold'
             : 'text-gray-400 hover:bg-white/5 hover:text-white font-medium'
             }`}
     >

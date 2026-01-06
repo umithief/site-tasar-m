@@ -225,7 +225,7 @@ const NeonButton = ({ text, loading }: { text: string, loading: boolean }) => (
     <button
         type="submit"
         disabled={loading}
-        className="group relative w-full h-12 bg-white/5 border border-white/10 rounded overflow-hidden transition-all duration-300 hover:border-[#F2A619] hover:bg-[#F2A619]/10"
+        className="group relative w-full h-12 bg-white/5 border border-white/10 rounded-xl overflow-hidden transition-all duration-300 hover:border-[#F2A619] hover:bg-[#F2A619]/10 active:scale-95"
     >
         <div className="absolute inset-0 flex items-center justify-center gap-2">
             <span className={`font-black tracking-[0.2em] transition-all duration-300 ${loading ? 'opacity-50' : 'group-hover:text-[#F2A619] text-white'}`}>

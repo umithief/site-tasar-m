@@ -58,6 +58,7 @@ interface VibeButtonProps extends Omit<HTMLMotionProps<"button">, "children"> {
     iconPosition?: 'left' | 'right';
     fullWidth?: boolean;
     withMagnetic?: boolean;
+    configOverride?: any;
 }
 
 // --- MASTER COMPONENT ---
@@ -72,13 +73,19 @@ export const VibeButton = React.forwardRef<HTMLButtonElement, VibeButtonProps>((
     fullWidth = false,
     withMagnetic = true,
     className = '',
+    configOverride,
     onClick,
     ...props
 }, forwardedRef) => {
 
     // --- GLOBAL SETTINGS INTEGRATION ---
     const { getComponentConfig } = useUIStore();
-    const config = getComponentConfig('VibeButton');
+    let config = getComponentConfig('VibeButton');
+
+    // Allow local override for previews
+    if (configOverride) {
+        config = { ...config, ...configOverride };
+    }
 
     // Merge Master Design Defaults with Admin Overrides
     const globalMagnetStrength = config.magneticStrength ?? 0.2;

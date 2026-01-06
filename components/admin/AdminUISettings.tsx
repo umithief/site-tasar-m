@@ -29,11 +29,24 @@ export const AdminUISettings = () => {
         }
     }, [settings]); // Listen to store changes properly
 
+    const [isSaving, setIsSaving] = useState(false);
+
     const handleChange = (key: string, value: any) => {
         const newConfig = { ...localConfig, [key]: value };
         setLocalConfig(newConfig);
-        // Live preview via store
-        updateSetting('VibeButton', newConfig);
+        // Removed auto-updateSetting to prevent API spam and allow manual save
+    };
+
+    const handleSave = async () => {
+        setIsSaving(true);
+        try {
+            await updateSetting('VibeButton', localConfig);
+            // Optional: Show success toast
+            setIsSaving(false);
+        } catch (error) {
+            console.error("Save failed", error);
+            setIsSaving(false);
+        }
     };
 
     return (
@@ -43,8 +56,19 @@ export const AdminUISettings = () => {
                     <h1 className="text-3xl font-black italic uppercase tracking-tighter">UI Settings</h1>
                     <p className="text-gray-400">Manage global component styles and behaviors.</p>
                 </div>
-                <div className="p-3 bg-white/5 rounded-xl border border-white/10">
-                    <Palette className="w-6 h-6 text-[#F2A619]" />
+                <div className="flex gap-4">
+                    <VibeButton
+                        variant="primary"
+                        size="sm"
+                        onClick={handleSave}
+                        isLoading={isSaving}
+                        icon={Save}
+                    >
+                        Save Changes
+                    </VibeButton>
+                    <div className="p-3 bg-white/5 rounded-xl border border-white/10">
+                        <Palette className="w-6 h-6 text-[#F2A619]" />
+                    </div>
                 </div>
             </div>
 
@@ -131,9 +155,9 @@ export const AdminUISettings = () => {
                     <h3 className="text-sm uppercase tracking-widest text-gray-500 mb-8">Live Preview</h3>
 
                     <div className="space-y-8 flex flex-col items-center">
-                        <VibeButton variant="primary">Primary Button</VibeButton>
-                        <VibeButton variant="secondary">Ghost Variant</VibeButton>
-                        <VibeButton variant="danger">Danger Zone</VibeButton>
+                        <VibeButton variant="primary" configOverride={localConfig}>Primary Button</VibeButton>
+                        <VibeButton variant="secondary" configOverride={localConfig}>Ghost Variant</VibeButton>
+                        <VibeButton variant="danger" configOverride={localConfig}>Danger Zone</VibeButton>
                     </div>
 
                     <div className="mt-12 p-4 bg-black/50 rounded-lg border border-white/5 text-xs text-gray-500 font-mono">

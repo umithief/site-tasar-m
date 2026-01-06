@@ -6,6 +6,7 @@ import { Save, RefreshCcw, Palette } from 'lucide-react';
 
 export const AdminUISettings = () => {
     const { getComponentConfig, updateSetting, fetchSettings } = useUIStore();
+    const settings = useUIStore((state) => state.settings);
     const config = getComponentConfig('VibeButton');
 
     // Local state for form handling to avoid jittery updates if we were syncing directly on every keystroke to server
@@ -26,7 +27,7 @@ export const AdminUISettings = () => {
         if (stored && Object.keys(stored).length > 0) {
             setLocalConfig(prev => ({ ...prev, ...stored }));
         }
-    }, [useUIStore().settings]); // Listen to store changes if needed
+    }, [settings]); // Listen to store changes properly
 
     const handleChange = (key: string, value: any) => {
         const newConfig = { ...localConfig, [key]: value };

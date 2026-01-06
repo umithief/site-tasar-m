@@ -201,7 +201,7 @@ export const Shop: React.FC<ShopProps> = ({
                                     brands: [],
                                     sortBy: 'featured'
                                 })}
-                                className="mt-6 px-6 py-2 bg-moto-accent text-black rounded-lg font-bold hover:bg-white transition-colors"
+                                className="mt-6 px-6 py-2 bg-[#E2FF3B] text-black rounded-lg font-bold hover:bg-white transition-colors"
                             >
                                 {t('shop.clear_filters')}
                             </button>

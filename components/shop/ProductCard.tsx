@@ -50,12 +50,12 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 {/* Badges */}
                 <div className="absolute top-3 left-3 flex flex-col gap-2">
                     {hasDiscount && (
-                        <span className="bg-red-500 text-white text-xs font-bold px-2 py-1 rounded">
+                        <span className="bg-[#FF3E3E] text-white text-xs font-bold px-2 py-1 rounded">
                             %{discountPercentage} {t('cart.discount')}
                         </span>
                     )}
                     {product.stock <= 5 && product.stock > 0 && (
-                        <span className="bg-orange-500 text-white text-xs font-bold px-2 py-1 rounded">
+                        <span className="bg-[#E2FF3B] text-black text-xs font-bold px-2 py-1 rounded">
                             {t('product.stock_last').replace('{count}', String(product.stock))}
                         </span>
                     )}
@@ -70,7 +70,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 <div className="absolute right-3 top-3 flex flex-col gap-2 translate-x-10 opacity-0 group-hover:translate-x-0 group-hover:opacity-100 transition-all duration-300">
                     <button
                         onClick={(e) => onToggleFavorite?.(product._id, e)}
-                        className={`p-2 rounded-full backdrop-blur-md transition-colors ${isFavorite ? 'bg-red-500/20 text-red-500' : 'bg-black/40 text-white hover:bg-white hover:text-black'
+                        className={`p-2 rounded-full backdrop-blur-md transition-colors ${isFavorite ? 'bg-[#FF3E3E]/20 text-[#FF3E3E]' : 'bg-black/40 text-white hover:bg-white hover:text-black'
                             }`}
                     >
                         <Heart size={18} fill={isFavorite ? "currentColor" : "none"} />

@@ -81,14 +81,14 @@ const NotificationItem = ({ notification }: { notification: Notification }) => {
                 animate={controls}
                 className={`relative flex items-center p-4 rounded-xl border backdrop-blur-md transition-colors cursor-pointer touch-pan-y
                 ${!notification.isRead
-                        ? 'bg-zinc-900/60 border-orange-500/30 shadow-[0_0_15px_-5px_rgba(249,115,22,0.15)]'
+                        ? 'bg-zinc-900/60 border-[#E2FF3B]/30 shadow-[0_0_15px_-5px_rgba(226,255,59,0.15)]'
                         : 'bg-black/40 border-white/5'
                     }`}
                 onClick={handleTap}
             >
                 {/* Unread Indicator */}
                 {!notification.isRead && (
-                    <div className="absolute left-1.5 top-1/2 -translate-y-1/2 w-1 h-8 bg-orange-500 rounded-full shadow-[0_0_8px_rgba(249,115,22,0.8)]" />
+                    <div className="absolute left-1.5 top-1/2 -translate-y-1/2 w-1 h-8 bg-[#E2FF3B] rounded-full shadow-[0_0_8px_rgba(226,255,59,0.8)]" />
                 )}
 
                 {/* Avatar Section */}
@@ -145,7 +145,7 @@ const MobileNotifications = () => {
     if (isLoading && notifications.length === 0) {
         return (
             <div className="flex flex-col items-center justify-center h-[50vh] text-zinc-500 gap-3">
-                <div className="w-6 h-6 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                <div className="w-6 h-6 border-2 border-[#E2FF3B] border-t-transparent rounded-full animate-spin" />
                 <p className="text-sm animate-pulse">Bildirimler yükleniyor...</p>
             </div>
         );
@@ -170,7 +170,7 @@ const MobileNotifications = () => {
             <h2 className="text-xl font-bold text-white mb-6 px-1 flex items-center gap-2">
                 Bildirim Merkezi
                 {notifications.some(n => !n.isRead) && (
-                    <span className="text-xs bg-orange-500/20 text-orange-400 px-2 py-0.5 rounded-full border border-orange-500/20">
+                    <span className="text-xs bg-[#E2FF3B]/20 text-[#E2FF3B] px-2 py-0.5 rounded-full border border-[#E2FF3B]/20">
                         {notifications.filter(n => !n.isRead).length} Yeni
                     </span>
                 )}

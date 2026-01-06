@@ -41,7 +41,7 @@ export const RouteDetailSheet: React.FC<RouteDetailSheetProps> = ({
                 <motion.path
                     d="M10,90 Q40,10 90,50"
                     fill="none"
-                    stroke="#F97316"
+                    stroke="#E2FF3B"
                     strokeWidth="4"
                     strokeLinecap="round"
                     initial={{ pathLength: 0 }}
@@ -52,7 +52,7 @@ export const RouteDetailSheet: React.FC<RouteDetailSheetProps> = ({
 
             {/* Start/End Points */}
             <div className="absolute bottom-4 left-4 w-4 h-4 bg-white rounded-full border-4 border-[#242f3e]" />
-            <div className="absolute top-1/2 right-4 w-4 h-4 bg-orange-500 rounded-full border-4 border-[#242f3e] animate-pulse" />
+            <div className="absolute top-1/2 right-4 w-4 h-4 bg-[#E2FF3B] rounded-full border-4 border-[#242f3e] animate-pulse" />
 
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-black/40">
                 <span className="bg-black/80 backdrop-blur text-white text-xs px-3 py-1 rounded-full border border-white/10 flex items-center gap-1">
@@ -62,7 +62,7 @@ export const RouteDetailSheet: React.FC<RouteDetailSheetProps> = ({
         </div>
     );
 
-    const StatGauge = ({ label, value, icon: Icon, color = 'text-orange-500' }: any) => (
+    const StatGauge = ({ label, value, icon: Icon, color = 'text-[#E2FF3B]' }: any) => (
         <div className="flex flex-col items-center flex-1 bg-zinc-900/50 p-3 rounded-2xl border border-white/5 backdrop-blur-sm">
             <div className="relative w-12 h-12 flex items-center justify-center mb-2">
                 <svg className="w-full h-full -rotate-90">
@@ -144,7 +144,7 @@ export const RouteDetailSheet: React.FC<RouteDetailSheetProps> = ({
                                 </div>
                                 <div className="w-px h-8 bg-zinc-800" />
                                 <div className="text-center flex-1">
-                                    <div className="text-xl font-mono font-bold text-orange-500">{route.riderCount}</div>
+                                    <div className="text-xl font-mono font-bold text-[#E2FF3B]">{route.riderCount}</div>
                                     <div className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider">Sürücü</div>
                                 </div>
                             </div>
@@ -158,7 +158,7 @@ export const RouteDetailSheet: React.FC<RouteDetailSheetProps> = ({
                                     </div>
                                     <div className="flex items-center gap-3">
                                         <div className="text-right">
-                                            <div className="text-3xl font-mono font-bold text-orange-500">24°</div>
+                                            <div className="text-3xl font-mono font-bold text-[#E2FF3B]">24°</div>
                                             <div className="text-xs text-zinc-500 font-bold uppercase">Güneşli</div>
                                         </div>
                                         <div className="text-4xl drop-shadow-lg">☀️</div>
@@ -170,7 +170,7 @@ export const RouteDetailSheet: React.FC<RouteDetailSheetProps> = ({
                                 <Gauge className="w-4 h-4" /> Sürüş Verileri
                             </h3>
                             <div className="flex gap-4 mb-8">
-                                <StatGauge label="Viraj" value={route.stats?.curves || 85} icon={Navigation} color="text-orange-500" />
+                                <StatGauge label="Viraj" value={route.stats?.curves || 85} icon={Navigation} color="text-[#E2FF3B]" />
                                 <StatGauge label="Yol" value={route.stats?.roadQuality || 90} icon={Check} color="text-green-500" />
                                 <StatGauge label="Trafik" value={route.stats?.traffic || 20} icon={Timer} color="text-red-500" />
                             </div>
@@ -195,13 +195,13 @@ export const RouteDetailSheet: React.FC<RouteDetailSheetProps> = ({
                             <div className="flex gap-4">
                                 <button
                                     onClick={() => onSaveRoute(route)}
-                                    className={`w-16 h-14 rounded-2xl flex items-center justify-center border transition-colors ${isSaved ? 'bg-orange-500/10 border-orange-500 text-orange-500' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}
+                                    className={`w-16 h-14 rounded-2xl flex items-center justify-center border transition-colors ${isSaved ? 'bg-[#E2FF3B]/10 border-[#E2FF3B] text-[#E2FF3B]' : 'bg-zinc-900 border-zinc-800 text-zinc-400'}`}
                                 >
                                     <Bookmark className={`w-6 h-6 ${isSaved ? 'fill-current' : ''}`} />
                                 </button>
                                 <button
                                     onClick={() => onStartNavigation(route)}
-                                    className="flex-1 h-14 bg-orange-600 rounded-2xl flex items-center justify-center gap-3 text-white font-bold uppercase tracking-wider shadow-[0_0_30px_rgba(234,88,12,0.4)] hover:bg-orange-500 transition-colors active:scale-95"
+                                    className="flex-1 h-14 bg-[#E2FF3B] rounded-2xl flex items-center justify-center gap-3 text-black font-bold uppercase tracking-wider shadow-[0_0_30px_rgba(226,255,59,0.4)] hover:bg-[#c9e62f] transition-colors active:scale-95"
                                 >
                                     <Navigation className="w-5 h-5 fill-current" />
                                     SÜRÜŞÜ BAŞLAT

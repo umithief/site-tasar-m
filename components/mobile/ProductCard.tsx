@@ -51,9 +51,9 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
 
                 {/* Social Cred (Rider's Choice) */}
                 {(product.likes || 0) > 50 && (
-                    <div className="absolute top-2 right-2 bg-orange-500/20 backdrop-blur-md px-2 py-1 rounded-full border border-orange-500/50 flex items-center gap-1">
-                        <Award size={10} className="text-orange-500" />
-                        <span className="text-[9px] font-bold text-orange-400 uppercase">Rider's Choice</span>
+                    <div className="absolute top-2 right-2 bg-[#E2FF3B]/20 backdrop-blur-md px-2 py-1 rounded-full border border-[#E2FF3B]/50 flex items-center gap-1">
+                        <Award size={10} className="text-[#E2FF3B]" />
+                        <span className="text-[9px] font-bold text-[#E2FF3B] uppercase">Rider's Choice</span>
                     </div>
                 )}
             </div>
@@ -65,14 +65,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
                 </h3>
 
                 <div className="flex items-center justify-between mt-2">
-                    <div className="text-orange-500 font-bold text-sm tracking-wide">
+                    <div className="text-[#E2FF3B] font-bold text-sm tracking-wide">
                         ₺{product.price.toLocaleString('tr-TR')}
                     </div>
 
                     <motion.button
                         whileTap={{ scale: 0.8 }}
                         onClick={handleAddToCart}
-                        className="bg-white text-black p-1.5 rounded-full hover:bg-orange-500 transition-colors"
+                        className="bg-white text-black p-1.5 rounded-full hover:bg-[#E2FF3B] transition-colors"
                     >
                         <Plus size={16} strokeWidth={3} />
                     </motion.button>

@@ -58,7 +58,7 @@ export const QuickViewDrawer: React.FC<QuickViewDrawerProps> = ({
                                     className="w-full h-full object-contain drop-shadow-2xl transition-transform duration-500 group-hover:scale-105"
                                 />
                                 {product.isDealOfTheDay && (
-                                    <div className="absolute top-4 left-4 bg-gradient-to-r from-orange-500 to-red-500 text-white text-[10px] font-bold uppercase px-3 py-1 rounded-full shadow-lg shadow-orange-500/20">
+                                    <div className="absolute top-4 left-4 bg-gradient-to-r from-[#E2FF3B] to-green-500 text-black font-bold uppercase px-3 py-1 rounded-full shadow-lg shadow-[#E2FF3B]/20">
                                         Günün Fırsatı
                                     </div>
                                 )}
@@ -71,7 +71,7 @@ export const QuickViewDrawer: React.FC<QuickViewDrawerProps> = ({
                                         <h2 className="text-2xl font-bold uppercase tracking-tight text-white leading-none">
                                             {product.name}
                                         </h2>
-                                        <span className="text-xl font-mono font-bold text-orange-500">
+                                        <span className="text-xl font-mono font-bold text-[#E2FF3B]">
                                             ₺{product.price.toLocaleString('tr-TR')}
                                         </span>
                                     </div>
@@ -117,7 +117,7 @@ export const QuickViewDrawer: React.FC<QuickViewDrawerProps> = ({
                                     onAddToCart(product);
                                     onClose();
                                 }}
-                                className="w-full bg-orange-600 hover:bg-orange-500 text-black font-bold uppercase tracking-widest py-4 h-auto rounded-xl flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(234,88,12,0.3)] hover:shadow-[0_0_30px_rgba(234,88,12,0.5)] transition-all"
+                                className="w-full bg-[#E2FF3B] hover:bg-[#cbe62b] text-black font-bold uppercase tracking-widest py-4 h-auto rounded-xl flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(226,255,59,0.3)] hover:shadow-[0_0_30px_rgba(226,255,59,0.5)] transition-all"
                             >
                                 <ShoppingBag className="w-5 h-5" />
                                 Sepete Ekle

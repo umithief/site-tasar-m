@@ -94,8 +94,8 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ items, total, onBack
                     transition={{ type: 'spring', delay: 0.2 }}
                     className="mb-8 relative"
                 >
-                    <div className="absolute inset-0 bg-orange-500 blur-3xl opacity-20" />
-                    <Check className="w-24 h-24 text-orange-500 relative z-10" />
+                    <div className="absolute inset-0 bg-[#E2FF3B] blur-3xl opacity-20" />
+                    <Check className="w-24 h-24 text-[#E2FF3B] relative z-10" />
                 </motion.div>
 
                 <motion.h2
@@ -121,7 +121,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ items, total, onBack
                     initial={{ x: '-100vw' }}
                     animate={{ x: '100vw' }}
                     transition={{ duration: 1.5, delay: 0.8, ease: "easeInOut" }}
-                    className="fixed bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-orange-500 to-transparent"
+                    className="fixed bottom-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-[#E2FF3B] to-transparent"
                 />
             </motion.div>
         );
@@ -189,13 +189,13 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ items, total, onBack
                             {/* Use Saved Address Toggle */}
                             <div
                                 onClick={() => setUseSavedAddress(!useSavedAddress)}
-                                className={`p-4 rounded-xl border flex items-center justify-between mb-8 cursor-pointer transition-all ${useSavedAddress ? 'bg-orange-500/10 border-orange-500' : 'bg-zinc-900 border-zinc-800'}`}
+                                className={`p-4 rounded-xl border flex items-center justify-between mb-8 cursor-pointer transition-all ${useSavedAddress ? 'bg-[#E2FF3B]/10 border-[#E2FF3B]' : 'bg-zinc-900 border-zinc-800'}`}
                             >
                                 <div className="flex items-center gap-3">
-                                    <MapPin className={`w-5 h-5 ${useSavedAddress ? 'text-orange-500' : 'text-zinc-500'}`} />
-                                    <span className={useSavedAddress ? 'text-orange-500 font-bold' : 'text-zinc-400'}>Kayıtlı Adresimi Kullan</span>
+                                    <MapPin className={`w-5 h-5 ${useSavedAddress ? 'text-[#E2FF3B]' : 'text-zinc-500'}`} />
+                                    <span className={useSavedAddress ? 'text-[#E2FF3B] font-bold' : 'text-zinc-400'}>Kayıtlı Adresimi Kullan</span>
                                 </div>
-                                {useSavedAddress && <Check className="w-5 h-5 text-orange-500" />}
+                                {useSavedAddress && <Check className="w-5 h-5 text-[#E2FF3B]" />}
                             </div>
 
                             <div className="space-y-4">
@@ -206,7 +206,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ items, total, onBack
                                         value={address.street}
                                         onChange={e => setAddress({ ...address, street: e.target.value })}
                                         disabled={useSavedAddress}
-                                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-white focus:border-orange-500 outline-none transition-colors disabled:opacity-50"
+                                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-white focus:border-[#E2FF3B] outline-none transition-colors disabled:opacity-50"
                                         placeholder="Örn: Bağdat Cad. No:12"
                                     />
                                 </div>
@@ -218,7 +218,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ items, total, onBack
                                             value={address.city}
                                             onChange={e => setAddress({ ...address, city: e.target.value })}
                                             disabled={useSavedAddress}
-                                            className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-white focus:border-orange-500 outline-none transition-colors disabled:opacity-50"
+                                            className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-white focus:border-[#E2FF3B] outline-none transition-colors disabled:opacity-50"
                                             placeholder="İstanbul"
                                         />
                                     </div>
@@ -228,7 +228,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ items, total, onBack
                                             type="text"
                                             value={address.zip}
                                             onChange={e => setAddress({ ...address, zip: e.target.value })}
-                                            className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-white focus:border-orange-500 outline-none transition-colors"
+                                            className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-white focus:border-[#E2FF3B] outline-none transition-colors"
                                             placeholder="34000"
                                         />
                                     </div>
@@ -256,7 +256,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ items, total, onBack
                                                 const v = e.target.value.replace(/\D/g, '').replace(/(.{4})/g, '$1 ').trim();
                                                 setCardNumber(v);
                                             }}
-                                            className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 pl-12 text-white focus:border-orange-500 outline-none transition-colors font-mono"
+                                            className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 pl-12 text-white focus:border-[#E2FF3B] outline-none transition-colors font-mono"
                                             placeholder="0000 0000 0000 0000"
                                         />
                                         <CreditCard className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 w-5 h-5" />
@@ -269,7 +269,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ items, total, onBack
                                         type="text"
                                         value={cardName}
                                         onChange={e => setCardName(e.target.value.toUpperCase())}
-                                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-white focus:border-orange-500 outline-none transition-colors"
+                                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-white focus:border-[#E2FF3B] outline-none transition-colors"
                                         placeholder="AD SOYAD"
                                     />
                                 </div>
@@ -286,7 +286,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ items, total, onBack
                                                 if (v.length >= 2) v = v.slice(0, 2) + '/' + v.slice(2, 4);
                                                 setExpiry(v);
                                             }}
-                                            className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-white focus:border-orange-500 outline-none transition-colors font-mono"
+                                            className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 text-white focus:border-[#E2FF3B] outline-none transition-colors font-mono"
                                             placeholder="AA/YY"
                                         />
                                     </div>
@@ -298,7 +298,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ items, total, onBack
                                                 maxLength={3}
                                                 value={cvc}
                                                 onChange={e => setCvc(e.target.value.replace(/\D/g, ''))}
-                                                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 pl-12 text-white focus:border-orange-500 outline-none transition-colors font-mono"
+                                                className="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-4 pl-12 text-white focus:border-[#E2FF3B] outline-none transition-colors font-mono"
                                                 placeholder="123"
                                             />
                                             <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 w-4 h-4" />

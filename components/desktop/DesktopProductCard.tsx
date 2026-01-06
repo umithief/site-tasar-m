@@ -25,7 +25,7 @@ export const DesktopProductCard: React.FC<DesktopProductCardProps> = ({
             layoutId={`product-${product._id}`}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            className="group relative bg-[#09090b] border border-white/5 rounded-2xl overflow-hidden cursor-pointer hover:border-orange-500/50 transition-colors duration-500"
+            className="group relative bg-[#09090b] border border-white/5 rounded-2xl overflow-hidden cursor-pointer hover:border-[#E2FF3B]/50 transition-colors duration-500"
         >
             {/* Image Area */}
             <div className="relative aspect-[0.8] overflow-hidden bg-zinc-900">
@@ -44,7 +44,7 @@ export const DesktopProductCard: React.FC<DesktopProductCardProps> = ({
                 <div className={`absolute inset-0 flex items-center justify-center gap-3 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
                     <button
                         onClick={(e) => { e.stopPropagation(); onAddToCart(product); }}
-                        className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:bg-orange-500 hover:text-white transition-colors shadow-lg transform hover:scale-110 active:scale-95"
+                        className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center hover:bg-[#E2FF3B] hover:text-black transition-colors shadow-lg transform hover:scale-110 active:scale-95"
                     >
                         <ShoppingBag className="w-5 h-5" />
                     </button>
@@ -70,12 +70,12 @@ export const DesktopProductCard: React.FC<DesktopProductCardProps> = ({
                 <div className="flex justify-between items-start mb-2">
                     <span className="text-[10px] uppercase font-bold text-zinc-500 tracking-wider font-mono">{product.brand || 'MOTO'}</span>
                     <div className="flex items-center gap-1">
-                        <Star className="w-3 h-3 text-orange-500 fill-orange-500" />
+                        <Star className="w-3 h-3 text-[#E2FF3B] fill-[#E2FF3B]" />
                         <span className="text-xs font-bold text-zinc-400">{product.rating}</span>
                     </div>
                 </div>
 
-                <h3 className="text-sm font-bold text-white mb-2 line-clamp-2 leading-relaxed group-hover:text-orange-500 transition-colors">
+                <h3 className="text-sm font-bold text-white mb-2 line-clamp-2 leading-relaxed group-hover:text-[#E2FF3B] transition-colors">
                     {product.name}
                 </h3>
 

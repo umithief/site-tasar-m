@@ -166,12 +166,12 @@ export const ReelPlayer: React.FC<ReelPlayerProps> = ({ reels, initialIndex, onC
                                 <div className="flex items-end justify-between">
                                     <div className="flex-1 mr-4">
                                         <div className="flex items-center gap-3 mb-3">
-                                            <UserAvatar name={currentReel.userName} src={currentReel.userAvatar} size={40} className="border-2 border-orange-500" />
+                                            <UserAvatar name={currentReel.userName} src={currentReel.userAvatar} size={40} className="border-2 border-[#E2FF3B]" />
                                             <div>
                                                 <div className="font-bold text-white text-sm flex items-center gap-2">
                                                     {currentReel.userName}
                                                     {currentReel.bikeModel && (
-                                                        <span className="text-[10px] px-1.5 py-0.5 bg-orange-500 text-black font-black rounded uppercase">
+                                                        <span className="text-[10px] px-1.5 py-0.5 bg-[#E2FF3B] text-black font-black rounded uppercase">
                                                             {currentReel.bikeModel}
                                                         </span>
                                                     )}

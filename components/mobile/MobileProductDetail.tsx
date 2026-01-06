@@ -219,7 +219,7 @@ export const MobileProductDetail: React.FC<MobileProductDetailProps> = ({
                             { label: 'Ağırlık', value: '1350g ± 50', icon: Info },
                             { label: 'Garanti', value: '5 Yıl', icon: Check },
                         ].map((spec, i) => (
-                            <div key={i} className="bg-zinc-900/50 border border-white/5 p-4 rounded-xl flex flex-col gap-2 hover:border-orange-500/30 transition-colors group">
+                            <div key={i} className="bg-zinc-900/50 border border-white/5 p-4 rounded-xl flex flex-col gap-2 hover:border-[#E2FF3B]/30 transition-colors group">
                                 <spec.icon className="w-5 h-5 text-zinc-500 group-hover:text-[#E2FF3B] transition-colors" />
                                 <div>
                                     <p className="text-[10px] text-zinc-500 uppercase font-bold tracking-wider">{spec.label}</p>

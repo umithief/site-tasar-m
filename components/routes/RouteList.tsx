@@ -43,7 +43,7 @@ export const RouteList: React.FC<RouteListProps> = ({
     if (isLoading) {
         return (
             <div className="flex flex-col items-center justify-center h-64 text-zinc-500">
-                <Loader2 className="w-8 h-8 animate-spin mb-4 text-orange-500" />
+                <Loader2 className="w-8 h-8 animate-spin mb-4 text-[#E2FF3B]" />
                 <p>Rotalar yükleniyor...</p>
             </div>
         );
@@ -60,7 +60,7 @@ export const RouteList: React.FC<RouteListProps> = ({
                         placeholder="Rota ara..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-black/40 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm text-white focus:border-orange-500/50 outline-none transition-all placeholder:text-zinc-600"
+                        className="w-full bg-black/40 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm text-white focus:border-[#E2FF3B]/50 outline-none transition-all placeholder:text-zinc-600"
                     />
                 </div>
 

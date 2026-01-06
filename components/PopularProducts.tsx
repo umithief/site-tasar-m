@@ -107,7 +107,7 @@ export const PopularProducts: React.FC<PopularProductsProps> = ({
                     >
                         <div className="flex items-center justify-between lg:justify-start gap-3 mb-2">
                             <h2 className="text-xl md:text-4xl font-display font-black text-gray-900 dark:text-white tracking-tight">
-                                VİTRİN <span className="text-transparent bg-clip-text bg-gradient-to-r from-moto-accent to-orange-500">ÜRÜNLERİ</span>
+                                VİTRİN <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E2FF3B] to-emerald-500">ÜRÜNLERİ</span>
                             </h2>
                         </div>
                         <p className="text-gray-500 text-xs md:text-sm font-medium line-clamp-1">Sizin için seçilen en popüler ekipmanlar.</p>
@@ -130,8 +130,8 @@ export const PopularProducts: React.FC<PopularProductsProps> = ({
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as any)}
                                 className={`flex items-center gap-2 px-3 md:px-5 py-2 md:py-2.5 rounded-full text-[10px] md:text-xs font-bold uppercase tracking-wider transition-all border whitespace-nowrap ${activeTab === tab.id
-                                    ? 'bg-moto-accent border-moto-accent text-white shadow-lg shadow-moto-accent/30'
-                                    : 'bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-500 hover:border-moto-accent/50 hover:text-gray-900 dark:hover:text-white'
+                                    ? 'bg-[#E2FF3B] border-[#E2FF3B] text-black shadow-lg shadow-[#E2FF3B]/30'
+                                    : 'bg-white dark:bg-white/5 border-gray-200 dark:border-white/10 text-gray-500 hover:border-[#E2FF3B]/50 hover:text-gray-900 dark:hover:text-white'
                                     }`}
                             >
                                 <tab.icon className="w-3 h-3 md:w-3.5 md:h-3.5" />
@@ -141,7 +141,7 @@ export const PopularProducts: React.FC<PopularProductsProps> = ({
 
                         <div className="w-[1px] h-8 bg-gray-300 dark:bg-white/10 mx-2 hidden lg:block"></div>
 
-                        <button onClick={onViewAll} className="hidden lg:flex items-center gap-1 text-xs font-bold text-gray-500 hover:text-moto-accent transition-colors underline decoration-2 underline-offset-4 whitespace-nowrap">
+                        <button onClick={onViewAll} className="hidden lg:flex items-center gap-1 text-xs font-bold text-gray-500 hover:text-[#E2FF3B] transition-colors underline decoration-2 underline-offset-4 whitespace-nowrap">
                             TÜMÜNÜ GÖR
                         </button>
                     </motion.div>
@@ -155,12 +155,12 @@ export const PopularProducts: React.FC<PopularProductsProps> = ({
                 >
                     {/* Custom Nav Buttons */}
                     <div className="absolute -left-6 top-1/2 -translate-y-1/2 z-30 opacity-0 group-hover/carousel:opacity-100 transition-all duration-300 hidden md:block">
-                        <button onClick={() => scroll('left')} className="w-12 h-12 bg-white dark:bg-[#1A1A17] rounded-full shadow-2xl border border-gray-100 dark:border-white/10 flex items-center justify-center text-black dark:text-white hover:scale-110 transition-transform hover:border-moto-accent">
+                        <button onClick={() => scroll('left')} className="w-12 h-12 bg-white dark:bg-[#1A1A17] rounded-full shadow-2xl border border-gray-100 dark:border-white/10 flex items-center justify-center text-black dark:text-white hover:scale-110 transition-transform hover:border-[#E2FF3B]">
                             <ChevronLeft className="w-6 h-6" />
                         </button>
                     </div>
                     <div className="absolute -right-6 top-1/2 -translate-y-1/2 z-30 opacity-0 group-hover/carousel:opacity-100 transition-all duration-300 hidden md:block">
-                        <button onClick={() => scroll('right')} className="w-12 h-12 bg-white dark:bg-[#1A1A17] rounded-full shadow-2xl border border-gray-100 dark:border-white/10 flex items-center justify-center text-black dark:text-white hover:scale-110 transition-transform hover:border-moto-accent">
+                        <button onClick={() => scroll('right')} className="w-12 h-12 bg-white dark:bg-[#1A1A17] rounded-full shadow-2xl border border-gray-100 dark:border-white/10 flex items-center justify-center text-black dark:text-white hover:scale-110 transition-transform hover:border-[#E2FF3B]">
                             <ChevronRight className="w-6 h-6" />
                         </button>
                     </div>
@@ -188,7 +188,7 @@ export const PopularProducts: React.FC<PopularProductsProps> = ({
                                         exit={{ opacity: 0, scale: 0.9 }}
                                         transition={{ duration: 0.4, ease: "easeOut" }}
                                         className={`min-w-[165px] sm:min-w-[300px] md:w-[260px] snap-center transition-all duration-500 rounded-2xl ${isHighlighted
-                                            ? 'shadow-[0_25px_50px_-12px_rgba(242,166,25,0.4)] ring-2 ring-moto-accent ring-offset-4 ring-offset-[#080808]'
+                                            ? 'shadow-[0_25px_50px_-12px_rgba(226,255,59,0.4)] ring-2 ring-[#E2FF3B] ring-offset-4 ring-offset-[#080808]'
                                             : 'shadow-none opacity-60'
                                             }`}
                                     >
@@ -208,12 +208,12 @@ export const PopularProducts: React.FC<PopularProductsProps> = ({
                         {/* View All Card */}
                         <div
                             onClick={onViewAll}
-                            className="min-w-[140px] md:min-w-[200px] h-[300px] bg-white dark:bg-[#111] rounded-2xl border-2 border-dashed border-gray-200 dark:border-white/10 flex flex-col items-center justify-center gap-4 cursor-pointer hover:border-moto-accent hover:bg-moto-accent/5 transition-all group snap-start"
+                            className="min-w-[140px] md:min-w-[200px] h-[300px] bg-white dark:bg-[#111] rounded-2xl border-2 border-dashed border-gray-200 dark:border-white/10 flex flex-col items-center justify-center gap-4 cursor-pointer hover:border-[#E2FF3B] hover:bg-[#E2FF3B]/5 transition-all group snap-start"
                         >
-                            <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center group-hover:bg-moto-accent group-hover:text-white transition-colors">
+                            <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center group-hover:bg-[#E2FF3B] group-hover:text-black transition-colors">
                                 <ArrowRight className="w-5 h-5 md:w-6 md:h-6 text-gray-400 dark:text-gray-500 group-hover:text-white" />
                             </div>
-                            <span className="font-bold text-xs md:text-sm text-gray-600 dark:text-gray-400 group-hover:text-moto-accent uppercase tracking-widest">Tümünü Gör</span>
+                            <span className="font-bold text-xs md:text-sm text-gray-600 dark:text-gray-400 group-hover:text-[#E2FF3B] uppercase tracking-widest">Tümünü Gör</span>
                         </div>
                     </div>
                 </div>

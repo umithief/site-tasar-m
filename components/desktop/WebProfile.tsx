@@ -276,7 +276,7 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user: initialUser, onNav
                                         disabled={isFollowPending}
                                         className={`px-8 py-3 font-bold uppercase tracking-wider rounded-xl transition-colors ${isFollowing
                                             ? 'bg-zinc-800 text-gray-400 hover:bg-zinc-700'
-                                            : 'bg-moto-accent text-black hover:bg-orange-400'
+                                            : 'bg-moto-accent text-black hover:bg-[#cbe62b]'
                                             }`}
                                     >
                                         {isFollowPending ? '...' : (isFollowing ? 'Takip Ediliyor' : 'Takip Et')}
@@ -301,7 +301,7 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user: initialUser, onNav
                                         <Icon className={`w-4 h-4 ${isActive ? 'text-moto-accent' : 'text-gray-600 group-hover:text-white'}`} />
                                         {tab.label}
                                         {isActive && (
-                                            <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-moto-accent shadow-[0_0_10px_orange]" />
+                                            <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-moto-accent shadow-[0_0_10px_#E2FF3B]" />
                                         )}
                                     </button>
                                 )

@@ -103,7 +103,7 @@ export const MobileAuth: React.FC<MobileAuthProps> = ({ onClose, onSuccess }) =>
                     className="mb-12"
                 >
                     <h1 className="text-5xl font-display font-black tracking-tighter italic text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
-                        MOTO<span className="text-orange-500">VIBE</span>
+                        MOTO<span className="text-[#E2FF3B]">VIBE</span>
                     </h1>
                     <p className="text-white/40 text-base font-medium mt-3 leading-relaxed">
                         Premium sürüş deneyimine hoş geldin. <br />
@@ -127,7 +127,7 @@ export const MobileAuth: React.FC<MobileAuthProps> = ({ onClose, onSuccess }) =>
                                     <div className="space-y-1">
                                         <label className="text-xs font-bold text-white/40 ml-4 uppercase tracking-wider">İsim Soyisim</label>
                                         <div className="relative group">
-                                            <div className="absolute left-0 bottom-0 w-full h-[1px] bg-white/20 group-focus-within:bg-orange-500 transition-colors duration-300" />
+                                            <div className="absolute left-0 bottom-0 w-full h-[1px] bg-white/20 group-focus-within:bg-[#E2FF3B] transition-colors duration-300" />
                                             <input
                                                 {...register('name', { required: true })}
                                                 type="text"
@@ -230,9 +230,9 @@ export const MobileAuth: React.FC<MobileAuthProps> = ({ onClose, onSuccess }) =>
                         className="text-white/50 text-sm font-medium hover:text-white transition-colors flex items-center gap-2"
                     >
                         {isLogin ? (
-                            <>Hesabın yok mu? <span className="text-orange-500 font-bold">Kayıt Ol</span></>
+                            <>Hesabın yok mu? <span className="text-[#E2FF3B] font-bold">Kayıt Ol</span></>
                         ) : (
-                            <>Zaten üye misin? <span className="text-orange-500 font-bold">Giriş Yap</span></>
+                            <>Zaten üye misin? <span className="text-[#E2FF3B] font-bold">Giriş Yap</span></>
                         )}
                     </button>
 

@@ -111,7 +111,7 @@ const ProductCatalog: React.FC = () => {
 
                     {/* Header */}
                     <div className="mb-12 lg:mb-20">
-                        <div className="flex items-center gap-3 text-orange-500 mb-4">
+                        <div className="flex items-center gap-3 text-[#E2FF3B] mb-4">
                             <Hexagon size={14} fill="currentColor" />
                             <span className="text-xs font-mono tracking-[0.2em] uppercase">Inventory Manifest</span>
                         </div>
@@ -140,10 +140,10 @@ const ProductCatalog: React.FC = () => {
                                 `}
                             >
                                 {/* Active Indicator Bar */}
-                                <div className={`absolute left-0 top-0 bottom-0 w-1 bg-orange-500 transition-transform duration-300 ${activeProductId === product.id ? 'scale-y-100' : 'scale-y-0'}`} />
+                                <div className={`absolute left-0 top-0 bottom-0 w-1 bg-[#E2FF3B] transition-transform duration-300 ${activeProductId === product.id ? 'scale-y-100' : 'scale-y-0'}`} />
 
                                 <div className="flex flex-col gap-1">
-                                    <span className="text-[10px] font-mono text-gray-500 group-hover:text-orange-500 transition-colors">
+                                    <span className="text-[10px] font-mono text-gray-500 group-hover:text-[#E2FF3B] transition-colors">
                                         //{product.sku}
                                     </span>
                                     <h3 className={`text-xl md:text-2xl font-bold uppercase transition-colors ${activeProductId === product.id ? 'text-white' : 'text-gray-400 group-hover:text-gray-200'}`}>
@@ -162,7 +162,7 @@ const ProductCatalog: React.FC = () => {
                                     <span className="text-lg font-mono font-medium text-white/90">
                                         {product.price}
                                     </span>
-                                    <div className={`w-8 h-8 flex items-center justify-center rounded-full bg-orange-600 text-white transition-all duration-300 ${activeProductId === product.id ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0'}`}>
+                                    <div className={`w-8 h-8 flex items-center justify-center rounded-full bg-[#E2FF3B] text-black transition-all duration-300 ${activeProductId === product.id ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4 group-hover:opacity-100 group-hover:translate-x-0'}`}>
                                         {activeProductId === product.id ? <ArrowRight size={16} /> : <Plus size={16} />}
                                     </div>
                                 </div>
@@ -210,7 +210,7 @@ const ProductCatalog: React.FC = () => {
                                 transition={{ delay: 0.3 }}
                                 className="flex items-center gap-2 px-4 py-2 bg-black/40 backdrop-blur-md border border-white/10 rounded-full"
                             >
-                                <Shield size={14} className="text-orange-500" />
+                                <Shield size={14} className="text-[#E2FF3B]" />
                                 <span className="text-xs text-white font-mono uppercase tracking-widest">{activeProduct.specs[2]?.value || 'Certified'}</span>
                             </motion.div>
                         </div>
@@ -222,7 +222,7 @@ const ProductCatalog: React.FC = () => {
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ delay: 0.2 }}
-                                className="block text-orange-500 font-mono text-sm tracking-[0.3em] mb-2"
+                                className="block text-[#E2FF3B] font-mono text-sm tracking-[0.3em] mb-2"
                             >
                                 {activeProduct.sku}
                             </motion.span>
@@ -244,7 +244,7 @@ const ProductCatalog: React.FC = () => {
                                 initial={{ opacity: 0 }}
                                 animate={{ opacity: 1 }}
                                 transition={{ delay: 0.4 }}
-                                className="text-gray-400 text-sm leading-relaxed border-l-2 border-orange-500 pl-4"
+                                className="text-gray-400 text-sm leading-relaxed border-l-2 border-[#E2FF3B] pl-4"
                             >
                                 {activeProduct.description}
                                 <br />
@@ -256,7 +256,7 @@ const ProductCatalog: React.FC = () => {
 
                         {/* Decoration Lines */}
                         <div className="absolute bottom-12 right-12 w-32 h-32 border-b-2 border-r-2 border-white/10 rounded-br-3xl"></div>
-                        <div className="absolute top-12 left-12 w-8 h-8 border-t-2 border-l-2 border-orange-500/50"></div>
+                        <div className="absolute top-12 left-12 w-8 h-8 border-t-2 border-l-2 border-[#E2FF3B]/50"></div>
                     </div>
                 </div>
 

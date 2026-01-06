@@ -220,7 +220,7 @@ const FullScreenStory: React.FC<{ story: Story; onClose: () => void }> = ({ stor
                     </div>
 
                     <div className="flex-1">
-                        <span className="text-orange-500 font-bold text-xs tracking-widest uppercase mb-2 block">
+                        <span className="text-[#E2FF3B] font-bold text-xs tracking-widest uppercase mb-2 block">
                             {story.category || 'GENEL'}
                         </span>
                         <h2 className="text-3xl md:text-3xl font-display font-black text-white leading-none uppercase mb-4">

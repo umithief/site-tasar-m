@@ -1,10 +1,10 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Plus, Trash2, Trophy } from 'lucide-react';
-import { GarageVehicle } from '../../services/garageService';
+import { UserBike } from '../../types';
 
 interface GarageCardProps {
-    vehicle?: GarageVehicle;
+    vehicle?: UserBike;
     isAddCard?: boolean;
     isOwner?: boolean;
     onAdd?: () => void;
@@ -23,10 +23,10 @@ const GarageCard: React.FC<GarageCardProps> = ({
             <motion.div
                 whileTap={{ scale: 0.95 }}
                 onClick={onAdd}
-                className="w-64 h-40 rounded-2xl border-2 border-dashed border-zinc-800 bg-zinc-900/50 flex flex-col items-center justify-center gap-3 cursor-pointer group hover:border-orange-500/50 transition-colors shrink-0 backdrop-blur-sm"
+                className="w-64 h-40 rounded-2xl border-2 border-dashed border-zinc-800 bg-zinc-900/50 flex flex-col items-center justify-center gap-3 cursor-pointer group hover:border-[#E2FF3B]/50 transition-colors shrink-0 backdrop-blur-sm"
             >
-                <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-orange-500/20 transition-colors">
-                    <Plus className="text-zinc-400 group-hover:text-orange-500 transition-colors" size={24} />
+                <div className="w-12 h-12 rounded-full bg-zinc-800 flex items-center justify-center group-hover:bg-[#E2FF3B]/20 transition-colors">
+                    <Plus className="text-zinc-400 group-hover:text-[#E2FF3B] transition-colors" size={24} />
                 </div>
                 <span className="text-zinc-500 text-sm font-medium group-hover:text-zinc-300">Garaja Ekle</span>
             </motion.div>
@@ -68,7 +68,7 @@ const GarageCard: React.FC<GarageCardProps> = ({
             <div className="absolute bottom-4 left-4 right-4">
                 <h3 className="text-white font-bold text-lg leading-tight truncate">{vehicle.model}</h3>
                 <div className="flex items-center gap-2 mt-1">
-                    <span className="text-orange-400 text-xs font-bold uppercase tracking-wider">{vehicle.brand}</span>
+                    <span className="text-[#E2FF3B] text-xs font-bold uppercase tracking-wider">{vehicle.brand}</span>
                     <span className="text-zinc-500 text-xs">•</span>
                     <span className="text-zinc-400 text-xs">{vehicle.year || '2024'}</span>
                 </div>

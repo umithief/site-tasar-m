@@ -58,10 +58,10 @@ export const DesktopQuickView: React.FC<DesktopQuickViewProps> = ({
                                 <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 to-transparent" />
 
                                 <div className="absolute bottom-6 left-8 right-8">
-                                    <h3 className="text-orange-500 font-bold uppercase tracking-widest text-xs mb-2">{product.brand || 'MOTOVIBE'}</h3>
+                                    <h3 className="text-[#E2FF3B] font-bold uppercase tracking-widest text-xs mb-2">{product.brand || 'MOTOVIBE'}</h3>
                                     <h2 className="text-3xl font-bold text-white leading-tight mb-2">{product.name}</h2>
                                     <div className="flex items-center gap-2">
-                                        <div className="flex text-orange-500">
+                                        <div className="flex text-[#E2FF3B]">
                                             {[...Array(5)].map((_, i) => (
                                                 <Star key={i} className={`w-4 h-4 ${i < Math.floor(product.rating) ? 'fill-current' : 'text-zinc-700'}`} />
                                             ))}
@@ -81,7 +81,7 @@ export const DesktopQuickView: React.FC<DesktopQuickViewProps> = ({
                                 <div className="grid grid-cols-2 gap-4 mb-8">
                                     {product.features?.map((feature, idx) => (
                                         <div key={idx} className="flex items-start gap-3">
-                                            <Check className="w-4 h-4 text-orange-500 mt-1 shrink-0" />
+                                            <Check className="w-4 h-4 text-[#E2FF3B] mt-1 shrink-0" />
                                             <span className="text-sm text-zinc-300 font-medium">{feature}</span>
                                         </div>
                                     ))}
@@ -96,7 +96,7 @@ export const DesktopQuickView: React.FC<DesktopQuickViewProps> = ({
                                     <div className="flex gap-4">
                                         <button
                                             onClick={() => onAddToCart(product)}
-                                            className="flex-1 h-14 bg-white text-black rounded-full font-bold uppercase tracking-widest hover:bg-orange-500 hover:text-white transition-all flex items-center justify-center gap-2"
+                                            className="flex-1 h-14 bg-white text-black rounded-full font-bold uppercase tracking-widest hover:bg-[#E2FF3B] hover:text-black transition-all flex items-center justify-center gap-2"
                                         >
                                             <ShoppingBag className="w-5 h-5" />
                                             Add to Garage

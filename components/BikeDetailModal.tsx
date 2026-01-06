@@ -116,7 +116,7 @@ export const BikeDetailModal: React.FC<BikeDetailModalProps> = ({
                                     <span className="text-xs text-gray-400 font-bold uppercase">Herkese Açık</span>
                                     <button
                                         onClick={() => setEditedBike({ ...editedBike, isPublic: !editedBike.isPublic })}
-                                        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${editedBike.isPublic ? 'bg-green-500/20 text-green-500' : 'bg-red-500/20 text-red-500'}`}
+                                        className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${editedBike.isPublic ? 'bg-green-500/20 text-green-500' : 'bg-[#FF3E3E]/20 text-[#FF3E3E]'}`}
                                     >
                                         {editedBike.isPublic ? <><Eye className="w-3 h-3" /> EVET</> : <><EyeOff className="w-3 h-3" /> HAYIR</>}
                                     </button>
@@ -142,7 +142,7 @@ export const BikeDetailModal: React.FC<BikeDetailModalProps> = ({
                                 <div>
                                     <label className="text-[10px] text-gray-500 uppercase font-bold mb-2 block">Notlar</label>
                                     <textarea
-                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs text-white outline-none focus:border-moto-accent h-24 resize-none"
+                                        className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-xs text-white outline-none focus:border-[#E2FF3B] h-24 resize-none"
                                         placeholder="Motor hakkında notlar..."
                                         value={editedBike.notes || ''}
                                         onChange={(e) => setEditedBike({ ...editedBike, notes: e.target.value })}
@@ -267,7 +267,7 @@ export const BikeDetailModal: React.FC<BikeDetailModalProps> = ({
                                                 <div className="flex items-start justify-between mb-2">
                                                     <div className="flex items-center gap-2">
                                                         <div className="w-8 h-8 rounded-lg bg-black flex items-center justify-center border border-white/10">
-                                                            {mod.type === 'Performans' ? <Zap className="w-4 h-4 text-yellow-500" /> : <Settings className="w-4 h-4 text-gray-400" />}
+                                                            {mod.type === 'Performans' ? <Zap className="w-4 h-4 text-[#E2FF3B]" /> : <Settings className="w-4 h-4 text-gray-400" />}
                                                         </div>
                                                         <div>
                                                             <div className="text-xs font-bold text-white leading-tight">{mod.name}</div>

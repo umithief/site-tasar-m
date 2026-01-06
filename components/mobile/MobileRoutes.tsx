@@ -91,7 +91,7 @@ export const MobileRoutes: React.FC<MobileRoutesProps> = ({ onStartRide }) => {
                                 animate={{ rotate: 360 }}
                                 transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                             >
-                                <Navigation className="w-6 h-6 text-orange-500" />
+                                <Navigation className="w-6 h-6 text-[#E2FF3B]" />
                             </motion.div>
                         </div>
                     </motion.div>
@@ -102,7 +102,7 @@ export const MobileRoutes: React.FC<MobileRoutesProps> = ({ onStartRide }) => {
             <header className="fixed top-0 left-0 right-0 z-10 bg-gradient-to-b from-black via-black/90 to-transparent pt-12 pb-6 px-6 backdrop-blur-sm">
                 <div className="flex justify-between items-end mb-6">
                     <div>
-                        <h1 className="text-3xl font-display font-bold text-white tracking-tighter italic">MOTIV <span className="text-orange-500">ROTA</span></h1>
+                        <h1 className="text-3xl font-display font-bold text-white tracking-tighter italic">MOTIV <span className="text-[#E2FF3B]">ROTA</span></h1>
                         <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">Keşfet • Sür • Paylaş</p>
                     </div>
                     <button className="w-10 h-10 btn-icon-glass bg-zinc-900 border-zinc-800 text-white shadow-lg active:scale-95">
@@ -134,10 +134,10 @@ export const MobileRoutes: React.FC<MobileRoutesProps> = ({ onStartRide }) => {
                 <section>
                     <div className="flex justify-between items-end mb-4">
                         <h2 className="text-lg font-bold text-white flex items-center gap-2">
-                            <Star className="w-5 h-5 text-orange-500 fill-current" />
+                            <Star className="w-5 h-5 text-[#E2FF3B] fill-current" />
                             Öne Çıkanlar
                         </h2>
-                        <span className="text-[10px] text-orange-500 font-bold uppercase tracking-wider bg-orange-500/10 px-2 py-1 rounded-lg">Tümünü Gör</span>
+                        <span className="text-[10px] text-[#E2FF3B] font-bold uppercase tracking-wider bg-[#E2FF3B]/10 px-2 py-1 rounded-lg">Tümünü Gör</span>
                     </div>
 
                     <div className="flex gap-4 overflow-x-auto no-scrollbar -mx-6 px-6 pb-4 snap-x snap-mandatory">
@@ -152,8 +152,8 @@ export const MobileRoutes: React.FC<MobileRoutesProps> = ({ onStartRide }) => {
                                 <div className="absolute inset-0 bg-gradient-to-b from-black/60 to-transparent h-24" />
 
                                 <div className="absolute top-4 left-4">
-                                    <span className="bg-orange-600/90 backdrop-blur text-white text-[10px] font-bold px-3 py-1.5 rounded-xl uppercase tracking-wider shadow-lg shadow-orange-600/20 border border-white/20 flex items-center gap-1">
-                                        <Star className="w-3 h-3 fill-white" />
+                                    <span className="bg-[#E2FF3B]/90 backdrop-blur text-black text-[10px] font-bold px-3 py-1.5 rounded-xl uppercase tracking-wider shadow-lg shadow-[#E2FF3B]/20 border border-white/20 flex items-center gap-1">
+                                        <Star className="w-3 h-3 fill-black" />
                                         Editörün Seçimi
                                     </span>
                                 </div>
@@ -162,7 +162,7 @@ export const MobileRoutes: React.FC<MobileRoutesProps> = ({ onStartRide }) => {
                                     <div className="flex justify-between items-end">
                                         <div>
                                             <div className="flex items-center gap-2 mb-1.5">
-                                                <MapPin className="w-3.5 h-3.5 text-orange-500" />
+                                                <MapPin className="w-3.5 h-3.5 text-[#E2FF3B]" />
                                                 <span className="text-xs text-zinc-300 font-bold uppercase tracking-wide">{route.location}</span>
                                             </div>
                                             <h3 className="text-2xl font-display font-bold text-white leading-none mb-3 shadow-black drop-shadow-lg">{route.title}</h3>
@@ -198,7 +198,7 @@ export const MobileRoutes: React.FC<MobileRoutesProps> = ({ onStartRide }) => {
                                 <div className="flex-1 py-1 min-w-0">
                                     <div className="flex justify-between items-start mb-1">
                                         <h3 className="font-bold text-white truncate pr-2">{route.title}</h3>
-                                        <span className="text-orange-500 font-bold text-xs flex items-center gap-0.5 bg-orange-500/10 px-1.5 py-0.5 rounded">
+                                        <span className="text-[#E2FF3B] font-bold text-xs flex items-center gap-0.5 bg-[#E2FF3B]/10 px-1.5 py-0.5 rounded">
                                             <Star className="w-3 h-3 fill-current" /> 4.8
                                         </span>
                                     </div>

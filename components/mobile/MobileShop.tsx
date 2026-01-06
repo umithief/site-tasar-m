@@ -24,7 +24,7 @@ export const MobileShop = ({ onNavigate, initialCategory = 'ALL' }: { onNavigate
             {/* Header */}
             <div className="sticky top-0 z-20 bg-white/80 dark:bg-black/80 backdrop-blur-xl border-b border-gray-200 dark:border-white/5 px-4 pt-12 pb-4">
                 <div className="flex items-center justify-between mb-4">
-                    <h1 className="text-2xl font-bold tracking-tighter italic">MOTO<span className="text-orange-500">SHOP</span></h1>
+                    <h1 className="text-2xl font-bold tracking-tighter italic">MOTO<span className="text-[#E2FF3B]">SHOP</span></h1>
                     <div className="relative">
                         <ShoppingBag className="text-zinc-800 dark:text-white" size={24} />
                         {/* Badge can be added here linking to Cart */}
@@ -39,7 +39,7 @@ export const MobileShop = ({ onNavigate, initialCategory = 'ALL' }: { onNavigate
                         placeholder="Parça veya SKU ara..."
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-gray-100 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl py-3 pl-10 pr-4 text-sm text-zinc-900 dark:text-white focus:outline-none focus:border-orange-500/50 transition-colors placeholder:text-zinc-500 dark:placeholder:text-zinc-600"
+                        className="w-full bg-gray-100 dark:bg-zinc-900 border border-gray-200 dark:border-zinc-800 rounded-xl py-3 pl-10 pr-4 text-sm text-zinc-900 dark:text-white focus:outline-none focus:border-[#E2FF3B]/50 transition-colors placeholder:text-zinc-500 dark:placeholder:text-zinc-600"
                     />
                 </div>
 
@@ -64,7 +64,7 @@ export const MobileShop = ({ onNavigate, initialCategory = 'ALL' }: { onNavigate
             <div className="p-4">
                 {isLoading ? (
                     <div className="flex justify-center py-20">
-                        <div className="w-8 h-8 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                        <div className="w-8 h-8 border-2 border-[#E2FF3B] border-t-transparent rounded-full animate-spin" />
                     </div>
                 ) : (
                     <div className="grid grid-cols-2 gap-4">

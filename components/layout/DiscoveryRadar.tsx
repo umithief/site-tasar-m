@@ -66,7 +66,7 @@ export const DiscoveryRadar: React.FC = () => {
             <div className="mb-10">
                 <div className="flex justify-between items-end mb-6">
                     <h3 className="text-sm font-bold text-zinc-400 uppercase tracking-widest">Top Riders</h3>
-                    <span className="text-xs text-orange-500 font-bold cursor-pointer hover:underline">View All</span>
+                    <span className="text-xs text-[#E2FF3B] font-bold cursor-pointer hover:underline">View All</span>
                 </div>
 
                 <div className="space-y-4">
@@ -77,15 +77,15 @@ export const DiscoveryRadar: React.FC = () => {
                                     <UserIcon className="w-5 h-5 text-zinc-500" />
                                 </div>
                                 <div className="absolute -bottom-1 -right-1 bg-black rounded-full p-0.5">
-                                    <div className="w-4 h-4 bg-orange-500 rounded-full flex items-center justify-center text-[10px] font-bold text-black border border-black">
+                                    <div className="w-4 h-4 bg-[#E2FF3B] rounded-full flex items-center justify-center text-[10px] font-bold text-black border border-black">
                                         {idx + 1}
                                     </div>
                                 </div>
                             </div>
                             <div className="flex-1">
-                                <h4 className="font-bold text-white text-sm group-hover:text-orange-500 transition-colors">{rider.name}</h4>
+                                <h4 className="font-bold text-white text-sm group-hover:text-[#E2FF3B] transition-colors">{rider.name}</h4>
                                 <div className="flex items-center gap-2 text-xs text-zinc-500">
-                                    <Shield className="w-3 h-3 text-orange-500" />
+                                    <Shield className="w-3 h-3 text-[#E2FF3B]" />
                                     <span>{rider.rank} • {rider.points.toLocaleString()} XP</span>
                                 </div>
                             </div>
@@ -110,7 +110,7 @@ export const DiscoveryRadar: React.FC = () => {
                             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
 
                             <div className="absolute bottom-0 left-0 right-0 p-4">
-                                <div className="text-xs text-orange-500 font-bold uppercase tracking-wider mb-1">{product.brand}</div>
+                                <div className="text-xs text-[#E2FF3B] font-bold uppercase tracking-wider mb-1">{product.brand}</div>
                                 <h4 className="text-white font-bold leading-tight mb-2">{product.name}</h4>
                                 <div className="flex justify-between items-center">
                                     <span className="text-white font-mono font-bold">₺{product.price.toLocaleString()}</span>

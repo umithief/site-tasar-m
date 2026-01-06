@@ -89,11 +89,11 @@ export const Forum: React.FC<ForumProps> = ({ user, onOpenAuth, onViewProfile, o
     const handleAddComment = async () => {
         if (!user || !selectedTopic || !commentText.trim()) return;
         try {
-            const newComment = await forumService.addComment(selectedTopic.id, user, commentText);
+            const newComment = await forumService.addComment(selectedTopic._id, user, commentText);
             const updatedTopic = { ...selectedTopic, comments: [...selectedTopic.comments, newComment] };
             setSelectedTopic(updatedTopic);
             setCommentText('');
-            const updatedTopics = topics.map(t => t.id === selectedTopic.id ? updatedTopic : t);
+            const updatedTopics = topics.map(t => t._id === selectedTopic._id ? updatedTopic : t);
             setTopics(updatedTopics);
             notify.success("Yorum eklendi.");
         } catch (error) {
@@ -105,8 +105,8 @@ export const Forum: React.FC<ForumProps> = ({ user, onOpenAuth, onViewProfile, o
         e.stopPropagation();
         if (!user) { onOpenAuth(); return; }
         await forumService.toggleLike(topicId);
-        setTopics(prev => prev.map(t => t.id === topicId ? { ...t, likes: t.likes + 1 } : t));
-        if (selectedTopic && selectedTopic.id === topicId) {
+        setTopics(prev => prev.map(t => t._id === topicId ? { ...t, likes: t.likes + 1 } : t));
+        if (selectedTopic && selectedTopic._id === topicId) {
             setSelectedTopic(prev => prev ? { ...prev, likes: prev.likes + 1 } : null);
         }
     };
@@ -147,7 +147,7 @@ export const Forum: React.FC<ForumProps> = ({ user, onOpenAuth, onViewProfile, o
                         <div key={i} className="flex items-center gap-3 group cursor-pointer p-2 rounded-xl hover:bg-gray-50 transition-colors">
                             <div className="relative">
                                 <UserAvatar name={rider.name} size={40} />
-                                <div className={`absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white border-2 border-white ${i === 0 ? 'bg-yellow-400' : i === 1 ? 'bg-gray-400' : 'bg-orange-600'}`}>
+                                <div className={`absolute -top-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold text-white border-2 border-white ${i === 0 ? 'bg-yellow-400' : i === 1 ? 'bg-gray-400' : 'bg-amber-700'}`}>
                                     {i + 1}
                                 </div>
                             </div>
@@ -259,7 +259,7 @@ export const Forum: React.FC<ForumProps> = ({ user, onOpenAuth, onViewProfile, o
                     ) : (
                         filteredTopics.map((topic) => (
                             <motion.div
-                                key={topic.id}
+                                key={topic._id}
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 onClick={() => handleTopicClick(topic)}
@@ -287,7 +287,7 @@ export const Forum: React.FC<ForumProps> = ({ user, onOpenAuth, onViewProfile, o
                                             {topic.category}
                                         </span>
                                         {topic.tags.includes('Yeni') && (
-                                            <span className="flex items-center gap-1 text-[9px] text-orange-500 font-bold animate-pulse">
+                                            <span className="flex items-center gap-1 text-[9px] text-[#E2FF3B] font-bold animate-pulse">
                                                 <Flame className="w-3 h-3 fill-current" /> YENİ
                                             </span>
                                         )}
@@ -362,7 +362,7 @@ export const Forum: React.FC<ForumProps> = ({ user, onOpenAuth, onViewProfile, o
 
                             <div className="flex items-center gap-3">
                                 <button
-                                    onClick={(e) => handleLike(e, selectedTopic.id)}
+                                    onClick={(e) => handleLike(e, selectedTopic._id)}
                                     className="bg-white border border-gray-200 hover:border-moto-accent hover:text-moto-accent px-4 py-2 rounded-xl flex items-center gap-2 text-gray-700 text-sm font-bold transition-all shadow-sm"
                                 >
                                     <Heart className="w-4 h-4" /> {selectedTopic.likes}
@@ -385,7 +385,7 @@ export const Forum: React.FC<ForumProps> = ({ user, onOpenAuth, onViewProfile, o
 
                         <div className="space-y-6 mb-12">
                             {selectedTopic.comments.map((comment, i) => (
-                                <div key={comment.id} className="flex gap-4 group">
+                                <div key={comment._id} className="flex gap-4 group">
                                     <div
                                         className="flex-shrink-0 cursor-pointer hover:scale-105 transition-transform pt-2"
                                         onClick={() => { if (onViewProfile) onViewProfile(comment.authorId); }}

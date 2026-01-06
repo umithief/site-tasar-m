@@ -801,9 +801,9 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                                     <span>Lean Right</span>
                                 </div>
                                 <div className="h-1 bg-white/10 rounded-full overflow-hidden flex">
-                                    <div className="h-full bg-orange-500 transition-all duration-100" style={{ width: leanAngle < 0 ? `${Math.abs(leanAngle) * 2}%` : '0%', marginLeft: leanAngle < 0 ? 'auto' : '0' }}></div>
+                                    <div className="h-full bg-[#E2FF3B] transition-all duration-100" style={{ width: leanAngle < 0 ? `${Math.abs(leanAngle) * 2}%` : '0%', marginLeft: leanAngle < 0 ? 'auto' : '0' }}></div>
                                     <div className="w-[2px] h-full bg-white/50"></div>
-                                    <div className="h-full bg-orange-500 transition-all duration-100" style={{ width: leanAngle > 0 ? `${leanAngle * 2}%` : '0%' }}></div>
+                                    <div className="h-full bg-[#E2FF3B] transition-all duration-100" style={{ width: leanAngle > 0 ? `${leanAngle * 2}%` : '0%' }}></div>
                                 </div>
                                 <div className="text-center text-lg font-bold text-white mt-1">{Math.abs(Math.round(leanAngle))}°</div>
                             </div>
@@ -826,7 +826,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                                     <div className="w-full h-full flex items-center justify-center bg-zinc-800"><div className="w-3 h-3 bg-white/20 rounded-full animate-bounce"></div></div>
                                 )}
                                 <div className="absolute inset-0 flex items-center justify-center">
-                                    {isPlaying ? <div className="flex gap-[2px] items-end h-4 pb-1"><div className="w-1 h-3 bg-orange-500 animate-pulse"></div><div className="w-1 h-2 bg-orange-500 animate-pulse delay-75"></div><div className="w-1 h-4 bg-orange-500 animate-pulse delay-150"></div></div> : <PlayCircle className="w-6 h-6 text-white/50" />}
+                                    {isPlaying ? <div className="flex gap-[2px] items-end h-4 pb-1"><div className="w-1 h-3 bg-[#E2FF3B] animate-pulse"></div><div className="w-1 h-2 bg-[#E2FF3B] animate-pulse delay-75"></div><div className="w-1 h-4 bg-[#E2FF3B] animate-pulse delay-150"></div></div> : <PlayCircle className="w-6 h-6 text-white/50" />}
                                 </div>
                             </div>
                             <div className="flex-1 min-w-0">
@@ -861,7 +861,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                     {/* CENTER GAUGE (The Core) */}
                     <div className="relative group cursor-pointer" onClick={() => setShowTelemetry(!showTelemetry)}>
                         {/* Outer Glow */}
-                        <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-40 bg-orange-500/20 blur-[100px] rounded-full transition-opacity duration-500 ${rpm > REDLINE_RPM ? 'opacity-100 bg-red-500/30' : 'opacity-40'}`}></div>
+                        <div className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-80 h-40 bg-[#E2FF3B]/20 blur-[100px] rounded-full transition-opacity duration-500 ${rpm > REDLINE_RPM ? 'opacity-100 bg-red-500/30' : 'opacity-40'}`}></div>
 
                         <div className="relative">
                             <span className="text-[160px] leading-[0.8] font-black italic tracking-tighter text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)] tabular-nums relative z-20 font-display block text-center min-w-[280px]">
@@ -874,7 +874,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                         <div className="w-[400px] h-2 bg-zinc-900 rounded-full mt-4 overflow-hidden relative border border-white/5 mx-auto">
                             {/* Gradient Bar */}
                             <div
-                                className={`h-full transition-all duration-100 ease-out ${rpm > REDLINE_RPM ? 'bg-red-500 shadow-[0_0_15px_#ef4444]' : 'bg-gradient-to-r from-zinc-700 via-white to-orange-500'}`}
+                                className={`h-full transition-all duration-100 ease-out ${rpm > REDLINE_RPM ? 'bg-red-500 shadow-[0_0_15px_#ef4444]' : 'bg-gradient-to-r from-zinc-700 via-white to-[#E2FF3B]'}`}
                                 style={{ width: `${(rpm / MAX_RPM) * 100}%` }}
                             ></div>
                             {/* Markers */}

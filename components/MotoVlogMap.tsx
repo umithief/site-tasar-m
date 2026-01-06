@@ -96,7 +96,7 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
             if (tempMarkerRef.current) tempMarkerRef.current.remove();
             const pulsingIcon = L.divIcon({
                 className: 'selection-marker',
-                html: `<div class="w-6 h-6 bg-red-500 rounded-full animate-ping"></div>`,
+                html: `<div class="w-6 h-6 bg-[#E2FF3B] rounded-full animate-ping"></div>`,
                 iconSize: [24, 24], iconAnchor: [12, 12]
             });
             const newMarker = L.marker([lat, lng], { icon: pulsingIcon }).addTo(mapRef.current);
@@ -135,7 +135,7 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
 
                 const pulsingIcon = L.divIcon({
                     className: 'selection-marker',
-                    html: `<div class="relative w-full h-full"><div class="absolute inset-0 bg-moto-accent rounded-full animate-ping opacity-75"></div><div class="absolute inset-0 m-auto w-3 h-3 bg-white rounded-full shadow-[0_0_15px_#FFA500]"></div></div>`,
+                    html: `<div class="relative w-full h-full"><div class="absolute inset-0 bg-moto-accent rounded-full animate-ping opacity-75"></div><div class="absolute inset-0 m-auto w-3 h-3 bg-white rounded-full shadow-[0_0_15px_#E2FF3B]"></div></div>`,
                     iconSize: [32, 32], iconAnchor: [16, 16]
                 });
                 const newMarker = L.marker([lat, lng], { icon: pulsingIcon }).addTo(map);

@@ -255,7 +255,7 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                             {activeTab === 'security' && 'Güvenlik Bölgesi'}
                         </h3>
                         <div className="flex gap-2">
-                            <button onClick={() => handleProfileUpdate()} disabled={isLoading} className="flex items-center gap-2 px-6 py-2 bg-moto-accent text-black font-bold uppercase tracking-wider text-xs rounded hover:bg-orange-400 transition-colors">
+                            <button onClick={() => handleProfileUpdate()} disabled={isLoading} className="flex items-center gap-2 px-6 py-2 bg-moto-accent text-black font-bold uppercase tracking-wider text-xs rounded hover:bg-[#cbe62b] transition-colors">
                                 {isLoading ? 'Kaydediliyor...' : <><Save className="w-4 h-4" /> Kaydet</>}
                             </button>
                         </div>
@@ -323,7 +323,7 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                                             <button
                                                 onClick={handleProfileUpdate}
                                                 disabled={isLoading}
-                                                className="w-full md:w-auto px-8 py-3 bg-moto-accent text-black font-bold uppercase tracking-wider text-sm rounded-xl hover:bg-orange-400 transition-colors shadow-[0_0_20px_rgba(255,165,0,0.3)] hover:shadow-[0_0_30px_rgba(255,165,0,0.5)]"
+                                                className="w-full md:w-auto px-8 py-3 bg-moto-accent text-black font-bold uppercase tracking-wider text-sm rounded-xl hover:bg-[#cbe62b] transition-colors shadow-[0_0_20px_rgba(226,255,59,0.3)] hover:shadow-[0_0_30px_rgba(226,255,59,0.5)]"
                                             >
                                                 {isLoading ? 'Kaydediliyor...' : 'Tüm Değişiklikleri Kaydet'}
                                             </button>
@@ -552,7 +552,7 @@ const TabButton = ({ id, icon: Icon, label, active, onClick }: { id: TabType, ic
     <button
         onClick={() => onClick(id)}
         className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group
-        ${active === id ? 'bg-moto-accent text-black shadow-[0_0_20px_rgba(255,165,0,0.2)]' : 'text-gray-500 hover:text-white hover:bg-white/5'}
+        ${active === id ? 'bg-moto-accent text-black shadow-[0_0_20px_rgba(226,255,59,0.2)]' : 'text-gray-500 hover:text-white hover:bg-white/5'}
         `}
     >
         <Icon className={`w-5 h-5 ${active === id ? 'text-black' : 'group-hover:text-white'}`} />

@@ -116,7 +116,7 @@ export const RouteCreator: React.FC<RouteCreatorProps> = ({ onSave, onCancel }) 
             waypoints: waypointsRef.current,
             router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1', profile: 'driving' }),
             lineOptions: {
-                styles: [{ color: '#F2A619', opacity: 0.8, weight: 6 }],
+                styles: [{ color: '#E2FF3B', opacity: 0.8, weight: 6 }],
                 extendToWaypoints: false,
                 missingRouteTolerance: 0
             },
@@ -197,7 +197,7 @@ export const RouteCreator: React.FC<RouteCreatorProps> = ({ onSave, onCancel }) 
                     <form onSubmit={handleSearch} className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                         <input
-                            className="w-full bg-black/80 backdrop-blur border border-white/20 rounded-xl pl-10 pr-4 py-3 text-xs text-white outline-none focus:border-orange-500"
+                            className="w-full bg-black/80 backdrop-blur border border-white/20 rounded-xl pl-10 pr-4 py-3 text-xs text-white outline-none focus:border-[#E2FF3B]"
                             placeholder="Haritada yer ara..."
                             value={mapSearchQuery}
                             onChange={e => setMapSearchQuery(e.target.value)}
@@ -223,7 +223,7 @@ export const RouteCreator: React.FC<RouteCreatorProps> = ({ onSave, onCancel }) 
             <div className="w-full lg:w-[400px] bg-zinc-900/80 backdrop-blur border border-white/10 rounded-3xl p-6 flex flex-col overflow-y-auto custom-scrollbar">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-xl font-bold text-white flex items-center gap-2">
-                        <Navigation className="w-5 h-5 text-orange-500" /> Yeni Rota
+                        <Navigation className="w-5 h-5 text-[#E2FF3B]" /> Yeni Rota
                     </h2>
                     <button onClick={onCancel} className="text-zinc-500 hover:text-white p-2">
                         <X className="w-5 h-5" />
@@ -234,7 +234,7 @@ export const RouteCreator: React.FC<RouteCreatorProps> = ({ onSave, onCancel }) 
                     <div>
                         <label className="block text-xs font-bold text-zinc-500 uppercase mb-2">Rota Başlığı</label>
                         <input
-                            className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white text-sm focus:border-orange-500 outline-none"
+                            className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white text-sm focus:border-[#E2FF3B] outline-none"
                             placeholder="Örn: Hafta Sonu Turu"
                             value={formData.title}
                             onChange={e => setFormData({ ...formData, title: e.target.value })}
@@ -273,7 +273,7 @@ export const RouteCreator: React.FC<RouteCreatorProps> = ({ onSave, onCancel }) 
                     <div>
                         <label className="block text-xs font-bold text-zinc-500 uppercase mb-2">Konum / Bölge</label>
                         <input
-                            className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white text-sm focus:border-orange-500 outline-none"
+                            className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white text-sm focus:border-[#E2FF3B] outline-none"
                             placeholder="Örn: İstanbul, Şile"
                             value={formData.location}
                             onChange={e => setFormData({ ...formData, location: e.target.value })}
@@ -283,18 +283,18 @@ export const RouteCreator: React.FC<RouteCreatorProps> = ({ onSave, onCancel }) 
                     <div className="bg-white/5 rounded-xl p-4 grid grid-cols-2 gap-4 border border-white/5">
                         <div className="text-center">
                             <div className="text-[10px] text-zinc-500 font-bold uppercase">Mesafe</div>
-                            <div className="text-orange-500 font-mono font-bold text-lg">{formData.distance || '--'}</div>
+                            <div className="text-[#E2FF3B] font-mono font-bold text-lg">{formData.distance || '--'}</div>
                         </div>
                         <div className="text-center">
                             <div className="text-[10px] text-zinc-500 font-bold uppercase">Süre</div>
-                            <div className="text-orange-500 font-mono font-bold text-lg">{formData.estimatedTime || '--'}</div>
+                            <div className="text-[#E2FF3B] font-mono font-bold text-lg">{formData.estimatedTime || '--'}</div>
                         </div>
                     </div>
 
                     <div>
                         <label className="block text-xs font-bold text-zinc-500 uppercase mb-2">Açıklama <span className="text-red-500">*</span></label>
                         <textarea
-                            className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white text-sm focus:border-orange-500 outline-none h-32 resize-none"
+                            className="w-full bg-black/40 border border-white/10 rounded-xl p-3 text-white text-sm focus:border-[#E2FF3B] outline-none h-32 resize-none"
                             placeholder="Rota hakkında detaylı bilgi giriniz..."
                             value={formData.description || ''}
                             onChange={e => setFormData({ ...formData, description: e.target.value })}

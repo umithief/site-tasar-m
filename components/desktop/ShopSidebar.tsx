@@ -35,7 +35,7 @@ export const ShopSidebar: React.FC<ShopSidebarProps> = ({
             {/* Garage Filter (The "Smart" Feature) */}
             <div className="mb-12">
                 <div className="flex items-center gap-2 mb-4">
-                    <Zap className="w-4 h-4 text-orange-500" />
+                    <Zap className="w-4 h-4 text-[#E2FF3B]" />
                     <h3 className="text-sm font-bold uppercase tracking-wider text-white">Garajın</h3>
                 </div>
 
@@ -43,12 +43,12 @@ export const ShopSidebar: React.FC<ShopSidebarProps> = ({
                     <button
                         onClick={() => onSelectBike(null)}
                         className={`w-full text-left px-4 py-3 rounded-xl border transition-all duration-300 relative overflow-hidden group ${selectedBikeId === null
-                                ? 'bg-zinc-900 border-orange-500/50 text-white'
-                                : 'bg-transparent border-white/10 text-zinc-500 hover:border-white/30 hover:text-white'
+                            ? 'bg-zinc-900 border-[#E2FF3B]/50 text-white'
+                            : 'bg-transparent border-white/10 text-zinc-500 hover:border-white/30 hover:text-white'
                             }`}
                     >
                         <span className="relative z-10 text-xs font-bold uppercase tracking-wider">Tüm Uyumlu Parçalar</span>
-                        {selectedBikeId === null && <div className="absolute inset-0 bg-orange-500/5" />}
+                        {selectedBikeId === null && <div className="absolute inset-0 bg-[#E2FF3B]/5" />}
                     </button>
 
                     {garageBikes.map(bike => (
@@ -56,8 +56,8 @@ export const ShopSidebar: React.FC<ShopSidebarProps> = ({
                             key={bike._id}
                             onClick={() => onSelectBike(selectedBikeId === bike._id ? null : bike._id)}
                             className={`w-full text-left px-4 py-3 rounded-xl border transition-all duration-300 relative overflow-hidden group ${selectedBikeId === bike._id
-                                    ? 'bg-zinc-900 border-orange-500 text-white shadow-[0_0_20px_rgba(249,115,22,0.1)]'
-                                    : 'bg-transparent border-white/10 text-zinc-500 hover:border-white/30 hover:text-white'
+                                ? 'bg-zinc-900 border-[#E2FF3B] text-white shadow-[0_0_20px_rgba(226,255,59,0.1)]'
+                                : 'bg-transparent border-white/10 text-zinc-500 hover:border-white/30 hover:text-white'
                                 }`}
                         >
                             <div className="relative z-10 flex items-center justify-between">
@@ -65,7 +65,7 @@ export const ShopSidebar: React.FC<ShopSidebarProps> = ({
                                     <span className="block text-[10px] uppercase text-zinc-500 mb-0.5">{bike.brand}</span>
                                     <span className="block text-sm font-bold uppercase tracking-wide">{bike.model}</span>
                                 </div>
-                                {selectedBikeId === bike._id && <Check className="w-4 h-4 text-orange-500" />}
+                                {selectedBikeId === bike._id && <Check className="w-4 h-4 text-[#E2FF3B]" />}
                             </div>
                         </button>
                     ))}
@@ -73,7 +73,7 @@ export const ShopSidebar: React.FC<ShopSidebarProps> = ({
                     {garageBikes.length === 0 && (
                         <div className="p-4 rounded-xl border border-dashed border-white/10 text-center">
                             <p className="text-xs text-zinc-600 mb-2">Garajın boş.</p>
-                            <button className="text-[10px] font-bold text-orange-500 hover:underline">Motor Ekle</button>
+                            <button className="text-[10px] font-bold text-[#E2FF3B] hover:underline">Motor Ekle</button>
                         </div>
                     )}
                 </div>
@@ -90,11 +90,11 @@ export const ShopSidebar: React.FC<ShopSidebarProps> = ({
                             className={`w-full flex items-center justify-between py-2 text-sm transition-colors group ${selectedCategory === cat ? 'text-white' : 'text-zinc-500 hover:text-white'
                                 }`}
                         >
-                            <span className={`uppercase tracking-widest text-xs font-medium ${selectedCategory === cat ? 'border-b border-orange-500 pb-0.5' : ''}`}>
+                            <span className={`uppercase tracking-widest text-xs font-medium ${selectedCategory === cat ? 'border-b border-[#E2FF3B] pb-0.5' : ''}`}>
                                 {cat === 'ALL' ? 'Tümü' : cat}
                             </span>
                             {selectedCategory === cat && (
-                                <motion.span layoutId="activeDot" className="w-1.5 h-1.5 rounded-full bg-orange-500" />
+                                <motion.span layoutId="activeDot" className="w-1.5 h-1.5 rounded-full bg-[#E2FF3B]" />
                             )}
                         </button>
                     ))}
@@ -114,7 +114,7 @@ export const ShopSidebar: React.FC<ShopSidebarProps> = ({
                         min="0"
                         max="100000"
                         step="1000"
-                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-orange-500"
+                        className="w-full h-1 bg-zinc-800 rounded-lg appearance-none cursor-pointer accent-[#E2FF3B]"
                     />
                 </div>
             </div>

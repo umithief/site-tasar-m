@@ -159,7 +159,7 @@ export const ReelUploadModal: React.FC<ReelUploadModalProps> = ({ isOpen, onClos
                                                         cy={radius}
                                                     />
                                                     <circle
-                                                        stroke="#f97316" // Orange-500
+                                                        stroke="#E2FF3B" // Neon Lime
                                                         strokeWidth={stroke}
                                                         strokeDasharray={circumference + ' ' + circumference}
                                                         style={{ strokeDashoffset }}
@@ -179,7 +179,7 @@ export const ReelUploadModal: React.FC<ReelUploadModalProps> = ({ isOpen, onClos
                                         ) : (
                                             <div
                                                 onClick={() => fileInputRef.current?.click()}
-                                                className={`w-full h-40 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all ${file ? 'border-orange-500 bg-orange-500/10' : 'border-white/10 hover:border-white/30 hover:bg-white/5'}`}
+                                                className={`w-full h-40 border-2 border-dashed rounded-2xl flex flex-col items-center justify-center cursor-pointer transition-all ${file ? 'border-[#E2FF3B] bg-[#E2FF3B]/10' : 'border-white/10 hover:border-white/30 hover:bg-white/5'}`}
                                             >
                                                 <input
                                                     ref={fileInputRef}
@@ -190,7 +190,7 @@ export const ReelUploadModal: React.FC<ReelUploadModalProps> = ({ isOpen, onClos
                                                 />
                                                 {file ? (
                                                     <>
-                                                        <CheckCircle className="w-10 h-10 text-orange-500 mb-2" />
+                                                        <CheckCircle className="w-10 h-10 text-[#E2FF3B] mb-2" />
                                                         <span className="text-sm font-bold text-white max-w-[80%] truncate">{file.name}</span>
                                                         <span className="text-xs text-white/50 mt-1">{(file.size / (1024 * 1024)).toFixed(1)} MB</span>
                                                     </>
@@ -207,7 +207,7 @@ export const ReelUploadModal: React.FC<ReelUploadModalProps> = ({ isOpen, onClos
 
                                     {/* Inputs */}
                                     <div className="space-y-4">
-                                        <div className="bg-white/5 rounded-xl px-4 py-3 flex items-center gap-3 border border-transparent focus-within:border-orange-500 transition-colors">
+                                        <div className="bg-white/5 rounded-xl px-4 py-3 flex items-center gap-3 border border-transparent focus-within:border-[#E2FF3B] transition-colors">
                                             <FileText className="w-5 h-5 text-white/40" />
                                             <input
                                                 type="text"
@@ -218,7 +218,7 @@ export const ReelUploadModal: React.FC<ReelUploadModalProps> = ({ isOpen, onClos
                                                 disabled={uploading}
                                             />
                                         </div>
-                                        <div className="bg-white/5 rounded-xl px-4 py-3 flex items-center gap-3 border border-transparent focus-within:border-orange-500 transition-colors">
+                                        <div className="bg-white/5 rounded-xl px-4 py-3 flex items-center gap-3 border border-transparent focus-within:border-[#E2FF3B] transition-colors">
                                             <Bike className="w-5 h-5 text-white/40" />
                                             <input
                                                 type="text"
@@ -244,7 +244,7 @@ export const ReelUploadModal: React.FC<ReelUploadModalProps> = ({ isOpen, onClos
                                         disabled={!file || uploading}
                                         isLoading={uploading}
                                         variant="primary"
-                                        className="w-full py-4 text-white font-black uppercase tracking-widest rounded-xl shadow-lg shadow-orange-500/20 transition-all active:scale-95 bg-orange-500 hover:bg-orange-600"
+                                        className="w-full py-4 text-black font-black uppercase tracking-widest rounded-xl shadow-lg shadow-[#E2FF3B]/20 transition-all active:scale-95 bg-[#E2FF3B] hover:bg-[#c9e62f]"
                                     >
                                         PAYLAŞ
                                     </Button>

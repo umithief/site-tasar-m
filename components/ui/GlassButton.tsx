@@ -23,11 +23,11 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
     const baseClasses = 'relative font-bold uppercase tracking-wider transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed overflow-hidden group';
 
     const variantClasses = {
-        primary: 'bg-gradient-to-r from-moto-accent to-moto-orange-600 text-black hover:from-moto-orange-600 hover:to-moto-accent shadow-glow hover:shadow-glow-lg',
+        primary: 'bg-gradient-to-r from-[#E2FF3B] to-moto-orange-600 text-black hover:from-moto-orange-600 hover:to-[#E2FF3B] shadow-glow hover:shadow-glow-lg',
         secondary: 'bg-white/10 backdrop-blur-md border border-white/20 text-white hover:bg-white/20 hover:border-white/30',
         ghost: 'bg-transparent text-white hover:bg-white/5',
         glass: 'bg-white/5 backdrop-blur-xl border border-white/10 text-white hover:bg-white/10 hover:border-white/20 shadow-glass',
-        neon: 'bg-transparent border-2 border-moto-accent text-moto-accent hover:bg-moto-accent hover:text-black shadow-neon hover:shadow-glow-lg'
+        neon: 'bg-transparent border-2 border-[#E2FF3B] text-[#E2FF3B] hover:bg-[#E2FF3B] hover:text-black shadow-neon hover:shadow-glow-lg'
     };
 
     const sizeClasses = {
@@ -42,7 +42,7 @@ export const GlassButton: React.FC<GlassButtonProps> = ({
         <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${glowEffect} ${className} rounded-2xl`}
+            className={`${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${glowEffect} ${className} rounded-xl`}
             {...props}
         >
             {/* Hover Overlay */}

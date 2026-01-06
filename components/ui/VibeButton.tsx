@@ -112,24 +112,26 @@ export const VibeButton = React.forwardRef<HTMLButtonElement, VibeButtonProps>((
         primary: `
             bg-[#E2FF3B] text-black 
             shadow-[0_0_20px_rgba(226,255,59,0.3)]
-            border-t-[0.5px] border-white/40
+            border-t border-white/20
             hover:shadow-[0_0_30px_rgba(226,255,59,0.6)]
         `,
         secondary: `
             bg-transparent border border-white/10 text-white
             hover:border-[#E2FF3B] hover:text-[#E2FF3B]
             hover:shadow-[0_0_15px_rgba(226,255,59,0.2)]
+            backdrop-blur-md
         `,
         ghost: `
             bg-transparent text-white border-none
-            hover:text-shadow-glow hover:text-[#E2FF3B]
+            hover:bg-white/5 hover:text-[#E2FF3B]
         `,
         outline: `
-            bg-white/5 border border-white/10 backdrop-blur-md text-white
-            hover:bg-white/10 hover:border-white/30
+            bg-transparent border border-white/10 text-white backdrop-blur-md
+            hover:border-[#E2FF3B] hover:text-[#E2FF3B]
+            hover:bg-white/5
         `,
         danger: `
-            bg-[#FF3E3E] text-white border-t-[0.5px] border-white/40
+            bg-[#FF3E3E] text-white border-t border-white/40
             hover:shadow-[0_0_20px_rgba(255,62,62,0.5)]
         `
     };

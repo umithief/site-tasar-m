@@ -67,7 +67,7 @@ export const FollowButton: React.FC<FollowButtonProps> = ({ targetUserId, isFoll
                 group flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all duration-300
                 ${effectiveIsFollowing
                     ? 'bg-transparent border border-white/20 text-white hover:border-red-500 hover:text-red-500'
-                    : 'bg-white text-black hover:bg-moto-accent hover:scale-105 shadow-lg shadow-white/10'}
+                    : 'bg-white text-black hover:bg-[#E2FF3B] hover:scale-105 shadow-lg shadow-white/10'}
                 ${isPending ? 'opacity-80 cursor-wait' : ''}
                 ${className}
             `}

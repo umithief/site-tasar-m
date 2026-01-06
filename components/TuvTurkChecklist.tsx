@@ -18,13 +18,13 @@ const CHECKLIST_DATA: ChecklistItem[] = [
     { id: 'light-2', category: 'Aydınlatma', label: 'Fren Lambası (Ön/Arka)', type: 'heavy', hint: 'Hem ön fren hem arka fren sıkıldığında yanmalı.', relatedProductKeyword: 'Stop Lambası' },
     { id: 'light-3', category: 'Aydınlatma', label: 'Sinyaller (Sağ/Sol)', type: 'heavy', hint: 'Dört sinyal de eksiksiz çalışmalı ve rengi solmamış olmalı.', relatedProductKeyword: 'Sinyal' },
     { id: 'light-4', category: 'Aydınlatma', label: 'Plaka Aydınlatması', type: 'heavy', hint: 'Plakayı okutacak şekilde beyaz ışık yanmalı.', relatedProductKeyword: 'Plaka Işığı' },
-    
+
     // Mechanics
     { id: 'mech-1', category: 'Mekanik', label: 'Lastik Diş Derinliği', type: 'heavy', hint: 'En az 1.6mm olmalı. Çatlak veya balon olmamalı.', relatedProductKeyword: 'Lastik' },
     { id: 'mech-2', category: 'Mekanik', label: 'Egzoz Susturucu', type: 'heavy', hint: 'Orijinal olmalı veya DB killer takılı olmalı. Aşırı ses ağır kusurdur.', relatedProductKeyword: 'Susturucu' },
     { id: 'mech-3', category: 'Mekanik', label: 'Zincir Gerginliği', type: 'heavy', hint: 'Aşırı gevşek veya sıkı olmamalı.', relatedProductKeyword: 'Zincir Yağı' },
     { id: 'mech-4', category: 'Mekanik', label: 'Fren Balataları', type: 'heavy', hint: 'Aşınma sınırında olmamalı.', relatedProductKeyword: 'Balata' },
-    
+
     // Safety & Docs
     { id: 'safe-1', category: 'Güvenlik', label: 'Korna', type: 'heavy', hint: 'Net ve güçlü bir şekilde çalmalı.', relatedProductKeyword: 'Korna' },
     { id: 'safe-2', category: 'Güvenlik', label: 'Aynalar', type: 'heavy', hint: 'Sağ ve sol ayna takılı olmalı, görüşü sağlamalı.', relatedProductKeyword: 'Ayna' },
@@ -49,7 +49,7 @@ export const TuvTurkChecklist: React.FC<TuvTurkChecklistProps> = ({ onBack, onNa
     const calculateResult = () => {
         const unchecked = CHECKLIST_DATA.filter(item => !checkedItems[item.id]);
         const heavyDefects = unchecked.filter(item => item.type === 'heavy');
-        
+
         setFailedItems(unchecked);
 
         if (heavyDefects.length > 0) {
@@ -90,7 +90,7 @@ export const TuvTurkChecklist: React.FC<TuvTurkChecklistProps> = ({ onBack, onNa
             <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
                 <AnimatePresence mode="wait">
                     {result === 'pending' ? (
-                        <motion.div 
+                        <motion.div
                             key="list"
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
@@ -109,7 +109,7 @@ export const TuvTurkChecklist: React.FC<TuvTurkChecklistProps> = ({ onBack, onNa
                                     <h3 className="text-sm font-bold text-gray-400 uppercase tracking-wider ml-1">{category}</h3>
                                     <div className="bg-[#1A1A17] border border-white/5 rounded-2xl overflow-hidden">
                                         {items.map((item) => (
-                                            <div 
+                                            <div
                                                 key={item.id}
                                                 onClick={() => toggleItem(item.id)}
                                                 className={`flex items-center justify-between p-4 cursor-pointer transition-colors border-b border-white/5 last:border-0 ${checkedItems[item.id] ? 'bg-green-500/5' : 'hover:bg-white/5'}`}
@@ -174,9 +174,9 @@ export const TuvTurkChecklist: React.FC<TuvTurkChecklistProps> = ({ onBack, onNa
                                                         <div className="text-gray-500 text-[10px]">{item.type === 'heavy' ? 'Ağır Kusur' : 'Hafif Kusur'}</div>
                                                     </div>
                                                     {item.relatedProductKeyword && (
-                                                        <button 
+                                                        <button
                                                             onClick={() => onNavigateShop(item.relatedProductKeyword!)}
-                                                            className="px-3 py-1.5 bg-moto-accent text-black text-xs font-bold rounded-lg flex items-center gap-1 hover:bg-white transition-colors"
+                                                            className="px-3 py-1.5 bg-[#E2FF3B] text-black text-xs font-bold rounded-xl flex items-center gap-1 hover:bg-white transition-colors"
                                                         >
                                                             <ShoppingBag className="w-3 h-3" /> AL
                                                         </button>
@@ -199,8 +199,8 @@ export const TuvTurkChecklist: React.FC<TuvTurkChecklistProps> = ({ onBack, onNa
             {/* Bottom Actions */}
             {result === 'pending' && (
                 <div className="p-4 border-t border-white/10 bg-[#09090b]">
-                    <Button 
-                        variant="primary" 
+                    <Button
+                        variant="primary"
                         className="w-full py-4 text-lg shadow-lg"
                         onClick={calculateResult}
                     >

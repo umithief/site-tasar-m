@@ -22,7 +22,8 @@ export const BottomNav: React.FC<SidebarProps> = ({
     onNavigate,
     user,
     onOpenAuth,
-    onCreateRide
+    onCreateRide,
+    cartCount
 }) => {
 
     // Determine which tab is technically "active" for highlighting

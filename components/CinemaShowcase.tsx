@@ -8,6 +8,8 @@ import { notify } from '../services/notificationService';
 import { useAppSounds } from '../hooks/useAppSounds';
 import { orderService } from '../services/orderService';
 import { authService } from '../services/auth';
+import { VibeButton } from './ui/VibeButton';
+import { ShoppingBag, ChevronRight, X } from 'lucide-react'; // Added icons
 
 export const CinemaShowcase: React.FC = () => {
     const [products, setProducts] = useState<Product[]>([]);
@@ -198,12 +200,16 @@ export const CinemaShowcase: React.FC = () => {
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Close Button */}
-                        <button
-                            onClick={() => setPreviewProduct(null)}
-                            className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-black/50 hover:bg-white/10 flex items-center justify-center text-white transition-colors border border-white/10"
-                        >
-                            ✕
-                        </button>
+                        <div className="absolute top-4 right-4 z-20">
+                            <VibeButton
+                                onClick={() => setPreviewProduct(null)}
+                                variant="ghost"
+                                size="sm"
+                                className="!rounded-full w-10 h-10 p-0 border border-white/10 bg-black/50 hover:bg-white/10"
+                            >
+                                <X className="w-5 h-5 text-white" />
+                            </VibeButton>
+                        </div>
 
                         {/* Image Side - Fixed Height & Gradient */}
                         <div className="w-full md:w-1/2 h-[400px] md:h-auto min-h-[400px] relative bg-black">
@@ -244,12 +250,16 @@ export const CinemaShowcase: React.FC = () => {
                             </div>
 
                             <div className="mt-auto pt-8 border-t border-white/10">
-                                <button
+                                <VibeButton
                                     onClick={() => handleAddToCart(previewProduct)}
-                                    className="w-full py-4 bg-moto-accent hover:bg-white text-black font-bold uppercase tracking-widest text-sm transition-colors rounded-xl flex items-center justify-center gap-2"
+                                    variant="primary"
+                                    fullWidth
+                                    size="lg"
+                                    icon={ShoppingBag}
+                                    className="uppercase tracking-widest text-sm"
                                 >
-                                    <span>Hemen Ön Sipariş Ver</span>
-                                </button>
+                                    Hemen Ön Sipariş Ver
+                                </VibeButton>
                             </div>
                         </div>
                     </motion.div>

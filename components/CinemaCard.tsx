@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence, useSpring, useMotionValue, useTransform } from 'framer-motion';
 import { ShoppingBag, Zap, Info } from 'lucide-react';
 import { Product } from '../types';
+import { VibeButton } from './ui/VibeButton';
 
 interface CinemaCardProps {
     product: Product;
@@ -12,60 +13,7 @@ interface CinemaCardProps {
     onPreview: (product: Product) => void;
 }
 
-const MagneticButton: React.FC<{ children: React.ReactNode; onClick: () => void; className?: string }> = ({
-    children,
-    onClick,
-    className = ""
-}) => {
-    const ref = useRef<HTMLButtonElement>(null);
-    const x = useMotionValue(0);
-    const y = useMotionValue(0);
 
-    const springConfig = { damping: 20, stiffness: 200 };
-    const springX = useSpring(x, springConfig);
-    const springY = useSpring(y, springConfig);
-
-    const handleMouseMove = (e: React.MouseEvent) => {
-        if (!ref.current) return;
-        const { clientX, clientY } = e;
-        const { left, top, width, height } = ref.current.getBoundingClientRect();
-        const centerX = left + width / 2;
-        const centerY = top + height / 2;
-        x.set((clientX - centerX) * 0.4);
-        y.set((clientY - centerY) * 0.4);
-    };
-
-    const handleMouseLeave = () => {
-        x.set(0);
-        y.set(0);
-    };
-
-    return (
-        <motion.button
-            ref={ref}
-            style={{ x: springX, y: springY }}
-            onMouseMove={handleMouseMove}
-            onMouseLeave={handleMouseLeave}
-            onClick={(e) => {
-                e.stopPropagation();
-                onClick();
-            }}
-            className={`relative rounded-full px-8 py-4 font-bold text-white bg-moto-accent overflow-hidden shadow-[0_0_30px_rgba(var(--moto-accent-rgb),0.5)] ${className}`}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-        >
-            <span className="relative z-10 flex items-center gap-2">
-                {children}
-            </span>
-            <motion.div
-                className="absolute inset-0 bg-white/20"
-                initial={{ x: "-100%" }}
-                whileHover={{ x: "100%" }}
-                transition={{ duration: 0.5 }}
-            />
-        </motion.button>
-    );
-};
 
 const DecodingText: React.FC<{ text: string; delay?: number }> = ({ text, delay = 0 }) => {
     const [display, setDisplay] = useState("");
@@ -296,10 +244,15 @@ export const CinemaCard: React.FC<CinemaCardProps> = ({
                                                     <span className="text-moto-accent text-sm font-bold">*</span>
                                                 </div>
                                             </div>
-                                            <MagneticButton onClick={() => onAddToCart(product)}>
-                                                <ShoppingBag size={22} strokeWidth={2.5} />
-                                                <span className="tracking-widest uppercase text-sm">Ön Sipariş Ver</span>
-                                            </MagneticButton>
+                                            <VibeButton
+                                                onClick={() => onAddToCart(product)}
+                                                variant="primary"
+                                                size="lg"
+                                                icon={ShoppingBag}
+                                                className="tracking-widest uppercase text-sm !rounded-full px-8 py-4 shadow-[0_0_30px_rgba(var(--moto-accent-rgb),0.5)]"
+                                            >
+                                                Ön Sipariş Ver
+                                            </VibeButton>
                                         </div>
                                     </motion.div>
                                 )}

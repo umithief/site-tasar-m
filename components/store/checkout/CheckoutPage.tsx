@@ -6,12 +6,14 @@ import { OrderSummary } from './OrderSummary';
 import { PaymentForm } from './PaymentForm';
 import { CartItem as CartItemType, ViewState } from '../../../types';
 
+import { OrderSuccess } from './OrderSuccess';
+
 interface CheckoutPageProps {
     items: CartItemType[];
     total: number;
     onBack: () => void;
     onSuccess: (orderId: string) => void;
-    onToast: (type: 'success' | 'error', msg: string) => void;
+    onToast: (type: any, msg: string) => void;
 }
 
 type Step = 'loadout' | 'deployment' | 'ignition';
@@ -19,6 +21,8 @@ type Step = 'loadout' | 'deployment' | 'ignition';
 export const CheckoutPage: React.FC<CheckoutPageProps> = ({ items, total, onBack, onSuccess, onToast }) => {
     const [step, setStep] = useState<Step>('loadout');
     const [loading, setLoading] = useState(false);
+    const [orderComplete, setOrderComplete] = useState(false);
+    const [completedOrderId, setCompletedOrderId] = useState<string>('');
 
     // Form States
     const [address, setAddress] = useState({ street: '', city: '', zip: '', country: 'Turkey' });
@@ -48,15 +52,27 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ items, total, onBack
 
     const handlePlaceOrder = () => {
         setLoading(true);
-        // Simulate API call
         setTimeout(() => {
             setLoading(false);
-            onSuccess(`ORD-${Math.random().toString(36).substr(2, 9).toUpperCase()}`);
+            const newOrderId = 'MV-' + Math.floor(Math.random() * 1000000);
+            setCompletedOrderId(newOrderId);
+            setOrderComplete(true);
+            // onSuccess callback will be handled by the user clicking "Return to Garage" or similar in OrderSuccess
         }, 2000);
     };
 
+    if (orderComplete) {
+        return (
+            <OrderSuccess
+                orderId={completedOrderId}
+                onTrackOrder={() => onSuccess(completedOrderId)}
+                onReturnHome={() => onSuccess(completedOrderId)}
+            />
+        );
+    }
+
     return (
-        <div className="min-h-screen bg-[#080808] text-white pb-32 font-sans selection:bg-[#E2FF3B] selection:text-black">
+        <div className="min-h-screen bg-[#050505] pt-safe-top pb-safe-bottom font-sans selection:bg-[#E2FF3B] selection:text-black">
 
             {/* Top Bar / Stepper */}
             <div className="sticky top-0 z-50 bg-[#080808]/80 backdrop-blur-xl border-b border-white/5">

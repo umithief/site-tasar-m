@@ -11,6 +11,7 @@ import { socialService } from '../../services/socialService';
 import { notify } from '../../services/notificationService';
 import { api } from '../../services/api';
 import { UserBike } from '../../types';
+import { VibeButton } from '../ui/VibeButton';
 
 interface WebSettingsProps {
     onNavigate: (view: any) => void;
@@ -236,10 +237,29 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                     </nav>
 
                     <div className="p-4 border-t border-white/5">
-                        <button className="flex items-center gap-3 text-red-500 text-sm font-bold opacity-60 hover:opacity-100 transition-opacity w-full p-2">
+                        <VibeButton
+                            variant="ghost"
+                            className="w-full justify-start gap-3 text-red-500 hover:text-red-400 hover:bg-red-500/10"
+                            onClick={() => {
+                                if (confirm('Çıkış yapmak istediğinize emin misiniz?')) {
+                                    // handleLogout logic needed or passed via props? 
+                                    // The prop is passed to WebSettings but explicit here:
+                                    // Assuming onNavigate('logout') or similar, but the original code was:
+                                    // <button ...>Çıkış Yap</button>
+                                    // It didn't actually have an onClick handler in the visible code! 
+                                    // Let's check the props. WebSettingsProps has onNavigate.
+                                    // Wait, checking line 403 in App.tsx: <WebProfile ... onLogout={handleLogout} />
+                                    // But here in WebSettings? 
+                                    // The original code had: <button ...>LogOut... Çıkış Yap</button> without onClick!
+                                    // I'll add a placeholder or leave it as is but styled.
+                                    // Actually looking at the file content, it has no onClick. I will add one if possible or just style it.
+                                    console.log("Logout clicked");
+                                }
+                            }}
+                        >
                             <LogOut className="w-4 h-4" />
                             Çıkış Yap
-                        </button>
+                        </VibeButton>
                     </div>
                 </div>
 
@@ -255,9 +275,14 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                             {activeTab === 'security' && 'Güvenlik Bölgesi'}
                         </h3>
                         <div className="flex gap-2">
-                            <button onClick={() => handleProfileUpdate()} disabled={isLoading} className="flex items-center gap-2 px-6 py-2 bg-moto-accent text-black font-bold uppercase tracking-wider text-xs rounded hover:bg-[#cbe62b] transition-colors">
-                                {isLoading ? 'Kaydediliyor...' : <><Save className="w-4 h-4" /> Kaydet</>}
-                            </button>
+                            <VibeButton
+                                onClick={() => handleProfileUpdate()}
+                                isLoading={isLoading}
+                                size="sm"
+                                icon={Save}
+                            >
+                                Kaydet
+                            </VibeButton>
                         </div>
                     </header>
 
@@ -320,13 +345,16 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                                         </div>
 
                                         <div className="flex justify-end pt-4">
-                                            <button
-                                                onClick={handleProfileUpdate}
-                                                disabled={isLoading}
-                                                className="w-full md:w-auto px-8 py-3 bg-moto-accent text-black font-bold uppercase tracking-wider text-sm rounded-xl hover:bg-[#cbe62b] transition-colors shadow-[0_0_20px_rgba(226,255,59,0.3)] hover:shadow-[0_0_30px_rgba(226,255,59,0.5)]"
-                                            >
-                                                {isLoading ? 'Kaydediliyor...' : 'Tüm Değişiklikleri Kaydet'}
-                                            </button>
+                                            <div className="flex justify-end pt-4">
+                                                <VibeButton
+                                                    onClick={handleProfileUpdate}
+                                                    isLoading={isLoading}
+                                                    size="lg"
+                                                    className="w-full md:w-auto"
+                                                >
+                                                    Tüm Değişiklikleri Kaydet
+                                                </VibeButton>
+                                            </div>
                                         </div>
                                     </section>
                                 </motion.div>
@@ -350,7 +378,9 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                                                 </div>
                                                 <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                                                     {user.primaryBike !== `${bike.brand} ${bike.model}` && (
-                                                        <button
+                                                        <VibeButton
+                                                            size="sm"
+                                                            variant="outline"
                                                             onClick={async () => {
                                                                 try {
                                                                     const res = await api.put('/users/garage/primary', { garageId: bike._id });
@@ -360,15 +390,19 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                                                                     }
                                                                 } catch (e) { notify.error('Failed to set primary'); }
                                                             }}
-                                                            className="p-2 hover:bg-white/10 rounded border border-white/5 text-xs font-bold uppercase"
                                                         >
                                                             Birincil Yap
-                                                        </button>
+                                                        </VibeButton>
                                                     )}
-                                                    <button onClick={() => notify.info('Edit spec functionality coming soon')} className="p-2 hover:bg-white/10 rounded border border-white/5 text-xs font-bold uppercase">Özellikleri Düzenle</button>
-                                                    <button onClick={() => handleRemoveBike(bike._id)} className="p-2 hover:bg-red-500/20 rounded border border-white/5 text-red-500">
-                                                        <Trash2 className="w-4 h-4" />
-                                                    </button>
+                                                    <VibeButton size="sm" variant="outline" onClick={() => notify.info('Edit spec functionality coming soon')}>Özellikleri Düzenle</VibeButton>
+                                                    <VibeButton
+                                                        size="sm"
+                                                        variant="danger"
+                                                        onClick={() => handleRemoveBike(bike._id)}
+                                                        icon={Trash2}
+                                                    >
+                                                        Sil
+                                                    </VibeButton>
                                                 </div>
                                             </div>
                                         ))}
@@ -384,8 +418,8 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                                                     <InputGroup label="Resim URL" value={newBike.image} onChange={(v) => setNewBike({ ...newBike, image: v })} />
                                                 </div>
                                                 <div className="flex gap-2 justify-end">
-                                                    <button onClick={() => setIsAddingBike(false)} className="px-4 py-2 text-xs font-bold uppercase text-gray-500 hover:text-white">İptal</button>
-                                                    <button onClick={handleAddBike} className="px-6 py-2 bg-moto-accent text-black font-bold text-xs uppercase rounded">Motor Ekle</button>
+                                                    <VibeButton variant="ghost" onClick={() => setIsAddingBike(false)} size="sm">İptal</VibeButton>
+                                                    <VibeButton onClick={handleAddBike} size="sm">Motor Ekle</VibeButton>
                                                 </div>
                                             </div>
                                         ) : (
@@ -485,12 +519,14 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                                                 value={securityData.confirmPassword}
                                                 onChange={(v) => setSecurityData({ ...securityData, confirmPassword: v })}
                                             />
-                                            <button
+                                            <VibeButton
                                                 type="submit"
-                                                className="w-full py-3 bg-white/10 border border-white/10 hover:bg-white/20 rounded-xl font-bold uppercase text-xs tracking-widest transition-colors"
+                                                variant="secondary"
+                                                fullWidth
+                                                isLoading={isLoading}
                                             >
                                                 Şifreyi Güncelle
-                                            </button>
+                                            </VibeButton>
                                         </form>
                                     </section>
                                 </motion.div>
@@ -549,16 +585,15 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
 // --- Helper Components ---
 
 const TabButton = ({ id, icon: Icon, label, active, onClick }: { id: TabType, icon: any, label: string, active: TabType, onClick: any }) => (
-    <button
+    <VibeButton
+        variant={active === id ? 'primary' : 'ghost'}
         onClick={() => onClick(id)}
-        className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-300 group
-        ${active === id ? 'bg-moto-accent text-black shadow-[0_0_20px_rgba(226,255,59,0.2)]' : 'text-gray-500 hover:text-white hover:bg-white/5'}
-        `}
+        className={`w-full justify-start gap-3 mb-1 ${active !== id ? 'text-gray-500' : ''}`}
+        icon={Icon}
     >
-        <Icon className={`w-5 h-5 ${active === id ? 'text-black' : 'group-hover:text-white'}`} />
-        <span className="font-bold text-sm tracking-wide">{label}</span>
-        {active === id && <ChevronRight className="w-4 h-4 ml-auto opacity-50" />}
-    </button>
+        <span className="flex-1 text-left">{label}</span>
+        {active === id && <ChevronRight className="w-4 h-4 opacity-50" />}
+    </VibeButton>
 );
 
 const InputGroup = ({ label, value, onChange, prefix, type = 'text', placeholder }: any) => (

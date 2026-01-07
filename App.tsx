@@ -622,6 +622,7 @@ export const App: React.FC = () => {
                                 onNavigate={navigateTo}
                                 isExpanded={isSidebarOpen}
                                 onToggleExpand={() => setIsSidebarOpen(!isSidebarOpen)}
+                                cartCount={cartItems.reduce((a, b) => a + b.quantity, 0)}
                             />
                         </div>
 

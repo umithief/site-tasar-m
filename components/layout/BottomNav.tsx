@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Home, Search, Plus, Film, User, Zap, ShoppingBag, Map as MapIcon, Compass, Navigation } from 'lucide-react';
+import { Home, Search, Plus, Film, User, Zap, ShoppingBag, Map as MapIcon, Compass, Navigation, ShoppingCart } from 'lucide-react';
 import { ViewState, User as UserType } from '../../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageProvider';
@@ -46,7 +46,7 @@ export const BottomNav: React.FC<SidebarProps> = ({
         { id: 'create', icon: Plus, label: 'Create', isFab: true },
 
         { id: 'shop', icon: ShoppingBag, label: 'Shop', view: 'shop' },
-        { id: 'onboarding', icon: Zap, label: 'Onboard', view: 'onboarding' },
+        { id: 'cart', icon: ShoppingCart, label: 'Cart', view: 'cart' },
     ];
 
     const [isFabOpen, setIsFabOpen] = useState(false);
@@ -161,6 +161,12 @@ export const BottomNav: React.FC<SidebarProps> = ({
                                         : 'text-gray-400'
                                         }`}
                                 />
+
+                                {item.id === 'cart' && cartCount > 0 && (
+                                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#E2FF3B] text-[10px] font-bold text-black animate-bounce">
+                                        {cartCount}
+                                    </span>
+                                )}
 
                                 {isActive && (
                                     <motion.div

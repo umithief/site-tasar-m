@@ -79,8 +79,8 @@ export const VibeButton = React.forwardRef<HTMLButtonElement, VibeButtonProps>((
 }, forwardedRef) => {
 
     // --- GLOBAL SETTINGS INTEGRATION ---
-    const { getComponentConfig } = useUIStore();
-    let config = getComponentConfig('VibeButton');
+    const settings = useUIStore((state) => state.settings);
+    let config = settings['VibeButton'] || {};
 
     // Allow local override for previews
     if (configOverride) {

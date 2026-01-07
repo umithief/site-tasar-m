@@ -60,6 +60,7 @@ import { Home } from './components/Home';
 import { Showcase } from './components/Showcase';
 import { AuthPage } from './components/AuthPage';
 import { Shop } from './components/Shop';
+import { StoreGrid } from './components/store/StoreGrid';
 import { MobileShop } from './components/mobile/MobileShop';
 import { MobileProfile } from './components/mobile/MobileProfile';
 import { WebProfile } from './components/desktop/WebProfile';
@@ -335,7 +336,7 @@ export const App: React.FC = () => {
         switch (view) {
             case 'home': return <Home onNavigate={navigateTo} products={products} onAddToCart={addToCart} onProductClick={(p: any) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
             case 'showcase': return <Showcase products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onNavigate={navigateTo} onToggleMenu={() => setIsMobileMenuOpen(true)} onCartClick={() => setIsCartOpen(true)} />;
-            case 'shop': return isMobileMenuOpen || window.innerWidth < 768 ? <MobileShop initialCategory={initialShopCategory} onNavigate={navigateTo} /> : <Shop products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onNavigate={navigateTo} initialCategory={initialShopCategory} onCartClick={() => setIsCartOpen(true)} />;
+            case 'shop': return isMobileMenuOpen || window.innerWidth < 768 ? <MobileShop initialCategory={initialShopCategory} onNavigate={navigateTo} /> : <StoreGrid onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} />;
             case 'auth': return isMobile ? (
                 <MobileAuth
                     onClose={() => navigateTo('home')}

@@ -74,7 +74,7 @@ import { MobileExplore } from './components/mobile/MobileExplore';
 import { ReelsPage } from './components/reels/ReelsPage';
 import { MobileProductDetail } from './components/mobile/MobileProductDetail';
 import { CartBottomSheet } from './components/mobile/CartBottomSheet';
-import { CheckoutPage } from './components/checkout/CheckoutPage';
+import { CheckoutPage } from './components/store/checkout/CheckoutPage';
 import { OrderTracking } from './components/checkout/OrderTracking';
 import { WebSettings } from './components/desktop/WebSettings';
 import { Garage } from './components/garage/Garage';

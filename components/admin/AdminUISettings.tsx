@@ -81,10 +81,34 @@ export const AdminUISettings = () => {
                             VibeButton Configuration
                         </h2>
 
+                        {/* Style Presets */}
+                        <div className="mb-8 p-4 bg-white/5 rounded-xl border border-white/5">
+                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Hızlı Tasarım Paketleri</label>
+                            <div className="grid grid-cols-2 gap-3">
+                                {[
+                                    { name: 'Neo (Yuvarlak)', config: { borderRadius: '9999px', animationSpeed: 1.5, magneticStrength: 0.3 } },
+                                    { name: 'Cyber (Keskin)', config: { borderRadius: '0px', animationSpeed: 0.8, magneticStrength: 0 } },
+                                    { name: 'Soft (Yumuşak)', config: { borderRadius: '12px', animationSpeed: 2.0, magneticStrength: 0.1 } },
+                                    { name: 'Hyper (Hızlı)', config: { borderRadius: '20px', animationSpeed: 0.5, magneticStrength: 0.5 } }
+                                ].map(preset => (
+                                    <button
+                                        key={preset.name}
+                                        onClick={() => setLocalConfig(prev => ({ ...prev, ...preset.config }))}
+                                        className="px-4 py-3 bg-black/40 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-bold text-white transition-all text-left flex flex-col gap-1 group"
+                                    >
+                                        <span className="group-hover:text-[#F2A619] transition-colors">{preset.name}</span>
+                                        <span className="text-[10px] text-gray-500 font-mono">
+                                            R:{preset.config.borderRadius === '9999px' ? 'Full' : preset.config.borderRadius} • S:{preset.config.animationSpeed}s
+                                        </span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
                         {/* Primary Color */}
                         <div className="mb-6">
                             <label className="block text-sm font-medium text-gray-400 mb-2">Primary Color (The Accelerator)</label>
-                            <div className="flex items-center gap-4">
+                            <div className="flex items-center gap-4 mb-4">
                                 <input
                                     type="color"
                                     value={localConfig.primaryColor}
@@ -97,6 +121,26 @@ export const AdminUISettings = () => {
                                     onChange={(e) => handleChange('primaryColor', e.target.value)}
                                     className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#F2A619]"
                                 />
+                            </div>
+
+                            {/* Color Presets */}
+                            <div className="grid grid-cols-6 gap-2">
+                                {[
+                                    { name: 'Neon Lime', value: '#E2FF3B' },
+                                    { name: 'Cyber Blue', value: '#00D4FF' },
+                                    { name: 'Hot Pink', value: '#FF0099' },
+                                    { name: 'Electric Orange', value: '#FF5E00' },
+                                    { name: 'Toxic Green', value: '#39FF14' },
+                                    { name: 'Void Purple', value: '#9D00FF' }
+                                ].map((preset) => (
+                                    <button
+                                        key={preset.value}
+                                        onClick={() => handleChange('primaryColor', preset.value)}
+                                        className={`w-8 h-8 rounded-full border-2 transition-all hover:scale-110 ${localConfig.primaryColor === preset.value ? 'border-white scale-110 shadow-[0_0_10px_rgba(255,255,255,0.5)]' : 'border-transparent opacity-70 hover:opacity-100'}`}
+                                        style={{ backgroundColor: preset.value }}
+                                        title={preset.name}
+                                    />
+                                ))}
                             </div>
                         </div>
 

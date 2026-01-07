@@ -10,11 +10,15 @@ import { useUIStore } from '../../store/useUIStore';
 interface StoreGridProps {
     onAddToCart: (product: Product) => void;
     onProductClick: (product: Product) => void;
+    onOpenCart: () => void;
+    cartCount: number;
 }
 
 export const StoreGrid: React.FC<StoreGridProps> = ({
     onAddToCart,
-    onProductClick
+    onProductClick,
+    onOpenCart,
+    cartCount
 }) => {
     const [products, setProducts] = useState<Product[]>([]);
     const [loading, setLoading] = useState(true);
@@ -70,6 +74,19 @@ export const StoreGrid: React.FC<StoreGridProps> = ({
                 </div>
 
                 <div className="flex items-center gap-4 w-full md:w-auto">
+                    {/* Cart Button */}
+                    <button
+                        onClick={onOpenCart}
+                        className="relative p-3 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors group"
+                    >
+                        <ShoppingCart className="text-gray-300 group-hover:text-[#E2FF3B] transition-colors" size={20} />
+                        {cartCount > 0 && (
+                            <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#E2FF3B] text-[10px] font-bold text-black animate-pulse">
+                                {cartCount}
+                            </span>
+                        )}
+                    </button>
+
                     <div className="relative flex-1 md:w-96">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                         <input

@@ -8,7 +8,7 @@ const CATEGORIES = ["Tümü", "Performans", "Ekipman", "Bakım", "Aksesuar"];
 
 import { ProductCategory } from '../../types';
 
-export const MobileShop = ({ onNavigate, initialCategory = 'ALL' }: { onNavigate: (view: any, data?: any) => void, initialCategory?: ProductCategory | 'ALL' }) => {
+export const MobileShop = ({ onNavigate, initialCategory = 'ALL', cartCount = 0 }: { onNavigate: (view: any, data?: any) => void, initialCategory?: ProductCategory | 'ALL', cartCount?: number }) => {
     const { data: products, isLoading } = useProducts();
     const [searchQuery, setSearchQuery] = useState("");
     const [activeCategory, setActiveCategory] = useState<string>(initialCategory === 'ALL' ? "Tümü" : initialCategory);
@@ -25,10 +25,14 @@ export const MobileShop = ({ onNavigate, initialCategory = 'ALL' }: { onNavigate
             <div className="sticky top-0 z-20 bg-white/80 dark:bg-black/80 backdrop-blur-xl border-b border-gray-200 dark:border-white/5 px-4 pt-12 pb-4">
                 <div className="flex items-center justify-between mb-4">
                     <h1 className="text-2xl font-bold tracking-tighter italic">MOTO<span className="text-[#E2FF3B]">SHOP</span></h1>
-                    <div className="relative">
+                    <button onClick={() => onNavigate('cart')} className="relative p-2 -mr-2">
                         <ShoppingBag className="text-zinc-800 dark:text-white" size={24} />
-                        {/* Badge can be added here linking to Cart */}
-                    </div>
+                        {cartCount > 0 && (
+                            <span className="absolute top-1 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-[#E2FF3B] text-[10px] font-bold text-black">
+                                {cartCount}
+                            </span>
+                        )}
+                    </button>
                 </div>
 
                 {/* Search Bar */}

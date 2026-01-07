@@ -338,7 +338,9 @@ export const App: React.FC = () => {
         switch (view) {
             case 'home': return <Home onNavigate={navigateTo} products={products} onAddToCart={addToCart} onProductClick={(p: any) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
             case 'showcase': return <Showcase products={products} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onNavigate={navigateTo} onToggleMenu={() => setIsMobileMenuOpen(true)} onCartClick={() => setIsCartOpen(true)} />;
-            case 'shop': return isMobileMenuOpen || window.innerWidth < 768 ? <MobileShop initialCategory={initialShopCategory} onNavigate={navigateTo} /> : <StoreGrid onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} />;
+            case 'shop': return isMobileMenuOpen || window.innerWidth < 768
+                ? <MobileShop initialCategory={initialShopCategory} onNavigate={navigateTo} cartCount={cartItems.reduce((a, b) => a + b.quantity, 0)} />
+                : <StoreGrid onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} onOpenCart={() => navigateTo('cart')} cartCount={cartItems.reduce((a, b) => a + b.quantity, 0)} />;
             case 'auth': return isMobile ? (
                 <MobileAuth
                     onClose={() => navigateTo('home')}
@@ -622,7 +624,6 @@ export const App: React.FC = () => {
                                 onNavigate={navigateTo}
                                 isExpanded={isSidebarOpen}
                                 onToggleExpand={() => setIsSidebarOpen(!isSidebarOpen)}
-                                cartCount={cartItems.reduce((a, b) => a + b.quantity, 0)}
                             />
                         </div>
 

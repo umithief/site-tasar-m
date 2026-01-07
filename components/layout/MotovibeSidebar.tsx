@@ -14,7 +14,6 @@ interface MotovibeSidebarProps {
     onNavigate: (view: ViewState) => void;
     isExpanded: boolean;
     onToggleExpand: () => void;
-    cartCount?: number;
     className?: string; // Allow external positioning classes
 }
 
@@ -23,7 +22,6 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
     onNavigate,
     isExpanded,
     onToggleExpand,
-    cartCount = 0,
     className
 }) => {
     const { user, logout } = useAuthStore();
@@ -39,7 +37,6 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
                 { id: 'explore', icon: Compass, label: 'Keşfet' },
                 { id: 'reels', icon: Zap, label: 'Reels' },
                 { id: 'shop', icon: ShoppingBag, label: 'Mağaza' },
-                { id: 'cart', icon: ShoppingCart, label: 'Sepetim' }, // Added Cart
                 { id: 'routes', icon: Map, label: 'Rotalar' },
             ]
         },
@@ -145,12 +142,7 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
                                                     strokeWidth={1}
                                                     className={`w-6 h-6 transition-all duration-300 ${isActive ? 'drop-shadow-[0_0_8px_rgba(255,69,0,0.5)]' : ''}`}
                                                 />
-                                                {/* Cart Badge */}
-                                                {item.id === 'cart' && cartCount > 0 && (
-                                                    <div className="absolute top-1 right-1 w-4 h-4 bg-[#E2FF3B] rounded-full flex items-center justify-center text-[10px] font-bold text-black animate-pulse">
-                                                        {cartCount}
-                                                    </div>
-                                                )}
+                                                {/* Cart Badge - Removed */}
                                             </motion.div>
 
                                             {/* Label Fade In */}

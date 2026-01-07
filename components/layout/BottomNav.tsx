@@ -7,7 +7,6 @@ import { useLanguage } from '../../contexts/LanguageProvider';
 interface SidebarProps {
     currentView: ViewState;
     onNavigate: (view: ViewState) => void;
-    cartCount: number;
     isOpen: boolean;
     onClose: () => void;
     user: UserType | null;
@@ -22,8 +21,7 @@ export const BottomNav: React.FC<SidebarProps> = ({
     onNavigate,
     user,
     onOpenAuth,
-    onCreateRide,
-    cartCount
+    onCreateRide
 }) => {
 
     // Determine which tab is technically "active" for highlighting
@@ -47,7 +45,6 @@ export const BottomNav: React.FC<SidebarProps> = ({
         { id: 'create', icon: Plus, label: 'Create', isFab: true },
 
         { id: 'shop', icon: ShoppingBag, label: 'Shop', view: 'shop' },
-        { id: 'cart', icon: ShoppingCart, label: 'Cart', view: 'cart' },
     ];
 
     const [isFabOpen, setIsFabOpen] = useState(false);
@@ -163,11 +160,7 @@ export const BottomNav: React.FC<SidebarProps> = ({
                                         }`}
                                 />
 
-                                {item.id === 'cart' && cartCount > 0 && (
-                                    <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#E2FF3B] text-[10px] font-bold text-black animate-bounce">
-                                        {cartCount}
-                                    </span>
-                                )}
+
 
                                 {isActive && (
                                     <motion.div

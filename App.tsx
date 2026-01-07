@@ -67,6 +67,7 @@ import { WebProfile } from './components/desktop/WebProfile';
 import { Favorites } from './components/Favorites';
 import { AIAssistantPage } from './components/AIAssistantPage';
 import { ProductDetail } from './components/ProductDetail';
+import { ProductDetails } from './components/store/ProductDetails';
 import { SocketProvider } from './context/SocketContext';
 import { MobileLayout } from './components/mobile/MobileLayout';
 import { MobileExplore } from './components/mobile/MobileExplore';
@@ -387,7 +388,7 @@ export const App: React.FC = () => {
             );
             case 'product-detail': return isMobile ?
                 <MobileProductDetail product={selectedProduct} onAddToCart={addToCart} onNavigate={navigateTo} onOpenCart={() => setIsCartOpen(true)} /> :
-                <ProductDetail product={selectedProduct} allProducts={products} onAddToCart={addToCart} onNavigate={navigateTo} onProductClick={(p) => navigateTo('product-detail', p)} />;
+                <ProductDetails product={selectedProduct!} onAddToCart={addToCart} onNavigate={navigateTo} />;
             case 'favorites': return <Favorites products={products} favoriteIds={favoriteIds} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onNavigate={navigateTo} />;
 
             case 'meetup':

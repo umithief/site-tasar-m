@@ -4,6 +4,7 @@ import { Search, Filter, Hash, TrendingUp, Grid, Image, User, Heart, MessageSqua
 import { socialService } from '../../services/socialService';
 import { SocialPost, ViewState } from '../../types';
 import { UserAvatar } from '../ui/UserAvatar';
+import { VibeButton } from '../ui/VibeButton';
 
 interface ExploreFeedProps {
     onNavigate?: (view: ViewState, data?: any) => void;
@@ -64,10 +65,18 @@ export const ExploreFeed: React.FC<ExploreFeedProps> = ({ onNavigate, isEmbedded
                                 { id: 'photos', label: 'Fotoğraflar', icon: Image },
                                 { id: 'riders', label: 'Sürücüler', icon: User }
                             ].map(item => (
-                                <button key={item.id} onClick={() => setFilter(item.id)} className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${filter === item.id ? 'bg-moto-accent text-black font-bold' : 'text-gray-400 hover:bg-white/5 hover:text-white'}`}>
-                                    <item.icon className="w-4 h-4" />
-                                    <span className="text-sm">{item.label}</span>
-                                </button>
+                                <VibeButton
+                                    key={item.id}
+                                    variant={filter === item.id ? 'primary' : 'ghost'}
+                                    onClick={() => setFilter(item.id)}
+                                    // fullWidth // Removing fullWidth to let it fit naturally or keep consistent? The original was w-full.
+                                    // wrapperClassName="w-full" // VibeButton might need a class wrapper or we pass className="w-full"
+                                    className="w-full justify-start gap-3"
+                                    // icon={item.icon} // We can use the icon prop or children. Let's use children for custom layout if needed, but icon prop is cleaner.
+                                    icon={item.icon}
+                                >
+                                    {item.label}
+                                </VibeButton>
                             ))}
                         </div>
 

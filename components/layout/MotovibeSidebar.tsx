@@ -30,7 +30,7 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
     // Menu Structure
     const menuGroups = [
         {
-            title: 'MAIN',
+            title: 'GENEL MENÜ',
             items: [
                 { id: 'home', icon: Home, label: 'Akış' },
                 { id: 'showcase', icon: Layers, label: 'Vitrin' }, // Added Showcase
@@ -41,7 +41,7 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
             ]
         },
         {
-            title: 'PERSONAL',
+            title: 'KİŞİSEL',
             items: [
                 { id: 'favorites', icon: Heart, label: 'Favoriler' },
                 { id: 'settings', icon: Settings, label: 'Ayarlar' },

@@ -29,9 +29,9 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ items, total, onBack
     const handleRemoveItem = (id: string) => { console.log('Remove', id); };
 
     const steps: { id: Step; label: string }[] = [
-        { id: 'loadout', label: 'Loadout' },
-        { id: 'deployment', label: 'Deployment' },
-        { id: 'ignition', label: 'Ignition' }
+        { id: 'loadout', label: 'Ekipman' },
+        { id: 'deployment', label: 'Teslimat' },
+        { id: 'ignition', label: 'Ödeme' }
     ];
 
     const handleNext = () => {
@@ -111,13 +111,13 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ items, total, onBack
                                     className="space-y-4"
                                 >
                                     <div className="flex items-center justify-between mb-6">
-                                        <h2 className="text-2xl font-black italic uppercase text-white">Gear Loadout</h2>
-                                        <span className="text-gray-500 font-mono text-xs">{items.length} ITEMS DETECTED</span>
+                                        <h2 className="text-2xl font-black italic uppercase text-white">Ekipman Listesi</h2>
+                                        <span className="text-gray-500 font-mono text-xs">{items.length} ÜRÜN TESPİT EDİLDİ</span>
                                     </div>
 
                                     {items.length === 0 ? (
                                         <div className="text-center py-20 bg-[#111] rounded-3xl border border-dashed border-white/10">
-                                            <p className="text-gray-500 font-mono">LOADOUT EMPTY</p>
+                                            <p className="text-gray-500 font-mono">SEPET BOŞ</p>
                                         </div>
                                     ) : (
                                         items.map(item => (
@@ -141,11 +141,11 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ items, total, onBack
                                     exit={{ opacity: 0, y: -20 }}
                                     className="space-y-6"
                                 >
-                                    <h2 className="text-2xl font-black italic uppercase text-white mb-6">Deployment Coordinates</h2>
+                                    <h2 className="text-2xl font-black italic uppercase text-white mb-6">Teslimat Koordinatları</h2>
 
                                     <div className="bg-[#111] border border-white/5 rounded-3xl p-6 lg:p-8 space-y-6">
                                         <div className="space-y-2">
-                                            <label className="text-xs font-bold text-gray-500 uppercase tracking-widest pl-2">Street Address</label>
+                                            <label className="text-xs font-bold text-gray-500 uppercase tracking-widest pl-2">Sokak Adresi</label>
                                             <div className="relative">
                                                 <input
                                                     type="text"
@@ -160,17 +160,17 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ items, total, onBack
 
                                         <div className="grid grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest pl-2">City</label>
+                                                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest pl-2">Şehir</label>
                                                 <input
                                                     type="text"
                                                     value={address.city}
                                                     onChange={e => setAddress({ ...address, city: e.target.value })}
                                                     className="w-full bg-[#080808] border border-white/10 rounded-xl p-4 text-white focus:border-[#E2FF3B] outline-none transition-all"
-                                                    placeholder="Neo-Istanbul"
+                                                    placeholder="İstanbul"
                                                 />
                                             </div>
                                             <div className="space-y-2">
-                                                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest pl-2">Postal Code</label>
+                                                <label className="text-xs font-bold text-gray-500 uppercase tracking-widest pl-2">Posta Kodu</label>
                                                 <input
                                                     type="text"
                                                     value={address.zip}
@@ -186,8 +186,8 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ items, total, onBack
                                                 <Truck size={20} />
                                             </div>
                                             <div>
-                                                <h4 className="font-bold text-white text-sm">Express Drone Shipping</h4>
-                                                <p className="text-xs text-gray-400">Estimated Arrival: <span className="text-[#E2FF3B]">Tomorrow, 14:00</span></p>
+                                                <h4 className="font-bold text-white text-sm">Ekspres Drone Kargo</h4>
+                                                <p className="text-xs text-gray-400">Tahmini Varış: <span className="text-[#E2FF3B]">Yarın, 14:00</span></p>
                                             </div>
                                         </div>
                                     </div>
@@ -203,7 +203,7 @@ export const CheckoutPage: React.FC<CheckoutPageProps> = ({ items, total, onBack
                                     exit={{ opacity: 0, y: -20 }}
                                     className="space-y-6"
                                 >
-                                    <h2 className="text-2xl font-black italic uppercase text-white mb-6">Authorize Ignition</h2>
+                                    <h2 className="text-2xl font-black italic uppercase text-white mb-6">Ödemeyi Onayla</h2>
 
                                     <div className="bg-[#111] border border-white/5 rounded-3xl p-6 lg:p-8">
                                         <PaymentForm

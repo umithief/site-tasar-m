@@ -38,13 +38,13 @@ export const CartPage: React.FC<CartPageProps> = ({
                         className="flex items-center gap-2 text-gray-500 hover:text-white transition-colors group"
                     >
                         <ArrowLeft size={20} className="group-hover:-translate-x-1 transition-transform" />
-                        <span className="font-bold uppercase tracking-wider text-sm">Return to Armoury</span>
+                        <span className="font-bold uppercase tracking-wider text-sm">Mağazaya Dön</span>
                     </button>
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-[#E2FF3B]/10 rounded-xl text-[#E2FF3B]">
                             <ShoppingCart size={24} />
                         </div>
-                        <h1 className="text-3xl font-black italic uppercase tracking-tighter">Loadout Manager</h1>
+                        <h1 className="text-3xl font-black italic uppercase tracking-tighter">Sepetim</h1>
                     </div>
                 </div>
 
@@ -55,9 +55,9 @@ export const CartPage: React.FC<CartPageProps> = ({
                         className="flex flex-col items-center justify-center py-20 bg-[#111] rounded-3xl border border-white/5 border-dashed"
                     >
                         <ShoppingCart size={64} className="text-gray-700 mb-6" />
-                        <h2 className="text-2xl font-bold uppercase tracking-wider text-white mb-2">Loadout Empty</h2>
-                        <p className="text-gray-500 mb-8 font-mono">No gear detected in current session.</p>
-                        <VibeButton variant="secondary" onClick={onContinueShopping}>Initialize Equipment Search</VibeButton>
+                        <h2 className="text-2xl font-bold uppercase tracking-wider text-white mb-2">Sepetiniz Boş</h2>
+                        <p className="text-gray-500 mb-8 font-mono">Henüz sepetinize ekipman eklemediniz.</p>
+                        <VibeButton variant="secondary" onClick={onContinueShopping}>Ekipman Aramasını Başlat</VibeButton>
                     </motion.div>
                 ) : (
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12">
@@ -93,13 +93,13 @@ export const CartPage: React.FC<CartPageProps> = ({
                 <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#111]/90 backdrop-blur-xl border-t border-white/10 p-4 pb-safe-bottom z-50">
                     <div className="flex justify-between items-center mb-4">
                         <div className="flex flex-col">
-                            <span className="text-xs text-gray-400 uppercase font-bold tracking-wider">Total Estimation</span>
+                            <span className="text-xs text-gray-400 uppercase font-bold tracking-wider">Tahmini Toplam</span>
                             <span className="text-2xl font-mono font-bold text-[#E2FF3B]">${subtotal.toLocaleString()}</span>
                         </div>
                         <div className="h-8 w-[1px] bg-white/10" />
-                        <span className="text-xs text-gray-500 font-mono">{items.length} UNITS</span>
+                        <span className="text-xs text-gray-500 font-mono">{items.length} Parça</span>
                     </div>
-                    <VibeButton variant="primary" fullWidth onClick={onCheckout}>Proceed to Deployment</VibeButton>
+                    <VibeButton variant="primary" fullWidth onClick={onCheckout}>Teslimat Adımına Geç</VibeButton>
                 </div>
             )}
 

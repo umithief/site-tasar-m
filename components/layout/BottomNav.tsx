@@ -40,11 +40,11 @@ export const BottomNav: React.FC<SidebarProps> = ({
     const activeTab = getActiveTab();
 
     const navItems = [
-        { id: 'home', icon: Home, label: 'Home', view: 'home' },
-        { id: 'explore', icon: Compass, label: 'Explore', view: 'explore' },
-        { id: 'create', icon: Plus, label: 'Create', isFab: true },
+        { id: 'home', icon: Home, label: 'Ana Sayfa', view: 'home' },
+        { id: 'explore', icon: Compass, label: 'Keşfet', view: 'explore' },
+        { id: 'create', icon: Plus, label: 'Oluştur', isFab: true },
 
-        { id: 'shop', icon: ShoppingBag, label: 'Shop', view: 'shop' },
+        { id: 'shop', icon: ShoppingBag, label: 'Mağaza', view: 'shop' },
     ];
 
     const [isFabOpen, setIsFabOpen] = useState(false);

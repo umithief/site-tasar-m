@@ -24,7 +24,7 @@ export const MobileShop = ({ onNavigate, initialCategory = 'ALL', cartCount = 0 
             {/* Header */}
             <div className="sticky top-0 z-20 bg-white/80 dark:bg-black/80 backdrop-blur-xl border-b border-gray-200 dark:border-white/5 px-4 pt-12 pb-4">
                 <div className="flex items-center justify-between mb-4">
-                    <h1 className="text-2xl font-bold tracking-tighter italic">MOTO<span className="text-[#E2FF3B]">SHOP</span></h1>
+                    <h1 className="text-2xl font-bold tracking-tighter italic">MOTO<span className="text-[#E2FF3B]">MAĞAZA</span></h1>
                     <button onClick={() => onNavigate('cart')} className="relative p-2 -mr-2">
                         <ShoppingBag className="text-zinc-800 dark:text-white" size={24} />
                         {cartCount > 0 && (

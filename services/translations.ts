@@ -3,7 +3,7 @@ export const translations = {
   tr: {
     nav: {
       home: 'Ana Sayfa',
-      shop: 'Koleksiyon',
+      shop: 'Mağaza',
       routes: 'Rotalar',
       community: 'Topluluk',
       events: 'Etkinlikler',

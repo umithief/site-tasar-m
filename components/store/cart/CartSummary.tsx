@@ -33,14 +33,14 @@ export const CartSummary: React.FC<CartSummaryProps> = ({
 
     return (
         <div className="bg-[#111] rounded-3xl border border-white/5 p-6 lg:p-8 space-y-8 sticky top-24 shadow-2xl shadow-black/50">
-            <h2 className="text-2xl font-black italic text-white uppercase tracking-tighter">Mission Summary</h2>
+            <h2 className="text-2xl font-black italic text-white uppercase tracking-tighter">Sipariş Özeti</h2>
 
             {/* Free Shipping Progress */}
             <div className="space-y-3">
                 <div className="flex justify-between text-xs font-bold uppercase tracking-widest">
-                    <span className="text-gray-400">Logistics Status</span>
+                    <span className="text-gray-400">Kargo Durumu</span>
                     <span className={remaining === 0 ? "text-[#E2FF3B]" : "text-gray-400"}>
-                        {remaining === 0 ? "Free Deployment Active" : `$${remaining.toLocaleString()} more for Free Deployment`}
+                        {remaining === 0 ? "Ücretsiz Kargo Aktif" : `$${remaining.toLocaleString()} daha ekle, Kargo Bedava`}
                     </span>
                 </div>
                 <div className="h-2 bg-white/5 rounded-full overflow-hidden relative">
@@ -58,7 +58,7 @@ export const CartSummary: React.FC<CartSummaryProps> = ({
                         className="flex items-center gap-2 text-[#E2FF3B] text-xs font-bold justify-center bg-[#E2FF3B]/5 p-2 rounded-lg border border-[#E2FF3B]/10"
                     >
                         <Truck size={14} />
-                        <span>Free Priority Shipping Unlocked</span>
+                        <span>Ücretsiz Kargo Kilidi Açıldı</span>
                     </motion.div>
                 )}
             </div>
@@ -66,17 +66,17 @@ export const CartSummary: React.FC<CartSummaryProps> = ({
             {/* Totals */}
             <div className="space-y-4 py-6 border-y border-white/5">
                 <div className="flex justify-between text-sm text-gray-400">
-                    <span>Subtotal</span>
+                    <span>Ara Toplam</span>
                     <span className="font-mono text-white">$<AnimatedNumber value={subtotal} /></span>
                 </div>
                 <div className="flex justify-between text-sm text-gray-400">
-                    <span>Logistic Fees</span>
+                    <span>Kargo Ücreti</span>
                     <span className="font-mono uppercase font-bold text-[#E2FF3B]">
-                        {shipping === 0 ? 'Wave' : `$${shipping}`}
+                        {shipping === 0 ? 'Ücretsiz' : `$${shipping}`}
                     </span>
                 </div>
                 <div className="flex justify-between items-end pt-2">
-                    <span className="text-sm font-bold text-white uppercase tracking-widest">Total Cost</span>
+                    <span className="text-sm font-bold text-white uppercase tracking-widest">Genel Toplam</span>
                     <span className="text-3xl font-mono font-bold text-[#E2FF3B] drop-shadow-[0_0_15px_rgba(226,255,59,0.3)]">
                         $<AnimatedNumber value={total} />
                     </span>
@@ -92,7 +92,7 @@ export const CartSummary: React.FC<CartSummaryProps> = ({
                 icon={ArrowRight}
                 className="!h-16 !text-lg !rounded-2xl"
             >
-                Proceed to Deployment
+                Teslimat Adımına Geç
             </VibeButton>
 
             {/* Trust Badges */}
@@ -105,7 +105,7 @@ export const CartSummary: React.FC<CartSummaryProps> = ({
 
             <div className="flex items-center gap-2 justify-center text-[10px] text-gray-600 uppercase tracking-widest font-bold">
                 <ShieldCheck size={12} />
-                Secure Loadout Configuration
+                Güvenli Ödeme Altyapısı
             </div>
         </div>
     );

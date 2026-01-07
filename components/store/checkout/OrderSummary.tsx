@@ -26,27 +26,27 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
 }) => {
     return (
         <div className="bg-[#111] rounded-3xl border border-white/5 p-6 space-y-6 sticky top-24">
-            <h2 className="text-xl font-black italic text-white uppercase tracking-tighter">Order Manifest</h2>
+            <h2 className="text-xl font-black italic text-white uppercase tracking-tighter">Sipariş Dökümü</h2>
 
             {/* Line Items */}
             <div className="space-y-3 pb-6 border-b border-white/5">
                 <div className="flex justify-between text-sm text-gray-400">
-                    <span>Subtotal</span>
+                    <span>Ara Toplam</span>
                     <span className="font-mono text-white">${subtotal.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between text-sm text-gray-400">
-                    <span>Shipping</span>
-                    <span className="font-mono text-[#E2FF3B] uppercase font-bold">{shipping === 0 ? 'Free' : `$${shipping}`}</span>
+                    <span>Kargo</span>
+                    <span className="font-mono text-[#E2FF3B] uppercase font-bold">{shipping === 0 ? 'Ücretsiz' : `$${shipping}`}</span>
                 </div>
                 <div className="flex justify-between text-sm text-gray-400">
-                    <span>Estimated Tax</span>
+                    <span>KDV (%18)</span>
                     <span className="font-mono text-white">${tax.toLocaleString()}</span>
                 </div>
             </div>
 
             {/* Total */}
             <div className="flex justify-between items-end">
-                <span className="text-sm font-bold text-gray-500 uppercase tracking-widest">Total Due</span>
+                <span className="text-sm font-bold text-gray-500 uppercase tracking-widest">Ödenecek Tutar</span>
                 <motion.span
                     key={total}
                     initial={{ scale: 1.2, color: '#fff' }}
@@ -69,9 +69,9 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
                     className="!h-14 !text-base !rounded-xl"
                 >
                     {step === 'ignition' ? (
-                        <>Confirm Order <ShieldCheck size={18} /></>
+                        <>Siparişi Onayla <ShieldCheck size={18} /></>
                     ) : (
-                        step === 'loadout' ? "Proceed to Deployment" : "Proceed to Ignition"
+                        step === 'loadout' ? "Teslimat Adımına Geç" : "Ödeme Adımına Geç"
                     )}
                 </VibeButton>
 
@@ -80,7 +80,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
                         onClick={onBack}
                         className="w-full py-3 text-xs font-bold text-gray-500 hover:text-white uppercase tracking-widest transition-colors"
                     >
-                        Back to Previous Step
+                        Önceki Adıma Dön
                     </button>
                 )}
             </div>
@@ -88,7 +88,7 @@ export const OrderSummary: React.FC<OrderSummaryProps> = ({
             {/* Guarantee */}
             <div className="flex items-center gap-3 pt-4 justify-center opacity-50">
                 <ShieldCheck size={14} className="text-gray-400" />
-                <span className="text-[10px] text-gray-500 uppercase tracking-widest">MotoVibe Gear Guarantee</span>
+                <span className="text-[10px] text-gray-500 uppercase tracking-widest">MotoVibe Ekipman Garantisi</span>
             </div>
         </div>
     );

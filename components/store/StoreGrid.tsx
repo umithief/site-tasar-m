@@ -70,7 +70,7 @@ export const StoreGrid: React.FC<StoreGridProps> = ({
                     <h1 className="text-4xl lg:text-5xl font-black italic uppercase tracking-tighter text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">
                         Gear<span className="text-[#E2FF3B]">Lab</span>.
                     </h1>
-                    <p className="text-gray-400 mt-2 font-mono text-sm tracking-widest">ADVANCED TACTICAL EQUIPMENT // V.2.0</p>
+                    <p className="text-gray-400 mt-2 font-mono text-sm tracking-widest">GELİŞMİŞ TAKTİKSEL EKİPMAN // V.2.0</p>
                 </div>
 
                 <div className="flex items-center gap-4 w-full md:w-auto">
@@ -91,7 +91,7 @@ export const StoreGrid: React.FC<StoreGridProps> = ({
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500" size={18} />
                         <input
                             type="text"
-                            placeholder="Search Equipment..."
+                            placeholder="Ekipman Ara..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                             className="w-full bg-[#111] border border-white/10 rounded-xl py-3 pl-12 pr-4 text-sm text-white focus:outline-none focus:border-[#E2FF3B] focus:ring-1 focus:ring-[#E2FF3B] transition-all"
@@ -152,12 +152,12 @@ export const StoreGrid: React.FC<StoreGridProps> = ({
 
                     {!loading && filteredProducts.length === 0 && (
                         <div className="text-center py-20 border border-dashed border-white/10 rounded-3xl bg-white/5">
-                            <p className="text-gray-400 font-mono">NO TACTICAL EQUIPMENT FOUND FOR THIS QUERY.</p>
+                            <p className="text-gray-400 font-mono">ARAMANIZLA EŞLEŞEN EKİPMAN BULUNAMADI.</p>
                             <button
                                 onClick={() => { setSelectedCategory(null); setSelectedBrands([]); setSearchQuery(''); }}
                                 className="mt-4 text-[#E2FF3B] underline hover:text-white"
                             >
-                                RESET FILTERS
+                                FİLTRELERİ SIFIRLA
                             </button>
                         </div>
                     )}

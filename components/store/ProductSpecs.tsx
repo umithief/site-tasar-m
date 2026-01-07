@@ -13,17 +13,17 @@ interface ProductSpecsProps {
 export const ProductSpecs: React.FC<ProductSpecsProps> = ({ specs }) => {
     // Default values if not provided
     const data = {
-        material: specs?.material || 'Carbon Fiber',
+        material: specs?.material || 'Karbon Fiber',
         protection: specs?.protection || 'ECE 22.06',
         weight: specs?.weight || '1350g',
-        weather: specs?.weather || 'Waterproof'
+        weather: specs?.weather || 'Su Geçirmez'
     };
 
     const items = [
-        { label: 'Material', value: data.material, icon: Shield, colSpan: 'col-span-1' },
-        { label: 'Protection', value: data.protection, icon: Shield, colSpan: 'col-span-1' },
-        { label: 'Weight', value: data.weight, icon: Weight, colSpan: 'col-span-1' },
-        { label: 'Weather', value: data.weather, icon: Droplets, colSpan: 'col-span-1' },
+        { label: 'Malzeme', value: data.material, icon: Shield, colSpan: 'col-span-1' },
+        { label: 'Koruma', value: data.protection, icon: Shield, colSpan: 'col-span-1' },
+        { label: 'Ağırlık', value: data.weight, icon: Weight, colSpan: 'col-span-1' },
+        { label: 'Hava', value: data.weather, icon: Droplets, colSpan: 'col-span-1' },
     ];
 
     return (

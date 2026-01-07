@@ -53,15 +53,15 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ cardData, onChange }) 
                     {/* Details */}
                     <div className="flex justify-between items-end text-white/90">
                         <div>
-                            <div className="text-[8px] uppercase tracking-widest opacity-60 mb-1">Card Holder</div>
+                            <div className="text-[8px] uppercase tracking-widest opacity-60 mb-1">KART SAHİBİ</div>
                             <div className="font-bold uppercase tracking-wider text-sm sm:text-base">
-                                {cardData.holder || 'YOUR NAME'}
+                                {cardData.holder || 'ADINIZ SOYADINIZ'}
                             </div>
                         </div>
                         <div className="text-right">
-                            <div className="text-[8px] uppercase tracking-widest opacity-60 mb-1">Expires</div>
+                            <div className="text-[8px] uppercase tracking-widest opacity-60 mb-1">SON KUL.</div>
                             <div className="font-mono font-bold">
-                                {cardData.expiry || 'MM/YY'}
+                                {cardData.expiry || 'AA/YY'}
                             </div>
                         </div>
                     </div>
@@ -74,7 +74,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ cardData, onChange }) 
             {/* Inputs */}
             <div className="grid grid-cols-2 gap-4">
                 <div className="col-span-2 space-y-2">
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-widest pl-2">Card Number</label>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-widest pl-2">Kart Numarası</label>
                     <div className="relative">
                         <input
                             type="text"
@@ -92,18 +92,18 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ cardData, onChange }) 
                 </div>
 
                 <div className="col-span-2 space-y-2">
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-widest pl-2">Card Holder</label>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-widest pl-2">Kart Sahibi</label>
                     <input
                         type="text"
                         value={cardData.holder}
                         onChange={(e) => onChange('holder', e.target.value.toUpperCase())}
-                        placeholder="NAME ON CARD"
+                        placeholder="KART ÜZERİNDEKİ İSİM"
                         className="w-full bg-[#111] border border-white/10 rounded-xl p-4 text-white font-bold focus:border-[#E2FF3B] focus:ring-1 focus:ring-[#E2FF3B] outline-none transition-all uppercase"
                     />
                 </div>
 
                 <div className="col-span-1 space-y-2">
-                    <label className="text-xs font-bold text-gray-500 uppercase tracking-widest pl-2">Expiry</label>
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-widest pl-2">Son Kul. Tarihi</label>
                     <input
                         type="text"
                         maxLength={5}
@@ -113,7 +113,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ cardData, onChange }) 
                             if (v.length >= 2) v = v.slice(0, 2) + '/' + v.slice(2, 4);
                             onChange('expiry', v);
                         }}
-                        placeholder="MM/YY"
+                        placeholder="AA/YY"
                         className="w-full bg-[#111] border border-white/10 rounded-xl p-4 text-white font-mono focus:border-[#E2FF3B] focus:ring-1 focus:ring-[#E2FF3B] outline-none transition-all"
                     />
                 </div>
@@ -136,7 +136,7 @@ export const PaymentForm: React.FC<PaymentFormProps> = ({ cardData, onChange }) 
 
             <div className="flex items-center gap-2 text-xs text-gray-500 justify-center bg-white/5 p-3 rounded-lg border border-white/5">
                 <Lock size={12} className="text-[#E2FF3B]" />
-                Payments are securely processed with 256-bit encryption.
+                Ödemeler 256-bit SSL şifreleme ile güvenle işlenmektedir.
             </div>
         </div>
     );

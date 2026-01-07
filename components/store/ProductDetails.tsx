@@ -41,7 +41,7 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({
                     className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors"
                 >
                     <ArrowLeft size={20} />
-                    <span className="text-xs font-bold uppercase tracking-widest hidden md:inline">Back to Shop</span>
+                    <span className="text-xs font-bold uppercase tracking-widest hidden md:inline">Mağazaya Dön</span>
                 </button>
                 <div className="font-bold font-mono text-sm tracking-widest opacity-50">PROD_ID: {product._id.slice(-6).toUpperCase()}</div>
             </header>
@@ -101,19 +101,19 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({
 
                             {/* Color */}
                             <div>
-                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Color Configuration</label>
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Renk Seçimi</label>
                                 <div className="flex gap-3">
                                     {colors.map(color => (
                                         <button
                                             key={color.name}
                                             onClick={() => setSelectedColor(color.name)}
                                             className={`h-12 px-6 rounded-full border flex items-center gap-3 transition-all ${selectedColor === color.name
-                                                    ? 'border-[#E2FF3B] bg-[#E2FF3B]/10 text-white shadow-[0_0_15px_rgba(226,255,59,0.1)]'
-                                                    : 'border-white/10 bg-transparent text-gray-400 hover:border-white/30'
+                                                ? 'border-[#E2FF3B] bg-[#E2FF3B]/10 text-white shadow-[0_0_15px_rgba(226,255,59,0.1)]'
+                                                : 'border-white/10 bg-transparent text-gray-400 hover:border-white/30'
                                                 }`}
                                         >
                                             <div className="w-4 h-4 rounded-full border border-white/20" style={{ backgroundColor: color.hex }} />
-                                            <span className="text-xs font-bold uppercase">{color.name}</span>
+                                            <span className="text-xs font-bold uppercase">{color.name === 'Black' ? 'Siyah' : color.name === 'Carbon' ? 'Karbon' : color.name}</span>
                                         </button>
                                     ))}
                                 </div>
@@ -121,15 +121,15 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({
 
                             {/* Size */}
                             <div>
-                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Size Selection</label>
+                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Beden Seçimi</label>
                                 <div className="flex gap-2">
                                     {sizes.map(size => (
                                         <button
                                             key={size}
                                             onClick={() => setSelectedSize(size)}
                                             className={`w-12 h-12 rounded-xl border flex items-center justify-center font-bold font-mono transition-all ${selectedSize === size
-                                                    ? 'bg-white text-black border-white'
-                                                    : 'bg-transparent text-gray-500 border-white/10 hover:border-white/30 hover:text-white'
+                                                ? 'bg-white text-black border-white'
+                                                : 'bg-transparent text-gray-500 border-white/10 hover:border-white/30 hover:text-white'
                                                 }`}
                                         >
                                             {size}
@@ -150,10 +150,10 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({
                                 onClick={() => onAddToCart(product)}
                                 className="!h-16 !text-lg !rounded-2xl"
                             >
-                                Initiate Acquisition
+                                Temin Etmeyi Başlat
                             </VibeButton>
                             <p className="text-center text-[10px] text-gray-500 uppercase tracking-widest mt-3">
-                                Secure Transaction Encrypted • Global Shipping Available
+                                Güvenli İşlem Şifreli • Küresel Kargo Mevcut
                             </p>
                         </div>
 
@@ -167,7 +167,7 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({
                             }}
                             className="space-y-4 text-gray-400 leading-relaxed text-sm mb-8"
                         >
-                            <h3 className="text-white text-sm font-bold uppercase tracking-widest">Product Intel</h3>
+                            <h3 className="text-white text-sm font-bold uppercase tracking-widest">Ürün Bilgisi</h3>
                             <p>{product.description}</p>
                             <ul className="space-y-2 mt-4">
                                 {product.features.map((feature, i) => (
@@ -189,7 +189,7 @@ export const ProductDetails: React.FC<ProductDetailsProps> = ({
             {/* Mobile Buy Bar (Visible only on small screens) */}
             <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-[#050505]/90 backdrop-blur-xl border-t border-white/10 z-50">
                 <VibeButton variant="primary" fullWidth onClick={() => onAddToCart(product)}>
-                    Add to Cart • ${price.toLocaleString()}
+                    Sepete Ekle • ${price.toLocaleString()}
                 </VibeButton>
             </div>
 

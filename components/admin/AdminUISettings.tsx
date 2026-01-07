@@ -16,7 +16,8 @@ export const AdminUISettings = () => {
         borderRadius: config.borderRadius || '9999px', // full
         animationSpeed: config.animationSpeed || 1.5,
         magneticStrength: config.magneticStrength || 0.2,
-        buttonStyle: config.buttonStyle || 'default'
+        buttonStyle: config.buttonStyle || 'default',
+        buttonSkin: config.buttonSkin || 'default'
     });
 
     useEffect(() => {
@@ -99,6 +100,29 @@ export const AdminUISettings = () => {
                                     >
                                         <div className="font-bold text-sm mb-1">{theme.name}</div>
                                         <div className="text-[10px] opacity-60">{theme.desc}</div>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Button Texture/Skin Selector */}
+                        <div className="mb-8 p-4 bg-gradient-to-br from-emerald-900/20 to-teal-900/20 rounded-xl border border-emerald-500/30">
+                            <label className="block text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3">Background Texture Skins</label>
+                            <div className="grid grid-cols-2 gap-3">
+                                {[
+                                    { id: 'default', name: 'Solid Color', desc: 'Uses Primary Color' },
+                                    { id: 'cosmic', name: 'Cosmic Void', desc: 'Deep Space Gradient' },
+                                    { id: 'liquid', name: 'Liquid Metal', desc: 'Flowing Silver' },
+                                    { id: 'carbon', name: 'Carbon Fiber', desc: 'Tactile Grid Mesh' },
+                                    { id: 'glass', name: 'Frost Glass', desc: 'Blur & Transparency' }
+                                ].map(skin => (
+                                    <button
+                                        key={skin.id}
+                                        onClick={() => setLocalConfig(prev => ({ ...prev, buttonSkin: skin.id }))}
+                                        className={`px-4 py-3 rounded-lg text-left transition-all border ${localConfig.buttonSkin === skin.id ? 'bg-emerald-500/20 border-emerald-500 text-white' : 'bg-black/40 border-white/10 text-gray-400 hover:text-white hover:border-white/30'}`}
+                                    >
+                                        <div className="font-bold text-sm mb-1">{skin.name}</div>
+                                        <div className="text-[10px] opacity-60">{skin.desc}</div>
                                     </button>
                                 ))}
                             </div>
@@ -232,6 +256,7 @@ export const AdminUISettings = () => {
                     <div className="mt-12 p-4 bg-black/50 rounded-lg border border-white/5 text-xs text-gray-500 font-mono">
                         <p>{`// Current Config`}</p>
                         <p>{`color: "${localConfig.primaryColor}"`}</p>
+                        <p>{`skin: "${localConfig.buttonSkin || 'default'}"`}</p>
                         <p>{`theme: "${localConfig.buttonStyle || 'default'}"`}</p>
                         <p>{`magnetic: ${localConfig.magneticStrength}`}</p>
                     </div>

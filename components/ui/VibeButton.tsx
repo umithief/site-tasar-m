@@ -59,7 +59,8 @@ interface VibeButtonProps extends Omit<HTMLMotionProps<"button">, "children"> {
     fullWidth?: boolean;
     withMagnetic?: boolean;
     configOverride?: any;
-    theme?: 'default' | 'cyber' | 'brutal' | 'racing'; // Allow direct override or use global config
+    theme?: 'default' | 'cyber' | 'brutal' | 'racing'; // Structural design
+    skin?: 'default' | 'cosmic' | 'liquid' | 'carbon' | 'glass'; // Background/Texture design
 }
 
 // --- MASTER COMPONENT ---
@@ -75,7 +76,8 @@ export const VibeButton = React.forwardRef<HTMLButtonElement, VibeButtonProps>((
     withMagnetic = true,
     className = '',
     configOverride,
-    theme, // Allow direct theme override
+    theme,
+    skin,
     onClick,
     ...props
 }, forwardedRef) => {
@@ -95,6 +97,7 @@ export const VibeButton = React.forwardRef<HTMLButtonElement, VibeButtonProps>((
     const globalAnimSpeed = config.animationSpeed ?? 1.5;
     const customPrimaryColor = config.primaryColor;
     const activeTheme = theme || config.buttonStyle || 'default';
+    const activeSkin = skin || config.buttonSkin || 'default';
 
     // Initialize Magnetic Hook
     const { ref: magneticRef, x, y, handleMouseMove, handleMouseLeave } = useMagnetic(
@@ -124,6 +127,16 @@ export const VibeButton = React.forwardRef<HTMLButtonElement, VibeButtonProps>((
     const themeVariables = {
         '--primary': customPrimaryColor || '#E2FF3B'
     } as React.CSSProperties;
+
+    // --- SKIN DEFINITIONS ---
+    // These override the background and text colors of the variant
+    const skinStyles: Record<string, string> = {
+        default: "",
+        cosmic: "bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-center before:absolute before:inset-0 before:bg-gradient-to-r before:from-purple-900 before:via-blue-900 before:to-black before:mix-blend-multiply !text-white border border-white/20 hover:shadow-[0_0_30px_rgba(147,51,234,0.5)]",
+        liquid: "bg-gradient-to-br from-gray-200 via-white to-gray-300 !text-black border-white/50 bg-[length:200%_200%] animate-[gradient_3s_ease_infinite] hover:shadow-[inset_0_0_20px_rgba(255,255,255,0.8),0_0_20px_rgba(255,255,255,0.4)]",
+        carbon: "bg-[radial-gradient(black_15%,transparent_16%),radial-gradient(black_15%,transparent_16%)] bg-[length:4px_4px] bg-zinc-900 !text-zinc-300 border border-zinc-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] hover:bg-zinc-800",
+        glass: "bg-white/10 backdrop-blur-xl border border-white/20 !text-white shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] hover:bg-white/20"
+    };
 
     const sizeStyles = {
         sm: "h-10 px-6 text-[10px]",
@@ -198,7 +211,7 @@ export const VibeButton = React.forwardRef<HTMLButtonElement, VibeButtonProps>((
         <motion.button
             ref={setRefs}
             style={{ x, y, ...dynamicStyle }}
-            className={cn(baseStyles, sizeStyles[size], variantStyles[variant], themeStyles[activeTheme], className)}
+            className={cn(baseStyles, sizeStyles[size], variantStyles[variant], themeStyles[activeTheme], skinStyles[activeSkin], className)}
 
             // Interaction Props
             whileTap={!isLoading && !isDisabled ? { scale: 0.97 } : {}}

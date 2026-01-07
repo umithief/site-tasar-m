@@ -7,18 +7,18 @@ import { Save, RefreshCcw, Palette } from 'lucide-react';
 export const AdminUISettings = () => {
     const { getComponentConfig, updateSetting, fetchSettings } = useUIStore();
     const settings = useUIStore((state) => state.settings);
-    const config = getComponentConfig('VibeButton');
 
-    // Local state for form handling to avoid jittery updates if we were syncing directly on every keystroke to server
-    // But for store we act directly usually. Let's start with defaults.
     const [localConfig, setLocalConfig] = useState({
-        primaryColor: config.primaryColor || '#E2FF3B',
-        borderRadius: config.borderRadius || '9999px', // full
-        animationSpeed: config.animationSpeed || 1.5,
-        magneticStrength: config.magneticStrength || 0.2,
-        buttonStyle: config.buttonStyle || 'default',
-        buttonSkin: config.buttonSkin || 'default'
+        primaryColor: '#E2FF3B',
+        borderRadius: '9999px',
+        animationSpeed: 1.5,
+        magneticStrength: 0.2,
+        buttonStyle: 'default',
+        buttonSkin: 'default'
     });
+
+    const [activeTab, setActiveTab] = useState<'style' | 'skin' | 'physics' | 'color'>('style');
+    const [isSaving, setIsSaving] = useState(false);
 
     useEffect(() => {
         fetchSettings();
@@ -29,21 +29,12 @@ export const AdminUISettings = () => {
         if (stored && Object.keys(stored).length > 0) {
             setLocalConfig(prev => ({ ...prev, ...stored }));
         }
-    }, [settings]); // Listen to store changes properly
-
-    const [isSaving, setIsSaving] = useState(false);
-
-    const handleChange = (key: string, value: any) => {
-        const newConfig = { ...localConfig, [key]: value };
-        setLocalConfig(newConfig);
-        // Removed auto-updateSetting to prevent API spam and allow manual save
-    };
+    }, [settings]);
 
     const handleSave = async () => {
         setIsSaving(true);
         try {
             await updateSetting('VibeButton', localConfig);
-            // Optional: Show success toast
             setIsSaving(false);
         } catch (error) {
             console.error("Save failed", error);
@@ -52,215 +43,207 @@ export const AdminUISettings = () => {
     };
 
     return (
-        <div className="p-8 text-white">
+        <div className="p-8 text-white min-h-screen">
             <div className="flex items-center justify-between mb-8">
                 <div>
-                    <h1 className="text-3xl font-black italic uppercase tracking-tighter">UI Settings</h1>
-                    <p className="text-gray-400">Manage global component styles and behaviors.</p>
+                    <h1 className="text-3xl font-black italic uppercase tracking-tighter">Vibe Design Studio</h1>
+                    <p className="text-gray-400">Master Component Interface Designer</p>
                 </div>
-                <div className="flex gap-4">
-                    <VibeButton
-                        variant="primary"
-                        size="sm"
-                        onClick={handleSave}
-                        isLoading={isSaving}
-                        icon={Save}
-                    >
-                        Save Changes
-                    </VibeButton>
-                    <div className="p-3 bg-white/5 rounded-xl border border-white/10">
-                        <Palette className="w-6 h-6 text-[#F2A619]" />
-                    </div>
-                </div>
+                <VibeButton
+                    variant="primary"
+                    size="sm"
+                    onClick={handleSave}
+                    isLoading={isSaving}
+                    icon={Save}
+                >
+                    Save Master Config
+                </VibeButton>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                {/* Controls Area */}
-                <div className="space-y-6">
-                    <div className="bg-[#121212] border border-white/10 rounded-2xl p-6">
-                        <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-                            <span className="w-1 h-6 bg-[#F2A619] rounded-full"></span>
-                            VibeButton Configuration
-                        </h2>
+            <div className="flex flex-col lg:flex-row gap-8 items-start">
 
-                        {/* Unique Design Selector */}
-                        <div className="mb-8 p-4 bg-gradient-to-br from-purple-900/20 to-blue-900/20 rounded-xl border border-purple-500/30">
-                            <label className="block text-xs font-bold text-purple-400 uppercase tracking-widest mb-3">Unique Design Themes</label>
-                            <div className="grid grid-cols-2 gap-3">
+                {/* UNIFIED DESIGNER BOX */}
+                <div className="flex-1 w-full bg-[#111] border border-white/10 rounded-3xl overflow-hidden flex flex-col min-h-[600px]">
+
+                    {/* TABS */}
+                    <div className="flex border-b border-white/10">
+                        {[
+                            { id: 'style', label: '1. Structure', icon: '🏗️' },
+                            { id: 'skin', label: '2. Surface', icon: '🎨' },
+                            { id: 'color', label: '3. Palette', icon: '🌈' },
+                            { id: 'physics', label: '4. Physics', icon: '⚛️' }
+                        ].map(tab => (
+                            <button
+                                key={tab.id}
+                                onClick={() => setActiveTab(tab.id as any)}
+                                className={`flex-1 py-6 flex flex-col items-center gap-2 border-r border-white/5 last:border-0 hover:bg-white/5 transition-colors relative ${activeTab === tab.id ? 'bg-white/5 text-white' : 'text-gray-500'}`}
+                            >
+                                <span className="text-2xl">{tab.icon}</span>
+                                <span className="text-xs font-black uppercase tracking-widest">{tab.label}</span>
+                                {activeTab === tab.id && <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#F2A619]" />}
+                            </button>
+                        ))}
+                    </div>
+
+                    {/* CONTENT AREA */}
+                    <div className="p-8 flex-1 bg-gradient-to-b from-[#111] to-black">
+
+                        {/* STYLE TAB */}
+                        {activeTab === 'style' && (
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-2 gap-4">
                                 {[
-                                    { id: 'default', name: 'Classic Premium', desc: 'Standard rounded look' },
-                                    { id: 'cyber', name: 'Cyberpunk 2077', desc: 'Glitch, Sharp, Mono' },
-                                    { id: 'brutal', name: 'Neo-Brutalism', desc: 'Hard shadows, Bold' },
-                                    { id: 'racing', name: 'F1 Racing', desc: 'Skewed, Fast, Italic' }
+                                    { id: 'default', name: 'Premium Classic', desc: 'Standard UI' },
+                                    { id: 'cyber', name: 'Cyberpunk', desc: 'Sharp, Technical' },
+                                    { id: 'brutal', name: 'Neo-Brutal', desc: 'Hard Edge, Shadow' },
+                                    { id: 'racing', name: 'F1 Racing', desc: 'Speed, Slanted' },
+                                    { id: 'pixel', name: '8-Bit Retro', desc: 'Blocky, Arcade' },
+                                    { id: 'flow', name: 'Liquid Flow', desc: 'Organic, Smooth' }
                                 ].map(theme => (
                                     <button
                                         key={theme.id}
                                         onClick={() => setLocalConfig(prev => ({ ...prev, buttonStyle: theme.id }))}
-                                        className={`px-4 py-3 rounded-lg text-left transition-all border ${localConfig.buttonStyle === theme.id ? 'bg-purple-500/20 border-purple-500 text-white' : 'bg-black/40 border-white/10 text-gray-400 hover:text-white hover:border-white/30'}`}
+                                        className={`p-6 rounded-2xl border text-left flex flex-col gap-2 transition-all ${localConfig.buttonStyle === theme.id ? 'bg-[#F2A619]/10 border-[#F2A619] text-white' : 'bg-white/5 border-white/5 text-gray-400 hover:bg-white/10 hover:border-white/20'}`}
                                     >
-                                        <div className="font-bold text-sm mb-1">{theme.name}</div>
-                                        <div className="text-[10px] opacity-60">{theme.desc}</div>
+                                        <div className="font-bold text-lg">{theme.name}</div>
+                                        <div className="text-xs opacity-60 font-mono">{theme.desc}</div>
                                     </button>
                                 ))}
-                            </div>
-                        </div>
 
-                        {/* Button Texture/Skin Selector */}
-                        <div className="mb-8 p-4 bg-gradient-to-br from-emerald-900/20 to-teal-900/20 rounded-xl border border-emerald-500/30">
-                            <label className="block text-xs font-bold text-emerald-400 uppercase tracking-widest mb-3">Background Texture Skins</label>
-                            <div className="grid grid-cols-2 gap-3">
+                                <div className={`col-span-2 mt-4 p-4 rounded-xl border border-dashed border-white/20 ${localConfig.buttonStyle !== 'default' && 'opacity-30 pointer-events-none'}`}>
+                                    <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-3">Border Radius (Classic Mode Only)</label>
+                                    <input
+                                        type="range"
+                                        min="0" max="30"
+                                        onChange={(e) => setLocalConfig(prev => ({ ...prev, borderRadius: `${e.target.value}px` }))}
+                                        className="w-full accent-[#F2A619]"
+                                    />
+                                </div>
+                            </motion.div>
+                        )}
+
+                        {/* SKIN TAB */}
+                        {activeTab === 'skin' && (
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="grid grid-cols-2 gap-4">
                                 {[
-                                    { id: 'default', name: 'Solid Color', desc: 'Uses Primary Color' },
-                                    { id: 'cosmic', name: 'Cosmic Void', desc: 'Deep Space Gradient' },
-                                    { id: 'liquid', name: 'Liquid Metal', desc: 'Flowing Silver' },
-                                    { id: 'carbon', name: 'Carbon Fiber', desc: 'Tactile Grid Mesh' },
-                                    { id: 'glass', name: 'Frost Glass', desc: 'Blur & Transparency' }
+                                    { id: 'default', name: 'Solid Matte', desc: 'Flat Color' },
+                                    { id: 'cosmic', name: 'Cosmic Void', desc: 'Deep Space Noise' },
+                                    { id: 'liquid', name: 'Liquid Metal', desc: 'Animated Chrome' },
+                                    { id: 'carbon', name: 'Carbon Fiber', desc: 'Tactile Grid' },
+                                    { id: 'glass', name: 'Frost Glass', desc: 'Blur Effect' },
+                                    { id: 'holographic', name: 'Holographic', desc: 'Rainbow Iridescent' },
+                                    { id: 'magma', name: 'Magma Core', desc: 'Animated Heat' },
+                                    { id: 'glitch', name: 'Sys.Glitch', desc: 'Chromatic Aberration' }
                                 ].map(skin => (
                                     <button
                                         key={skin.id}
                                         onClick={() => setLocalConfig(prev => ({ ...prev, buttonSkin: skin.id }))}
-                                        className={`px-4 py-3 rounded-lg text-left transition-all border ${localConfig.buttonSkin === skin.id ? 'bg-emerald-500/20 border-emerald-500 text-white' : 'bg-black/40 border-white/10 text-gray-400 hover:text-white hover:border-white/30'}`}
+                                        className={`p-6 rounded-2xl border text-left flex flex-col gap-2 transition-all overflow-hidden relative group ${localConfig.buttonSkin === skin.id ? 'border-white ring-1 ring-white' : 'border-white/5 hover:border-white/20'}`}
                                     >
-                                        <div className="font-bold text-sm mb-1">{skin.name}</div>
-                                        <div className="text-[10px] opacity-60">{skin.desc}</div>
+                                        <div className={`absolute inset-0 opacity-20 group-hover:opacity-40 transition-opacity bg-gradient-to-br from-white/10 to-transparent pointer-events-none`} />
+                                        <div className="font-bold text-lg relative z-10 text-white">{skin.name}</div>
+                                        <div className="text-xs text-gray-400 font-mono relative z-10">{skin.desc}</div>
                                     </button>
                                 ))}
-                            </div>
-                        </div>
-
-                        {/* Legacy Presets (Hidden when using Unique Themes for clarity) */}
-                        {localConfig.buttonStyle === 'default' && (
-                            <div className="mb-8 p-4 bg-white/5 rounded-xl border border-white/5">
-                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Hızlı Tasarım Paketleri</label>
-                                <div className="grid grid-cols-2 gap-3">
-                                    {[
-                                        { name: 'Neo (Yuvarlak)', config: { borderRadius: '9999px', animationSpeed: 1.5, magneticStrength: 0.3 } },
-                                        { name: 'Cyber (Keskin)', config: { borderRadius: '0px', animationSpeed: 0.8, magneticStrength: 0 } },
-                                        { name: 'Soft (Yumuşak)', config: { borderRadius: '12px', animationSpeed: 2.0, magneticStrength: 0.1 } },
-                                        { name: 'Hyper (Hızlı)', config: { borderRadius: '20px', animationSpeed: 0.5, magneticStrength: 0.5 } }
-                                    ].map(preset => (
-                                        <button
-                                            key={preset.name}
-                                            onClick={() => setLocalConfig(prev => ({ ...prev, ...preset.config }))}
-                                            className="px-4 py-3 bg-black/40 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-bold text-white transition-all text-left flex flex-col gap-1 group"
-                                        >
-                                            <span className="group-hover:text-[#F2A619] transition-colors">{preset.name}</span>
-                                            <span className="text-[10px] text-gray-500 font-mono">
-                                                R:{preset.config.borderRadius === '9999px' ? 'Full' : preset.config.borderRadius} • S:{preset.config.animationSpeed}s
-                                            </span>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
+                            </motion.div>
                         )}
 
-                        {/* Primary Color */}
-                        <div className="mb-6">
-                            <label className="block text-sm font-medium text-gray-400 mb-2">Primary Color (The Accelerator)</label>
-                            <div className="flex items-center gap-4 mb-4">
-                                <input
-                                    type="color"
-                                    value={localConfig.primaryColor}
-                                    onChange={(e) => handleChange('primaryColor', e.target.value)}
-                                    className="w-12 h-12 rounded-lg cursor-pointer bg-transparent border-none appearance-none"
-                                />
-                                <input
-                                    type="text"
-                                    value={localConfig.primaryColor}
-                                    onChange={(e) => handleChange('primaryColor', e.target.value)}
-                                    className="bg-white/5 border border-white/10 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-[#F2A619]"
-                                />
-                            </div>
+                        {/* COLOR TAB */}
+                        {activeTab === 'color' && (
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Base Accent Color</label>
+                                    <div className="flex gap-4 items-center">
+                                        <input
+                                            type="color"
+                                            value={localConfig.primaryColor}
+                                            onChange={(e) => setLocalConfig(prev => ({ ...prev, primaryColor: e.target.value }))}
+                                            className="w-20 h-20 rounded-2xl cursor-pointer bg-transparent border-none"
+                                        />
+                                        <div className="flex-1 grid grid-cols-5 gap-2">
+                                            {['#E2FF3B', '#00D4FF', '#FF0099', '#FF5E00', '#39FF14', '#9D00FF', '#FFFFFF', '#FF3E3E', '#F2A619', '#000000'].map(color => (
+                                                <button
+                                                    key={color}
+                                                    onClick={() => setLocalConfig(prev => ({ ...prev, primaryColor: color }))}
+                                                    className="aspect-square rounded-xl border border-white/10 hover:scale-110 transition-transform shadow-lg"
+                                                    style={{ backgroundColor: color }}
+                                                />
+                                            ))}
+                                        </div>
+                                    </div>
+                                </div>
+                            </motion.div>
+                        )}
 
-                            {/* Color Presets */}
-                            <div className="grid grid-cols-6 gap-2">
-                                {[
-                                    { name: 'Neon Lime', value: '#E2FF3B' },
-                                    { name: 'Cyber Blue', value: '#00D4FF' },
-                                    { name: 'Hot Pink', value: '#FF0099' },
-                                    { name: 'Electric Orange', value: '#FF5E00' },
-                                    { name: 'Toxic Green', value: '#39FF14' },
-                                    { name: 'Void Purple', value: '#9D00FF' }
-                                ].map((preset) => (
-                                    <button
-                                        key={preset.value}
-                                        onClick={() => handleChange('primaryColor', preset.value)}
-                                        className={`w-8 h-8 rounded-full border-2 transition-all hover:scale-110 ${localConfig.primaryColor === preset.value ? 'border-white scale-110 shadow-[0_0_10px_rgba(255,255,255,0.5)]' : 'border-transparent opacity-70 hover:opacity-100'}`}
-                                        style={{ backgroundColor: preset.value }}
-                                        title={preset.name}
+                        {/* PHYSICS TAB */}
+                        {activeTab === 'physics' && (
+                            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Shimmer Speed ({localConfig.animationSpeed}s)</label>
+                                    <input
+                                        type="range" min="0.5" max="5" step="0.1"
+                                        value={localConfig.animationSpeed}
+                                        onChange={(e) => setLocalConfig(prev => ({ ...prev, animationSpeed: parseFloat(e.target.value) }))}
+                                        className="w-full accent-[#F2A619] h-2 bg-white/10 rounded-lg appearance-none cursor-pointer"
                                     />
-                                ))}
+                                </div>
+                                <div>
+                                    <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-4">Magnetic Strength ({localConfig.magneticStrength})</label>
+                                    <input
+                                        type="range" min="0" max="1" step="0.1"
+                                        value={localConfig.magneticStrength}
+                                        onChange={(e) => setLocalConfig(prev => ({ ...prev, magneticStrength: parseFloat(e.target.value) }))}
+                                        className="w-full accent-[#F2A619] h-2 bg-white/10 rounded-lg appearance-none cursor-pointer"
+                                    />
+                                    <p className="text-xs text-gray-500 mt-2">Does not apply to mobile devices</p>
+                                </div>
+                            </motion.div>
+                        )}
+
+                    </div>
+                </div>
+
+                {/* LIVE PREVIEW SIDEBAR */}
+                <div className="w-full lg:w-96 sticky top-8">
+                    <div className="bg-[#111] border border-white/10 rounded-3xl p-8 flex flex-col items-center gap-12 min-h-[500px] justify-center relative overflow-hidden">
+
+                        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5" />
+
+                        {/* Preview Items */}
+                        <div className="relative z-10 flex flex-col items-center gap-6 w-full">
+                            <h3 className="text-xs font-black uppercase tracking-[0.5em] text-gray-600 mb-4">Live Render</h3>
+
+                            <VibeButton variant="primary" size="lg" configOverride={localConfig} fullWidth>
+                                Primary Action
+                            </VibeButton>
+
+                            <div className="flex gap-4 w-full">
+                                <VibeButton variant="secondary" size="md" configOverride={localConfig} className="flex-1">
+                                    Secondary
+                                </VibeButton>
+                                <VibeButton variant="ghost" size="md" configOverride={localConfig} className="flex-1">
+                                    Ghost
+                                </VibeButton>
                             </div>
+
+                            <VibeButton variant="outline" size="sm" configOverride={localConfig}>
+                                Minimal Outline
+                            </VibeButton>
+
+                            <VibeButton variant="danger" size="sm" configOverride={localConfig} fullWidth>
+                                System Error
+                            </VibeButton>
                         </div>
 
-                        {/* Border Radius (Disabled if not Default theme) */}
-                        <div className={`mb-6 transition-opacity ${localConfig.buttonStyle && localConfig.buttonStyle !== 'default' ? 'opacity-50 pointer-events-none' : ''}`}>
-                            <label className="block text-sm font-medium text-gray-400 mb-2">Border Radius (Default Theme Only)</label>
-                            <div className="flex items-center gap-4">
-                                <select
-                                    value={localConfig.borderRadius}
-                                    onChange={(e) => handleChange('borderRadius', e.target.value)}
-                                    className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-[#F2A619]"
-                                >
-                                    <option value="0px">Square (0px)</option>
-                                    <option value="8px">Small (8px)</option>
-                                    <option value="16px">Medium (16px)</option>
-                                    <option value="24px">Large (24px)</option>
-                                    <option value="9999px">Full (Pill)</option>
-                                </select>
-                            </div>
-                        </div>
-
-                        {/* Animation Speed */}
-                        <div className="mb-6">
-                            <label className="block text-sm font-medium text-gray-400 mb-2">Shimmer Speed ({localConfig.animationSpeed}s)</label>
-                            <input
-                                type="range"
-                                min="0.5"
-                                max="5"
-                                step="0.1"
-                                value={localConfig.animationSpeed}
-                                onChange={(e) => handleChange('animationSpeed', parseFloat(e.target.value))}
-                                className="w-full accent-[#F2A619]"
-                            />
-                        </div>
-
-                        {/* Magnetic Strength */}
-                        <div className="mb-6">
-                            <label className="block text-sm font-medium text-gray-400 mb-2">Magnetic Pull Strength</label>
-                            <input
-                                type="range"
-                                min="0"
-                                max="1"
-                                step="0.1"
-                                value={localConfig.magneticStrength}
-                                onChange={(e) => handleChange('magneticStrength', parseFloat(e.target.value))}
-                                className="w-full accent-[#F2A619]"
-                            />
-                            <p className="text-xs text-gray-500 mt-1">Set to 0 to disable magnetic effect.</p>
+                        {/* Code Spec */}
+                        <div className="w-full p-4 bg-black rounded-lg border border-white/10 font-mono text-[10px] text-gray-500">
+                            <div>theme: <span className="text-[#F2A619]">{localConfig.buttonStyle}</span></div>
+                            <div>skin: <span className="text-blue-400">{localConfig.buttonSkin}</span></div>
+                            <div>color: <span className="text-green-400">{localConfig.primaryColor}</span></div>
                         </div>
 
                     </div>
                 </div>
 
-                {/* Live Preview Area */}
-                <div className="bg-[#121212] border border-white/10 rounded-2xl p-8 flex flex-col items-center justify-center sticky top-8 h-[500px]">
-                    <h3 className="text-sm uppercase tracking-widest text-gray-500 mb-8">Live Preview</h3>
-
-                    <div className="space-y-8 flex flex-col items-center">
-                        <VibeButton variant="primary" configOverride={localConfig}>Primary Button</VibeButton>
-                        <VibeButton variant="secondary" configOverride={localConfig}>Ghost Variant</VibeButton>
-                        <VibeButton variant="danger" configOverride={localConfig}>Danger Zone</VibeButton>
-                    </div>
-
-                    <div className="mt-12 p-4 bg-black/50 rounded-lg border border-white/5 text-xs text-gray-500 font-mono">
-                        <p>{`// Current Config`}</p>
-                        <p>{`color: "${localConfig.primaryColor}"`}</p>
-                        <p>{`skin: "${localConfig.buttonSkin || 'default'}"`}</p>
-                        <p>{`theme: "${localConfig.buttonStyle || 'default'}"`}</p>
-                        <p>{`magnetic: ${localConfig.magneticStrength}`}</p>
-                    </div>
-                </div>
             </div>
         </div>
     );

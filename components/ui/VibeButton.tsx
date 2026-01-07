@@ -59,8 +59,8 @@ interface VibeButtonProps extends Omit<HTMLMotionProps<"button">, "children"> {
     fullWidth?: boolean;
     withMagnetic?: boolean;
     configOverride?: any;
-    theme?: 'default' | 'cyber' | 'brutal' | 'racing'; // Structural design
-    skin?: 'default' | 'cosmic' | 'liquid' | 'carbon' | 'glass'; // Background/Texture design
+    theme?: 'default' | 'cyber' | 'brutal' | 'racing' | 'pixel' | 'flow'; // Structural design
+    skin?: 'default' | 'cosmic' | 'liquid' | 'carbon' | 'glass' | 'holographic' | 'magma' | 'glitch'; // Background/Texture design
 }
 
 // --- MASTER COMPONENT ---
@@ -120,7 +120,9 @@ export const VibeButton = React.forwardRef<HTMLButtonElement, VibeButtonProps>((
         default: "", // Standard logic applies
         cyber: "rounded-none border-l-2 border-r-2 border-t-0 border-b-0 border-[var(--primary)] hover:border-white tracking-[0.25em] skew-x-[-10deg] hover:skew-x-0 font-mono text-[10px]",
         brutal: "rounded-none border-2 border-white shadow-[4px_4px_0px_white] hover:shadow-[none] hover:translate-x-[4px] hover:translate-y-[4px] active:translate-x-[4px] active:translate-y-[4px] font-black",
-        racing: "rounded rounded-tr-2xl rounded-bl-2xl italic border-b-4 border-black/30 hover:border-black/50 transform hover:-translate-y-1 active:translate-y-0 active:border-b-0"
+        racing: "rounded rounded-tr-2xl rounded-bl-2xl italic border-b-4 border-black/30 hover:border-black/50 transform hover:-translate-y-1 active:translate-y-0 active:border-b-0",
+        pixel: "rounded-none border-4 border-white font-mono uppercase tracking-widest hover:border-[#E2FF3B] active:border-white shadow-[inset_-4px_-4px_0px_rgba(0,0,0,0.5)]",
+        flow: "rounded-[2rem] border border-white/20 hover:rounded-xl transition-all duration-500 ease-out hover:shadow-[0_10px_40px_rgba(var(--primary),0.4)]"
     };
 
     // Inject custom properties for themes that use them
@@ -135,7 +137,10 @@ export const VibeButton = React.forwardRef<HTMLButtonElement, VibeButtonProps>((
         cosmic: "bg-[url('https://grainy-gradients.vercel.app/noise.svg')] bg-center before:absolute before:inset-0 before:bg-gradient-to-r before:from-purple-900 before:via-blue-900 before:to-black before:mix-blend-multiply !text-white border border-white/20 hover:shadow-[0_0_30px_rgba(147,51,234,0.5)]",
         liquid: "bg-gradient-to-br from-gray-200 via-white to-gray-300 !text-black border-white/50 bg-[length:200%_200%] animate-[gradient_3s_ease_infinite] hover:shadow-[inset_0_0_20px_rgba(255,255,255,0.8),0_0_20px_rgba(255,255,255,0.4)]",
         carbon: "bg-[radial-gradient(black_15%,transparent_16%),radial-gradient(black_15%,transparent_16%)] bg-[length:4px_4px] bg-zinc-900 !text-zinc-300 border border-zinc-700 shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] hover:bg-zinc-800",
-        glass: "bg-white/10 backdrop-blur-xl border border-white/20 !text-white shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] hover:bg-white/20"
+        glass: "bg-white/10 backdrop-blur-xl border border-white/20 !text-white shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] hover:bg-white/20",
+        holographic: "bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 bg-[length:200%_auto] animate-[gradient_3s_linear_infinite] !text-white border-none shadow-[0_0_20px_rgba(255,255,255,0.4)]",
+        magma: "bg-gradient-to-br from-red-600 via-orange-500 to-yellow-500 bg-[length:200%_200%] animate-[pulse_4s_cubic-bezier(0.4,0,0.6,1)_infinite] !text-black font-black border-red-900",
+        glitch: "bg-black text-[#E2FF3B] border border-[#E2FF3B] hover:shadow-[2px_0_0_red,-2px_0_0_cyan] hover:translate-x-[1px]"
     };
 
     const sizeStyles = {

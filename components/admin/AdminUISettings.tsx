@@ -15,7 +15,8 @@ export const AdminUISettings = () => {
         primaryColor: config.primaryColor || '#E2FF3B',
         borderRadius: config.borderRadius || '9999px', // full
         animationSpeed: config.animationSpeed || 1.5,
-        magneticStrength: config.magneticStrength || 0.2
+        magneticStrength: config.magneticStrength || 0.2,
+        buttonStyle: config.buttonStyle || 'default'
     });
 
     useEffect(() => {
@@ -81,29 +82,53 @@ export const AdminUISettings = () => {
                             VibeButton Configuration
                         </h2>
 
-                        {/* Style Presets */}
-                        <div className="mb-8 p-4 bg-white/5 rounded-xl border border-white/5">
-                            <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Hızlı Tasarım Paketleri</label>
+                        {/* Unique Design Selector */}
+                        <div className="mb-8 p-4 bg-gradient-to-br from-purple-900/20 to-blue-900/20 rounded-xl border border-purple-500/30">
+                            <label className="block text-xs font-bold text-purple-400 uppercase tracking-widest mb-3">Unique Design Themes</label>
                             <div className="grid grid-cols-2 gap-3">
                                 {[
-                                    { name: 'Neo (Yuvarlak)', config: { borderRadius: '9999px', animationSpeed: 1.5, magneticStrength: 0.3 } },
-                                    { name: 'Cyber (Keskin)', config: { borderRadius: '0px', animationSpeed: 0.8, magneticStrength: 0 } },
-                                    { name: 'Soft (Yumuşak)', config: { borderRadius: '12px', animationSpeed: 2.0, magneticStrength: 0.1 } },
-                                    { name: 'Hyper (Hızlı)', config: { borderRadius: '20px', animationSpeed: 0.5, magneticStrength: 0.5 } }
-                                ].map(preset => (
+                                    { id: 'default', name: 'Classic Premium', desc: 'Standard rounded look' },
+                                    { id: 'cyber', name: 'Cyberpunk 2077', desc: 'Glitch, Sharp, Mono' },
+                                    { id: 'brutal', name: 'Neo-Brutalism', desc: 'Hard shadows, Bold' },
+                                    { id: 'racing', name: 'F1 Racing', desc: 'Skewed, Fast, Italic' }
+                                ].map(theme => (
                                     <button
-                                        key={preset.name}
-                                        onClick={() => setLocalConfig(prev => ({ ...prev, ...preset.config }))}
-                                        className="px-4 py-3 bg-black/40 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-bold text-white transition-all text-left flex flex-col gap-1 group"
+                                        key={theme.id}
+                                        onClick={() => setLocalConfig(prev => ({ ...prev, buttonStyle: theme.id }))}
+                                        className={`px-4 py-3 rounded-lg text-left transition-all border ${localConfig.buttonStyle === theme.id ? 'bg-purple-500/20 border-purple-500 text-white' : 'bg-black/40 border-white/10 text-gray-400 hover:text-white hover:border-white/30'}`}
                                     >
-                                        <span className="group-hover:text-[#F2A619] transition-colors">{preset.name}</span>
-                                        <span className="text-[10px] text-gray-500 font-mono">
-                                            R:{preset.config.borderRadius === '9999px' ? 'Full' : preset.config.borderRadius} • S:{preset.config.animationSpeed}s
-                                        </span>
+                                        <div className="font-bold text-sm mb-1">{theme.name}</div>
+                                        <div className="text-[10px] opacity-60">{theme.desc}</div>
                                     </button>
                                 ))}
                             </div>
                         </div>
+
+                        {/* Legacy Presets (Hidden when using Unique Themes for clarity) */}
+                        {localConfig.buttonStyle === 'default' && (
+                            <div className="mb-8 p-4 bg-white/5 rounded-xl border border-white/5">
+                                <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-3">Hızlı Tasarım Paketleri</label>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {[
+                                        { name: 'Neo (Yuvarlak)', config: { borderRadius: '9999px', animationSpeed: 1.5, magneticStrength: 0.3 } },
+                                        { name: 'Cyber (Keskin)', config: { borderRadius: '0px', animationSpeed: 0.8, magneticStrength: 0 } },
+                                        { name: 'Soft (Yumuşak)', config: { borderRadius: '12px', animationSpeed: 2.0, magneticStrength: 0.1 } },
+                                        { name: 'Hyper (Hızlı)', config: { borderRadius: '20px', animationSpeed: 0.5, magneticStrength: 0.5 } }
+                                    ].map(preset => (
+                                        <button
+                                            key={preset.name}
+                                            onClick={() => setLocalConfig(prev => ({ ...prev, ...preset.config }))}
+                                            className="px-4 py-3 bg-black/40 hover:bg-white/10 border border-white/10 rounded-lg text-sm font-bold text-white transition-all text-left flex flex-col gap-1 group"
+                                        >
+                                            <span className="group-hover:text-[#F2A619] transition-colors">{preset.name}</span>
+                                            <span className="text-[10px] text-gray-500 font-mono">
+                                                R:{preset.config.borderRadius === '9999px' ? 'Full' : preset.config.borderRadius} • S:{preset.config.animationSpeed}s
+                                            </span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         {/* Primary Color */}
                         <div className="mb-6">
@@ -144,9 +169,9 @@ export const AdminUISettings = () => {
                             </div>
                         </div>
 
-                        {/* Border Radius */}
-                        <div className="mb-6">
-                            <label className="block text-sm font-medium text-gray-400 mb-2">Border Radius</label>
+                        {/* Border Radius (Disabled if not Default theme) */}
+                        <div className={`mb-6 transition-opacity ${localConfig.buttonStyle && localConfig.buttonStyle !== 'default' ? 'opacity-50 pointer-events-none' : ''}`}>
+                            <label className="block text-sm font-medium text-gray-400 mb-2">Border Radius (Default Theme Only)</label>
                             <div className="flex items-center gap-4">
                                 <select
                                     value={localConfig.borderRadius}
@@ -207,7 +232,7 @@ export const AdminUISettings = () => {
                     <div className="mt-12 p-4 bg-black/50 rounded-lg border border-white/5 text-xs text-gray-500 font-mono">
                         <p>{`// Current Config`}</p>
                         <p>{`color: "${localConfig.primaryColor}"`}</p>
-                        <p>{`radius: "${localConfig.borderRadius}"`}</p>
+                        <p>{`theme: "${localConfig.buttonStyle || 'default'}"`}</p>
                         <p>{`magnetic: ${localConfig.magneticStrength}`}</p>
                     </div>
                 </div>

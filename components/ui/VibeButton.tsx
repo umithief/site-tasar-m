@@ -59,6 +59,7 @@ interface VibeButtonProps extends Omit<HTMLMotionProps<"button">, "children"> {
     fullWidth?: boolean;
     withMagnetic?: boolean;
     configOverride?: any;
+    theme?: 'default' | 'cyber' | 'brutal' | 'racing'; // Allow direct override or use global config
 }
 
 // --- MASTER COMPONENT ---
@@ -74,6 +75,7 @@ export const VibeButton = React.forwardRef<HTMLButtonElement, VibeButtonProps>((
     withMagnetic = true,
     className = '',
     configOverride,
+    theme, // Allow direct theme override
     onClick,
     ...props
 }, forwardedRef) => {
@@ -92,6 +94,7 @@ export const VibeButton = React.forwardRef<HTMLButtonElement, VibeButtonProps>((
     const globalRadius = config.borderRadius ?? (size === 'sm' ? '9999px' : '9999px'); // Default full rounded
     const globalAnimSpeed = config.animationSpeed ?? 1.5;
     const customPrimaryColor = config.primaryColor;
+    const activeTheme = theme || config.buttonStyle || 'default';
 
     // Initialize Magnetic Hook
     const { ref: magneticRef, x, y, handleMouseMove, handleMouseLeave } = useMagnetic(
@@ -108,6 +111,19 @@ export const VibeButton = React.forwardRef<HTMLButtonElement, VibeButtonProps>((
 
     // --- STYLES SYSTEM ---
     const baseStyles = "relative inline-flex items-center justify-center overflow-hidden transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-[#E2FF3B] focus:ring-offset-2 focus:ring-offset-black disabled:opacity-50 disabled:cursor-not-allowed uppercase font-bold tracking-widest";
+
+    // --- THEME DEFINITIONS ---
+    const themeStyles: Record<string, string> = {
+        default: "", // Standard logic applies
+        cyber: "rounded-none border-l-2 border-r-2 border-t-0 border-b-0 border-[var(--primary)] hover:border-white tracking-[0.25em] skew-x-[-10deg] hover:skew-x-0 font-mono text-[10px]",
+        brutal: "rounded-none border-2 border-white shadow-[4px_4px_0px_white] hover:shadow-[none] hover:translate-x-[4px] hover:translate-y-[4px] active:translate-x-[4px] active:translate-y-[4px] font-black",
+        racing: "rounded rounded-tr-2xl rounded-bl-2xl italic border-b-4 border-black/30 hover:border-black/50 transform hover:-translate-y-1 active:translate-y-0 active:border-b-0"
+    };
+
+    // Inject custom properties for themes that use them
+    const themeVariables = {
+        '--primary': customPrimaryColor || '#E2FF3B'
+    } as React.CSSProperties;
 
     const sizeStyles = {
         sm: "h-10 px-6 text-[10px]",
@@ -145,8 +161,9 @@ export const VibeButton = React.forwardRef<HTMLButtonElement, VibeButtonProps>((
 
     // Admin Panel Colors Override
     const dynamicStyle: React.CSSProperties = {
-        borderRadius: globalRadius,
+        borderRadius: (activeTheme === 'default') ? globalRadius : undefined, // Themes override radius
         width: fullWidth ? '100%' : 'auto',
+        ...themeVariables,
         ...(variant === 'primary' && customPrimaryColor ? {
             backgroundColor: customPrimaryColor,
             boxShadow: `0 0 20px ${customPrimaryColor}60`,
@@ -181,7 +198,7 @@ export const VibeButton = React.forwardRef<HTMLButtonElement, VibeButtonProps>((
         <motion.button
             ref={setRefs}
             style={{ x, y, ...dynamicStyle }}
-            className={cn(baseStyles, sizeStyles[size], variantStyles[variant], className)}
+            className={cn(baseStyles, sizeStyles[size], variantStyles[variant], themeStyles[activeTheme], className)}
 
             // Interaction Props
             whileTap={!isLoading && !isDisabled ? { scale: 0.97 } : {}}

@@ -75,6 +75,7 @@ import { ReelsPage } from './components/reels/ReelsPage';
 import { MobileProductDetail } from './components/mobile/MobileProductDetail';
 import { CartBottomSheet } from './components/mobile/CartBottomSheet';
 import { CheckoutPage } from './components/store/checkout/CheckoutPage';
+import { CartPage } from './components/store/cart/CartPage';
 import { OrderTracking } from './components/checkout/OrderTracking';
 import { WebSettings } from './components/desktop/WebSettings';
 import { Garage } from './components/garage/Garage';
@@ -425,6 +426,16 @@ export const App: React.FC = () => {
             case 'explore': return isMobile ? <MobileExplore onNavigate={navigateTo} /> : <ExploreMap onNavigate={navigateTo} />;
             case 'create': return <RideMode route={activeRoute} onNavigate={navigateTo} />; // Placeholder
             case 'garage': return <Garage />;
+            case 'cart':
+                return (
+                    <CartPage
+                        items={cartItems}
+                        onUpdateQuantity={updateQuantity}
+                        onRemoveItem={(id) => setCartItems(prev => prev.filter(item => item._id !== id))}
+                        onCheckout={handleCheckout}
+                        onContinueShopping={() => navigateTo('shop')}
+                    />
+                );
             case 'checkout':
                 return (
                     <CheckoutPage

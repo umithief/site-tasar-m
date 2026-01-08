@@ -108,46 +108,17 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                                 <Sun className="w-3 h-3 text-yellow-500" />
                                 {greeting}
                             </p>
-                            <h2 className="text-xl font-black text-gray-900 dark:text-white leading-none tracking-tight">{user && user.name ? user.name.split(' ')[0] : t('home.guest')}</h2>
+                            <h2 className="text-lg font-black text-gray-900 dark:text-white leading-none tracking-tight">{user && user.name ? user.name.split(' ')[0] : t('home.guest')}</h2>
                         </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
-                        <Button
-                            onClick={() => onNavigate('lifesaver')}
-                            className="bg-red-600 text-white animate-pulse shadow-lg shadow-red-600/30 border-2 border-white rounded-full hover:bg-red-700"
-                            variant="icon-glass"
-                            size="icon"
-                        >
-                            <Siren className="w-6 h-6" />
-                        </Button>
-
-                        <Button
-                            onClick={() => setIsSearchOpen(!isSearchOpen)}
-                            className={`transition-all border-2 border-transparent rounded-full ${isSearchOpen ? 'bg-moto-accent text-black shadow-lg' : 'bg-gray-100 text-gray-600 hover:bg-gray-200'}`}
-                            variant="ghost" // Using ghost to allow bg override
-                            size="icon"
-                        >
-                            {isSearchOpen ? <X className="w-5 h-5" /> : <Search className="w-5 h-5" />}
-                        </Button>
-
-                        {/* Cart Button */}
+                    <div className="flex items-center gap-2">
                         <Button
                             onClick={onCartClick}
-                            className="bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-gray-300 border-2 border-transparent rounded-full hover:bg-moto-accent hover:text-black hover:shadow-lg transition-all"
+                            className="bg-black text-white rounded-full w-10 h-10 p-0 flex items-center justify-center hover:bg-moto-accent hover:text-black transition-colors"
                             variant="ghost"
-                            size="icon"
                         >
-                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><path d="M3 6h18" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
-                        </Button>
-
-                        <Button
-                            onClick={onToggleMenu}
-                            className="bg-[#121212] text-white shadow-lg rounded-full hover:bg-black"
-                            variant="icon-glass"
-                            size="icon"
-                        >
-                            <Menu className="w-5 h-5" strokeWidth={2.5} />
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><path d="M3 6h18" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
                         </Button>
                     </div>
                 </div>
@@ -212,83 +183,65 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                 onViewAll={() => onNavigate('shop')}
             />
 
-            <div className="px-4 md:px-8 py-4 relative z-10">
+            <div className="px-4 md:px-8 py-8 md:py-16 relative z-10 space-y-8 md:space-y-16">
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     onClick={() => onNavigate('vlog-map')}
-                    className="max-w-[1800px] mx-auto bg-white dark:bg-zinc-900 border border-gray-200 dark:border-white/10 rounded-3xl p-0 relative overflow-hidden cursor-pointer hover:border-red-500 transition-all group shadow-xl"
+                    className="max-w-[1800px] mx-auto bg-[#0a0a0a] border border-white/10 rounded-[2rem] overflow-hidden cursor-pointer group shadow-2xl relative"
                 >
-                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-5 pointer-events-none"></div>
+                    <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent z-10 pointer-events-none"></div>
+                    <img src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1600&auto=format&fit=crop" className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-1000" alt="Vlog Map" />
 
-                    <div className="flex flex-col md:flex-row">
-                        <div className="p-8 md:p-10 flex-1 relative z-10 flex flex-col justify-center">
-                            <div className="flex items-center gap-2 text-xs font-bold text-red-600 uppercase tracking-widest mb-3">
-                                <Film className="w-4 h-4" /> İnteraktif Harita
-                            </div>
-                            <h3 className="text-3xl md:text-5xl font-display font-black text-gray-900 dark:text-white mb-4 leading-none">
-                                {t('home.vlog_map').split(' ')[0]} <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-red-600 to-[#E2FF3B]">{t('home.vlog_map').split(' ')[1]}</span>
-                            </h3>
-                            <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base max-w-lg mb-6">
-                                {t('home.vlog_desc')}
-                            </p>
-
-                            <Button
-                                onClick={() => onNavigate('vlog-map')}
-                                className="relative overflow-hidden bg-red-600 text-white px-8 py-4 rounded-xl font-bold text-sm shadow-lg shadow-red-600/30 w-fit uppercase tracking-wider hover:shadow-red-500/50 hover:scale-105"
-                                variant="danger"
-                            >
-                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shine" />
-                                <span className="relative z-10 flex items-center gap-2">
-                                    {t('home.open_map')}
-                                    <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                                </span>
-                            </Button>
+                    <div className="relative z-20 p-8 md:p-16 flex flex-col justify-center min-h-[400px]">
+                        <div className="flex items-center gap-3 text-red-500 font-bold tracking-[0.3em] text-xs uppercase mb-4">
+                            <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> CANLI HARİTA
                         </div>
+                        <h3 className="text-4xl md:text-7xl font-display font-black text-white mb-6 leading-[0.9]">
+                            ROTA <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">KEŞFET</span>
+                        </h3>
+                        <p className="text-gray-400 text-base md:text-xl max-w-lg mb-8 leading-relaxed">
+                            {t('home.vlog_desc')}
+                        </p>
 
-                        <div className="h-48 md:h-auto md:w-1/2 relative overflow-hidden bg-gray-100">
-                            <img src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=800&auto=format&fit=crop" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" alt="Vlog Map" />
-                            <div className="absolute inset-0 bg-gradient-to-t from-white to-transparent md:bg-gradient-to-r"></div>
+                        <div className="flex items-center gap-4">
+                            <Button
+                                onClick={(e) => { e.stopPropagation(); onNavigate('vlog-map'); }}
+                                className="bg-white text-black px-8 py-6 rounded-xl font-bold text-sm tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-xl hover:shadow-red-600/20"
+                                variant="primary"
+                            >
+                                {t('home.open_map')}
+                            </Button>
                         </div>
                     </div>
                 </motion.div>
-            </div>
 
-
-
-            <div className="px-4 md:px-8 py-4 relative z-10">
                 <motion.div
-                    initial={{ opacity: 0, y: 20 }}
+                    initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     onClick={() => onNavigate('valuation')}
-                    className="max-w-[1800px] mx-auto bg-gradient-to-r from-orange-50 to-white dark:from-zinc-900 dark:to-black border border-gray-200 dark:border-white/10 rounded-3xl p-6 md:p-10 relative overflow-hidden cursor-pointer hover:border-moto-accent transition-all group shadow-lg"
+                    className="max-w-[1800px] mx-auto bg-gradient-to-br from-[#111] to-black border border-white/10 rounded-[2rem] p-8 md:p-16 relative overflow-hidden cursor-pointer hover:border-moto-accent/50 transition-all group shadow-2xl"
                 >
-                    <div className="absolute top-0 right-0 w-64 h-64 bg-moto-accent/10 rounded-full blur-[80px] pointer-events-none group-hover:bg-moto-accent/20 transition-colors"></div>
+                    <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-moto-accent/5 rounded-full blur-[120px] pointer-events-none"></div>
 
-                    <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
                         <div>
-                            <div className="flex items-center gap-2 text-xs font-bold text-moto-accent uppercase tracking-widest mb-2">
-                                <Sparkles className="w-4 h-4" /> Yeni Özellik
+                            <div className="flex items-center gap-2 text-xs font-bold text-moto-accent uppercase tracking-[0.3em] mb-4">
+                                <Sparkles className="w-4 h-4" /> AI VALUATION
                             </div>
-                            <h3 className="text-2xl md:text-4xl font-display font-bold text-gray-900 dark:text-white mb-2 leading-tight">
+                            <h3 className="text-3xl md:text-6xl font-display font-black text-white mb-4 leading-none">
                                 {t('home.valuation')}
                             </h3>
-                            <p className="text-gray-600 dark:text-gray-400 text-sm md:text-base max-w-lg">
+                            <p className="text-gray-400 text-sm md:text-lg max-w-xl leading-relaxed">
                                 {t('home.valuation_desc')}
                             </p>
                         </div>
 
-                        <Button
-                            onClick={() => onNavigate('valuation')}
-                            className="bg-black dark:bg-white text-white dark:text-black px-6 py-3 rounded-xl font-bold text-sm shadow-xl hover:bg-moto-accent hover:text-black border border-transparent hover:border-black/10 gap-2"
-                            variant="secondary"
-                        >
-                            <Calculator className="w-4 h-4" />
-                            {t('home.calculate')}
-                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                        </Button>
+                        <div className="w-16 h-16 md:w-24 md:h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-moto-accent group-hover:text-black group-hover:scale-110 transition-all duration-500">
+                            <Calculator className="w-8 h-8 md:w-10 md:h-10" />
+                        </div>
                     </div>
                 </motion.div>
             </div>

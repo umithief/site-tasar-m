@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, useMotionValue, useTransform, animate } from 'framer-motion';
+import { ArrowRight } from 'lucide-react';
 
 import { sliderService } from '../services/sliderService';
 
@@ -9,7 +10,8 @@ const FALLBACK_SLIDES = [
         id: 1,
         title: "NITRO ASPHALT",
         subtitle: "The heat is rising.",
-        image: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?q=80&w=1920&auto=format&fit=crop"
+        image: "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?q=80&w=1920&auto=format&fit=crop",
+        cta: "Koleksiyonu Keşfet"
     }
 ];
 
@@ -154,14 +156,26 @@ export default function LiquidSlider() {
 
                 {/* ANIMATED SUBTITLE */}
                 <motion.p
-                    className="mt-4 text-white/80 text-lg md:text-xl font-light tracking-[0.5em] uppercase mix-blend-difference"
+                    className="mt-4 text-white/90 text-sm md:text-xl font-medium tracking-[0.2em] uppercase mix-blend-screen"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    key={activeSlide.id || activeSlide._id || index} // Retrigger animation
-                    transition={{ delay: 0.5, duration: 1 }}
+                    key={`sub-${activeSlide.id || index}`}
+                    transition={{ delay: 0.3, duration: 0.8 }}
                 >
                     {activeSlide.subtitle}
                 </motion.p>
+
+                {/* CTA BUTTON */}
+                <motion.button
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    key={`cta-${activeSlide.id || index}`}
+                    transition={{ delay: 0.5, duration: 0.8 }}
+                    className="mt-8 px-8 py-4 bg-[#F2A619] text-black font-black uppercase tracking-wider text-sm md:text-base rounded-full hover:bg-white hover:text-black transition-colors shadow-[0_0_20px_rgba(242,166,25,0.4)] hover:shadow-[0_0_30px_rgba(255,255,255,0.5)] flex items-center gap-2 group pointer-events-auto"
+                >
+                    {(activeSlide as any).cta || "Şimdi İncele"}
+                    <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
+                </motion.button>
             </div>
 
             {/* --- PROGRESS BAR NAVIGATION --- */}

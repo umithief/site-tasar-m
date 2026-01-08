@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { Phone, Headset, Navigation, Clock, CheckCircle, Truck, MapPin, Bike } from 'lucide-react';
-import { VibeButton } from '../../ui/VibeButton';
+import { VibeButton } from '../ui/VibeButton';
 import { Order } from '../../types';
 import { orderService } from '../../services/orderService';
 

@@ -3,8 +3,7 @@ import { motion, AnimatePresence, LayoutGroup } from 'framer-motion';
 import {
     Home, Compass, Zap, ShoppingBag, Map,
     Warehouse, Heart, Settings, User, LogOut,
-    ChevronRight, Layers, Menu, Shield, ShoppingCart,
-    ClipboardCheck, Volume2, FileWarning, Scale, Gauge, QrCode, Calculator, Wrench, Siren
+    ChevronRight, Layers, Menu, Shield, ShoppingCart
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { ViewState } from '../../types';
@@ -46,20 +45,6 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
             items: [
                 { id: 'favorites', icon: Heart, label: 'Favoriler' },
                 { id: 'settings', icon: Settings, label: 'Ayarlar' },
-            ]
-        },
-        {
-            title: 'ARAÇLAR',
-            items: [
-                { id: 'tuvturk', icon: ClipboardCheck, label: 'TÜVTÜRK Hazırlık' },
-                { id: 'exhaust', icon: Volume2, label: 'Egzoz Lab' },
-                { id: 'stolen', icon: FileWarning, label: 'Çalıntı Havuzu' },
-                { id: 'legal', icon: Scale, label: 'Yasal Rehber' },
-                { id: 'redline', icon: Gauge, label: 'Redline Challenge' },
-                { id: 'qr-generator', icon: QrCode, label: 'Kask QR' },
-                { id: 'valuation', icon: Calculator, label: 'Değerleme' },
-                { id: 'lifesaver', icon: Siren, label: 'Acil Durum' },
-                { id: 'service-finder', icon: Wrench, label: 'Servis Bul' },
             ]
         },
         ...(user?.isAdmin ? [{

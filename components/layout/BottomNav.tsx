@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Home, Search, Plus, Film, User, Zap, ShoppingBag, Map as MapIcon, Compass, Navigation, ShoppingCart } from 'lucide-react';
+import { Home, Search, Plus, Film, User, Zap, ShoppingBag, Map as MapIcon, Compass, Navigation, ShoppingCart, Wrench } from 'lucide-react';
 import { ViewState, User as UserType } from '../../types';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageProvider';
@@ -97,6 +97,7 @@ export const BottomNav: React.FC<SidebarProps> = ({
                             { id: 'create-ride', label: 'Grup Sürüşü', icon: MapIcon, color: 'text-lime-400', action: onCreateRide },
                             { id: 'ride-mode', label: 'Sürüş Modu', icon: Navigation, color: 'text-moto-accent', view: 'ride-mode' },
                             { id: 'reels', label: 'Reels', icon: Film, color: 'text-pink-500', view: 'reels' },
+                            { id: 'tools', label: 'Araçlar', icon: Wrench, color: 'text-yellow-500', view: 'mototool' },
                             { id: 'post', label: 'Yeni Gönderi', icon: Plus, color: 'text-blue-400', view: 'social-hub' }
                         ].map((item, index) => (
                             <button

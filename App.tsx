@@ -37,6 +37,11 @@ import { MotoVlogMap } from './components/MotoVlogMap';
 import { LifeSaver } from './components/LifeSaver';
 import { LivingBackground } from './components/LivingBackground';
 import { RidersDirectory } from './components/RidersDirectory';
+import { TuvTurkChecklist } from './components/TuvTurkChecklist';
+import { ExhaustLab } from './components/ExhaustLab';
+import { RedlineChallenge } from './components/RedlineChallenge';
+import { LegalGuide } from './components/LegalGuide';
+import { StolenPool } from './components/StolenPool';
 import { SocialHub } from './components/social/SocialHub';
 import { authService } from './services/auth';
 import { orderService } from './services/orderService';
@@ -474,6 +479,11 @@ export const App: React.FC = () => {
                     }}
                 />;
             case 'settings': return <WebSettings onNavigate={navigateTo} />;
+            case 'tuvturk': return <TuvTurkChecklist onBack={() => navigateTo('home')} onNavigateShop={(k) => navigateTo('shop', k)} />;
+            case 'exhaust': return <ExhaustLab onBack={() => navigateTo('home')} />;
+            case 'redline': return <RedlineChallenge onBack={() => navigateTo('home')} />;
+            case 'legal': return <LegalGuide onBack={() => navigateTo('home')} />;
+            case 'stolen': return <StolenPool onBack={() => navigateTo('home')} />;
             default: return <Home onNavigate={navigateTo} products={products} onAddToCart={addToCart} onProductClick={(p: any) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
         }
     };

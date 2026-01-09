@@ -1,151 +1,167 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, MessageCircle, Share2, MapPin, Gauge } from 'lucide-react';
-import { SocialPost, ViewState } from '../../types';
-import { UserAvatar } from '../ui/UserAvatar';
-import { useLikePost } from '../../hooks/usePosts';
+import { Heart, MessageCircle, Share2, Zap, Gauge, Navigation, MapPin, MoreVertical } from 'lucide-react';
+import { SocialPost } from '../../types';
+import { useAuthStore } from '../../store/authStore';
+import { socialService } from '../../services/socialService';
+import { formatDistanceToNow } from 'date-fns';
+import { tr } from 'date-fns/locale';
 
 interface PostCardProps {
     post: SocialPost;
-    currentUserId?: string;
-    onNavigate?: (view: ViewState, data?: any) => void;
-    onCommentClick?: () => void;
+    onLike?: (id: string) => void;
+    onComment?: (id: string) => void;
 }
 
-export const PostCard: React.FC<PostCardProps> = ({ post, currentUserId, onNavigate, onCommentClick }) => {
-    const { mutate: likePost } = useLikePost();
+// Telemetry Number Component with Count-up Effect
+const TelemetryValue = ({ value, unit, label }: { value: number | string; unit: string; label: string }) => {
+    return (
+        <div className="flex flex-col items-center justify-center p-2 bg-black/40 backdrop-blur-md border border-white/10 rounded-xl min-w-[80px]">
+            <span className="text-[10px] text-gray-400 font-bold tracking-wider mb-1">{label}</span>
+            <div className="flex items-baseline gap-1">
+                <span className="text-xl font-display font-bold text-white tabular-nums">
+                    {typeof value === 'number' ? value.toLocaleString() : value}
+                </span>
+                <span className="text-[10px] text-[#E2FF3B] font-bold">{unit}</span>
+            </div>
+        </div>
+    );
+};
+
+export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) => {
+    const { user: currentUser } = useAuthStore();
     const [isLiked, setIsLiked] = useState(post.isLiked);
-    const [likeCount, setLikeCount] = useState(post.likes);
+    const [likesCount, setLikesCount] = useState(post.likes);
 
-    const handleLike = () => {
-        if (!currentUserId) return;
-        setIsLiked(!isLiked);
-        setLikeCount(prev => isLiked ? prev - 1 : prev + 1);
-        likePost({ postId: post._id, userId: currentUserId });
+    const handleLike = async () => {
+        if (!currentUser) return;
+
+        // Optimistic UI
+        const newStatus = !isLiked;
+        setIsLiked(newStatus);
+        setLikesCount(prev => newStatus ? prev + 1 : prev - 1);
+
+        // Call API
+        if (onLike) onLike(post._id);
+        else await socialService.likePost(post._id, currentUser._id);
     };
-
-    const hasRideStats = post.rideStats && (post.rideStats.maxSpeed > 0 || post.rideStats.distance > 0);
 
     return (
         <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.4, ease: "easeOut" }}
-            className="w-full max-w-2xl mx-auto bg-[#0D0D0D] rounded-[24px] border border-white/5 shadow-2xl overflow-hidden mb-8 group"
+            transition={{ type: "spring", stiffness: 50, damping: 20 }}
+            className="w-full bg-[#0A0A0A] border border-white/5 shadow-2xl rounded-3xl overflow-hidden group relative"
         >
             {/* Header */}
-            <div className="p-4 flex items-center justify-between">
-                <div className="flex items-center gap-3 cursor-pointer" onClick={() => onNavigate && onNavigate('public-profile', { _id: post.userId })}>
-                    <div className="relative p-0.5 rounded-full border border-[#E2FF3B]">
-                        <UserAvatar src={post.userAvatar} name={post.userName} size={40} />
-                    </div>
-                    <div>
-                        <h3 className="text-white font-bold text-sm leading-none">{post.userName}</h3>
-                        <div className="flex items-center gap-1 text-[10px] text-zinc-500 mt-1">
-                            <MapPin className="w-3 h-3" />
-                            {post.rideStats?.routeSvg ? "İstanbul, TR" : (post.location || "Konum Yok")}
+            <div className="flex items-center justify-between p-4 relative z-10 bg-gradient-to-b from-black/80 to-transparent">
+                <div className="flex items-center gap-3">
+                    <div className="relative">
+                        <img
+                            src={post.userAvatar || 'https://via.placeholder.com/40'}
+                            alt={post.userName}
+                            className="w-10 h-10 rounded-full object-cover border-2 border-white/10"
+                        />
+                        {/* Online/Badge Indicator */}
+                        <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#E2FF3B] rounded-full border-2 border-black flex items-center justify-center">
+                            <Zap className="w-2 h-2 text-black fill-current" />
                         </div>
                     </div>
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <h3 className="text-sm font-bold text-white">{post.userName || 'Anonim Sürücü'}</h3>
+                            {/* Badge */}
+                            <div className="px-1.5 py-0.5 bg-[#E2FF3B]/10 border border-[#E2FF3B]/20 rounded text-[10px] font-bold text-[#E2FF3B] flex items-center gap-1">
+                                <Zap className="w-2 h-2" />
+                                SPORT MODE
+                            </div>
+                        </div>
+                        <p className="text-xs text-gray-500">
+                            {post.timestamp || 'Az önce'}
+                            {' • '}
+                            <span>{post.location || 'İstanbul'}</span>
+                        </p>
+                    </div>
                 </div>
-
-                {hasRideStats && (
-                    <div className="bg-red-500/10 text-red-500 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border border-red-500/20 shadow-[0_0_10px_rgba(239,68,68,0.2)]">
-                        Sport Mode
-                    </div>
-                )}
+                <button className="text-gray-400 hover:text-white transition-colors">
+                    <MoreVertical className="w-5 h-5" />
+                </button>
             </div>
 
-            {/* Media Area with HUD */}
-            <div className={`relative w-full ${post.images && post.images.length > 0 ? 'aspect-square' : 'p-4'}`}>
+            {/* Content / Media */}
+            <div className="relative aspect-[4/5] w-full bg-black/50 overflow-hidden">
                 {post.images && post.images.length > 0 ? (
-                    <div className="relative w-full h-full overflow-hidden rounded-2xl mx-auto px-2 pb-2">
-                        <img
-                            src={post.images[0]}
-                            alt="Post content"
-                            className="w-full h-full object-cover rounded-2xl shadow-lg"
-                        />
-
-                        {/* HUD Overlay */}
-                        {hasRideStats && (
-                            <div className="absolute bottom-6 right-6 bg-black/40 backdrop-blur-md border border-white/10 rounded-xl p-3 flex flex-col gap-1 transition-opacity duration-300 opacity-80 group-hover:opacity-100 items-end">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-[#E2FF3B] font-mono font-bold text-lg">{post.rideStats?.maxSpeed}</span>
-                                    <span className="text-xs text-zinc-400 uppercase font-medium">KM/H AVG</span>
-                                </div>
-                                {post.rideStats?.leanAngle && (
-                                    <div className="flex items-center gap-2">
-                                        <span className="text-white font-mono font-bold text-sm">{post.rideStats.leanAngle}°</span>
-                                        <span className="text-[10px] text-zinc-500 uppercase font-medium">Lean Angle</span>
-                                    </div>
-                                )}
-                            </div>
-                        )}
-                    </div>
+                    <img src={post.images[0]} alt="Post content" className="w-full h-full object-cover rounded-3xl" />
                 ) : (
-                    null
+                    <div className="w-full h-full flex items-center justify-center bg-[#111] text-gray-600">
+                        Görsel Yok
+                    </div>
+                )}
+
+                {/* Telemetry HUD Overlay */}
+                {post.rideStats && (
+                    <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-2 z-20">
+                        {/* Glassmorphic Stats Container */}
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                            className="flex-1 flex items-center justify-between gap-2"
+                        >
+                            <TelemetryValue value={post.rideStats.maxSpeed || 0} unit="KM/S" label="HIZ" />
+                            <TelemetryValue value={post.rideStats.distance || 0} unit="KM" label="MESAFE" />
+                            <TelemetryValue value={post.rideStats.leanAngle || 0} unit="°" label="EĞİM" />
+                        </motion.div>
+                    </div>
                 )}
             </div>
 
-            {/* Content & Interactions */}
-            <div className="p-5 pt-2">
-                {/* Interactions Bar */}
+            {/* Footer Actions */}
+            <div className="p-4 bg-[#0A0A0A]">
                 <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-2">
                         <motion.button
-                            onClick={handleLike}
                             whileTap={{ scale: 0.8 }}
-                            className="group/like flex items-center gap-1.5"
+                            onClick={handleLike}
+                            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${isLiked ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'bg-white/5 text-white border border-white/10 hover:bg-white/10'}`}
                         >
-                            <div className={`p-2 rounded-full transition-colors ${isLiked ? 'bg-[#FF3E3E]/10' : 'bg-white/5 group-hover/like:bg-white/10'}`}>
-                                <Heart
-                                    className={`w-5 h-5 transition-all ${isLiked ? 'fill-[#FF3E3E] text-[#FF3E3E]' : 'text-zinc-500'}`}
-                                />
-                            </div>
-                            <AnimatePresence mode='wait'>
-                                <motion.span
-                                    key={likeCount}
-                                    initial={{ y: 5, opacity: 0 }}
-                                    animate={{ y: 0, opacity: 1 }}
-                                    className={`text-sm font-bold ${isLiked ? 'text-[#FF3E3E]' : 'text-zinc-500'}`}
-                                >
-                                    {likeCount}
-                                </motion.span>
-                            </AnimatePresence>
+                            <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
+                            {isLiked ? 'BEĞENDİN' : 'BEĞEN'}
                         </motion.button>
 
                         <button
-                            onClick={onCommentClick}
-                            className="group/comment flex items-center gap-1.5 text-zinc-500 hover:text-white transition-colors"
+                            onClick={() => onComment && onComment(post._id)}
+                            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-white/5 text-white border border-white/10 hover:bg-white/10 transition-all"
                         >
-                            <div className="p-2 rounded-full bg-white/5 group-hover/comment:bg-white/10 transition-colors">
-                                <MessageCircle className="w-5 h-5" />
-                            </div>
-                            <span className="text-sm font-medium">{post.comments || 0}</span>
+                            <MessageCircle className="w-4 h-4" />
+                            YORUM YAP
+                        </button>
+
+                        <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-white/5 text-white border border-white/10 hover:bg-white/10 transition-all">
+                            <Share2 className="w-4 h-4" />
+                            PAYLAŞ
                         </button>
                     </div>
-
-                    <button className="text-zinc-500 hover:text-white transition-colors">
-                        <Share2 className="w-5 h-5" />
-                    </button>
                 </div>
 
-                {/* Description */}
-                <div className="space-y-2">
-                    <p className="text-zinc-300 text-sm leading-relaxed">
+                {/* Engagement Text */}
+                <div className="flex items-center gap-2 text-sm text-gray-400">
+                    <div className="flex -space-x-2">
+                        {[1, 2, 3].map(i => (
+                            <div key={i} className="w-5 h-5 rounded-full bg-gray-700 border border-[#0A0A0A]"></div>
+                        ))}
+                    </div>
+                    <span><span className="text-white font-bold">{likesCount} sürücü</span> bunu beğendi</span>
+                </div>
+
+                {/* Caption */}
+                {post.content && (
+                    <div className="mt-3 text-sm text-gray-300">
+                        <span className="font-bold text-white mr-2">{post.userName}</span>
                         {post.content}
-                    </p>
-                    {/* Hashtags Mockup - we can extract from content or just append */}
-                    <div className="flex gap-2 text-[#E2FF3B] text-xs font-medium cursor-pointer">
-                        <span className="hover:text-white transition-colors hover:shadow-[0_0_10px_rgba(226,255,59,0.3)]">#motolife</span>
-                        <span className="hover:text-white transition-colors hover:shadow-[0_0_10px_rgba(226,255,59,0.3)]">#nightride</span>
                     </div>
-
-                    <div className="text-[10px] text-zinc-600 font-medium uppercase tracking-widest pt-2">
-                        {post.timestamp || "Az Önce"}
-                    </div>
-                </div>
-
+                )}
             </div>
         </motion.div>
     );

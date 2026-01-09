@@ -88,7 +88,6 @@ export const useAuthStore = create<AuthState>()(
                         set({ user, isAuthenticated: true });
                     }
                 } catch (error) {
-                    console.error('Session validation failed:', error);
                     // If 401, token is invalid
                     if ((error as any).response?.status === 401) {
                         get().logout();

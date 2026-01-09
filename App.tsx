@@ -165,7 +165,11 @@ export const App: React.FC = () => {
             if (storedFavorites) setFavoriteIds(JSON.parse(storedFavorites));
 
             const currentUser = await authService.getCurrentUser();
-            if (currentUser) setUser(currentUser);
+            if (currentUser) {
+                setUser(currentUser);
+                // CRITICAL FIX: Fetch fresh profile data (including following list) from API
+                useAuthStore.getState().checkAuth();
+            }
 
             // Check if tour should show
             if (!tourService.hasCompletedTour()) {

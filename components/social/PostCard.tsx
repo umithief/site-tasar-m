@@ -52,11 +52,11 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
             transition={{ type: "spring", stiffness: 50, damping: 20 }}
-            className="w-full bg-[#0A0A0A] border border-white/5 shadow-2xl rounded-3xl overflow-hidden group relative"
+            className="w-full max-w-[500px] mx-auto bg-[#0A0A0A] border border-white/5 shadow-2xl rounded-2xl overflow-hidden group relative"
         >
             {/* Header */}
-            <div className="flex items-center justify-between p-4 relative z-10 bg-gradient-to-b from-black/80 to-transparent">
-                <div className="flex items-center gap-3">
+            <div className="flex items-center justify-between p-3 relative z-10 bg-gradient-to-b from-black/80 to-transparent">
+                <div className="flex items-center gap-2">
                     <div className="relative">
                         <img
                             src={post.userAvatar || 'https://via.placeholder.com/40'}
@@ -90,9 +90,9 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
             </div>
 
             {/* Content / Media */}
-            <div className="relative aspect-[4/5] w-full bg-black/50 overflow-hidden">
+            <div className="relative aspect-[4/3] w-full bg-black/50 overflow-hidden">
                 {post.images && post.images.length > 0 ? (
-                    <img src={post.images[0]} alt="Post content" className="w-full h-full object-cover rounded-3xl" />
+                    <img src={post.images[0]} alt="Post content" className="w-full h-full object-cover" />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center bg-[#111] text-gray-600">
                         Görsel Yok
@@ -124,22 +124,22 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
                         <motion.button
                             whileTap={{ scale: 0.8 }}
                             onClick={handleLike}
-                            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold transition-all ${isLiked ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'bg-white/5 text-white border border-white/10 hover:bg-white/10'}`}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold transition-all ${isLiked ? 'bg-red-500/10 text-red-500 border border-red-500/20' : 'bg-white/5 text-white border border-white/10 hover:bg-white/10'}`}
                         >
-                            <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
+                            <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-current' : ''}`} />
                             {isLiked ? 'BEĞENDİN' : 'BEĞEN'}
                         </motion.button>
 
                         <button
                             onClick={() => onComment && onComment(post._id)}
-                            className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-white/5 text-white border border-white/10 hover:bg-white/10 transition-all"
+                            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold bg-white/5 text-white border border-white/10 hover:bg-white/10 transition-all"
                         >
-                            <MessageCircle className="w-4 h-4" />
+                            <MessageCircle className="w-3.5 h-3.5" />
                             YORUM YAP
                         </button>
 
-                        <button className="flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold bg-white/5 text-white border border-white/10 hover:bg-white/10 transition-all">
-                            <Share2 className="w-4 h-4" />
+                        <button className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-bold bg-white/5 text-white border border-white/10 hover:bg-white/10 transition-all">
+                            <Share2 className="w-3.5 h-3.5" />
                             PAYLAŞ
                         </button>
                     </div>

@@ -216,7 +216,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
                             {[
                                 { id: 'feed', icon: Home, label: 'Akış' },
-                                { id: 'stories', icon: Image, label: 'Hikayeler' },
+                                // { id: 'stories', icon: Image, label: 'Hikayeler' }, // Removed as it's now in feed
                                 { id: 'vlog', icon: MapIcon, label: 'Map', badge: 'CANLI' },
                                 { id: 'rides', icon: Users, label: 'Sürüşler' }, // New Tab
                                 { id: 'routes', icon: Navigation, label: 'Rotalar' },
@@ -401,18 +401,17 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                         </div>
                     </div>
                     {/* View Switcher */}
-                    {view === 'stories' && (
-                        /* Stories Tab Content */
-                        <div className="mb-8">
-                            <StoryBar
-                                storyGroups={storyGroups}
-                                onStorySelect={setSelectedStoryGroup}
-                                onAddStory={() => fileInputRef.current?.click()}
-                            />
-                        </div>
-                    )}
+
                     {view === 'feed' ? (
                         <>
+                            {/* Stories Bar (Instagram Style) */}
+                            <div className="mb-6 -mx-4 lg:mx-0">
+                                <StoryBar
+                                    storyGroups={storyGroups}
+                                    onStorySelect={setSelectedStoryGroup}
+                                    onAddStory={() => fileInputRef.current?.click()}
+                                />
+                            </div>
 
                             {/* Community CTA (if not logged in) */}
                             {!currentUser && (

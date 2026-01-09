@@ -41,11 +41,19 @@ export const getStories = async (req, res) => {
     try {
         const currentUserId = req.user._id;
 
-        // 1. Fetch all active stories
+        // 1. Fetch current user's following list
+        const currentUser = await User.findById(currentUserId).select('following');
+        const followingIds = currentUser.following || [];
+
+        // Add current user to list to see own story
+        const allowedUserIds = [...followingIds, currentUserId];
+
+        // 2. Fetch all active stories from allowed users
         const stories = await Story.aggregate([
             {
                 $match: {
-                    expiresAt: { $gt: new Date() } // Only active stories
+                    expiresAt: { $gt: new Date() }, // Only active stories
+                    userId: { $in: allowedUserIds } // Only from following + self
                 }
             },
             {

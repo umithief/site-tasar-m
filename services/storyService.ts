@@ -1,109 +1,59 @@
+import { api } from './api';
 
-import { Story } from '../types';
-import { DB, getStorage, setStorage, delay } from './db';
-import { CONFIG } from './config';
 
-// Varsayılan Storyler (Updated with new fields)
-const DEFAULT_STORIES: Story[] = [
-    {
-        _id: 'st-1',
-        title: 'Sana Özel',
-        label: 'Sana Özel',
-        category: 'ÖNERİLEN',
-        image: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=200&auto=format&fit=crop',
-        coverImg: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=200&auto=format&fit=crop',
-        videoUrl: '',
-        duration: '0:30',
-        color: 'border-orange-500'
-    }
-];
+export interface Story {
+    _id: string;
+    userId: string; // or User object depending on population
+    mediaUrl: string;
+    mediaType: 'IMAGE' | 'VIDEO';
+    createdAt: string;
+    expiresAt: string;
+    views: number;
+    seen?: boolean;
+}
 
-const DB_KEY_STORIES = 'mv_stories';
+export interface StoryGroup {
+    user: {
+        _id: string;
+        name: string;
+        avatar: string;
+    };
+    stories: Story[];
+    allSeen: boolean;
+}
 
 export const storyService = {
-    async getStories(): Promise<Story[]> {
-        if (CONFIG.USE_MOCK_API) {
-            await delay(300);
-            const stored = getStorage<Story[]>(DB_KEY_STORIES, []);
-            if (stored.length === 0) {
-                setStorage(DB_KEY_STORIES, DEFAULT_STORIES);
-                return DEFAULT_STORIES;
-            }
-            return stored;
-        } else {
-            // REAL BACKEND
-            try {
-                const response = await fetch(`${CONFIG.API_URL}/stories`);
-                if (!response.ok) return DEFAULT_STORIES;
-                const data = await response.json();
-
-                // Map backend fields to frontend interface if needed
-                // But we unified them in types.ts so it should be fine.
-                // Just map legacy data if any.
-                return data.map((item: any) => ({
-                    ...item,
-                    _id: item._id || item.id, // Ensure _id is present
-                    label: item.title, // Map title to label if label is missing
-                    image: item.coverImg || item.image // Map coverImg to image
-                }));
-            } catch {
-                return DEFAULT_STORIES;
-            }
-        }
+    // Fetch all active stories grouped by user
+    getStories: async (): Promise<StoryGroup[]> => {
+        const response = await api.get('/stories');
+        return response.data;
     },
 
-    async addStory(story: Omit<Story, '_id'>): Promise<Story> {
-        if (CONFIG.USE_MOCK_API) {
-            await delay(500);
-            const stories = getStorage<Story[]>(DB_KEY_STORIES, []);
-            const newStory: Story = {
-                ...story,
-                _id: `st-${Date.now()}`,
-            };
-            stories.push(newStory);
-            setStorage(DB_KEY_STORIES, stories);
-            return newStory;
-        } else {
-            // REAL BACKEND
-            const response = await fetch(`${CONFIG.API_URL}/stories`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(story)
-            });
-            return await response.json();
-        }
+    // Create a new story
+    createStory: async (file: File): Promise<Story> => {
+        // 1. Upload file first
+        const formData = new FormData();
+        formData.append('file', file);
+
+        const uploadRes = await api.post('/upload', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+
+        const mediaUrl = uploadRes.data.url;
+
+        // 2. Create story record
+        const mediaType = file.type.startsWith('video') ? 'VIDEO' : 'IMAGE';
+
+        const response = await api.post('/stories', {
+            mediaUrl,
+            mediaType
+        });
+
+        return response.data;
     },
 
-    async updateStory(story: Story): Promise<void> {
-        if (CONFIG.USE_MOCK_API) {
-            await delay(300);
-            const stories = getStorage<Story[]>(DB_KEY_STORIES, []);
-            const index = stories.findIndex(s => s._id === story._id);
-            if (index !== -1) {
-                stories[index] = story;
-                setStorage(DB_KEY_STORIES, stories);
-            }
-        } else {
-            // REAL BACKEND
-            await fetch(`${CONFIG.API_URL}/stories/${story._id}`, {
-                method: 'PUT',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(story)
-            });
-        }
-    },
-
-    async deleteStory(id: string): Promise<void> {
-        if (CONFIG.USE_MOCK_API) {
-            await delay(300);
-            const stories = getStorage<Story[]>(DB_KEY_STORIES, []);
-            const filtered = stories.filter(s => s._id !== id);
-            setStorage(DB_KEY_STORIES, filtered);
-        } else {
-            // REAL BACKEND
-            await fetch(`${CONFIG.API_URL}/stories/${id}`, {
-                method: 'DELETE'
-            });
-        }
+    // Mark story as viewed
+    viewStory: async (storyId: string): Promise<void> => {
+        await api.post(`/stories/${storyId}/view`);
     }
 };

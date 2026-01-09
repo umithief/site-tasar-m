@@ -1,71 +1,145 @@
 import Story from '../models/Story.js';
-
-// @desc    Get all stories
-// @route   GET /api/stories
-// @access  Public
-export const getStories = async (req, res) => {
-    try {
-        const stories = await Story.find().sort({ createdAt: -1 });
-        res.status(200).json(stories);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
-};
+import StoryView from '../models/StoryView.js';
+import User from '../models/User.js';
 
 // @desc    Create a new story
 // @route   POST /api/stories
-// @access  Private (Admin)
+// @access  Private
 export const createStory = async (req, res) => {
     try {
-        const { title, category, coverImg, videoUrl, duration } = req.body;
+        const { mediaUrl, mediaType } = req.body;
 
-        const story = await Story.create({
-            title,
-            category,
-            coverImg,
-            videoUrl,
-            duration
+        if (!mediaUrl) {
+            return res.status(400).json({ message: 'Media URL is required' });
+        }
+
+        const story = new Story({
+            userId: req.user._id,
+            mediaUrl,
+            mediaType: mediaType || 'IMAGE'
         });
+
+        await story.save();
+
+        // Populate user details
+        // Note: populate typically works on the document, but depending on mongoose version/setup, 
+        // sometimes we need to re-fetch or use execPopulate. 
+        // Safe bet:
+        await story.populate('userId', 'name avatar');
 
         res.status(201).json(story);
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
     }
 };
 
-// @desc    Update a story
-// @route   PUT /api/stories/:id
-// @access  Private (Admin)
-export const updateStory = async (req, res) => {
+// @desc    Get active stories grouped by user
+// @route   GET /api/stories
+// @access  Private
+export const getStories = async (req, res) => {
     try {
-        const story = await Story.findByIdAndUpdate(req.params.id, req.body, {
-            new: true,
-            runValidators: true
+        const currentUserId = req.user._id;
+
+        // 1. Fetch all active stories
+        const stories = await Story.aggregate([
+            {
+                $match: {
+                    expiresAt: { $gt: new Date() } // Only active stories
+                }
+            },
+            {
+                $sort: { createdAt: 1 }
+            },
+            {
+                $group: {
+                    _id: '$userId',
+                    stories: { $push: '$$ROOT' },
+                    lastUpdated: { $max: '$createdAt' }
+                }
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: '_id',
+                    foreignField: '_id',
+                    as: 'user'
+                }
+            },
+            {
+                $unwind: '$user'
+            },
+            {
+                $project: {
+                    _id: 1,
+                    user: {
+                        _id: 1,
+                        name: 1,
+                        avatar: 1
+                    },
+                    stories: 1,
+                    lastUpdated: 1
+                }
+            },
+            {
+                $sort: { lastUpdated: -1 }
+            }
+        ]);
+
+        // 2. Fetch viewed stories for the current user
+        const viewedStoryIds = await StoryView.find({ viewerId: currentUserId }).distinct('storyId');
+        const viewedSet = new Set(viewedStoryIds.map(id => id.toString()));
+
+        // 3. Mark seen
+        const result = stories.map(group => {
+            const storiesWithSeen = group.stories.map(story => ({
+                ...story,
+                seen: viewedSet.has(story._id.toString())
+            }));
+
+            const allSeen = storiesWithSeen.every(s => s.seen);
+
+            return {
+                user: group.user,
+                stories: storiesWithSeen,
+                allSeen
+            };
         });
 
-        if (!story) {
-            return res.status(404).json({ message: 'Story not found' });
-        }
-
-        res.status(200).json(story);
+        res.json(result);
     } catch (error) {
-        res.status(400).json({ message: error.message });
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
     }
 };
 
-// @desc    Delete a story
-// @route   DELETE /api/stories/:id
-// @access  Private (Admin)
-export const deleteStory = async (req, res) => {
+// @desc    Mark a story as viewed
+// @route   POST /api/stories/:id/view
+// @access  Private
+export const viewStory = async (req, res) => {
     try {
-        const story = await Story.findByIdAndDelete(req.params.id);
+        const storyId = req.params.id;
+        const userId = req.user._id;
 
+        const story = await Story.findById(storyId);
         if (!story) {
             return res.status(404).json({ message: 'Story not found' });
         }
 
-        res.status(200).json({ message: 'Story deleted' });
+        const existingView = await StoryView.findOne({ storyId, viewerId: userId });
+
+        if (!existingView) {
+            await StoryView.create({
+                storyId,
+                viewerId: userId
+            });
+
+            await Story.findByIdAndUpdate(storyId, { $inc: { views: 1 } });
+        }
+
+        res.status(200).json({ success: true });
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error(error);
+        res.status(500).json({ message: 'Server Error' });
     }
 };

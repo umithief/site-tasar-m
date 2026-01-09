@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+
 import { motion, AnimatePresence } from 'framer-motion';
 import { Compass, Home, MessageSquare, Calendar, User, Search, Map as MapIcon, Navigation, Plus, Image, Grid, Users, Bell, ShoppingBag, Settings, LogOut, PlusCircle, Archive, Heart, MessageCircle, Sun, Moon, Gauge } from 'lucide-react';
 import { ResponsivePostCard } from './ResponsivePostCard';
@@ -21,6 +22,9 @@ import { usePosts, useCreatePost } from '../../hooks/usePosts';
 import { MediaUploader } from '../ui/MediaUploader';
 import { useAuthStore } from '../../store/authStore';
 import { useNotificationStore } from '../../store/useNotificationStore';
+import { StoryBar } from './StoryBar';
+import { StoryViewerOverlay } from './StoryViewerOverlay';
+import { storyService, StoryGroup } from '../../services/storyService';
 
 
 interface SocialHubProps {
@@ -60,6 +64,35 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
     const [searchResults, setSearchResults] = useState<{ users?: any[], rides?: any[], routes?: any[] }>({});
     const [isSearching, setIsSearching] = useState(false);
     const [showSearchResults, setShowSearchResults] = useState(false);
+
+    // Stories State
+    const [storyGroups, setStoryGroups] = useState<StoryGroup[]>([]);
+    const [selectedStoryGroup, setSelectedStoryGroup] = useState<StoryGroup | null>(null);
+    const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const loadStories = async () => {
+        try {
+            const groups = await storyService.getStories();
+            setStoryGroups(groups);
+        } catch (error) {
+            console.error('Failed to load stories', error);
+        }
+    };
+
+    useEffect(() => {
+        loadStories();
+    }, []);
+
+    const handleFileSelect = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        if (e.target.files && e.target.files[0]) {
+            try {
+                await storyService.createStory(e.target.files[0]);
+                loadStories(); // Refresh
+            } catch (error) {
+                console.error('Failed to upload story', error);
+            }
+        }
+    };
 
     // Debounced Search
     useEffect(() => {
@@ -147,6 +180,30 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
 
     return (
         <div className="bg-[#09090b] min-h-screen text-white pt-0 pb-0 font-sans selection:bg-moto-accent/30 relative transition-colors duration-300">
+            {/* Hidden File Input for Stories */}
+            <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept="image/*,video/*"
+                onChange={handleFileSelect}
+            />
+
+            {/* Story Viewer Overlay */}
+            <AnimatePresence>
+                {selectedStoryGroup && (
+                    <StoryViewerOverlay
+                        initialGroup={selectedStoryGroup}
+                        allGroups={storyGroups}
+                        onClose={() => setSelectedStoryGroup(null)}
+                        onGroupChange={(groupId) => {
+                            // Logic handled inside viewer for next/prev, but if we need to sync parent state:
+                            const group = storyGroups.find(g => g.user._id === groupId);
+                            if (group) setSelectedStoryGroup(group);
+                        }}
+                    />
+                )}
+            </AnimatePresence>
             {/* Background Ambient */}
             <div className="fixed top-0 left-0 w-full h-[50vh] bg-gradient-to-b from-purple-900/10 to-transparent pointer-events-none dark:block hidden" />
 
@@ -345,25 +402,13 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                     </div>
                     {/* View Switcher */}
                     {view === 'stories' && (
-                        /* Stories Rail - Moved from Feed */
-                        <div className="mb-8 overflow-x-auto no-scrollbar pb-2">
-                            <div className="flex gap-4">
-                                {/* Add Story */}
-                                <div className="flex-shrink-0 w-24 h-40 bg-[#111] rounded-2xl border border-white/10 flex flex-col items-center justify-center gap-2 cursor-pointer hover:border-moto-accent/50 transition-colors group relative overflow-hidden">
-                                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/80 z-0" />
-                                    <UserAvatar src={currentUser?.profileImage} name={currentUser?.name} size={40} className="z-10 border-2 border-black" />
-                                    <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-10 bg-moto-accent rounded-full p-1"><Plus className="w-3 h-3 text-black" /></div>
-                                </div>
-                                {/* Mock Stories */}
-                                {['story1.jpg', 'story2.jpg', 'story3.jpg', 'story4.jpg'].map((_, i) => (
-                                    <div key={i} className="flex-shrink-0 w-24 h-40 rounded-2xl bg-gray-800 relative overflow-hidden cursor-pointer ring-2 ring-transparent hover:ring-moto-accent transition-all">
-                                        <img src={`https://source.unsplash.com/random/200x400?motorcycle&sig=${i}`} className="w-full h-full object-cover" />
-                                        <div className="absolute inset-0 bg-gradient-to-b from-black/0 via-black/0 to-black/80" />
-                                        <div className="absolute bottom-2 left-2 text-[10px] font-bold truncate max-w-[90%]">Rider {i + 1}</div>
-                                        <div className="absolute top-2 left-2 w-8 h-8 rounded-full border-2 border-moto-accent p-0.5"><img src={`https://source.unsplash.com/random/50x50?face&sig=${i}`} className="w-full h-full rounded-full object-cover" /></div>
-                                    </div>
-                                ))}
-                            </div>
+                        /* Stories Tab Content */
+                        <div className="mb-8">
+                            <StoryBar
+                                storyGroups={storyGroups}
+                                onStorySelect={setSelectedStoryGroup}
+                                onAddStory={() => fileInputRef.current?.click()}
+                            />
                         </div>
                     )}
                     {view === 'feed' ? (

@@ -1,14 +1,14 @@
 import express from 'express';
-import { getStories, createStory, updateStory, deleteStory } from '../controllers/storyController.js';
+import { createStory, getStories, viewStory } from '../controllers/storyController.js';
+import { protect } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
 router.route('/')
-    .get(getStories)
-    .post(createStory);
+    .post(protect, createStory)
+    .get(protect, getStories);
 
-router.route('/:id')
-    .put(updateStory)
-    .delete(deleteStory);
+router.route('/:id/view')
+    .post(protect, viewStory);
 
 export default router;

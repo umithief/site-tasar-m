@@ -1,34 +1,36 @@
 import mongoose from 'mongoose';
 
 const storySchema = new mongoose.Schema({
-    title: {
-        type: String,
-        required: [true, 'Story title is required'],
-        trim: true
+    userId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'User',
+        required: true,
+        index: true
     },
-    category: {
+    mediaUrl: {
         type: String,
-        required: [true, 'Category is required'],
-        default: 'LIFESTYLE'
+        required: true
     },
-    coverImg: {
+    mediaType: {
         type: String,
-        required: [true, 'Cover image URL is required']
-    },
-    videoUrl: {
-        type: String,
-        required: [true, 'Video URL is required']
-    },
-    duration: {
-        type: String,
-        required: [true, 'Duration is required'],
-        default: '0:30'
+        enum: ['IMAGE', 'VIDEO'],
+        default: 'IMAGE'
     },
     createdAt: {
         type: Date,
         default: Date.now
+    },
+    expiresAt: {
+        type: Date,
+        default: () => new Date(+new Date() + 24 * 60 * 60 * 1000), // 24 hours from now
+        index: { expires: '0s' } // TTL index
+    },
+    views: {
+        type: Number,
+        default: 0
     }
+}, {
+    timestamps: true
 });
 
-const Story = mongoose.models.Story || mongoose.model('Story', storySchema);
-export default Story;
+export default mongoose.models.Story || mongoose.model('Story', storySchema);

@@ -10,6 +10,7 @@ router.post('/login', userController.loginUser);
 
 // Profile
 router.get('/', userController.getAllUsers);
+router.get('/profile', protect, userController.getMe); // Must be before /:id
 router.get('/:id', userController.getProfile);
 router.put('/profile', protect, userController.updateProfile);
 router.put('/update-settings', protect, userController.updateSettings);

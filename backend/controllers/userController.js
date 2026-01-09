@@ -66,6 +66,20 @@ export const registerUser = catchAsync(async (req, res, next) => {
     createSendToken(newUser, 201, res);
 });
 
+export const getMe = catchAsync(async (req, res, next) => {
+    const user = await User.findById(req.user.id)
+        .populate('followers', 'name avatar username')
+        .populate('following', 'name avatar username')
+        .populate('garage');
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            user
+        }
+    });
+});
+
 export const loginUser = catchAsync(async (req, res, next) => {
     const { email, password } = req.body;
 

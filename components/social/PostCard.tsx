@@ -13,20 +13,7 @@ interface PostCardProps {
     onComment?: (id: string) => void;
 }
 
-// Telemetry Number Component with Count-up Effect
-const TelemetryValue = ({ value, unit, label }: { value: number | string; unit: string; label: string }) => {
-    return (
-        <div className="flex flex-col items-center justify-center p-2 bg-black/40 backdrop-blur-md border border-white/10 rounded-xl min-w-[80px]">
-            <span className="text-[10px] text-gray-400 font-bold tracking-wider mb-1">{label}</span>
-            <div className="flex items-baseline gap-1">
-                <span className="text-xl font-display font-bold text-white tabular-nums">
-                    {typeof value === 'number' ? value.toLocaleString() : value}
-                </span>
-                <span className="text-[10px] text-[#E2FF3B] font-bold">{unit}</span>
-            </div>
-        </div>
-    );
-};
+
 
 export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) => {
     const { user: currentUser } = useAuthStore();
@@ -99,22 +86,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
                     </div>
                 )}
 
-                {/* Telemetry HUD Overlay */}
-                {post.rideStats && (
-                    <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-2 z-20">
-                        {/* Glassmorphic Stats Container */}
-                        <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ delay: 0.2 }}
-                            className="flex-1 flex items-center justify-between gap-2"
-                        >
-                            <TelemetryValue value={post.rideStats.maxSpeed || 0} unit="KM/S" label="HIZ" />
-                            <TelemetryValue value={post.rideStats.distance || 0} unit="KM" label="MESAFE" />
-                            <TelemetryValue value={post.rideStats.leanAngle || 0} unit="°" label="EĞİM" />
-                        </motion.div>
-                    </div>
-                )}
+
             </div>
 
             {/* Footer Actions */}

@@ -19,7 +19,7 @@ export const StoryBar: React.FC<StoryBarProps> = ({ storyGroups, onStorySelect, 
 
 
     return (
-        <div className="w-full overflow-x-auto py-2 px-4 no-scrollbar border-b border-gray-100 dark:border-white/5 bg-white dark:bg-black relative z-20">
+        <div className="w-full overflow-x-auto py-1 px-4 no-scrollbar border-b border-gray-100 dark:border-white/5 bg-white dark:bg-black relative z-20">
             <div className="flex items-center gap-4 min-w-max pl-2">
 
                 {/* MY STORY (ADD) */}

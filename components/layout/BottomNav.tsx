@@ -13,7 +13,7 @@ interface SidebarProps {
     onOpenAuth: () => void;
     onOpenFeedback: () => void;
     onToggle: () => void;
-    onCreateRide: () => void;
+    cartCount: number;
 }
 
 export const BottomNav: React.FC<SidebarProps> = ({
@@ -21,7 +21,7 @@ export const BottomNav: React.FC<SidebarProps> = ({
     onNavigate,
     user,
     onOpenAuth,
-    onCreateRide
+    cartCount
 }) => {
 
     // Determine which tab is technically "active" for highlighting
@@ -94,7 +94,6 @@ export const BottomNav: React.FC<SidebarProps> = ({
                         className="absolute bottom-24 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 z-50 w-full max-w-[200px]"
                     >
                         {[
-                            { id: 'create-ride', label: 'Grup Sürüşü', icon: MapIcon, color: 'text-lime-400', action: onCreateRide },
                             { id: 'ride-mode', label: 'Sürüş Modu', icon: Navigation, color: 'text-moto-accent', view: 'ride-mode' },
                             { id: 'reels', label: 'Reels', icon: Film, color: 'text-pink-500', view: 'reels' },
                             { id: 'tools', label: 'Araçlar', icon: Wrench, color: 'text-yellow-500', view: 'mototool' },
@@ -103,8 +102,7 @@ export const BottomNav: React.FC<SidebarProps> = ({
                             <button
                                 key={item.id}
                                 onClick={() => {
-                                    if (item.action) item.action();
-                                    else if (item.view) onNavigate(item.view as any);
+                                    onNavigate(item.view as any);
                                     setIsFabOpen(false);
                                 }}
                                 className="w-full bg-[#1A1A17]/90 backdrop-blur-md border border-white/10 p-4 rounded-2xl flex items-center gap-4 shadow-xl active:scale-95 transition-transform"

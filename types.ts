@@ -496,17 +496,4 @@ export interface StolenItem {
   dateReported: string;
 }
 
-export type RideDifficulty = 'Easy' | 'Moderate' | 'Hard';
 
-export interface Ride {
-  id: string; // Prisma uses id or _id? Schema says id (uuid). JS might return _id if I mixed it up, but Prisma usually returns whatever model says. Schema says id.
-  title: string;
-  description?: string;
-  startTime: string; // ISO
-  difficulty: RideDifficulty;
-  route: any; // GeoJSON
-  maxParticipants: number;
-  creatorId: string;
-  creator?: User;
-  createdAt: string;
-}

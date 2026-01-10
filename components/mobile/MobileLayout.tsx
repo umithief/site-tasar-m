@@ -12,7 +12,6 @@ interface MobileLayoutProps {
     cartCount: number;
     onOpenAuth: () => void;
     onOpenFeedback: () => void;
-    onCreateRide: () => void;
 }
 
 export const MobileLayout: React.FC<MobileLayoutProps> = ({
@@ -22,8 +21,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
     user,
     cartCount,
     onOpenAuth,
-    onOpenFeedback,
-    onCreateRide
+    onOpenFeedback
 }) => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [showTopBar, setShowTopBar] = useState(true);
@@ -97,7 +95,6 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
                 onOpenAuth={onOpenAuth}
                 onOpenFeedback={onOpenFeedback}
                 onToggle={() => setIsMenuOpen(!isMenuOpen)}
-                onCreateRide={onCreateRide}
 
             />
         </div>

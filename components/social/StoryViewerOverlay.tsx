@@ -19,6 +19,7 @@ export const StoryViewerOverlay: React.FC<StoryViewerProps> = ({ initialGroup, a
 
     // UI State
     const [isPaused, setIsPaused] = useState(false);
+    const [isLoaded, setIsLoaded] = useState(false);
     const progressRef = useRef<number>(0);
     const [progress, setProgress] = useState(0);
 
@@ -36,7 +37,7 @@ export const StoryViewerOverlay: React.FC<StoryViewerProps> = ({ initialGroup, a
 
     // Timer Logic
     useEffect(() => {
-        if (isPaused) return;
+        if (isPaused || !isLoaded) return;
 
         const duration = 5000; // 5s per story
         const interval = 50; // Update every 50ms
@@ -54,11 +55,12 @@ export const StoryViewerOverlay: React.FC<StoryViewerProps> = ({ initialGroup, a
         }, interval);
 
         return () => clearInterval(timer);
-    }, [activeStoryIndex, activeGroupIndex, isPaused]);
+    }, [activeStoryIndex, activeGroupIndex, isPaused, isLoaded]);
 
-    // Reset progress on story change
+    // Reset progress and loading state on story change
     useEffect(() => {
         setProgress(0);
+        setIsLoaded(false);
     }, [activeStoryIndex, activeGroupIndex]);
 
     const handleNext = () => {
@@ -155,15 +157,28 @@ export const StoryViewerOverlay: React.FC<StoryViewerProps> = ({ initialGroup, a
 
             {/* --- CONTENT --- */}
             <div className="flex-1 relative bg-black flex items-center justify-center">
+                {!isLoaded && (
+                    <div className="absolute inset-0 flex items-center justify-center z-10">
+                        <div className="w-8 h-8 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    </div>
+                )}
+
                 {activeStory.mediaType === 'VIDEO' ? (
                     <video
                         src={activeStory.mediaUrl}
-                        className="w-full h-full object-contain"
+                        className={`w-full h-full object-contain transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
                         autoPlay
                         playsInline
+                        onLoadedMetadata={() => setIsLoaded(true)}
+                        onWaiting={() => setIsPaused(true)}
+                        onPlaying={() => setIsPaused(false)}
                     />
                 ) : (
-                    <img src={activeStory.mediaUrl} className="w-full h-full object-contain" />
+                    <img
+                        src={activeStory.mediaUrl}
+                        className={`w-full h-full object-contain transition-opacity duration-300 ${isLoaded ? 'opacity-100' : 'opacity-0'}`}
+                        onLoad={() => setIsLoaded(true)}
+                    />
                 )}
 
                 {/* Gradient Overlay for Text Readability */}

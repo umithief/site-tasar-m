@@ -30,7 +30,6 @@ import userRoutes from './routes/userRoutes.js';
 import reelRoutes from './routes/reelRoutes.js';
 import postRoutes from './routes/postRoutes.js';
 import rideRoutes from './routes/rideRoutes.js';
-import metricRoutes from './routes/metricRoutes.js';
 import uiRoutes from './routes/uiRoutes.js';
 
 // ... imports
@@ -571,14 +570,11 @@ app.use('/api/showcase', showcaseRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/activities', activityRoutes);
 app.use('/api/rides', rideRoutes);
-app.use('/api/metrics', metricRoutes);
-
 app.use('/api/music', musicRoutes);
 app.use('/api/models', modelRoutes);
 app.use('/api/stolen-items', stolenRoutes);
 app.use('/api/negotiations', negotiationRoutes);
 app.use('/api/feedback', feedbackRoutes);
-app.use('/api/rides', rideRoutes);
 app.use('/api/ui-settings', uiRoutes);
 
 // --- GLOBAL ERROR HANDLER ---

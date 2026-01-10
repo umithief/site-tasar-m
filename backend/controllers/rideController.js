@@ -1,82 +1,155 @@
 import Ride from '../models/Ride.js';
-import mongoose from 'mongoose';
-import User from '../models/User.js'; // Ensure User model is imported if needed for queries
-import { CreateRideSchema } from '../validations/schemas.js';
-import { z } from 'zod';
+import User from '../models/User.js';
+
+// Haversine Formula for Distance (in km)
+const calculateDistance = (lat1, lon1, lat2, lon2) => {
+    const R = 6371; // Radius of earth in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+};
 
 export const createRide = async (req, res) => {
     try {
-        const user = req.user;
-        const body = CreateRideSchema.parse(req.body);
+        const { title, coordinates, telemetry, bikeId, description, isPublic } = req.body;
+        const userId = req.user._id; // From auth middleware
 
-        // Fallback user finding logic for MongoDB
-        let creatorId = 'user_123';
-        if (user) {
-            creatorId = user._id || user.id;
-        } else {
-            // Find first admin or user as fallback
-            const fallbackUser = await User.findOne();
-            if (fallbackUser) creatorId = fallbackUser._id;
+        if (!coordinates || coordinates.length < 2) {
+            return res.status(400).json({ success: false, message: 'Geçersiz koordinat verisi. En az 2 nokta gerekli.' });
         }
 
-        const ride = await Ride.create({
-            title: body.title,
-            description: body.description,
-            startTime: new Date(body.startTime),
-            difficulty: body.difficulty,
-            route: body.route,
-            maxParticipants: body.maxParticipants || 10,
-            creatorId: creatorId
+        // --- ANALYSIS LOGIC ---
+        let maxSpeed = 0;
+        let totalSpeed = 0;
+        let maxLeanAngle = 0;
+        let maxGForce = 0;
+
+        // Analyze Telemetry
+        if (telemetry && telemetry.length > 0) {
+            telemetry.forEach(point => {
+                if (point.speed > maxSpeed) maxSpeed = point.speed;
+                if (point.leanAngle > maxLeanAngle) maxLeanAngle = point.leanAngle;
+                if (point.gForce > maxGForce) maxGForce = point.gForce;
+                totalSpeed += point.speed;
+            });
+        }
+
+        // Analyze Route (Distance)
+        let totalDistance = 0;
+        for (let i = 0; i < coordinates.length - 1; i++) {
+            const [lon1, lat1] = coordinates[i];
+            const [lon2, lat2] = coordinates[i + 1];
+            totalDistance += calculateDistance(lat1, lon1, lat2, lon2);
+        }
+
+        // Duration (from telemetry timestamps or simple mock if relying on interval)
+        // Assuming telemetry is ordered by time
+        let duration = 0;
+        if (telemetry && telemetry.length > 1) {
+            const start = new Date(telemetry[0].timestamp).getTime();
+            const end = new Date(telemetry[telemetry.length - 1].timestamp).getTime();
+            duration = (end - start) / 1000; // seconds
+        }
+
+        const avgSpeed = telemetry && telemetry.length > 0 ? (totalSpeed / telemetry.length) : 0;
+
+        // Create Ride
+        const newRide = await Ride.create({
+            userId,
+            bikeId,
+            title: title || `Sürüş - ${new Date().toLocaleDateString('tr-TR')}`,
+            description,
+            isPublic: isPublic !== undefined ? isPublic : true,
+            route: {
+                type: 'LineString',
+                coordinates: coordinates
+            },
+            telemetry: telemetry || [],
+            stats: {
+                maxSpeed,
+                avgSpeed,
+                maxLeanAngle,
+                maxGForce,
+                totalDistance: parseFloat(totalDistance.toFixed(2)),
+                duration: Math.round(duration)
+            }
         });
 
-        // Populate creator info
-        // Note: In Mongoose, we usually populate in a separate query or aggregate if needed immediately, 
-        // but for creation response, basic data is often enough or we can do:
-        // await ride.populate('creator', 'name avatar'); 
-        // Assuming 'creator' virtual or simple fetch. 
-        // For now, returning the ride object.
+        // Optional: Update User Stats (Total KM)
+        await User.findByIdAndUpdate(userId, {
+            $inc: { 'points': parseFloat((totalDistance * 10).toFixed(0)) } // 10 points per km
+        });
 
-        res.status(201).json(ride);
+        res.status(201).json({
+            success: true,
+            message: 'Sürüş başarıyla kaydedildi ve analiz edildi.',
+            data: newRide
+        });
+
     } catch (error) {
-        if (error instanceof z.ZodError) {
-            return res.status(400).json({ errors: error.issues });
-        }
-        console.error("Create Ride Error:", error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        console.error('Ride Create Error:', error);
+        res.status(500).json({ success: false, message: 'Sürüş kaydedilemedi.', error: error.message });
     }
 };
 
-export const getRides = async (req, res) => {
+export const getRide = async (req, res) => {
     try {
-        const rides = await Ride.find({
-            startTime: { $gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } // Show rides from last 24h
-        })
-            .sort({ startTime: 1 })
-            .limit(50)
-        // Manual "populate" since we store creatorId as String matching Supabase/Custom ID, 
-        // not necessarily an ObjectId if relying on external auth.
-        // However, if we migrated User to Mongoose fully, we can use populate.
-        // Let's assume logical linking for now or basic populate if reference is set up.
-        // .populate('creatorId', 'name avatar'); 
+        const ride = await Ride.findById(req.params.id)
+            .populate('userId', 'name avatar rank')
+            .populate('bikeId'); // Assuming bike model/brand is needed
 
-        // For this specific codebase, users seem to be in MongoDB, so we can try to fetch creator details manually
-        // or if creatorId is the _id.
-        // Let's iterate and attach creator info wrapper if needed, but for MVP standard find is okay.
+        if (!ride) {
+            return res.status(404).json({ success: false, message: 'Sürüş verisi bulunamadı.' });
+        }
 
-        // Improve: Fetch creators manually to attach author info
-        const creatorIds = [...new Set(rides.map(r => r.creatorId))];
-        const validCreatorIds = creatorIds.filter(id => mongoose.Types.ObjectId.isValid(id));
-        const creators = await User.find({ _id: { $in: validCreatorIds } }).select('name avatar username');
-        const creatorMap = creators.reduce((acc, curr) => ({ ...acc, [curr._id]: curr }), {});
-
-        const ridesWithCreator = rides.map(ride => ({
-            ...ride.toObject(),
-            creator: creatorMap[ride.creatorId] || { name: 'Unknown', avatar: '' }
-        }));
-
-        res.status(200).json(ridesWithCreator);
+        res.status(200).json({ success: true, data: ride });
     } catch (error) {
-        console.error("Get Rides Error:", error);
-        res.status(500).json({ message: 'Internal Server Error' });
+        console.error('Get Ride Error:', error);
+        res.status(500).json({ success: false, message: 'Sunucu hatası.' });
+    }
+};
+
+export const getUserRides = async (req, res) => {
+    try {
+        const { userId } = req.params;
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10;
+        const skip = (page - 1) * limit;
+
+        const rides = await Ride.find({ userId })
+            .sort({ date: -1 }) // Newest first
+            .skip(skip)
+            .limit(limit);
+
+        const total = await Ride.countDocuments({ userId });
+
+        res.status(200).json({
+            success: true,
+            count: rides.length,
+            pagination: { total, page, pages: Math.ceil(total / limit) },
+            data: rides
+        });
+    } catch (error) {
+        console.error('Get User Rides Error:', error);
+        res.status(500).json({ success: false, message: 'Kullanıcı sürüşleri getirilemedi.' });
+    }
+};
+
+export const deleteRide = async (req, res) => {
+    try {
+        const ride = await Ride.findOneAndDelete({ _id: req.params.id, userId: req.user._id });
+
+        if (!ride) {
+            return res.status(404).json({ success: false, message: 'Sürüş bulunamadı veya yetkiniz yok.' });
+        }
+
+        res.status(200).json({ success: true, message: 'Sürüş silindi.' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: 'Silme işlemi başarısız.' });
     }
 };

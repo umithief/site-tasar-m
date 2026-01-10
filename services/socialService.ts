@@ -21,7 +21,10 @@ export const socialService = {
 
             return posts.map((post: any) => ({
                 ...post,
-                userId: post.user,
+                userId: post.user?._id || post.user,
+                userName: post.user?.name || post.userName || 'Anonim',
+                userAvatar: post.user?.avatar || post.userAvatar || '',
+                userRank: post.user?.rank || post.userRank,
                 commentList: post.comments || [],
                 comments: post.commentCount || 0,
                 likes: post.likeCount || 0,
@@ -155,7 +158,10 @@ export const socialService = {
 
             return posts.map((post: any) => ({
                 ...post,
-                userId: post.user,
+                userId: post.user?._id || post.user,
+                userName: post.user?.name || post.userName || 'Anonim',
+                userAvatar: post.user?.avatar || post.userAvatar || '',
+                userRank: post.user?.rank || post.userRank,
                 commentList: post.comments || [],
                 comments: post.commentCount || 0,
                 likes: post.likeCount || 0,
@@ -271,7 +277,10 @@ export const socialService = {
 
             return posts.map((post: any) => ({
                 ...post,
-                userId: post.user,
+                userId: post.user?._id || post.user,
+                userName: post.user?.name || post.userName || 'Anonim',
+                userAvatar: post.user?.avatar || post.userAvatar || '',
+                userRank: post.user?.rank || post.userRank,
                 commentList: post.comments || [],
                 comments: post.commentCount || 0,
                 likes: post.likeCount || 0,

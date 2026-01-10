@@ -405,7 +405,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                     {view === 'feed' ? (
                         <>
                             {/* Stories Bar (Instagram Style) */}
-                            <div className="mb-6 -mx-4 lg:mx-0">
+                            <div className="mb-1 -mx-4 lg:mx-0">
                                 <StoryBar
                                     storyGroups={storyGroups}
                                     onStorySelect={setSelectedStoryGroup}

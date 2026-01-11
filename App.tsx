@@ -16,6 +16,7 @@ import { AdminPanel } from './components/AdminPanel';
 import { ProductQuickViewModal } from './components/ProductQuickViewModal';
 import { ToastType, ToastContainer, ToastMessage } from './components/Toast';
 import { RideMode } from './components/RideMode';
+import { InRideCockpit } from './components/ride/InRideCockpit'; // New Cockpit
 import { MotoTool } from './components/MotoTool';
 import { RouteExplorer } from './components/RouteExplorer';
 import { MobileOnboarding } from './components/mobile/MobileOnboarding';
@@ -403,7 +404,7 @@ export const App: React.FC = () => {
             case 'meetup':
             case 'events': return <MotoMeetup user={user} onOpenAuth={() => navigateTo('auth')} onNavigate={navigateTo} />;
             case 'service-finder': return <ServiceFinder onNavigate={navigateTo} />;
-            case 'ride-mode': return <RideMode route={activeRoute} onNavigate={navigateTo} />;
+            case 'ride-mode': return <InRideCockpit onFinishRide={() => setView('home')} />;
             case 'mototool': return <MotoTool onNavigate={navigateTo} />;
             case 'valuation': return <MotoValuation onNavigate={navigateTo} />;
             case 'qr-generator': return <HelmetQRGenerator onNavigate={navigateTo} />;

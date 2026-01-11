@@ -64,7 +64,7 @@ export const RouteSuggestions: React.FC = () => {
             <div className="relative w-full">
                 {/* Scrollable Area */}
                 <div
-                    className="flex overflow-x-auto snap-x snap-mandatory gap-4 px-6 pb-8 no-scrollbar touch-pan-x"
+                    className="flex overflow-x-auto snap-x snap-mandatory gap-4 px-6 pb-8 no-scrollbar"
                     style={{ WebkitOverflowScrolling: 'touch' }}
                 >
                     {routes.map((route, i) => (

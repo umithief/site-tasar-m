@@ -212,215 +212,229 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
 
                 {/* --- MAIN FEED STREAM --- */}
                 <div className="min-h-screen bg-transparent transition-colors duration-300">
-                    {/* Top Navigation Tabs */}
+
+
+                    {/* Sticky Header Group (Tabs + Stories) */}
                     <div
-                        className="sticky z-40 bg-transparent px-4 py-2 flex items-center justify-center pointer-events-none transition-[top] duration-300"
+                        className="sticky z-40 transition-[top] duration-300 pb-2"
                         style={{ top: 'var(--mobile-header-height, 0px)' }}
                     >
-                        <div className="flex items-center gap-6 overflow-x-auto no-scrollbar pointer-events-auto bg-black/40 backdrop-blur-md rounded-full px-6 py-2 border border-white/5 shadow-2xl">
-                            {[
-                                { id: 'feed', label: 'AKIŞ' },
-                                { id: 'vlog', label: 'MAP (CANLI)' },
-                                { id: 'rides', label: 'SÜRÜŞLER' },
-                                { id: 'routes', label: 'ROTALAR' },
-                            ].map((item: any) => (
-                                <button
-                                    key={item.id}
-                                    onClick={() => setView(item.id as HubView)}
-                                    className={`relative text-sm font-bold tracking-wider transition-all whitespace-nowrap py-1
-                                    ${view === item.id
-                                            ? 'text-[#E2FF3B] drop-shadow-[0_0_8px_rgba(226,255,59,0.5)]'
-                                            : 'text-white/40 hover:text-white'}`}
-                                >
-                                    <span>{item.label}</span>
-                                    {view === item.id && (
-                                        <motion.div
-                                            layoutId="activeTabUnderline"
-                                            className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#E2FF3B] shadow-[0_0_8px_#E2FF3B]"
-                                        />
-                                    )}
-                                </button>
-                            ))}
-                        </div>
+                        {/* Background for the sticky area to prevent bleed-through */}
+                        <div className="absolute inset-0 bg-black/80 backdrop-blur-xl border-b border-white/5 shadow-2xl z-[-1]" />
+
+                        {/* Top Navigation Tabs */}
+                        <div className="bg-transparent px-4 py-2 flex items-center justify-center">
+                            <div className="flex items-center gap-6 overflow-x-auto no-scrollbar bg-white/5 rounded-full px-6 py-2 border border-white/5">
+                                {[
+                                    { id: 'feed', label: 'AKIŞ' },
+                                    { id: 'vlog', label: 'MAP (CANLI)' },
+                                    { id: 'rides', label: 'SÜRÜŞLER' },
+                                    { id: 'routes', label: 'ROTALAR' },
+                                ].map((item: any) => (
+                                    <button
+                                        key={item.id}
+                                        onClick={() => setView(item.id as HubView)}
+                                        className={`relative text-sm font-bold tracking-wider transition-all whitespace-nowrap py-1
+                                        ${view === item.id
+                                                ? 'text-[#E2FF3B] drop-shadow-[0_0_8px_rgba(226,255,59,0.5)]'
+                                                : 'text-white/40 hover:text-white'}`}
+                                    >
+                                        <span>{item.label}</span>
+                                        {view === item.id && (
+                                            <motion.div
+                                                layoutId="activeTabUnderline"
+                                                className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#E2FF3B] shadow-[0_0_8px_#E2FF3B]"
+                                            />
+                                        )}
+                                    </button>
+                                ))}
+                            </div>
 
 
-                        {/* Right Actions (Desktop Only) */}
-                        <div className="hidden lg:flex items-center gap-3 pl-4 border-l border-white/10 ml-4 pointer-events-auto">
-                            {/* Theme Toggle */}
+                            {/* Right Actions (Desktop Only) */}
+                            <div className="hidden lg:flex items-center gap-3 pl-4 border-l border-white/10 ml-4 pointer-events-auto">
+                                {/* Theme Toggle */}
 
 
-                            {/* Notifications */}
-                            <div className="relative">
-                                <button
-                                    onClick={() => setIsNotificationOpen(!isNotificationOpen)}
-                                    className={`relative p-2 rounded-full transition-all border ${isNotificationOpen ? 'bg-white text-black border-white' : 'bg-[#18181b] text-zinc-400 border-white/5 hover:text-white'}`}
-                                >
-                                    <Bell className={`w-5 h-5 ${isNotificationOpen ? 'fill-current' : ''}`} />
-                                    {useNotificationStore.getState().unreadCount > 0 && (
-                                        <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse ring-2 ring-[#09090b]" />
-                                    )}
-                                </button>
+                                {/* Notifications */}
+                                <div className="relative">
+                                    <button
+                                        onClick={() => setIsNotificationOpen(!isNotificationOpen)}
+                                        className={`relative p-2 rounded-full transition-all border ${isNotificationOpen ? 'bg-white text-black border-white' : 'bg-[#18181b] text-zinc-400 border-white/5 hover:text-white'}`}
+                                    >
+                                        <Bell className={`w-5 h-5 ${isNotificationOpen ? 'fill-current' : ''}`} />
+                                        {useNotificationStore.getState().unreadCount > 0 && (
+                                            <span className="absolute top-1.5 right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse ring-2 ring-[#09090b]" />
+                                        )}
+                                    </button>
 
-                                <button
-                                    onClick={() => setIsCreateOpen(!isCreateOpen)}
-                                    className={`relative p-2 rounded-full transition-all border ml-2 ${isCreateOpen ? 'bg-moto-accent text-black border-moto-accent' : 'bg-[#18181b] text-zinc-400 border-white/5 hover:text-white'}`}
-                                >
-                                    <PlusCircle className="w-5 h-5" />
-                                </button>
+                                    <button
+                                        onClick={() => setIsCreateOpen(!isCreateOpen)}
+                                        className={`relative p-2 rounded-full transition-all border ml-2 ${isCreateOpen ? 'bg-moto-accent text-black border-moto-accent' : 'bg-[#18181b] text-zinc-400 border-white/5 hover:text-white'}`}
+                                    >
+                                        <PlusCircle className="w-5 h-5" />
+                                    </button>
 
-                                {/* Notification Dropdown */}
-                                <AnimatePresence>
-                                    {isNotificationOpen && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            className="absolute top-full right-0 mt-2 w-80 bg-[#18181b] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-[60]"
-                                        >
-                                            <div className="p-3 border-b border-white/5 flex justify-between items-center">
-                                                <h4 className="font-bold text-sm">Bildirimler</h4>
-                                                <span className="text-[10px] text-zinc-500 cursor-pointer hover:text-white">Tümünü Okundu İşaretle</span>
-                                            </div>
-                                            <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
-                                                {notifications.length > 0 ? (
-                                                    notifications.map((notif: any) => (
-                                                        <div key={notif.id} className={`p-3 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer ${!notif.read ? 'bg-white/5' : ''}`}>
-                                                            <div className="flex gap-3">
-                                                                <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center flex-shrink-0">
-                                                                    <Bell className="w-4 h-4 text-moto-accent" />
-                                                                </div>
-                                                                <div>
-                                                                    <p className="text-xs text-zinc-300 leading-snug">{notif.message}</p>
-                                                                    <span className="text-[10px] text-zinc-500 mt-1 block">{notif.time || 'Az önce'}</span>
+                                    {/* Notification Dropdown */}
+                                    <AnimatePresence>
+                                        {isNotificationOpen && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                className="absolute top-full right-0 mt-2 w-80 bg-[#18181b] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-[60]"
+                                            >
+                                                <div className="p-3 border-b border-white/5 flex justify-between items-center">
+                                                    <h4 className="font-bold text-sm">Bildirimler</h4>
+                                                    <span className="text-[10px] text-zinc-500 cursor-pointer hover:text-white">Tümünü Okundu İşaretle</span>
+                                                </div>
+                                                <div className="max-h-[300px] overflow-y-auto custom-scrollbar">
+                                                    {notifications.length > 0 ? (
+                                                        notifications.map((notif: any) => (
+                                                            <div key={notif.id} className={`p-3 border-b border-white/5 hover:bg-white/5 transition-colors cursor-pointer ${!notif.read ? 'bg-white/5' : ''}`}>
+                                                                <div className="flex gap-3">
+                                                                    <div className="w-8 h-8 rounded-full bg-zinc-800 flex items-center justify-center flex-shrink-0">
+                                                                        <Bell className="w-4 h-4 text-moto-accent" />
+                                                                    </div>
+                                                                    <div>
+                                                                        <p className="text-xs text-zinc-300 leading-snug">{notif.message}</p>
+                                                                        <span className="text-[10px] text-zinc-500 mt-1 block">{notif.time || 'Az önce'}</span>
+                                                                    </div>
                                                                 </div>
                                                             </div>
+                                                        ))
+                                                    ) : (
+                                                        <div className="p-8 text-center text-zinc-500 text-xs">
+                                                            Bildiriminiz yok.
                                                         </div>
-                                                    ))
-                                                ) : (
-                                                    <div className="p-8 text-center text-zinc-500 text-xs">
-                                                        Bildiriminiz yok.
-                                                    </div>
-                                                )}
-                                            </div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </div>
+                                                    )}
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
 
-                            {/* Profile Menu */}
-                            <div className="relative z-50">
-                                <button
-                                    onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
-                                    className="bg-zinc-800/50 text-white p-0.5 rounded-full hover:bg-zinc-700/50 transition-all border border-white/5 ring-2 ring-transparent focus:ring-moto-accent/50"
-                                >
-                                    <UserAvatar src={currentUser?.profileImage || currentUser?.avatar} name={currentUser?.name} size={32} />
-                                </button>
+                                {/* Profile Menu */}
+                                <div className="relative z-50">
+                                    <button
+                                        onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)}
+                                        className="bg-zinc-800/50 text-white p-0.5 rounded-full hover:bg-zinc-700/50 transition-all border border-white/5 ring-2 ring-transparent focus:ring-moto-accent/50"
+                                    >
+                                        <UserAvatar src={currentUser?.profileImage || currentUser?.avatar} name={currentUser?.name} size={32} />
+                                    </button>
 
-                                <AnimatePresence>
-                                    {isProfileMenuOpen && (
-                                        <motion.div
-                                            initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            animate={{ opacity: 1, y: 0, scale: 1 }}
-                                            exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                            transition={{ duration: 0.15, ease: "easeOut" }}
-                                            className="absolute top-full right-0 mt-4 w-72 bg-[#121214] border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-[100] ring-1 ring-white/5"
-                                        >
-                                            {/* Header */}
-                                            <div className="relative p-6 pt-8 pb-6 border-b border-white/5 overflow-hidden group">
-                                                <div className="absolute inset-0 bg-gradient-to-br from-moto-accent/10 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
-                                                <div className="relative z-10 flex items-center gap-4">
-                                                    <div className="ring-2 ring-white/10 rounded-full p-0.5 bg-black">
-                                                        <UserAvatar src={currentUser?.profileImage || currentUser?.avatar} name={currentUser?.name} size={48} />
-                                                    </div>
-                                                    <div className="flex-1 min-w-0">
-                                                        <h4 className="text-white font-bold text-base truncate">{currentUser?.name || "Misafir"}</h4>
-                                                        <p className="text-zinc-500 text-xs font-mono truncate">@{currentUser?.username || "guest"}</p>
-                                                        {currentUser?.rank && (
-                                                            <span className="inline-flex items-center mt-1.5 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-zinc-800 text-zinc-300 border border-white/5">
-                                                                {currentUser.rank}
-                                                            </span>
-                                                        )}
+                                    <AnimatePresence>
+                                        {isProfileMenuOpen && (
+                                            <motion.div
+                                                initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                animate={{ opacity: 1, y: 0, scale: 1 }}
+                                                exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                                transition={{ duration: 0.15, ease: "easeOut" }}
+                                                className="absolute top-full right-0 mt-4 w-72 bg-[#121214] border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-[100] ring-1 ring-white/5"
+                                            >
+                                                {/* Header */}
+                                                <div className="relative p-6 pt-8 pb-6 border-b border-white/5 overflow-hidden group">
+                                                    <div className="absolute inset-0 bg-gradient-to-br from-moto-accent/10 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
+                                                    <div className="relative z-10 flex items-center gap-4">
+                                                        <div className="ring-2 ring-white/10 rounded-full p-0.5 bg-black">
+                                                            <UserAvatar src={currentUser?.profileImage || currentUser?.avatar} name={currentUser?.name} size={48} />
+                                                        </div>
+                                                        <div className="flex-1 min-w-0">
+                                                            <h4 className="text-white font-bold text-base truncate">{currentUser?.name || "Misafir"}</h4>
+                                                            <p className="text-zinc-500 text-xs font-mono truncate">@{currentUser?.username || "guest"}</p>
+                                                            {currentUser?.rank && (
+                                                                <span className="inline-flex items-center mt-1.5 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-zinc-800 text-zinc-300 border border-white/5">
+                                                                    {currentUser.rank}
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
 
-                                            {/* Menu Items */}
-                                            <div className="p-2 space-y-0.5">
-                                                <button
-                                                    onClick={() => { onNavigate && onNavigate('my-profile'); setIsProfileMenuOpen(false); }}
-                                                    className="w-full text-left px-4 py-3 text-sm font-medium text-zinc-300 hover:bg-zinc-800/50 hover:text-white flex items-center gap-3 rounded-xl transition-all group"
-                                                >
-                                                    <div className="p-1.5 rounded-lg bg-zinc-800/50 text-zinc-400 group-hover:bg-moto-accent group-hover:text-black transition-colors">
-                                                        <User className="w-4 h-4" />
-                                                    </div>
-                                                    Profil Görüntüle
-                                                </button>
+                                                {/* Menu Items */}
+                                                <div className="p-2 space-y-0.5">
+                                                    <button
+                                                        onClick={() => { onNavigate && onNavigate('my-profile'); setIsProfileMenuOpen(false); }}
+                                                        className="w-full text-left px-4 py-3 text-sm font-medium text-zinc-300 hover:bg-zinc-800/50 hover:text-white flex items-center gap-3 rounded-xl transition-all group"
+                                                    >
+                                                        <div className="p-1.5 rounded-lg bg-zinc-800/50 text-zinc-400 group-hover:bg-moto-accent group-hover:text-black transition-colors">
+                                                            <User className="w-4 h-4" />
+                                                        </div>
+                                                        Profil Görüntüle
+                                                    </button>
 
-                                                <button
-                                                    onClick={() => { onNavigate && onNavigate('garage' as any); setIsProfileMenuOpen(false); }}
-                                                    className="w-full text-left px-4 py-3 text-sm font-medium text-zinc-300 hover:bg-zinc-800/50 hover:text-white flex items-center gap-3 rounded-xl transition-all group"
-                                                >
-                                                    <div className="p-1.5 rounded-lg bg-zinc-800/50 text-zinc-400 group-hover:bg-moto-accent group-hover:text-black transition-colors">
-                                                        <Archive className="w-4 h-4" />
-                                                    </div>
-                                                    Garajım
-                                                </button>
+                                                    <button
+                                                        onClick={() => { onNavigate && onNavigate('garage' as any); setIsProfileMenuOpen(false); }}
+                                                        className="w-full text-left px-4 py-3 text-sm font-medium text-zinc-300 hover:bg-zinc-800/50 hover:text-white flex items-center gap-3 rounded-xl transition-all group"
+                                                    >
+                                                        <div className="p-1.5 rounded-lg bg-zinc-800/50 text-zinc-400 group-hover:bg-moto-accent group-hover:text-black transition-colors">
+                                                            <Archive className="w-4 h-4" />
+                                                        </div>
+                                                        Garajım
+                                                    </button>
 
-                                                <button
-                                                    onClick={() => { onNavigate && onNavigate('settings' as any); setIsProfileMenuOpen(false); }}
-                                                    className="w-full text-left px-4 py-3 text-sm font-medium text-zinc-300 hover:bg-zinc-800/50 hover:text-white flex items-center gap-3 rounded-xl transition-all group"
-                                                >
-                                                    <div className="p-1.5 rounded-lg bg-zinc-800/50 text-zinc-400 group-hover:bg-moto-accent group-hover:text-black transition-colors">
-                                                        <Settings className="w-4 h-4" />
-                                                    </div>
-                                                    Ayarlar
-                                                </button>
-                                            </div>
+                                                    <button
+                                                        onClick={() => { onNavigate && onNavigate('settings' as any); setIsProfileMenuOpen(false); }}
+                                                        className="w-full text-left px-4 py-3 text-sm font-medium text-zinc-300 hover:bg-zinc-800/50 hover:text-white flex items-center gap-3 rounded-xl transition-all group"
+                                                    >
+                                                        <div className="p-1.5 rounded-lg bg-zinc-800/50 text-zinc-400 group-hover:bg-moto-accent group-hover:text-black transition-colors">
+                                                            <Settings className="w-4 h-4" />
+                                                        </div>
+                                                        Ayarlar
+                                                    </button>
+                                                </div>
 
-                                            <div className="h-px bg-white/5 mx-4 my-1" />
+                                                <div className="h-px bg-white/5 mx-4 my-1" />
 
-                                            {/* Logout Section */}
-                                            <div className="p-2">
-                                                <button
-                                                    onClick={() => {
-                                                        setIsProfileMenuOpen(false);
-                                                        if (logout) {
-                                                            logout();
-                                                            // Force close interactions
-                                                            setTimeout(() => {
-                                                                if (onNavigate) onNavigate('auth' as any); // Explicitly go to auth
-                                                                else window.location.reload(); // Fallback hard reload
-                                                            }, 100);
-                                                        }
-                                                    }}
-                                                    className="w-full text-left px-4 py-3 text-xs font-bold uppercase tracking-wider text-red-500 hover:bg-red-500/10 hover:text-red-400 flex items-center gap-3 rounded-xl transition-all"
-                                                >
-                                                    <LogOut className="w-4 h-4" />
-                                                    Oturumu Kapat
-                                                </button>
-                                            </div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
+                                                {/* Logout Section */}
+                                                <div className="p-2">
+                                                    <button
+                                                        onClick={() => {
+                                                            setIsProfileMenuOpen(false);
+                                                            if (logout) {
+                                                                logout();
+                                                                // Force close interactions
+                                                                setTimeout(() => {
+                                                                    if (onNavigate) onNavigate('auth' as any); // Explicitly go to auth
+                                                                    else window.location.reload(); // Fallback hard reload
+                                                                }, 100);
+                                                            }
+                                                        }}
+                                                        className="w-full text-left px-4 py-3 text-xs font-bold uppercase tracking-wider text-red-500 hover:bg-red-500/10 hover:text-red-400 flex items-center gap-3 rounded-xl transition-all"
+                                                    >
+                                                        <LogOut className="w-4 h-4" />
+                                                        Oturumu Kapat
+                                                    </button>
+                                                </div>
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    {/* View Switcher */}
 
-                    {view === 'feed' ? (
-                        <>
-                            {/* Stories Bar (Instagram Style) */}
-                            <div className="mb-0 mx-0">
+
+                        {/* Stories Bar (Instagram Style) - Inside Sticky Group */}
+                        {view === 'feed' && (
+                            <div className="mb-0 mx-0 pb-2">
                                 <StoryBar
                                     storyGroups={storyGroups}
                                     onStorySelect={setSelectedStoryGroup}
                                     onAddStory={() => fileInputRef.current?.click()}
                                 />
                             </div>
+                        )}
+                    </div> {/* End of Sticky Group */}
 
-                            {/* Community CTA (if not logged in) */}
+
+                    {/* View Switcher Content */}
+                    {view === 'feed' ? (
+                        <>
+                            {/* Stories Bar removed from here, moved to sticky group above */}
+
+                            {/* Community CTA within Feed Stream (if not logged in) */}
                             {!currentUser && (
-                                <div className="flex flex-col items-center justify-center py-10 px-4 text-center bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl mb-8">
+                                <div className="flex flex-col items-center justify-center py-10 px-4 text-center bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl mb-8 mt-4 mx-4">
                                     <div className="max-w-md space-y-2 mb-6">
                                         <h2 className="text-3xl font-display font-bold text-white">Topluluğa Katıl</h2>
                                         <p className="text-gray-400">Diğer sürücüleri takip etmek, gönderi paylaşmak ve etkinliklere katılmak için giriş yap.</p>

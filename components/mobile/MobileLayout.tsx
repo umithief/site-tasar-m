@@ -80,7 +80,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
             </motion.div>
 
             {/* --- MAIN CONTENT --- */}
-            <main className="pt-[80px] px-0 md:pt-0 pb-20 overflow-x-hidden w-full relative">
+            <main className="pt-[60px] px-0 md:pt-0 pb-20 overflow-x-hidden w-full relative">
                 {children}
             </main>
 

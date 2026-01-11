@@ -216,7 +216,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                 {/* --- MAIN FEED STREAM --- */}
                 <div className="min-h-screen bg-transparent transition-colors duration-300">
                     {/* Top Navigation Tabs */}
-                    <div className="sticky top-0 z-40 bg-transparent backdrop-blur-md px-0 py-0 flex items-center justify-between">
+                    <div className="sticky top-[60px] z-40 bg-transparent backdrop-blur-md px-0 py-0 flex items-center justify-between">
                         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
                             {[
                                 { id: 'feed', icon: Home, label: 'Akış' },

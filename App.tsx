@@ -35,7 +35,6 @@ import { MotoValuation } from './components/MotoValuation';
 import { HelmetQRGenerator } from './components/HelmetQRGenerator';
 import { MotoVlogMap } from './components/MotoVlogMap';
 import { LifeSaver } from './components/LifeSaver';
-import { LivingBackground } from './components/LivingBackground';
 import { RidersDirectory } from './components/RidersDirectory';
 import { TuvTurkChecklist } from './components/TuvTurkChecklist';
 import { ExhaustLab } from './components/ExhaustLab';
@@ -499,10 +498,6 @@ export const App: React.FC = () => {
     return (
         <SocketProvider>
             <div key={animKey} className={`flex flex-col min-h-[100dvh] bg-black text-gray-100 transition-colors duration-1000 ${isFullScreenMode ? 'overflow-hidden h-screen bg-black text-white' : ''}`}>
-
-                <div className="bg-noise opacity-5"></div>
-
-                {!isFullScreenMode && <LivingBackground />}
 
                 {!isFullScreenMode && <ScrollProgress />}
 

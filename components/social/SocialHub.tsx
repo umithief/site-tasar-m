@@ -180,7 +180,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
 
 
     return (
-        <div className="bg-[#09090b] min-h-screen text-white pt-0 pb-0 font-sans selection:bg-moto-accent/30 relative transition-colors duration-300">
+        <div className="bg-transparent min-h-screen text-white pt-0 pb-0 font-sans selection:bg-moto-accent/30 relative transition-colors duration-300">
             {/* Hidden File Input for Stories */}
             <input
                 type="file"
@@ -214,9 +214,9 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
             <div className="w-full mx-auto grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-0 relative items-start">
 
                 {/* --- MAIN FEED STREAM --- */}
-                <div className="min-h-screen bg-[#09090b] transition-colors duration-300">
+                <div className="min-h-screen bg-transparent transition-colors duration-300">
                     {/* Top Navigation Tabs */}
-                    <div className="sticky top-0 z-40 bg-[#09090b]/95 backdrop-blur-xl px-0 py-0 flex items-center justify-between">
+                    <div className="sticky top-0 z-40 bg-transparent backdrop-blur-md px-0 py-0 flex items-center justify-between">
                         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
                             {[
                                 { id: 'feed', icon: Home, label: 'Akış' },

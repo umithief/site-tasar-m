@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, MessageCircle, Share2, Zap, Gauge, Navigation, MapPin, MoreVertical } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Zap, Gauge, Navigation, MapPin, MoreVertical, Trash2, Edit2, Flag, ShieldAlert, Bookmark } from 'lucide-react';
 import { SocialPost } from '../../types';
 import { useAuthStore } from '../../store/authStore';
 import { socialService } from '../../services/socialService';
@@ -20,6 +20,9 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
     const [isLiked, setIsLiked] = useState(post.isLiked);
     const [likesCount, setLikesCount] = useState(post.likes);
 
+    const [showHeartOverlay, setShowHeartOverlay] = useState(false);
+    const [showOptions, setShowOptions] = useState(false);
+
     const handleLike = async () => {
         if (!currentUser) return;
 
@@ -28,9 +31,33 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
         setIsLiked(newStatus);
         setLikesCount(prev => newStatus ? prev + 1 : prev - 1);
 
+        if (newStatus) {
+            setShowHeartOverlay(true);
+            setTimeout(() => setShowHeartOverlay(false), 2000);
+        }
+
         // Call API
         if (onLike) onLike(post._id);
         else await socialService.likePost(post._id, currentUser._id);
+    };
+
+    const handleDelete = async () => {
+        if (confirm('Bu gönderiyi silmek istediğine emin misin?')) {
+            await socialService.deletePost(post._id);
+            setShowOptions(false);
+        }
+    };
+
+    const handleReport = async () => {
+        await socialService.reportPost(post._id, 'inappropriate');
+        setShowOptions(false);
+        alert('Gönderi raporlandı.');
+    };
+
+    const handleShareToAdmin = async () => {
+        await socialService.shareToAdmin(post._id);
+        setShowOptions(false);
+        alert('Gönderi admine iletildi.');
     };
 
     return (
@@ -72,9 +99,53 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
                             </p>
                         </div>
                     </div>
-                    <button className="w-8 h-8 rounded-full bg-white/5 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/10 transition-colors">
-                        <MoreVertical className="w-4 h-4" />
-                    </button>
+                    <div className="relative">
+                        <button
+                            onClick={() => setShowOptions(!showOptions)}
+                            className="w-8 h-8 rounded-full bg-white/5 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/10 transition-colors"
+                        >
+                            <MoreVertical className="w-4 h-4" />
+                        </button>
+
+                        <AnimatePresence>
+                            {showOptions && (
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                                    className="absolute top-full right-0 mt-2 w-48 bg-[#18181b] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50 py-1"
+                                >
+                                    {currentUser?._id === post.userId ? (
+                                        <>
+                                            <button onClick={() => { setShowOptions(false); alert('Düzenleme yakında aktif olacak.'); }} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors">
+                                                <Edit2 className="w-4 h-4" />
+                                                Düzenle
+                                            </button>
+                                            <button onClick={handleDelete} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-red-500/10 transition-colors">
+                                                <Trash2 className="w-4 h-4" />
+                                                Sil
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <button onClick={() => setShowOptions(false)} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors">
+                                                <Bookmark className="w-4 h-4" />
+                                                Kaydet
+                                            </button>
+                                            <button onClick={handleShareToAdmin} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-moto-accent hover:bg-moto-accent/10 transition-colors">
+                                                <ShieldAlert className="w-4 h-4" />
+                                                Admine İlet
+                                            </button>
+                                            <button onClick={handleReport} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-red-500/10 transition-colors">
+                                                <Flag className="w-4 h-4" />
+                                                Şikayet Et
+                                            </button>
+                                        </>
+                                    )}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
                 </div>
             </div>
 
@@ -93,7 +164,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
 
                 {/* Heart Animation Overlay */}
                 <AnimatePresence>
-                    {isLiked && (
+                    {showHeartOverlay && (
                         <motion.div
                             initial={{ scale: 0, opacity: 0 }}
                             animate={{ scale: 1.5, opacity: 1 }}

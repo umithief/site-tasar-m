@@ -1,6 +1,6 @@
 import React, { useState, memo, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, MessageCircle, Share2, MoreHorizontal, Bookmark } from 'lucide-react';
+import { Heart, MessageCircle, Share2, MoreHorizontal, Bookmark, Trash2, Edit2, Flag, ShieldAlert } from 'lucide-react';
 import { SocialPost } from '../../types';
 import { UserAvatar } from '../ui/UserAvatar';
 import { socialService } from '../../services/socialService';
@@ -73,9 +73,29 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
             // Double tap detected
             if (!isLiked) handleLike();
             setShowHeartOverlay(true);
-            setTimeout(() => setShowHeartOverlay(false), 1000);
+            setTimeout(() => setShowHeartOverlay(false), 2000);
         }
         setLastTap(now);
+    };
+
+    const handleDelete = async () => {
+        if (confirm('Bu gönderiyi silmek istediğine emin misin?')) {
+            await socialService.deletePost(post._id);
+            // In a real app, we'd invalidate queries here
+            setShowOptions(false);
+        }
+    };
+
+    const handleReport = async () => {
+        await socialService.reportPost(post._id, 'inappropriate');
+        setShowOptions(false);
+        alert('Gönderi raporlandı.');
+    };
+
+    const handleShareToAdmin = async () => {
+        await socialService.shareToAdmin(post._id);
+        setShowOptions(false);
+        alert('Gönderi admine iletildi.');
     };
 
     return (
@@ -132,25 +152,49 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                 </button>
             </div>
 
-            {/* Options Menu */}
             <MobileBottomSheet
                 isOpen={showOptions}
                 onClose={() => setShowOptions(false)}
-                title="Post Options"
+                title="Gönderi Seçenekleri"
             >
                 <div className="space-y-2 p-4">
                     {currentUserId === post.userId ? (
-                        <button className="w-full flex items-center gap-3 p-4 bg-red-500/10 text-red-500 rounded-2xl font-bold">
-                            <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center"><Share2 className="w-4 h-4 rotate-180" /></div> {/* Reuse icon for delete logic later */}
-                            Delete Post (Coming Soon)
-                        </button>
+                        <>
+                            <button
+                                onClick={() => { setShowOptions(false); alert('Düzenleme yakında aktif olacak.'); }}
+                                className="w-full flex items-center gap-3 p-4 bg-white/5 text-white rounded-2xl font-bold hover:bg-white/10 transition-colors"
+                            >
+                                <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center"><Edit2 className="w-4 h-4 text-blue-500" /></div>
+                                Düzenle
+                            </button>
+                            <button
+                                onClick={handleDelete}
+                                className="w-full flex items-center gap-3 p-4 bg-red-500/10 text-red-500 rounded-2xl font-bold hover:bg-red-500/20 transition-colors"
+                            >
+                                <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center"><Trash2 className="w-4 h-4" /></div>
+                                Gönderiyi Sil
+                            </button>
+                        </>
                     ) : (
                         <>
-                            <button className="w-full flex items-center gap-3 p-4 bg-white/5 text-white rounded-2xl font-bold">
-                                <Bookmark className="w-5 h-5" /> Save Post
+                            <button className="w-full flex items-center gap-3 p-4 bg-white/5 text-white rounded-2xl font-bold hover:bg-white/10 transition-colors">
+                                <Bookmark className="w-5 h-5" /> Kaydet
                             </button>
-                            <button className="w-full flex items-center gap-3 p-4 bg-red-500/10 text-red-500 rounded-2xl font-bold">
-                                Report Inappropriate
+
+                            <button
+                                onClick={handleShareToAdmin}
+                                className="w-full flex items-center gap-3 p-4 bg-white/5 text-white rounded-2xl font-bold hover:bg-white/10 transition-colors"
+                            >
+                                <div className="w-8 h-8 rounded-full bg-moto-accent/20 flex items-center justify-center"><ShieldAlert className="w-4 h-4 text-moto-accent" /></div>
+                                Admine İlet
+                            </button>
+
+                            <button
+                                onClick={handleReport}
+                                className="w-full flex items-center gap-3 p-4 bg-red-500/10 text-red-500 rounded-2xl font-bold hover:bg-red-500/20 transition-colors"
+                            >
+                                <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center"><Flag className="w-4 h-4" /></div>
+                                Şikayet Et
                             </button>
                         </>
                     )}

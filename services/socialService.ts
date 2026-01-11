@@ -330,5 +330,17 @@ export const socialService = {
             console.error('Get Latest Ride Error:', error);
             return null;
         }
+    },
+
+    async reportPost(postId: string, reason: string): Promise<boolean> {
+        // Mock implementation
+        console.log(`Reporting post ${postId} for ${reason}`);
+        return new Promise(resolve => setTimeout(() => resolve(true), 1000));
+    },
+
+    async shareToAdmin(postId: string): Promise<boolean> {
+        // Mock implementation
+        console.log(`Sharing post ${postId} to admin`);
+        return new Promise(resolve => setTimeout(() => resolve(true), 1000));
     }
 };

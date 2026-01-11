@@ -458,7 +458,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
 
                             {/* Feed Stream */}
                             <PullToRefresh onRefresh={async () => { await fetchNextPage(); }} isMobile={true}>
-                                <div className="space-y-6 pt-0 h-[calc(100vh-140px)] overflow-y-auto no-scrollbar pb-32">
+                                <div className="space-y-6 pt-0 pb-32">
                                     {/* Empty State */}
                                     {!isFetchingNextPage && data?.pages?.[0]?.length === 0 && (
                                         <div className="flex flex-col items-center justify-center py-20 px-6 text-center">

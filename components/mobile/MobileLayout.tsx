@@ -102,7 +102,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
             {/* --- MAIN CONTENT --- */}
             {/* When absolute, we need padding to push content down? Header is absolute top-0. Content starts at top-0. */}
             {/* Yes, we need padding top equal to header height + safe area. */}
-            <main className="pt-[80px] px-0 md:pt-0 pb-20 overflow-x-hidden w-full relative transition-[padding] duration-300">
+            <main className="pt-[80px] px-0 md:pt-0 pb-20 w-full transition-[padding] duration-300">
                 {children}
             </main>
 

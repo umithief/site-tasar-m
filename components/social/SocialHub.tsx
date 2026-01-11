@@ -216,11 +216,11 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
 
                     {/* Sticky Header Group (Tabs + Stories) */}
                     <div
-                        className="sticky z-40 transition-[top] duration-300 pb-2"
+                        className="sticky z-40 transition-[top] duration-300 pb-2 will-change-transform transform-gpu"
                         style={{ top: 'var(--mobile-header-height, 0px)' }}
                     >
                         {/* Background for the sticky area to prevent bleed-through */}
-                        <div className="absolute inset-0 bg-black/80 backdrop-blur-xl border-b border-white/5 shadow-2xl z-[-1]" />
+                        <div className="absolute inset-0 bg-black/80 backdrop-blur-md border-b border-white/5 shadow-2xl z-[-1]" />
 
                         {/* Top Navigation Tabs */}
                         <div className="bg-transparent px-4 py-2 flex items-center justify-center">

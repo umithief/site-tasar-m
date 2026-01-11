@@ -69,7 +69,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
         >
             {/* --- TOP APP BAR --- */}
             <motion.div
-                className={`top-0 left-0 right-0 z-[130] px-6 pt-safe-top pt-4 md:hidden ${isAtTop ? 'absolute' : 'fixed backdrop-blur-xl bg-black/80 border-b border-white/5'}`}
+                className={`top-0 left-0 right-0 z-[130] px-6 pt-safe-top pt-4 md:hidden will-change-transform transform-gpu ${isAtTop ? 'absolute' : 'fixed backdrop-blur-md bg-black/80 border-b border-white/5'}`}
                 initial={{ y: 0 }}
                 animate={{
                     y: (isAtTop || showTopBar) ? 0 : -100,

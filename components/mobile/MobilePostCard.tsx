@@ -99,53 +99,31 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
     };
 
     return (
-        <div className="mb-4 bg-black border-b border-white/10 pb-4">
+        <div className="mx-2 mb-6 bg-[#121212] rounded-[40px] overflow-hidden border border-white/5 shadow-2xl snap-center relative">
             {/* Header */}
-            <div className="px-3 py-2 flex items-center justify-between">
+            <div className="px-5 py-4 flex items-center justify-between bg-gradient-to-b from-black/50 to-transparent absolute top-0 left-0 right-0 z-10 pointer-events-none">
                 <div
-                    className="flex items-center gap-2 cursor-pointer active:opacity-70 transition-opacity"
+                    className="flex items-center gap-3 pointer-events-auto"
                     onClick={(e) => {
                         e.stopPropagation();
                         if (onNavigate && post.userId) {
-                            // Support both ID and Username based routing preference
                             const target = (post as any).username || post.userId;
                             onNavigate('public-profile', { userId: post.userId, username: target });
                         }
                     }}
                 >
-                    <UserAvatar name={post.userName} src={post.userAvatar} size={32} />
-                    <div className="flex flex-col">
-                        <div className="flex items-center gap-2">
-                            <span className="text-white font-bold text-sm leading-none">{post.userName}</span>
-                            <span className="text-gray-500 text-[10px]">•</span>
-
-                            {/* Follow Button - Live Data - Safe Check */}
-                            {currentUserId && post.userId && currentUserId !== post.userId && (
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        if (!currentUserId || !post.userId) return;
-                                        // Ensure userId is string
-                                        const targetId = typeof post.userId === 'object' ? (post.userId as any).toString() : post.userId;
-                                        toggleFollow({ targetUserId: targetId, isCurrentlyFollowing: isFollowing });
-                                    }}
-                                    disabled={isPending}
-                                    className={`ml-2 px-3 py-1 rounded-full text-[10px] font-bold tracking-wide transition-all border
-                                    ${isFollowing
-                                            ? 'bg-zinc-800 border-zinc-800 text-zinc-400'
-                                            : 'bg-transparent border-moto-accent text-moto-accent hover:bg-moto-accent hover:text-black'}`}
-                                >
-                                    {isPending ? '...' : (isFollowing ? 'Takip Ediliyor' : 'Takip Et')}
-                                </button>
-                            )}
-                        </div>
+                    <div className="p-0.5 bg-white/20 backdrop-blur-md rounded-full">
+                        <UserAvatar name={post.userName} src={post.userAvatar} size={36} />
+                    </div>
+                    <div className="flex flex-col drop-shadow-md">
+                        <span className="text-white font-bold text-sm leading-none tracking-wide">{post.userName}</span>
                         {post.bikeModel && (
-                            <span className="text-gray-500 text-[10px] leading-tight">{post.bikeModel}</span>
+                            <span className="text-white/80 text-[10px] font-medium">{post.bikeModel}</span>
                         )}
                     </div>
                 </div>
                 <button
-                    className="p-1 text-gray-400 hover:text-white"
+                    className="w-8 h-8 rounded-full bg-black/20 backdrop-blur-md flex items-center justify-center text-white border border-white/10 pointer-events-auto active:scale-90 transition-transform"
                     onClick={() => setShowOptions(true)}
                 >
                     <MoreHorizontal className="w-5 h-5" />
@@ -201,9 +179,9 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                 </div>
             </MobileBottomSheet>
 
-            {/* Media (Zero Margin) */}
+            {/* Media */}
             <div
-                className="relative w-full aspect-square bg-gray-900 overflow-hidden"
+                className="relative w-full aspect-[4/5] bg-gray-900 overflow-hidden"
                 onClick={handleDoubleTap}
             >
                 <img
@@ -213,49 +191,115 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                     className="w-full h-full object-cover"
                 />
 
+                {/* HUD Overlay (Mock or Real) */}
+                <div className="absolute bottom-4 left-4 flex items-center gap-2">
+                    <div className="bg-black/60 backdrop-blur-md border border-white/10 rounded-full px-3 py-1.5 flex items-center gap-2">
+                        <div className="w-1.5 h-1.5 bg-[#E2FF3B] rounded-full animate-pulse" />
+                        <span className="text-white text-[10px] font-bold tracking-wider font-mono">124 KM/S</span>
+                    </div>
+                    <div className="bg-black/60 backdrop-blur-md border border-white/10 rounded-full px-3 py-1.5 flex items-center gap-2">
+                        <span className="text-white text-[10px] font-bold tracking-wider font-mono">42° EĞİM</span>
+                    </div>
+                </div>
+
                 {/* Heart Overlay Animation */}
                 <AnimatePresence>
                     {showHeartOverlay && (
                         <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
                             <motion.div
-                                initial={{ scale: 0, opacity: 0 }}
-                                animate={{ scale: 1.5, opacity: 1 }}
-                                exit={{ scale: 0, opacity: 0 }}
+                                initial={{ scale: 0, opacity: 0, rotate: -45 }}
+                                animate={{ scale: 1.5, opacity: 1, rotate: 0 }}
+                                exit={{ scale: 0, opacity: 0, rotate: 45 }}
                                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
                             >
-                                <Heart className="w-24 h-24 text-white fill-white drop-shadow-xl" />
+                                <Heart className="w-32 h-32 text-[#E2FF3B] fill-[#E2FF3B] drop-shadow-[0_0_20px_rgba(226,255,59,0.6)]" />
                             </motion.div>
                         </div>
                     )}
                 </AnimatePresence>
             </div>
 
-            {/* Action Bar */}
-            <PostActionsBar post={post} onCommentClick={() => onCommentClick && onCommentClick()} />
+            {/* Footer Content */}
+            <div className="p-5 pt-4">
+                {/* Tactile Action Buttons */}
+                <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center gap-4">
+                        <motion.button
+                            whileTap={{ scale: 0.8 }}
+                            onClick={handleLike}
+                            className={`w-12 h-12 rounded-full flex items-center justify-center border transition-all duration-300 ${isLiked
+                                ? 'bg-[#E2FF3B] border-[#E2FF3B] shadow-[0_0_15px_rgba(226,255,59,0.4)]'
+                                : 'bg-white/5 border-white/10 hover:bg-white/10'
+                                }`}
+                        >
+                            <Heart className={`w-6 h-6 ${isLiked ? 'text-black fill-black' : 'text-white'}`} />
+                        </motion.button>
 
-            {/* Likes */}
-            <div className="px-3 text-sm font-bold text-white mb-1">
-                {likeCount} beğenme
-            </div>
+                        <motion.button
+                            whileTap={{ scale: 0.8 }}
+                            onClick={() => onCommentClick && onCommentClick()}
+                            className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+                        >
+                            <MessageCircle className="w-6 h-6 text-white" />
+                        </motion.button>
 
-            {/* Caption */}
-            <div className="px-3">
-                <p className="text-sm text-gray-200">
-                    <span className="font-bold text-white mr-2">{post.userName}</span>
-                    {isExpanded ? post.content : (
-                        <>
-                            <span className="line-clamp-2 inline">{post.content}</span>
-                            {post.content && post.content.length > 80 && (
-                                <button
-                                    onClick={() => setIsExpanded(true)}
-                                    className="text-gray-500 text-xs ml-1"
-                                >
-                                    ...daha fazla
-                                </button>
-                            )}
-                        </>
-                    )}
-                </p>
+                        <motion.button
+                            whileTap={{ scale: 0.8 }}
+                            className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+                        >
+                            <Share2 className="w-6 h-6 text-white" />
+                        </motion.button>
+                    </div>
+
+                    {/* Bookmark (Right) */}
+                    <motion.button
+                        whileTap={{ scale: 0.8 }}
+                        className="w-10 h-10 rounded-full bg-transparent flex items-center justify-center text-zinc-500 hover:text-white transition-colors"
+                    >
+                        <Bookmark className="w-6 h-6" />
+                    </motion.button>
+                </div>
+
+                {/* Likes Count */}
+                {likeCount > 0 && (
+                    <div className="mb-2 flex items-center gap-2">
+                        <div className="flex -space-x-2">
+                            {[...Array(3)].map((_, i) => (
+                                <div key={i} className="w-5 h-5 rounded-full bg-zinc-800 border border-[#121212]" />
+                            ))}
+                        </div>
+                        <span className="text-sm font-bold text-white">
+                            {likeCount} beğenme
+                        </span>
+                    </div>
+                )}
+
+                {/* Caption */}
+                <div className="">
+                    <p className="text-sm text-gray-300 leading-relaxed">
+                        <span className="font-bold text-white mr-2 text-[15px]">{post.userName}</span>
+                        {isExpanded ? post.content : (
+                            <>
+                                <span className="line-clamp-2 inline">{post.content}</span>
+                                {post.content && post.content.length > 80 && (
+                                    <button
+                                        onClick={() => setIsExpanded(true)}
+                                        className="text-gray-500 text-xs ml-1 font-bold"
+                                    >
+                                        devamını oku
+                                    </button>
+                                )}
+                            </>
+                        )}
+                    </p>
+                </div>
+
+                {/* Time */}
+                <div className="mt-2">
+                    <span className="text-[10px] text-gray-600 uppercase tracking-widest font-bold">
+                        {new Date((post as any).createdAt || (post as any).timestamp || Date.now()).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}
+                    </span>
+                </div>
             </div>
         </div>
     );

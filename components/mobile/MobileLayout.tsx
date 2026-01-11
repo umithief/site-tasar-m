@@ -52,28 +52,28 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
         <div className="min-h-screen bg-black text-white pb-24 md:pb-0">
             {/* --- TOP APP BAR --- */}
             <motion.div
-                className="fixed top-0 left-0 right-0 z-[130] bg-black/80 backdrop-blur-xl border-b border-white/5 px-4 pt-safe-top pb-3 md:hidden transition-transform duration-300"
-                initial={{ y: 0 }}
-                animate={{ y: showTopBar ? 0 : -100 }}
+                className="fixed top-0 left-0 right-0 z-[130] pointer-events-none px-6 pt-safe-top pt-4 md:hidden"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
             >
-                <div className="flex items-center justify-between h-12">
-                    {/* Logo */}
-                    <div className="flex items-center gap-2" onClick={() => onNavigate('home')}>
-                        <span className="font-display font-black text-xl tracking-tighter text-white">
-                            MOTO<span className="text-moto-accent">VIBE</span>
+                <div className="flex items-center justify-between">
+                    {/* Logo (Left) */}
+                    <div className="pointer-events-auto" onClick={() => onNavigate('home')}>
+                        <span className="font-display font-black text-2xl tracking-tighter text-white drop-shadow-xl italic">
+                            MOTO<span className="text-[#E2FF3B]">VIBE</span>
                         </span>
                     </div>
 
-                    {/* Actions */}
-                    <div className="flex items-center gap-3">
+                    {/* Actions (Right - Glass Containers) */}
+                    <div className="flex items-center gap-3 pointer-events-auto">
                         {/* Notifications */}
-                        <button className="relative w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/10 transition-all active:scale-95">
-                            <Bell className="w-5 h-5 text-gray-200" />
-                            <span className="absolute top-2.5 right-2.5 w-1.5 h-1.5 bg-moto-accent rounded-full animate-pulse"></span>
+                        <button className="relative w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center backdrop-blur-md border border-white/10 shadow-lg active:scale-90 transition-all">
+                            <Bell className="w-5 h-5 text-white" />
+                            <span className="absolute top-3 right-3 w-2 h-2 bg-[#E2FF3B] rounded-full animate-pulse shadow-[0_0_8px_#E2FF3B]"></span>
                         </button>
-                        {/* Direct Messages */}
-                        <button onClick={() => onNavigate('forum')} className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/10 transition-all active:scale-95">
-                            <MessageCircle className="w-5 h-5 text-gray-200" />
+                        {/* Messages */}
+                        <button onClick={() => onNavigate('forum')} className="w-11 h-11 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center backdrop-blur-md border border-white/10 shadow-lg active:scale-90 transition-all">
+                            <MessageCircle className="w-5 h-5 text-white" />
                         </button>
                     </div>
                 </div>

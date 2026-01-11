@@ -216,35 +216,36 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                 {/* --- MAIN FEED STREAM --- */}
                 <div className="min-h-screen bg-transparent transition-colors duration-300">
                     {/* Top Navigation Tabs */}
-                    <div className="sticky top-[60px] z-40 bg-transparent backdrop-blur-md px-0 py-0 flex items-center justify-between">
-                        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
+                    <div className="sticky top-[70px] z-40 bg-transparent px-4 py-2 flex items-center justify-center pointer-events-none">
+                        <div className="flex items-center gap-6 overflow-x-auto no-scrollbar pointer-events-auto bg-black/40 backdrop-blur-md rounded-full px-6 py-2 border border-white/5 shadow-2xl">
                             {[
-                                { id: 'feed', icon: Home, label: 'Akış' },
-                                // { id: 'stories', icon: Image, label: 'Hikayeler' }, // Removed as it's now in feed
-                                { id: 'vlog', icon: MapIcon, label: 'Map', badge: 'CANLI' },
-                                { id: 'rides', icon: Users, label: 'Sürüşler' }, // New Tab
-                                { id: 'routes', icon: Navigation, label: 'Rotalar' },
-                                { id: 'events', icon: Calendar, label: 'Buluşmalar' },
+                                { id: 'feed', label: 'AKIŞ' },
+                                { id: 'vlog', label: 'MAP (CANLI)' },
+                                { id: 'rides', label: 'SÜRÜŞLER' },
+                                { id: 'routes', label: 'ROTALAR' },
                             ].map((item: any) => (
                                 <button
                                     key={item.id}
                                     onClick={() => setView(item.id as HubView)}
-                                    className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium transition-all whitespace-nowrap
+                                    className={`relative text-sm font-bold tracking-wider transition-all whitespace-nowrap py-1
                                     ${view === item.id
-                                            ? 'bg-white text-black font-bold shadow-[0_0_20px_rgba(255,255,255,0.3)]'
-                                            : 'bg-[#18181b] text-zinc-400 hover:bg-[#27272a] hover:text-white border border-white/5'}`}
+                                            ? 'text-[#E2FF3B] drop-shadow-[0_0_8px_rgba(226,255,59,0.5)]'
+                                            : 'text-white/40 hover:text-white'}`}
                                 >
-                                    <item.icon className={`w-3.5 h-3.5 ${view === item.id ? 'fill-current' : ''}`} />
                                     <span>{item.label}</span>
-                                    {item.badge && (
-                                        <span className={`text-[9px] font-black px-1.5 py-0.5 rounded-sm ml-1 ${view === item.id ? 'bg-black text-white' : 'bg-red-500 text-white'}`}>{item.badge}</span>
+                                    {view === item.id && (
+                                        <motion.div
+                                            layoutId="activeTabUnderline"
+                                            className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#E2FF3B] shadow-[0_0_8px_#E2FF3B]"
+                                        />
                                     )}
                                 </button>
                             ))}
                         </div>
 
-                        {/* Right Actions */}
-                        <div className="flex items-center gap-3 pl-4 border-l border-white/10 ml-4">
+
+                        {/* Right Actions (Desktop Only) */}
+                        <div className="hidden lg:flex items-center gap-3 pl-4 border-l border-white/10 ml-4 pointer-events-auto">
                             {/* Theme Toggle */}
 
 
@@ -443,7 +444,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
 
                             {/* Feed Stream */}
                             <PullToRefresh onRefresh={async () => { await fetchNextPage(); }} isMobile={true}>
-                                <div className="space-y-6 pt-0">
+                                <div className="space-y-6 pt-0 snap-y snap-mandatory h-[calc(100vh-140px)] overflow-y-auto no-scrollbar pb-32">
                                     {/* Empty State */}
                                     {!isFetchingNextPage && data?.pages?.[0]?.length === 0 && (
                                         <div className="flex flex-col items-center justify-center py-20 px-6 text-center">

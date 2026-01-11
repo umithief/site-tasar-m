@@ -70,7 +70,7 @@ export const BottomNav: React.FC<SidebarProps> = ({
     ];
 
     return (
-        <div className="md:hidden fixed bottom-0 left-0 right-0 z-[140]">
+        <div className="md:hidden fixed bottom-6 left-0 right-0 z-[140] flex justify-center pointer-events-none">
             {/* Create Menu Backdrop */}
             <AnimatePresence>
                 {isFabOpen && (
@@ -79,7 +79,7 @@ export const BottomNav: React.FC<SidebarProps> = ({
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={() => setIsFabOpen(false)}
-                        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[-1]"
+                        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[-1] pointer-events-auto"
                     />
                 )}
             </AnimatePresence>
@@ -88,10 +88,10 @@ export const BottomNav: React.FC<SidebarProps> = ({
             <AnimatePresence>
                 {isFabOpen && (
                     <motion.div
-                        initial={{ opacity: 0, scale: 0.9, y: 20 }}
+                        initial={{ opacity: 0, scale: 0.8, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="absolute bottom-24 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4 z-50 w-full max-w-[200px]"
+                        exit={{ opacity: 0, scale: 0.8, y: 20 }}
+                        className="absolute bottom-24 flex flex-col items-center gap-3 z-50 w-[200px] pointer-events-auto"
                     >
                         {[
                             { id: 'ride-mode', label: 'Sürüş Modu', icon: Navigation, color: 'text-moto-accent', view: 'ride-mode' },
@@ -105,36 +105,43 @@ export const BottomNav: React.FC<SidebarProps> = ({
                                     onNavigate(item.view as any);
                                     setIsFabOpen(false);
                                 }}
-                                className="w-full bg-[#1A1A17]/90 backdrop-blur-md border border-white/10 p-4 rounded-2xl flex items-center gap-4 shadow-xl active:scale-95 transition-transform"
+                                className="w-full bg-[#1A1A17]/90 backdrop-blur-xl border border-white/10 p-3 rounded-2xl flex items-center gap-3 shadow-xl active:scale-95 transition-transform"
                             >
-                                <div className={`w-10 h-10 rounded-full bg-white/5 flex items-center justify-center ${item.color}`}>
-                                    <item.icon className="w-5 h-5" />
+                                <div className={`w-8 h-8 rounded-full bg-white/5 flex items-center justify-center ${item.color}`}>
+                                    <item.icon className="w-4 h-4" />
                                 </div>
-                                <span className="text-white font-bold text-lg">{item.label}</span>
+                                <span className="text-white font-bold text-sm">{item.label}</span>
                             </button>
                         ))}
                     </motion.div>
                 )}
             </AnimatePresence>
 
-            {/* Glassmorphism Background */}
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-xl border-t border-white/10" />
+            {/* Floating Dock Container */}
+            <motion.div
+                initial={{ y: 20, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                className="w-[90%] max-w-[400px] bg-black/40 backdrop-blur-2xl border border-white/10 rounded-full shadow-[0_8px_32px_rgba(0,0,0,0.5)] px-2 h-16 flex items-center justify-between pointer-events-auto relative overflow-hidden"
+            >
+                {/* Glass Reflection */}
+                <div className="absolute inset-x-0 top-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
-            <div className="relative flex justify-between items-end h-16 px-4">
                 {navItems.map((item) => {
                     const isActive = activeTab === item.id;
 
                     // FAB (Center Item)
                     if (item.isFab) {
                         return (
-                            <div key={item.id} className="relative -top-6 flex justify-center w-[20%]">
+                            <div key={item.id} className="flex justify-center flex-1">
                                 <motion.button
-                                    whileTap={{ scale: 0.9 }}
+                                    whileTap={{ scale: 0.92 }}
                                     onClick={() => handleNavClick(item)}
                                     animate={{ rotate: isFabOpen ? 45 : 0 }}
-                                    className={`w-14 h-14 rounded-full ${isFabOpen ? 'bg-red-500 border-red-900' : 'bg-moto-accent border-black'} text-white flex items-center justify-center shadow-[0_0_20px_rgba(0,0,0,0.5)] border-4 z-50 transition-colors duration-300`}
+                                    className={`w-12 h-12 rounded-full ${isFabOpen ? 'bg-red-500' : 'bg-[#E2FF3B]'} text-black flex items-center justify-center shadow-[0_0_15px_rgba(226,255,59,0.4)] relative overflow-hidden group`}
                                 >
-                                    <Plus className="w-8 h-8" strokeWidth={3} />
+                                    {/* Pulse Effect */}
+                                    {!isFabOpen && <div className="absolute inset-0 bg-white/30 animate-pulse rounded-full" />}
+                                    <Plus className="w-6 h-6 relative z-10" strokeWidth={3} />
                                 </motion.button>
                             </div>
                         )
@@ -142,36 +149,31 @@ export const BottomNav: React.FC<SidebarProps> = ({
 
                     // Standard Icon
                     return (
-                        <button
+                        <motion.button
                             key={item.id}
+                            whileTap={{ scale: 0.92 }}
                             onClick={() => handleNavClick(item)}
-                            className="flex-1 flex flex-col items-center justify-center h-full w-[20%] relative group"
+                            className="flex-1 flex flex-col items-center justify-center h-full relative"
                         >
-                            <motion.div
-                                animate={isActive ? { scale: 1.2, y: -4 } : { scale: 1, y: 0 }}
-                                transition={{ type: 'spring', stiffness: 300, damping: 15 }}
-                                className="relative p-2"
-                            >
+                            <div className="relative p-2">
                                 <item.icon
-                                    className={`w-6 h-6 transition-colors duration-300 ${isActive
-                                        ? 'text-moto-accent stroke-[2.5px] drop-shadow-[0_0_8px_var(--moto-accent)]'
-                                        : 'text-gray-400'
+                                    className={`w-5 h-5 transition-all duration-300 ${isActive
+                                        ? 'text-[#E2FF3B] fill-[#E2FF3B]/10 drop-shadow-[0_0_8px_rgba(226,255,59,0.5)]'
+                                        : 'text-zinc-500'
                                         }`}
+                                    strokeWidth={isActive ? 2.5 : 2}
                                 />
-
-
-
                                 {isActive && (
                                     <motion.div
                                         layoutId="activeTabDot"
-                                        className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-1 h-1 bg-moto-accent rounded-full shadow-[0_0_8px_currentColor]"
+                                        className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 bg-[#E2FF3B] rounded-full shadow-[0_0_4px_#E2FF3B]"
                                     />
                                 )}
-                            </motion.div>
-                        </button>
+                            </div>
+                        </motion.button>
                     )
                 })}
-            </div>
+            </motion.div>
         </div>
     );
 };

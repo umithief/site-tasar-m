@@ -20,68 +20,60 @@ export const StoryBar: React.FC<StoryBarProps> = ({ storyGroups, onStorySelect, 
 
     return (
         <div className="w-full overflow-x-auto py-1 px-0 no-scrollbar border-none bg-transparent relative z-20">
-            <div className="flex items-center gap-4 min-w-max pl-2">
+            <div className="flex items-center gap-5 min-w-max pl-4">
 
                 {/* MY STORY (ADD) */}
                 <motion.div
                     whileTap={{ scale: 0.95 }}
-                    className="flex flex-col items-center gap-2 cursor-pointer group relative"
+                    className="flex flex-col items-center gap-1 cursor-pointer group relative"
                     onClick={onAddStory}
                 >
-                    <div className="relative w-[72px] h-[72px]">
-                        <div className="absolute inset-0 rounded-2xl border-2 border-dashed border-gray-300 dark:border-white/20 group-hover:border-moto-accent transition-colors" />
-                        <div className="absolute inset-[4px] rounded-xl overflow-hidden bg-gray-100 dark:bg-zinc-900 flex items-center justify-center">
-                            <UserAvatar name={user?.name || 'Sen'} size={50} className="w-full h-full rounded-none" />
+                    <div className="relative w-[70px] h-[70px]">
+                        <div className="absolute inset-0 rounded-full border-2 border-dashed border-white/20 group-hover:border-[#E2FF3B] transition-colors" />
+                        <div className="absolute inset-[4px] rounded-full overflow-hidden bg-zinc-900 flex items-center justify-center">
+                            <UserAvatar name={user?.name || 'Sen'} size={62} className="w-full h-full rounded-full" />
                         </div>
 
-                        <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-moto-accent rounded-lg border-2 border-white dark:border-black flex items-center justify-center shadow-lg transform rotate-3 group-hover:rotate-0 transition-transform">
+                        <div className="absolute bottom-0 right-0 w-6 h-6 bg-[#E2FF3B] rounded-full border-2 border-black flex items-center justify-center shadow-lg">
                             <Plus size={14} className="text-black stroke-[3px]" />
                         </div>
                     </div>
+                    <span className="text-[10px] font-medium text-gray-400">Senin Hikayen</span>
                 </motion.div>
-
-                {/* SEPARATOR */}
-                {/* <div className="w-[1px] h-10 bg-gray-200 dark:bg-white/10 mx-1" /> */}
 
                 {/* OTHER STORIES */}
                 {storyGroups.map((group, index) => (
                     <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: index * 0.05 }}
-                        whileHover={{ y: -2 }}
                         whileTap={{ scale: 0.95 }}
                         key={group.user._id}
-                        className="flex flex-col items-center gap-2 cursor-pointer group"
+                        className="flex flex-col items-center gap-1 cursor-pointer group"
                         onClick={() => onStorySelect(group)}
                     >
-                        <div className="relative w-[72px] h-[72px]">
-                            {/* Gradient Ring (Squircle) */}
-                            {!group.allSeen && (
-                                <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-moto-accent via-rose-500 to-amber-500 p-[2px] animate-gradient-xy">
-                                    <div className="w-full h-full bg-black rounded-2xl" />
+                        <div className="relative w-[74px] h-[74px] flex items-center justify-center">
+                            {/* Tachometer Ring */}
+                            {!group.allSeen ? (
+                                <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_180deg,#E2FF3B,#00F0FF,#E2FF3B)] animate-spin-slow p-[2px]">
+                                    <div className="w-full h-full bg-black rounded-full" />
                                 </div>
+                            ) : (
+                                <div className="absolute inset-0 rounded-full border border-white/10" />
                             )}
 
                             {/* Image Container */}
-                            <div className={`absolute inset-[2px] rounded-2xl overflow-hidden bg-white dark:bg-zinc-900 border-2 ${group.allSeen ? 'border-gray-200 dark:border-white/10' : 'border-black dark:border-black'}`}>
+                            <div className="absolute inset-[4px] rounded-full overflow-hidden border-2 border-black">
                                 <img
                                     src={group.user.avatar || `https://ui-avatars.com/api/?name=${group.user.name}&background=random`}
-                                    className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500"
+                                    className="w-full h-full object-cover"
                                     alt={group.user.name}
                                 />
-
-                                {/* Gradient Overlay on Image */}
-                                <div className="absolute inset-0 bg-gradient-to-b from-black/0 via-black/0 to-black/40 opacity-60" />
-                            </div>
-
-                            {/* Name Overlay (Inside Card) */}
-                            <div className="absolute bottom-1 left-1 right-1 text-center">
-                                <span className="text-[9px] font-bold text-white drop-shadow-md truncate block">
-                                    {group.user.name.split(' ')[0]}
-                                </span>
                             </div>
                         </div>
+                        <span className="text-[10px] font-medium text-white truncate max-w-[70px] text-center">
+                            {group.user.name.split(' ')[0]}
+                        </span>
                     </motion.div>
                 ))}
             </div>

@@ -14,7 +14,6 @@ import { PullToRefresh } from '../mobile/PullToRefresh';
 import { MotoVlogMap } from '../MotoVlogMap';
 import { RouteExplorer } from '../RouteExplorer';
 import { MotoMeetup } from '../MotoMeetup';
-import { AnimatedBackground } from '../ui/AnimatedBackground';
 import { rideService } from '../../services/rideService';
 import { RideCard } from '../ride/RideCard'; // Import RideCard
 import { socialService } from '../../services/socialService';

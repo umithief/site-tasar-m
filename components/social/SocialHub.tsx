@@ -214,9 +214,9 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
             <div className="w-full mx-auto grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-0 relative items-start">
 
                 {/* --- MAIN FEED STREAM --- */}
-                <div className="min-h-screen border-r border-white/5 bg-[#09090b] transition-colors duration-300">
+                <div className="min-h-screen bg-[#09090b] transition-colors duration-300">
                     {/* Top Navigation Tabs */}
-                    <div className="sticky top-0 z-40 bg-[#09090b]/95 backdrop-blur-xl border-b border-white/5 px-0 py-0 flex items-center justify-between">
+                    <div className="sticky top-0 z-40 bg-[#09090b]/95 backdrop-blur-xl px-0 py-0 flex items-center justify-between">
                         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
                             {[
                                 { id: 'feed', icon: Home, label: 'Akış' },
@@ -480,7 +480,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                                     className="group"
                                                 >
                                                     <div className="relative">
-                                                        <div className="absolute -left-4 top-0 bottom-0 w-[1px] bg-white/5 group-hover:bg-white/10 transition-colors hidden xl:block" />
+                                                        {/* <div className="absolute -left-4 top-0 bottom-0 w-[1px] bg-white/5 group-hover:bg-white/10 transition-colors hidden xl:block" /> */}
                                                         <ResponsivePostCard
                                                             post={post}
                                                             currentUserId={currentUser?._id}
@@ -534,7 +534,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                 </div >
 
                 {/* --- RIGHT SIDEBAR (Context) --- */}
-                <div className="hidden lg:block sticky top-0 h-screen overflow-y-auto custom-scrollbar p-6 space-y-8 border-l border-white/5 bg-[#09090b] transition-colors duration-300">
+                <div className="hidden lg:block sticky top-0 h-screen overflow-y-auto custom-scrollbar p-6 space-y-8 bg-[#09090b] transition-colors duration-300">
 
                     {/* Search Field */}
                     <div className="relative group z-50">

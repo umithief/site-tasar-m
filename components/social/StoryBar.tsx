@@ -41,7 +41,7 @@ export const StoryBar: React.FC<StoryBarProps> = ({ storyGroups, onStorySelect, 
                 </motion.div>
 
                 {/* SEPARATOR */}
-                <div className="w-[1px] h-10 bg-gray-200 dark:bg-white/10 mx-1" />
+                {/* <div className="w-[1px] h-10 bg-gray-200 dark:bg-white/10 mx-1" /> */}
 
                 {/* OTHER STORIES */}
                 {storyGroups.map((group, index) => (

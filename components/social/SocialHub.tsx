@@ -205,9 +205,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                 )}
             </AnimatePresence>
             {/* Background Ambient */}
-            <div className="fixed inset-0 z-0">
-                <AnimatedBackground />
-            </div>
+
             {/* <div className="fixed top-0 left-0 w-full h-[50vh] bg-gradient-to-b from-purple-900/10 to-transparent pointer-events-none dark:block hidden" /> */}
 
             <div className="w-full mx-auto grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-0 relative items-start">

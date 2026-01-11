@@ -212,7 +212,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                 {/* --- MAIN FEED STREAM --- */}
                 <div className="min-h-screen border-r border-white/5 bg-[#09090b] transition-colors duration-300">
                     {/* Top Navigation Tabs */}
-                    <div className="sticky top-0 z-40 bg-[#09090b]/95 backdrop-blur-xl border-b border-white/5 px-4 lg:px-6 py-2 flex items-center justify-between">
+                    <div className="sticky top-0 z-40 bg-[#09090b]/95 backdrop-blur-xl border-b border-white/5 px-0 py-0 flex items-center justify-between">
                         <div className="flex items-center gap-2 overflow-x-auto no-scrollbar">
                             {[
                                 { id: 'feed', icon: Home, label: 'Akış' },
@@ -405,7 +405,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                     {view === 'feed' ? (
                         <>
                             {/* Stories Bar (Instagram Style) */}
-                            <div className="mb-0 -mx-4 lg:mx-0">
+                            <div className="mb-0 mx-0">
                                 <StoryBar
                                     storyGroups={storyGroups}
                                     onStorySelect={setSelectedStoryGroup}

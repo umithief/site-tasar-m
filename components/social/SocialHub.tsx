@@ -25,6 +25,7 @@ import { useNotificationStore } from '../../store/useNotificationStore';
 import { StoryBar } from './StoryBar';
 import { StoryViewerOverlay } from './StoryViewerOverlay';
 import { storyService, StoryGroup } from '../../services/storyService';
+import { RouteSuggestions } from './RouteSuggestions';
 
 
 interface SocialHubProps {
@@ -484,32 +485,44 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                         </div>
                                     )}
 
+
+
                                     {data?.pages.map((page, i) => (
                                         <React.Fragment key={i}>
-                                            {page?.map((post: SocialPost) => (
-                                                <motion.div
-                                                    key={post._id}
-                                                    initial={{ opacity: 0, y: 50 }}
-                                                    whileInView={{ opacity: 1, y: 0 }}
-                                                    viewport={{ once: true, margin: "-10%" }}
-                                                    className="group"
-                                                >
-                                                    <div className="relative">
-                                                        {/* <div className="absolute -left-4 top-0 bottom-0 w-[1px] bg-white/5 group-hover:bg-white/10 transition-colors hidden xl:block" /> */}
-                                                        <ResponsivePostCard
-                                                            post={post}
-                                                            currentUserId={currentUser?._id}
-                                                            onNavigate={onNavigate}
-                                                            onCommentClick={() => {
-                                                                setActivePostId(post._id);
-                                                                setIsCommentSheetOpen(true);
-                                                            }}
-                                                        />
-                                                    </div>
-                                                </motion.div>
+                                            {page?.map((post: SocialPost, index: number) => (
+                                                <React.Fragment key={post._id}>
+                                                    <motion.div
+                                                        initial={{ opacity: 0, y: 50 }}
+                                                        whileInView={{ opacity: 1, y: 0 }}
+                                                        viewport={{ once: true, margin: "-10%" }}
+                                                        className="group"
+                                                    >
+                                                        <div className="relative">
+                                                            {/* <div className="absolute -left-4 top-0 bottom-0 w-[1px] bg-white/5 group-hover:bg-white/10 transition-colors hidden xl:block" /> */}
+                                                            <ResponsivePostCard
+                                                                post={post}
+                                                                isMobile={true}
+                                                                currentUserId={currentUser?._id}
+                                                                onNavigate={onNavigate}
+                                                                onCommentClick={() => {
+                                                                    setActivePostId(post._id);
+                                                                    setIsCommentSheetOpen(true);
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </motion.div>
+
+                                                    {/* Inject Route Suggestions after the 3rd post of the first page */}
+                                                    {i === 0 && index === 2 && (
+                                                        <div className="py-2">
+                                                            <RouteSuggestions />
+                                                        </div>
+                                                    )}
+                                                </React.Fragment>
                                             ))}
                                         </React.Fragment>
                                     ))}
+
                                     {isFetchingNextPage && <div className="flex justify-center py-8"><div className="w-8 h-8 border-2 border-moto-accent border-t-transparent rounded-full animate-spin" /></div>}
                                     {hasNextPage && (
                                         <div className="flex justify-center pt-8">
@@ -545,14 +558,15 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                 </div>
                             )}
                         </div>
-                    )}
+                    )
+                    }
                 </div >
 
                 {/* --- RIGHT SIDEBAR (Context) --- */}
-                <div className="hidden lg:block sticky top-0 h-screen overflow-y-auto custom-scrollbar p-6 space-y-8 bg-[#09090b] transition-colors duration-300">
+                < div className="hidden lg:block sticky top-0 h-screen overflow-y-auto custom-scrollbar p-6 space-y-8 bg-[#09090b] transition-colors duration-300" >
 
                     {/* Search Field */}
-                    <div className="relative group z-50">
+                    < div className="relative group z-50" >
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-moto-accent transition-colors" />
                         <input
                             type="text"
@@ -659,10 +673,10 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                 </motion.div>
                             )}
                         </AnimatePresence>
-                    </div>
+                    </div >
 
                     {/* Live Stats Widget */}
-                    <motion.div
+                    < motion.div
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         className="bg-[#111] rounded-3xl p-6 border border-white/5 shadow-xl relative overflow-hidden group"
@@ -688,7 +702,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                 </div>
                             </div>
                         </div>
-                    </motion.div>
+                    </motion.div >
 
                     {/* Active Squads (Chats) */}
                     < div className="bg-[#111] rounded-3xl p-6 border border-white/5 shadow-xl" >
@@ -749,14 +763,16 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
             < DirectMessages isOpen={isDMOpen} onClose={() => { setIsDMOpen(false); setInitialChatId(null); }} initialChatUserId={initialChatId || undefined} />
 
             {/* Comment Sheet (Shared) */}
-            {activePostId && (
-                <CommentSheet
-                    isOpen={isCommentSheetOpen}
-                    onClose={() => setIsCommentSheetOpen(false)}
-                    postId={activePostId}
-                    currentUser={currentUser}
-                />
-            )}
+            {
+                activePostId && (
+                    <CommentSheet
+                        isOpen={isCommentSheetOpen}
+                        onClose={() => setIsCommentSheetOpen(false)}
+                        postId={activePostId}
+                        currentUser={currentUser}
+                    />
+                )
+            }
         </div >
     );
 };

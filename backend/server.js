@@ -29,11 +29,10 @@ import activityRoutes from './routes/activityRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import reelRoutes from './routes/reelRoutes.js';
 import postRoutes from './routes/postRoutes.js';
-// import rideRoutes from './routes/rideRoutes.js'; // Removed
+import rideRoutes from './routes/rideRoutes.js'; // Enabled
 import uiRoutes from './routes/uiRoutes.js';
 
 // ... imports
-
 
 import http from 'http';
 import { initSync } from './socket.js';
@@ -45,7 +44,7 @@ import './models/User.js';
 import './models/Post.js'; // Registers 'SocialPost'
 import './models/Order.js';
 import './models/Message.js';
-// import './models/Ride.js'; // Removed
+import './models/Ride.js'; // Enabled
 import MeetupEvent from './models/MeetupEvent.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -569,7 +568,7 @@ app.use('/api/notifications', notificationRoutes);
 app.use('/api/showcase', showcaseRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/activities', activityRoutes);
-// app.use('/api/rides', rideRoutes);
+app.use('/api/rides', rideRoutes);
 app.use('/api/music', musicRoutes);
 app.use('/api/models', modelRoutes);
 app.use('/api/stolen-items', stolenRoutes);

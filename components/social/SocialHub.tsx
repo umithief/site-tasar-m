@@ -26,6 +26,7 @@ import { StoryBar } from './StoryBar';
 import { StoryViewerOverlay } from './StoryViewerOverlay';
 import { storyService, StoryGroup } from '../../services/storyService';
 import { RouteSuggestions } from './RouteSuggestions';
+import { CreateRideModal } from '../ride/CreateRideModal'; // Imported
 
 
 interface SocialHubProps {
@@ -48,6 +49,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
     const [view, setView] = useState<HubView>('feed');
 
     const [isCreateOpen, setIsCreateOpen] = useState(false);
+    const [isCreateRideOpen, setIsCreateRideOpen] = useState(false); // New state
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = usePosts();
@@ -276,6 +278,14 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                         <PlusCircle className="w-5 h-5" />
                                     </button>
 
+                                    <button
+                                        onClick={() => setIsCreateRideOpen(true)}
+                                        className="relative p-2 rounded-full transition-all border ml-2 bg-[#18181b] text-zinc-400 border-white/5 hover:text-white hover:border-[#E2FF3B] hover:text-[#E2FF3B]"
+                                        title="Sürüş Oluştur"
+                                    >
+                                        <Navigation className="w-5 h-5" />
+                                    </button>
+
                                     {/* Notification Dropdown */}
                                     <AnimatePresence>
                                         {isNotificationOpen && (
@@ -501,7 +511,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                                             {/* <div className="absolute -left-4 top-0 bottom-0 w-[1px] bg-white/5 group-hover:bg-white/10 transition-colors hidden xl:block" /> */}
                                                             <ResponsivePostCard
                                                                 post={post}
-                                                                isMobile={true}
+                                                                // isMobile={true} -- Removing this as it causes a type error and seems unused
                                                                 currentUserId={currentUser?._id}
                                                                 onNavigate={onNavigate}
                                                                 onCommentClick={() => {
@@ -773,6 +783,15 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                     />
                 )
             }
+
+            <CreateRideModal
+                isOpen={isCreateRideOpen}
+                onClose={() => setIsCreateRideOpen(false)}
+                user={currentUser}
+                onSuccess={() => {
+                    // Refresh handled by event listener
+                }}
+            />
         </div >
     );
 };

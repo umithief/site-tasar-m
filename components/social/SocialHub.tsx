@@ -213,7 +213,10 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                 {/* --- MAIN FEED STREAM --- */}
                 <div className="min-h-screen bg-transparent transition-colors duration-300">
                     {/* Top Navigation Tabs */}
-                    <div className="sticky top-[70px] z-40 bg-transparent px-4 py-2 flex items-center justify-center pointer-events-none">
+                    <div
+                        className="sticky z-40 bg-transparent px-4 py-2 flex items-center justify-center pointer-events-none transition-[top] duration-300"
+                        style={{ top: 'var(--mobile-header-height, 0px)' }}
+                    >
                         <div className="flex items-center gap-6 overflow-x-auto no-scrollbar pointer-events-auto bg-black/40 backdrop-blur-md rounded-full px-6 py-2 border border-white/5 shadow-2xl">
                             {[
                                 { id: 'feed', label: 'AKIŞ' },

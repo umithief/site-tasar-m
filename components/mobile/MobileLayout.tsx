@@ -49,12 +49,23 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
     }, [lastScrollY]);
 
     return (
-        <div className="min-h-screen bg-black text-white pb-24 md:pb-0">
+        <div
+            className="min-h-screen bg-black text-white pb-24 md:pb-0"
+            style={{
+                '--mobile-header-height': showTopBar ? '60px' : '0px',
+                '--mobile-header-translate': showTopBar ? '0px' : '-100px'
+            } as React.CSSProperties}
+        >
             {/* --- TOP APP BAR --- */}
             <motion.div
                 className="fixed top-0 left-0 right-0 z-[130] pointer-events-none px-6 pt-safe-top pt-4 md:hidden"
                 initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
+                animate={{
+                    opacity: showTopBar ? 1 : 0,
+                    y: showTopBar ? 0 : -20,
+                    pointerEvents: showTopBar ? 'auto' : 'none'
+                }}
+                transition={{ duration: 0.3 }}
             >
                 <div className="flex items-center justify-between">
                     {/* Logo (Left) */}
@@ -80,7 +91,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
             </motion.div>
 
             {/* --- MAIN CONTENT --- */}
-            <main className="pt-[60px] px-0 md:pt-0 pb-20 overflow-x-hidden w-full relative">
+            <main className="pt-[60px] px-0 md:pt-0 pb-20 overflow-x-hidden w-full relative transition-[padding] duration-300">
                 {children}
             </main>
 

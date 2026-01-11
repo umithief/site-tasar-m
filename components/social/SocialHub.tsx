@@ -14,6 +14,7 @@ import { PullToRefresh } from '../mobile/PullToRefresh';
 import { MotoVlogMap } from '../MotoVlogMap';
 import { RouteExplorer } from '../RouteExplorer';
 import { MotoMeetup } from '../MotoMeetup';
+import { AnimatedBackground } from '../ui/AnimatedBackground';
 import { rideService } from '../../services/rideService';
 import { RideCard } from '../ride/RideCard'; // Import RideCard
 import { socialService } from '../../services/socialService';
@@ -205,7 +206,10 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                 )}
             </AnimatePresence>
             {/* Background Ambient */}
-            <div className="fixed top-0 left-0 w-full h-[50vh] bg-gradient-to-b from-purple-900/10 to-transparent pointer-events-none dark:block hidden" />
+            <div className="fixed inset-0 z-0">
+                <AnimatedBackground />
+            </div>
+            {/* <div className="fixed top-0 left-0 w-full h-[50vh] bg-gradient-to-b from-purple-900/10 to-transparent pointer-events-none dark:block hidden" /> */}
 
             <div className="w-full mx-auto grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-0 relative items-start">
 

@@ -433,7 +433,7 @@ export const App: React.FC = () => {
             case 'reels': return <ReelsPage onNavigate={navigateTo} />;
             case 'reels': return <ReelsPage onNavigate={navigateTo} />;
             case 'explore': return isMobile ? <MobileExplore onNavigate={navigateTo} /> : <ExploreMap onNavigate={navigateTo} />;
-            case 'create': return <RideMode route={activeRoute} onNavigate={navigateTo} />; // Placeholder
+            case 'create': return <InRideCockpit onFinishRide={() => setView('home')} />; // Placeholder
             case 'garage': return <Garage />;
             case 'cart':
                 return (

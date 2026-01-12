@@ -5,7 +5,6 @@ import { Compass, Home, MessageSquare, Calendar, User, Search, Map as MapIcon, N
 import { ResponsivePostCard } from './ResponsivePostCard';
 import { PostComposer } from './PostComposer';
 import { FollowButton } from './FollowButton';
-import { DirectMessages } from './DirectMessages';
 import { SocialPost, ViewState } from '../../types';
 import { UserAvatar } from '../ui/UserAvatar';
 import { Button } from '../ui/Button';
@@ -17,7 +16,6 @@ import { MotoMeetup } from '../MotoMeetup';
 import { rideService } from '../../services/rideService';
 import { RideCard } from '../ride/RideCard'; // Import RideCard
 import { socialService } from '../../services/socialService';
-import { messageService } from '../../services/messageService';
 import { usePosts, useCreatePost } from '../../hooks/usePosts';
 import { MediaUploader } from '../ui/MediaUploader';
 import { useAuthStore } from '../../store/authStore';
@@ -55,8 +53,6 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
     const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = usePosts();
     const { mutate: createPost } = useCreatePost();
     const [suggestedRiders, setSuggestedRiders] = useState<any[]>([]);
-    const [activeThreads, setActiveThreads] = useState<any[]>([]);
-    const [initialChatId, setInitialChatId] = useState<string | null>(null);
 
     // Comment Sheet State
     const [activePostId, setActivePostId] = useState<string | null>(null);
@@ -120,20 +116,16 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
     // Initial Data Fetch
     useEffect(() => {
         const fetchMiscData = async () => {
-            const [riders, threads, rides] = await Promise.all([
+            const [riders, rides] = await Promise.all([
                 socialService.getSuggestedRiders(),
-                messageService.getThreads(),
-                rideService.getRides().catch(() => []) // Fetch rides, handle error silently
+                rideService.getRides().catch(() => [])
             ]);
             setSuggestedRiders(riders);
-            setActiveThreads(threads);
             setActiveRides(rides);
         };
 
         fetchMiscData();
 
-
-        // Listen for new rides
         const handleRideCreated = () => {
             console.log("Refreshing rides...");
             rideService.getRides().then(setActiveRides).catch(console.error);
@@ -144,13 +136,6 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
             window.removeEventListener('ride-created', handleRideCreated);
         };
     }, []);
-
-    useEffect(() => {
-        if (initialData?.openChat) {
-            setInitialChatId(initialData.openChat);
-            setIsDMOpen(true);
-        }
-    }, [initialData]);
 
     const handlePostCreate = async (content: string, media: string | null, stats?: any, location?: string) => {
         if (!currentUser) return;
@@ -714,59 +699,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                         </div>
                     </motion.div >
 
-                    {/* Active Squads (Chats) */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.1 }}
-                        className="relative overflow-hidden rounded-3xl p-6 border border-white/10 shadow-xl group"
-                    >
-                        {/* Glass Background */}
-                        <div className="absolute inset-0 bg-white/5 backdrop-blur-xl z-0" />
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-50 z-0" />
 
-                        <div className="relative z-10 flex items-center justify-between mb-6">
-                            <h3 className="font-bold text-white tracking-wide text-sm flex items-center gap-2">
-                                <MessageCircle className="w-4 h-4 text-moto-accent" />
-                                AKTİF SOHBETLER
-                            </h3>
-                            <span className="bg-moto-accent/20 text-moto-accent text-[10px] px-2 py-1 rounded-full font-bold shadow-[0_0_10px_rgba(226,255,59,0.2)]">{activeThreads.length}</span>
-                        </div>
-
-                        <div className="relative z-10 space-y-3 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
-                            {activeThreads.map(thread => (
-                                <div
-                                    key={thread.id}
-                                    onClick={() => onNavigate && onNavigate('messages', { userId: thread.userId })}
-                                    className="flex items-center gap-3 cursor-pointer hover:bg-white/10 p-3 rounded-xl transition-all border border-transparent hover:border-white/5 group/item"
-                                >
-                                    <div className="relative">
-                                        <UserAvatar src={thread.userAvatar} name={thread.userName} size={42} className="ring-2 ring-white/5 group-hover/item:ring-moto-accent/50 transition-all" />
-                                        {thread.unreadCount > 0 && (
-                                            <div className="absolute -top-1 -right-1 w-4 h-4 bg-moto-accent rounded-full border-2 border-[#111] flex items-center justify-center">
-                                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-moto-accent opacity-75"></span>
-                                            </div>
-                                        )}
-                                    </div>
-                                    <div className="flex-1 min-w-0">
-                                        <div className="flex justify-between items-baseline">
-                                            <div className="font-bold text-sm text-gray-200 group-hover/item:text-moto-accent transition-colors truncate">{thread.userName}</div>
-                                            <div className="text-[9px] text-gray-600 font-mono">{thread.lastMessageTime ? new Date(thread.lastMessageTime).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}</div>
-                                        </div>
-                                        <div className="text-xs text-gray-500 truncate max-w-[140px] group-hover/item:text-gray-300 transition-colors">
-                                            {thread.lastMessage || 'Fotoğraf gönderdi'}
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-                            {activeThreads.length === 0 && (
-                                <div className="text-center py-8 opacity-50">
-                                    <MessageSquare className="w-8 h-8 mx-auto mb-2 text-gray-600" />
-                                    <p className="text-xs text-gray-500">Henüz sohbet yok.</p>
-                                </div>
-                            )}
-                        </div>
-                    </motion.div>
 
                     {/* Trending Riders */}
                     < div className="bg-[#111] rounded-3xl p-6 border border-white/5 shadow-xl relative overflow-hidden" >

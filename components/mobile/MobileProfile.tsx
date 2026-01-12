@@ -236,11 +236,7 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ userId, username: 
                                 >
                                     {isFollowing ? 'Takip Ediliyor' : 'Takip Et'}
                                 </button>
-                                <button
-                                    className="p-3 rounded-xl bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:text-moto-accent hover:border-moto-accent/30 transition-all shadow-lg active:scale-95"
-                                >
-                                    <MessageCircle className="w-5 h-5" />
-                                </button>
+
                             </>
                         )}
                     </div>

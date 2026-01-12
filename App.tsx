@@ -41,7 +41,7 @@ import { TuvTurkChecklist } from './components/TuvTurkChecklist';
 import { ExhaustLab } from './components/ExhaustLab';
 import { RedlineChallenge } from './components/RedlineChallenge';
 import { LegalGuide } from './components/LegalGuide';
-import { ChatSystem } from './components/chat/ChatSystem';
+
 import { StolenPool } from './components/StolenPool';
 import { SocialHub } from './components/social/SocialHub';
 import { authService } from './services/auth';
@@ -116,7 +116,7 @@ export const App: React.FC = () => {
 
     const [user, setUser] = useState<User | null>(null);
     const [viewingUser, setViewingUser] = useState<User | null>(null);
-    const [activeChatUserId, setActiveChatUserId] = useState<string | null>(null);
+
 
     const [isAuthOpen, setIsAuthOpen] = useState(false);
     const [authMode, setAuthMode] = useState<AuthMode>('login');
@@ -223,11 +223,6 @@ export const App: React.FC = () => {
             if (data._id) {
                 setViewingUser(data);
             }
-        }
-        if (data && newView === 'messages') {
-            setActiveChatUserId(data.userId);
-        } else {
-            setActiveChatUserId(null);
         }
         setView(newView);
         window.scrollTo(0, 0);
@@ -493,7 +488,7 @@ export const App: React.FC = () => {
             case 'redline': return <RedlineChallenge onBack={() => navigateTo('home')} />;
             case 'legal': return <LegalGuide onBack={() => navigateTo('home')} />;
             case 'stolen': return <StolenPool onBack={() => navigateTo('home')} />;
-            case 'messages': return user ? <ChatSystem currentUserId={user._id} initialChatId={activeChatUserId || undefined} onClose={() => navigateTo('home')} /> : <AuthPage onNavigate={navigateTo} onLoginSuccess={(u) => { setUser(u); navigateTo('messages'); }} />;
+
             default: return <Home onNavigate={navigateTo} products={products} onAddToCart={addToCart} onProductClick={(p: any) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
         }
     };
@@ -502,7 +497,7 @@ export const App: React.FC = () => {
         return <IntroAnimation onComplete={handleIntroComplete} />;
     }
 
-    const isFullScreenMode = view === 'ride-mode' || view === 'mototool' || view === 'admin' || view === 'meetup' || view === 'events' || view === 'valuation' || view === 'qr-generator' || view === 'vlog-map' || view === 'lifesaver' || view === 'reels' || view === 'auth' || view === 'explore' || view === 'achievements' || view === 'messages';
+    const isFullScreenMode = view === 'ride-mode' || view === 'mototool' || view === 'admin' || view === 'meetup' || view === 'events' || view === 'valuation' || view === 'qr-generator' || view === 'vlog-map' || view === 'lifesaver' || view === 'reels' || view === 'auth' || view === 'explore' || view === 'achievements';
 
     return (
         <SocketProvider>

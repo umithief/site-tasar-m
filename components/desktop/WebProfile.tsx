@@ -282,12 +282,7 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user: initialUser, onNav
                                         >
                                             {isFollowPending ? '...' : (isFollowing ? 'Takip Ediliyor' : 'Takip Et')}
                                         </button>
-                                        <button
-                                            className="ml-3 px-6 py-3 font-bold uppercase tracking-wider rounded-xl transition-all bg-white/5 border border-white/10 text-white hover:bg-white/10 hover:border-moto-accent/50 hover:text-moto-accent hover:shadow-[0_0_15px_rgba(226,255,59,0.1)] flex items-center gap-2 group"
-                                        >
-                                            <MessageCircle className="w-5 h-5 group-hover:scale-110 transition-transform" />
-                                            Mesaj
-                                        </button>
+
                                     </>
                                 )}
                             </div>

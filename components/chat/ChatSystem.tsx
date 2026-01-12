@@ -87,13 +87,13 @@ export const ChatSystem: React.FC<ChatSystemProps> = ({ onClose, currentUserId, 
                                 });
                                 const uData = await uRes.json();
 
-                                if (uData.data) {
+                                if (uData.data && uData.data.user) {
                                     const newChat: Chat = {
                                         id: initData.data.id, // Valid DB ID
                                         partnerId: initialChatId,
-                                        name: uData.data.name,
-                                        avatar: uData.data.profileImage,
-                                        username: uData.data.username,
+                                        name: uData.data.user.name,
+                                        avatar: uData.data.user.profileImage || uData.data.user.avatar, // Handle possible field diff
+                                        username: uData.data.user.username,
                                         lastMessage: '',
                                         lastMessageTime: new Date().toISOString(),
                                         unreadCount: 0,

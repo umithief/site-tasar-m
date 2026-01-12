@@ -404,7 +404,7 @@ export const App: React.FC = () => {
             case 'meetup':
             case 'events': return <MotoMeetup user={user} onOpenAuth={() => navigateTo('auth')} onNavigate={navigateTo} />;
             case 'service-finder': return <ServiceFinder onNavigate={navigateTo} />;
-            case 'ride-mode': return <InRideCockpit onFinishRide={() => setView('home')} />;
+            case 'ride-mode': return <RideMode route={activeRoute} onNavigate={navigateTo} />;
             case 'mototool': return <MotoTool onNavigate={navigateTo} />;
             case 'valuation': return <MotoValuation onNavigate={navigateTo} />;
             case 'qr-generator': return <HelmetQRGenerator onNavigate={navigateTo} />;
@@ -433,7 +433,7 @@ export const App: React.FC = () => {
             case 'reels': return <ReelsPage onNavigate={navigateTo} />;
             case 'reels': return <ReelsPage onNavigate={navigateTo} />;
             case 'explore': return isMobile ? <MobileExplore onNavigate={navigateTo} /> : <ExploreMap onNavigate={navigateTo} />;
-            case 'create': return <InRideCockpit onFinishRide={() => setView('home')} />; // Placeholder
+            case 'create': return <RideMode route={activeRoute} onNavigate={navigateTo} />; // Placeholder
             case 'garage': return <Garage />;
             case 'cart':
                 return (

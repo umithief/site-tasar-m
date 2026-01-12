@@ -309,7 +309,7 @@ export const ChatSystem: React.FC<ChatSystemProps> = ({ onClose, currentUserId, 
                                     )}
                                 </div>
                                 <div>
-                                    <h2 className="font-bold text-sm tracking-wide">Sürücü: {activeChat.name.split(' ')[0]} | Yamaha R6</h2>
+                                    <h2 className="font-bold text-sm tracking-wide">Sürücü: {(activeChat.name || 'Misafir').split(' ')[0]} | Yamaha R6</h2>
                                     <span className="text-[10px] text-[#00F0FF] font-medium tracking-wider flex items-center gap-1">
                                         <div className="w-1.5 h-1.5 rounded-full bg-[#00F0FF]"></div>
                                         ÇEVRİMİÇİ

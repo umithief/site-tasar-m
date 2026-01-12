@@ -10,7 +10,7 @@ export const getChats = catchAsync(async (req, res, next) => {
     const conversations = await Conversation.find({
         participants: userId
     })
-        .populate('participants', 'name avatar email username')
+        .populate('participants', 'name avatar email username primaryBike')
         .sort({ updatedAt: -1 });
 
     // Format for frontend
@@ -30,6 +30,7 @@ export const getChats = catchAsync(async (req, res, next) => {
             name: otherUser.name,
             avatar: otherUser.avatar, // Fixed field name
             username: otherUser.username,
+            primaryBike: otherUser.primaryBike,
             lastMessage: chat.lastMessage,
             lastMessageTime: chat.updatedAt,
             unreadCount: unread,

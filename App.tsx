@@ -226,6 +226,8 @@ export const App: React.FC = () => {
         }
         if (data && newView === 'messages') {
             setActiveChatUserId(data.userId);
+        } else {
+            setActiveChatUserId(null);
         }
         setView(newView);
         window.scrollTo(0, 0);

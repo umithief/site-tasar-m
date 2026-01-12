@@ -352,13 +352,22 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                 className: 'trail-polyline'
             }).addTo(map);
 
-            // Add CSS for the neon line
+            // Add CSS for the neon line and VIBRANT MAP
             const style = document.createElement('style');
             style.innerHTML = `
             .neon-polyline { filter: drop-shadow(0 0 8px #E2FF3B); }
             .trail-polyline { filter: drop-shadow(0 0 5px #00f3ff); }
-            .leaflet-container { background: #000 !important; }
-            .vibrant-satellite { filter: saturate(1.4) contrast(1.1) brightness(1.1); }
+            .leaflet-container { background: #1a1a1a !important; }
+            
+            /* Aggressively Target Tiles for Color */
+            .leaflet-tile-pane .leaflet-layer .vibrant-satellite {
+                filter: saturate(1.5) contrast(1.1) brightness(1.1) grayscale(0) !important;
+            }
+            
+            /* Fallback: Target all images in the tile pane if class fails */
+            .leaflet-tile-pane img {
+                filter: saturate(1.4) grayscale(0) !important;
+            }
           `;
             document.head.appendChild(style);
         }

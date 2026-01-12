@@ -61,6 +61,39 @@ function calculateBearing(startLat: number, startLng: number, destLat: number, d
     return (brng + 360) % 360;
 }
 
+// Helper: Translate OSRM Instructions to Turkish (Fallback)
+function translateInstruction(text: string): string {
+    if (!text) return '';
+    let t = text.toLowerCase();
+
+    // Directions
+    t = t.replace(/\bturn right\b/g, 'Sağa dön');
+    t = t.replace(/\bturn left\b/g, 'Sola dön');
+    t = t.replace(/\bslight right\b/g, 'Hafif sağa');
+    t = t.replace(/\bslight left\b/g, 'Hafif sola');
+    t = t.replace(/\bcontinue\b/g, 'Devam et');
+    t = t.replace(/\bstraight\b/g, 'Düz git');
+    t = t.replace(/\bkeep right\b/g, 'Sağdan devam et');
+    t = t.replace(/\bkeep left\b/g, 'Soldan devam et');
+    t = t.replace(/\bmake a u-turn\b/g, 'U dönüşü yap');
+    t = t.replace(/\benter the roundabout\b/g, 'Dönel kavşağa gir');
+    t = t.replace(/\band take the\b/g, 've çıkış:');
+    t = t.replace(/\bexit\b/g, 'çıkış');
+    t = t.replace(/\bdestination\b/g, 'Hedef');
+    t = t.replace(/\bon the right\b/g, 'sağda');
+    t = t.replace(/\bon the left\b/g, 'solda');
+    t = t.replace(/\bit looks like you have arrived\b/g, 'Hedefe ulaştınız');
+    t = t.replace(/\byou have arrived\b/g, 'Vardınız');
+    t = t.replace(/\bat the end of the road\b/g, 'Yolun sonunda');
+
+    // Prepositions/Connectors
+    t = t.replace(/\bonto\b/g, 'yönüne:');
+    t = t.replace(/\btowards\b/g, 'istikametine:');
+
+    // Capitalize first letter
+    return t.charAt(0).toUpperCase() + t.slice(1);
+}
+
 export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
     // System State
     const [time, setTime] = useState(new Date());
@@ -504,7 +537,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
             try {
                 const control = L.Routing.control({
                     waypoints,
-                    router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1', profile: 'driving' }),
+                    router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1', profile: 'driving', language: 'tr' }),
                     lineOptions: {
                         styles: [{ color: '#00f3ff', opacity: 0.8, weight: 8, className: 'neon-polyline' }]
                     },
@@ -523,7 +556,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                         demoIndexRef.current = 0;
                     }
                     if (r.instructions && r.instructions.length > 0) {
-                        setNextTurn({ text: r.instructions[0].text, distance: r.instructions[0].distance, type: r.instructions[0].type, modifier: r.instructions[0].modifier });
+                        setNextTurn({ text: translateInstruction(r.instructions[0].text), distance: r.instructions[0].distance, type: r.instructions[0].type, modifier: r.instructions[0].modifier });
                     }
                 });
 
@@ -556,7 +589,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                 try {
                     const control = L.Routing.control({
                         waypoints: waypoints,
-                        router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1', profile: 'driving' }),
+                        router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1', profile: 'driving', language: 'tr' }),
                         lineOptions: {
                             styles: [{ color: '#E2FF3B', opacity: 0.8, weight: 8, className: 'neon-polyline' }]
                         },
@@ -571,7 +604,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                         const r = e.routes[0];
                         if (r.instructions && r.instructions.length > 0) {
                             setNextTurn({
-                                text: r.instructions[0].text,
+                                text: translateInstruction(r.instructions[0].text),
                                 distance: r.instructions[0].distance,
                                 type: r.instructions[0].type,
                                 modifier: r.instructions[0].modifier

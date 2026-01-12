@@ -271,16 +271,25 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user: initialUser, onNav
                                         </button>
                                     </>
                                 ) : (
-                                    <button
-                                        onClick={handleFollow}
-                                        disabled={isFollowPending}
-                                        className={`px-8 py-3 font-bold uppercase tracking-wider rounded-xl transition-colors ${isFollowing
-                                            ? 'bg-zinc-800 text-gray-400 hover:bg-zinc-700'
-                                            : 'bg-moto-accent text-black hover:bg-[#cbe62b]'
-                                            }`}
-                                    >
-                                        {isFollowPending ? '...' : (isFollowing ? 'Takip Ediliyor' : 'Takip Et')}
-                                    </button>
+                                    <>
+                                        <button
+                                            onClick={handleFollow}
+                                            disabled={isFollowPending}
+                                            className={`px-8 py-3 font-bold uppercase tracking-wider rounded-xl transition-colors ${isFollowing
+                                                ? 'bg-zinc-800 text-gray-400 hover:bg-zinc-700'
+                                                : 'bg-moto-accent text-black hover:bg-[#cbe62b]'
+                                                }`}
+                                        >
+                                            {isFollowPending ? '...' : (isFollowing ? 'Takip Ediliyor' : 'Takip Et')}
+                                        </button>
+                                        <button
+                                            onClick={() => onNavigate('messages', { userId: profileUser._id })}
+                                            className="ml-3 px-6 py-3 font-bold uppercase tracking-wider rounded-xl transition-colors bg-white/10 text-white hover:bg-white/20 flex items-center gap-2"
+                                        >
+                                            <MessageCircle className="w-5 h-5" />
+                                            Mesaj
+                                        </button>
+                                    </>
                                 )}
                             </div>
                         </motion.div>

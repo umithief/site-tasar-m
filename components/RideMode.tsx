@@ -326,10 +326,11 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                 inertia: true
             }).setView(initialCenter, 15);
 
-            // COLORFUL MAP (OpenStreetMap Standard)
-            tileLayerRef.current = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-                attribution: '&copy; OpenStreetMap contributors',
-                maxZoom: 19
+            // SATELLITE MAP (Esri World Imagery) - VIBRANT
+            tileLayerRef.current = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '&copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+                maxZoom: 19,
+                className: 'vibrant-satellite'
             }).addTo(map);
 
             mapRef.current = map;
@@ -357,6 +358,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
             .neon-polyline { filter: drop-shadow(0 0 8px #E2FF3B); }
             .trail-polyline { filter: drop-shadow(0 0 5px #00f3ff); }
             .leaflet-container { background: #000 !important; }
+            .vibrant-satellite { filter: saturate(1.4) contrast(1.1) brightness(1.1); }
           `;
             document.head.appendChild(style);
         }

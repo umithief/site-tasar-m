@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, Zap, MessageCircle } from 'lucide-react';
 import { BottomNav } from '../layout/BottomNav';
 import { ViewState, User } from '../../types';
+import { UserAvatar } from '../ui/UserAvatar';
+import { useDashboardStore } from '../../store/dashboardStore';
 
 interface MobileLayoutProps {
     children: React.ReactNode;
@@ -79,11 +81,19 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
                     transition={{ duration: 0.3, ease: 'circOut' }}
                 >
                     <div className="flex items-center justify-between h-[44px]"> {/* Explicit Height */}
-                        {/* Logo (Left) */}
-                        <div className="pointer-events-auto" onClick={() => onNavigate('home')}>
-                            <span className="font-display font-black text-2xl tracking-tighter text-white drop-shadow-xl italic">
-                                MOTO<span className="text-[#E2FF3B]">VIBE</span>
-                            </span>
+
+                        <div className="flex items-center gap-3">
+                            {/* Avatar Trigger (Left) */}
+                            <div className="pointer-events-auto" onClick={() => useDashboardStore.getState().toggle()}>
+                                <UserAvatar src={(user as any)?.profileImage || user?.avatar} name={user?.name} size={32} className="ring-2 ring-white/10" />
+                            </div>
+
+                            {/* Logo */}
+                            <div className="pointer-events-auto" onClick={() => onNavigate('home')}>
+                                <span className="font-display font-black text-xl tracking-tighter text-white drop-shadow-xl italic">
+                                    MOTO<span className="text-[#E2FF3B]">VIBE</span>
+                                </span>
+                            </div>
                         </div>
 
                         {/* Actions (Right - Glass Containers) */}

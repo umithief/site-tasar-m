@@ -25,6 +25,8 @@ import { StoryViewerOverlay } from './StoryViewerOverlay';
 import { storyService, StoryGroup } from '../../services/storyService';
 import { RouteSuggestions } from './RouteSuggestions';
 import { CreateRideModal } from '../ride/CreateRideModal'; // Imported
+import { ResponsiveDashboardLayout } from '../dashboard/ResponsiveDashboardLayout';
+import { useDashboardStore } from '../../store/dashboardStore';
 
 
 interface SocialHubProps {
@@ -166,6 +168,152 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
     const notifications = useNotificationStore((state) => state.notifications);
 
 
+    const isMobileDrawerOpen = useDashboardStore((state) => state.isOpen);
+
+    const rightSidebarContent = (
+        <div className="hidden lg:block sticky top-0 h-screen overflow-y-auto custom-scrollbar p-6 space-y-8 bg-[#09090b] transition-colors duration-300">
+            {/* Search Field */}
+            <div className="relative group z-50">
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-moto-accent transition-colors" />
+                <input
+                    type="text"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => searchQuery.length >= 2 && setShowSearchResults(true)}
+                    placeholder="Sürücü, rota veya etkinlik ara..."
+                    className="w-full bg-[#111] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-moto-accent/50 transition-colors shadow-lg"
+                />
+
+                {/* Search Dropdown */}
+                <AnimatePresence>
+                    {showSearchResults && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            className="absolute top-full left-0 right-0 mt-2 bg-[#18181b] border border-white/10 rounded-2xl shadow-xl overflow-hidden max-h-[500px] overflow-y-auto custom-scrollbar"
+                        >
+                            {isSearching ? (
+                                <div className="p-4 text-center text-gray-500 text-xs">Aranıyor...</div>
+                            ) : (searchResults.users?.length > 0 || searchResults.rides?.length > 0 || searchResults.routes?.length > 0) ? (
+                                <div className="py-2">
+                                    {/* Users Section */}
+                                    {searchResults.users?.length > 0 && (
+                                        <div className="mb-2">
+                                            <div className="px-4 py-1 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Kullanıcılar</div>
+                                            {searchResults.users.map((user: any) => (
+                                                <div
+                                                    key={user._id}
+                                                    onClick={() => {
+                                                        onNavigate && onNavigate('public-profile', { _id: user._id });
+                                                        setShowSearchResults(false);
+                                                        setSearchQuery('');
+                                                    }}
+                                                    className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 cursor-pointer transition-colors"
+                                                >
+                                                    <UserAvatar src={user.profileImage} name={user.name} size={32} />
+                                                    <div>
+                                                        <div className="text-white font-bold text-sm">{user.name}</div>
+                                                        <div className="text-gray-500 text-xs">{user.bike || 'Motosiklet Tutkunu'}</div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {/* Rides Section */}
+                                    {searchResults.rides?.length > 0 && (
+                                        <div className="mb-2 border-t border-white/5 pt-2">
+                                            <div className="px-4 py-1 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Sürüşler</div>
+                                            {searchResults.rides.map((ride: any) => (
+                                                <div
+                                                    key={ride._id}
+                                                    onClick={() => {
+                                                        setView('rides'); // Switch to rides tab
+                                                        // Ideally scroll to ride or filter, but for now just switch view
+                                                        setShowSearchResults(false);
+                                                        setSearchQuery('');
+                                                    }}
+                                                    className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 cursor-pointer transition-colors"
+                                                >
+                                                    <div className="w-8 h-8 rounded-full bg-moto-accent/20 flex items-center justify-center text-moto-accent">
+                                                        <Users className="w-4 h-4" />
+                                                    </div>
+                                                    <div>
+                                                        <div className="text-white font-bold text-sm">{ride.title}</div>
+                                                        <div className="text-gray-500 text-xs line-clamp-1">{ride.description}</div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {/* Routes Section */}
+                                    {searchResults.routes?.length > 0 && (
+                                        <div className="mb-2 border-t border-white/5 pt-2">
+                                            <div className="px-4 py-1 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Rotalar</div>
+                                            {searchResults.routes.map((route: any) => (
+                                                <div
+                                                    key={route._id}
+                                                    onClick={() => {
+                                                        setView('routes'); // Switch to routes tab
+                                                        setShowSearchResults(false);
+                                                        setSearchQuery('');
+                                                    }}
+                                                    className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 cursor-pointer transition-colors"
+                                                >
+                                                    <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-500">
+                                                        <Navigation className="w-4 h-4" />
+                                                    </div>
+                                                    <div>
+                                                        <div className="text-white font-bold text-sm">{route.title}</div>
+                                                        <div className="text-gray-500 text-xs">{route.location}</div>
+                                                    </div>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            ) : (
+                                <div className="p-4 text-center text-gray-500 text-xs">Sonuç bulunamadı</div>
+                            )}
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+            </div>
+
+            {/* Trending Riders */}
+            <div className="bg-[#111] rounded-3xl p-6 border border-white/5 shadow-xl relative overflow-hidden">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 blur-[60px] rounded-full pointer-events-none" />
+                <h3 className="font-bold text-white tracking-wide text-sm mb-6 relative z-10">ÖNERİLEN SÜRÜCÜLER</h3>
+                <div className="space-y-5 relative z-10">
+                    {suggestedRiders.slice(0, 4).map(rider => (
+                        <div key={rider._id} className="flex items-center justify-between group/rider">
+                            <div className="flex items-center gap-3 cursor-pointer flex-1" onClick={() => onNavigate && onNavigate('public-profile', { _id: rider._id })}>
+                                <UserAvatar src={rider.avatar} name={rider.name} size={36} />
+                                <div className="overflow-hidden">
+                                    <div className="font-bold text-xs text-white truncate">{rider.name}</div>
+                                    <div className="text-[10px] text-gray-400 truncate">{rider.bike || 'Rider'}</div>
+                                </div>
+                            </div>
+                            <div className="opacity-100 transition-opacity">
+                                <FollowButton targetUserId={rider._id} className="!w-auto !h-7 !px-3 !text-[10px]" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+
+            {/* Footer */}
+            <div className="flex flex-wrap gap-x-4 gap-y-2 text-[10px] text-gray-600 px-2 justify-center">
+                <a href="#" className="hover:text-gray-400">Gizlilik</a>
+                <a href="#" className="hover:text-gray-400">Kurallar</a>
+                <a href="#" className="hover:text-gray-400">Reklam</a>
+                <a href="#" className="hover:text-gray-400">MotoVibe © 2025</a>
+            </div>
+        </div>
+    );
+
     return (
         <div className="bg-transparent min-h-screen text-white pt-0 pb-0 font-sans selection:bg-moto-accent/30 relative transition-colors duration-300">
             {/* Hidden File Input for Stories */}
@@ -196,7 +344,12 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
 
             {/* <div className="fixed top-0 left-0 w-full h-[50vh] bg-gradient-to-b from-purple-900/10 to-transparent pointer-events-none dark:block hidden" /> */}
 
-            <div className="w-full mx-auto grid grid-cols-1 lg:grid-cols-[1fr_380px] gap-0 relative items-start">
+            <ResponsiveDashboardLayout
+                user={currentUser}
+                isMobileDrawerOpen={isMobileDrawerOpen}
+                onCloseMobileDrawer={() => useDashboardStore.getState().close()}
+                rightSidebar={rightSidebarContent}
+            >
 
                 {/* --- MAIN FEED STREAM --- */}
                 <div className="min-h-screen bg-transparent transition-colors duration-300">
@@ -410,17 +563,18 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                         </div>
 
 
-                        {/* Stories Bar (Instagram Style) - Inside Sticky Group */}
-                        {view === 'feed' && (
-                            <div className="mb-0 mx-0 pb-2">
-                                <StoryBar
-                                    storyGroups={storyGroups}
-                                    onStorySelect={setSelectedStoryGroup}
-                                    onAddStory={() => fileInputRef.current?.click()}
-                                />
-                            </div>
-                        )}
                     </div> {/* End of Sticky Group */}
+
+                    {/* Stories Bar (Scrollable) */}
+                    {view === 'feed' && (
+                        <div className="mb-0 mx-0 pb-2">
+                            <StoryBar
+                                storyGroups={storyGroups}
+                                onStorySelect={setSelectedStoryGroup}
+                                onAddStory={() => fileInputRef.current?.click()}
+                            />
+                        </div>
+                    )}
 
 
                     {/* View Switcher Content */}
@@ -457,7 +611,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                 <div className="space-y-6 pt-0 pb-32">
                                     {/* Empty State */}
                                     {!isFetchingNextPage && data?.pages?.[0]?.length === 0 && (
-                                        <div className="flex flex-col items-center justify-center py-20 px-6 text-center">
+                                        <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
                                             <div className="w-20 h-20 bg-zinc-900 rounded-full flex items-center justify-center mb-6 border border-zinc-800">
                                                 <Users className="w-10 h-10 text-moto-accent" />
                                             </div>
@@ -558,181 +712,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                 </div >
 
                 {/* --- RIGHT SIDEBAR (Context) --- */}
-                < div className="hidden lg:block sticky top-0 h-screen overflow-y-auto custom-scrollbar p-6 space-y-8 bg-[#09090b] transition-colors duration-300" >
-
-                    {/* Search Field */}
-                    < div className="relative group z-50" >
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-moto-accent transition-colors" />
-                        <input
-                            type="text"
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            onFocus={() => searchQuery.length >= 2 && setShowSearchResults(true)}
-                            placeholder="Sürücü, rota veya etkinlik ara..."
-                            className="w-full bg-[#111] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-moto-accent/50 transition-colors shadow-lg"
-                        />
-
-                        {/* Search Dropdown */}
-                        <AnimatePresence>
-                            {showSearchResults && (
-                                <motion.div
-                                    initial={{ opacity: 0, y: 10 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: 10 }}
-                                    className="absolute top-full left-0 right-0 mt-2 bg-[#18181b] border border-white/10 rounded-2xl shadow-xl overflow-hidden max-h-[500px] overflow-y-auto custom-scrollbar"
-                                >
-                                    {isSearching ? (
-                                        <div className="p-4 text-center text-gray-500 text-xs">Aranıyor...</div>
-                                    ) : (searchResults.users?.length > 0 || searchResults.rides?.length > 0 || searchResults.routes?.length > 0) ? (
-                                        <div className="py-2">
-                                            {/* Users Section */}
-                                            {searchResults.users?.length > 0 && (
-                                                <div className="mb-2">
-                                                    <div className="px-4 py-1 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Kullanıcılar</div>
-                                                    {searchResults.users.map((user: any) => (
-                                                        <div
-                                                            key={user._id}
-                                                            onClick={() => {
-                                                                onNavigate && onNavigate('public-profile', { _id: user._id });
-                                                                setShowSearchResults(false);
-                                                                setSearchQuery('');
-                                                            }}
-                                                            className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 cursor-pointer transition-colors"
-                                                        >
-                                                            <UserAvatar src={user.profileImage} name={user.name} size={32} />
-                                                            <div>
-                                                                <div className="text-white font-bold text-sm">{user.name}</div>
-                                                                <div className="text-gray-500 text-xs">{user.bike || 'Motosiklet Tutkunu'}</div>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
-
-                                            {/* Rides Section */}
-                                            {searchResults.rides?.length > 0 && (
-                                                <div className="mb-2 border-t border-white/5 pt-2">
-                                                    <div className="px-4 py-1 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Sürüşler</div>
-                                                    {searchResults.rides.map((ride: any) => (
-                                                        <div
-                                                            key={ride._id}
-                                                            onClick={() => {
-                                                                setView('rides'); // Switch to rides tab
-                                                                // Ideally scroll to ride or filter, but for now just switch view
-                                                                setShowSearchResults(false);
-                                                                setSearchQuery('');
-                                                            }}
-                                                            className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 cursor-pointer transition-colors"
-                                                        >
-                                                            <div className="w-8 h-8 rounded-full bg-moto-accent/20 flex items-center justify-center text-moto-accent">
-                                                                <Users className="w-4 h-4" />
-                                                            </div>
-                                                            <div>
-                                                                <div className="text-white font-bold text-sm">{ride.title}</div>
-                                                                <div className="text-gray-500 text-xs line-clamp-1">{ride.description}</div>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
-
-                                            {/* Routes Section */}
-                                            {searchResults.routes?.length > 0 && (
-                                                <div className="mb-2 border-t border-white/5 pt-2">
-                                                    <div className="px-4 py-1 text-[10px] font-bold text-gray-500 uppercase tracking-wider">Rotalar</div>
-                                                    {searchResults.routes.map((route: any) => (
-                                                        <div
-                                                            key={route._id}
-                                                            onClick={() => {
-                                                                setView('routes'); // Switch to routes tab
-                                                                setShowSearchResults(false);
-                                                                setSearchQuery('');
-                                                            }}
-                                                            className="flex items-center gap-3 px-4 py-2 hover:bg-white/5 cursor-pointer transition-colors"
-                                                        >
-                                                            <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-500">
-                                                                <Navigation className="w-4 h-4" />
-                                                            </div>
-                                                            <div>
-                                                                <div className="text-white font-bold text-sm">{route.title}</div>
-                                                                <div className="text-gray-500 text-xs">{route.location}</div>
-                                                            </div>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            )}
-                                        </div>
-                                    ) : (
-                                        <div className="p-4 text-center text-gray-500 text-xs">Sonuç bulunamadı</div>
-                                    )}
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
-                    </div >
-
-                    {/* Live Stats Widget */}
-                    < motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        className="bg-[#111] rounded-3xl p-6 border border-white/5 shadow-xl relative overflow-hidden group"
-                    >
-                        <div className="absolute top-0 right-0 w-24 h-24 bg-moto-accent/10 blur-[40px] rounded-full pointer-events-none group-hover:bg-moto-accent/20 transition-colors" />
-                        <h3 className="font-bold text-white tracking-wide text-sm mb-4 flex items-center gap-2">
-                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
-                            CANLI VERİLER
-                        </h3>
-                        <div className="grid grid-cols-2 gap-4">
-                            <div className="bg-white/5 rounded-xl p-3">
-                                <span className="text-[10px] text-gray-500 uppercase font-bold block mb-1">Anlık Hız</span>
-                                <div className="flex items-baseline gap-1">
-                                    <span className="text-2xl font-mono font-bold text-white">124</span>
-                                    <span className="text-[10px] text-moto-accent font-bold">km/h</span>
-                                </div>
-                            </div>
-                            <div className="bg-white/5 rounded-xl p-3">
-                                <span className="text-[10px] text-gray-500 uppercase font-bold block mb-1">Mesafe</span>
-                                <div className="flex items-baseline gap-1">
-                                    <span className="text-2xl font-mono font-bold text-white">42.8</span>
-                                    <span className="text-[10px] text-moto-accent font-bold">km</span>
-                                </div>
-                            </div>
-                        </div>
-                    </motion.div >
-
-
-
-                    {/* Trending Riders */}
-                    < div className="bg-[#111] rounded-3xl p-6 border border-white/5 shadow-xl relative overflow-hidden" >
-                        <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 blur-[60px] rounded-full pointer-events-none" />
-                        <h3 className="font-bold text-white tracking-wide text-sm mb-6 relative z-10">ÖNERİLEN SÜRÜCÜLER</h3>
-                        <div className="space-y-5 relative z-10">
-                            {suggestedRiders.slice(0, 4).map(rider => (
-                                <div key={rider._id} className="flex items-center justify-between group/rider">
-                                    <div className="flex items-center gap-3 cursor-pointer flex-1" onClick={() => onNavigate && onNavigate('public-profile', { _id: rider._id })}>
-                                        <UserAvatar src={rider.avatar} name={rider.name} size={36} />
-                                        <div className="overflow-hidden">
-                                            <div className="font-bold text-xs text-white truncate">{rider.name}</div>
-                                            <div className="text-[10px] text-gray-400 truncate">{rider.bike || 'Rider'}</div>
-                                        </div>
-                                    </div>
-                                    <div className="opacity-100 transition-opacity">
-                                        <FollowButton targetUserId={rider._id} className="!w-auto !h-7 !px-3 !text-[10px]" />
-                                    </div>
-                                </div>
-                            ))}
-                        </div>
-                    </div >
-
-                    {/* Footer */}
-                    < div className="flex flex-wrap gap-x-4 gap-y-2 text-[10px] text-gray-600 px-2 justify-center" >
-                        <a href="#" className="hover:text-gray-400">Gizlilik</a>
-                        <a href="#" className="hover:text-gray-400">Kurallar</a>
-                        <a href="#" className="hover:text-gray-400">Reklam</a>
-                        <a href="#" className="hover:text-gray-400">MotoVibe © 2025</a>
-                    </div >
-                </div >
-
-            </div >
+            </ResponsiveDashboardLayout>
 
             {/* Direct Messages Overlay */}
 

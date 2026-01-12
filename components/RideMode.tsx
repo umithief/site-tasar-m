@@ -120,8 +120,8 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
         return null;
     });
 
-    const [isGpsEnabled, setIsGpsEnabled] = useState(false); // Default OFF
-    const [gpsStatus, setGpsStatus] = useState<'active' | 'searching' | 'off' | 'denied' | 'unavailable'>('off');
+    const [isGpsEnabled, setIsGpsEnabled] = useState(true); // Default ON
+    const [gpsStatus, setGpsStatus] = useState<'active' | 'searching' | 'off' | 'denied' | 'unavailable'>('searching');
     const [heading, setHeading] = useState(0);
 
     // Physics & Demo
@@ -371,6 +371,21 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
             }
           `;
             document.head.appendChild(style);
+        }
+
+        // IMMEDIATE LOCATION CHECK (Force Update)
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    const { latitude, longitude, heading, speed } = pos.coords;
+                    updatePosition(latitude, longitude, (speed || 0) * 3.6, heading || 0);
+                    if (mapRef.current) {
+                        mapRef.current.setView([latitude, longitude], 17, { animate: true });
+                    }
+                },
+                (err) => console.warn("Initial GPS Error:", err),
+                { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+            );
         }
 
         return () => {

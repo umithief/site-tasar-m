@@ -69,24 +69,13 @@ if (MONGO_URI.includes('14531453')) {
 const upload = multer({ storage: multer.memoryStorage() });
 
 // Middleware
+// Middleware
 app.use(cors({
-    origin: (origin, callback) => {
-        const allowed = [
-            'http://localhost:5173', 'http://127.0.0.1:5173',
-            'https://motovibe.vercel.app',
-            'https://motovibe-frontend.onrender.com',
-            'https://motovibe-api.onrender.com',
-            'https://site-tasar-m.onrender.com'
-        ];
-        // Allow requests with no origin (like mobile apps or curl requests)
-        if (!origin) return callback(null, true);
-
-        if (allowed.includes(origin) || origin.startsWith('http://localhost:') || origin.startsWith('http://192.168.') || origin.endsWith('.onrender.com')) {
-            callback(null, true);
-        } else {
-            origin: ["http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:5173", "http://192.168.1.36:5173", "http://192.168.1.36:3000"],
-                credentials: true
-        }));
+    origin: ["http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:5173", "http://192.168.1.36:5173", "http://192.168.1.36:3000", "https://motovibe.vercel.app", "https://motovibe-frontend.onrender.com"],
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH', 'HEAD'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
+}));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Uploads klasörünü dışarıya aç (Resimlere erişim için)

@@ -326,10 +326,11 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                 inertia: true
             }).setView(initialCenter, 15);
 
-            // SATELLITE MAP (Esri World Imagery) - VIBRANT
-            tileLayerRef.current = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-                attribution: '&copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
-                maxZoom: 19,
+            // SATELLITE MAP (Google Maps Hybrid) - High Reliability & Color
+            // Google Maps Tiles: s = satellite, h = labels
+            tileLayerRef.current = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+                maxZoom: 20,
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
                 className: 'vibrant-satellite'
             }).addTo(map);
 
@@ -359,14 +360,14 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
             .trail-polyline { filter: drop-shadow(0 0 5px #00f3ff); }
             .leaflet-container { background: #1a1a1a !important; }
             
-            /* Aggressively Target Tiles for Color */
-            .leaflet-tile-pane .leaflet-layer .vibrant-satellite {
-                filter: saturate(1.5) contrast(1.1) brightness(1.1) grayscale(0) !important;
-            }
-            
-            /* Fallback: Target all images in the tile pane if class fails */
+            /* NUCLEAR RESET: Force all map tiles to be color first */
             .leaflet-tile-pane img {
-                filter: saturate(1.4) grayscale(0) !important;
+                filter: none !important; 
+            }
+
+            /* Then apply Vibrance explicitly to our layer */
+            .leaflet-tile-pane .leaflet-layer .vibrant-satellite {
+                filter: saturate(1.4) contrast(1.1) brightness(1.1) !important;
             }
           `;
             document.head.appendChild(style);

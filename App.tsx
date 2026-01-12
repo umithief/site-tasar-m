@@ -42,7 +42,7 @@ import { ExhaustLab } from './components/ExhaustLab';
 import { RedlineChallenge } from './components/RedlineChallenge';
 import { LegalGuide } from './components/LegalGuide';
 import { ChatSystem } from './components/chat/ChatSystem';
-import { StolenPool } from './components/services/StolenPool';
+import { StolenPool } from './components/StolenPool';
 import { SocialHub } from './components/social/SocialHub';
 import { authService } from './services/auth';
 import { orderService } from './services/orderService';

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Send, MapPin, Camera, CheckCheck, Search, ArrowLeft, Phone, Video, MoreVertical, Paperclip } from 'lucide-react';
 import { useSocket } from '../../context/SocketContext'; // Assuming context exists
 import { UserAvatar } from '../ui/UserAvatar'; // Assuming component exists
+import { CONFIG } from '../../services/config';
 
 interface ChatSystemProps {
     isOpen?: boolean;
@@ -58,7 +59,7 @@ export const ChatSystem: React.FC<ChatSystemProps> = ({ onClose, currentUserId, 
             if (initialChatId) {
                 // Try to find existing chat with this partner
                 // We need to fetch chats first to check
-                const res = await fetch('/api/chats', {
+                const res = await fetch(`${CONFIG.API_URL}/chats`, {
                     headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                 });
                 const data = await res.json();
@@ -70,7 +71,7 @@ export const ChatSystem: React.FC<ChatSystemProps> = ({ onClose, currentUserId, 
                     } else {
                         // Create temporary chat or initialize it
                         try {
-                            const uRes = await fetch(`/api/users/${initialChatId}`, {
+                            const uRes = await fetch(`${CONFIG.API_URL}/users/${initialChatId}`, {
                                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
                             });
                             const uData = await uRes.json();
@@ -113,7 +114,7 @@ export const ChatSystem: React.FC<ChatSystemProps> = ({ onClose, currentUserId, 
 
     const fetchChats = async () => {
         try {
-            const res = await fetch('/api/chats', {
+            const res = await fetch(`${CONFIG.API_URL}/chats`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` } // Simple token retrieval
             });
             const data = await res.json();
@@ -139,7 +140,7 @@ export const ChatSystem: React.FC<ChatSystemProps> = ({ onClose, currentUserId, 
 
         // Fetch History
         try {
-            const res = await fetch(`/api/chats/${chat.id}/messages`, {
+            const res = await fetch(`${CONFIG.API_URL}/chats/${chat.id}/messages`, {
                 headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
             });
             const data = await res.json();

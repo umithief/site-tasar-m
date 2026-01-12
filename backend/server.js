@@ -84,16 +84,9 @@ app.use(cors({
         if (allowed.includes(origin) || origin.startsWith('http://localhost:') || origin.startsWith('http://192.168.') || origin.endsWith('.onrender.com')) {
             callback(null, true);
         } else {
-            console.warn(`🔥 BLOCKED CORS ORIGIN: ${origin}`);
-            callback(new Error('Not allowed by CORS'));
-        }
-    },
-    credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH', 'HEAD'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
-}));
-
-app.use(express.json({ limit: '50mb' }));
+            origin: ["http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:5173", "http://192.168.1.36:5173", "http://192.168.1.36:3000"],
+                credentials: true
+        }));
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Uploads klasörünü dışarıya aç (Resimlere erişim için)

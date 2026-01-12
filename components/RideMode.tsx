@@ -728,7 +728,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
 
             {/* --- MAP BACKGROUND (Clean & Full) --- */}
             <div className="absolute inset-0 z-0 overflow-hidden">
-                <div ref={mapContainerRef} className="w-full h-full brightness-[0.85] contrast-110 saturate-0" />
+                <div ref={mapContainerRef} className="w-full h-full brightness-100 contrast-110 saturate-100" />
                 {/* Tech Vignette */}
                 <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_70%,rgba(0,0,0,0.9)_100%)] z-10"></div>
 

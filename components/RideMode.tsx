@@ -326,11 +326,10 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                 inertia: true
             }).setView(initialCenter, 15);
 
-            // MODERN DARK MAP (CartoDB Dark Matter)
-            tileLayerRef.current = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '&copy; CARTO',
-                maxZoom: 20,
-                subdomains: 'abcd'
+            // SATELLITE MAP (Esri World Imagery)
+            tileLayerRef.current = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                attribution: '&copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+                maxZoom: 19
             }).addTo(map);
 
             mapRef.current = map;

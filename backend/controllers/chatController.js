@@ -10,7 +10,7 @@ export const getChats = catchAsync(async (req, res, next) => {
     const conversations = await Conversation.find({
         participants: userId
     })
-        .populate('participants', 'name profileImage email username')
+        .populate('participants', 'name avatar email username')
         .sort({ updatedAt: -1 });
 
     // Format for frontend
@@ -28,7 +28,7 @@ export const getChats = catchAsync(async (req, res, next) => {
             id: chat._id,
             partnerId: otherUser._id,
             name: otherUser.name,
-            avatar: otherUser.profileImage,
+            avatar: otherUser.avatar, // Fixed field name
             username: otherUser.username,
             lastMessage: chat.lastMessage,
             lastMessageTime: chat.updatedAt,
@@ -51,7 +51,7 @@ export const getMessages = catchAsync(async (req, res, next) => {
         .sort({ createdAt: -1 }) // Newest first for pagination
         .skip((page - 1) * limit)
         .limit(limit * 1)
-        .populate('senderId', 'name profileImage');
+        .populate('senderId', 'name avatar');
 
     // Mark as read logic could go here or separate endpoint
 

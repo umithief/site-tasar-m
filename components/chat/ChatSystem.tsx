@@ -25,7 +25,7 @@ interface Chat {
 
 interface Message {
     _id: string;
-    senderId: { _id: string; name: string; profileImage: string } | string;
+    senderId: { _id: string; name: string; avatar: string } | string;
     text: string;
     type: 'TEXT' | 'MAP_PIN' | 'IMAGE';
     createdAt: string;

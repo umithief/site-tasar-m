@@ -46,6 +46,7 @@ import './models/Post.js'; // Registers 'SocialPost'
 import './models/Order.js';
 import './models/Message.js';
 import './models/Ride.js'; // Enabled
+import Route from './models/Route.js'; // Imported for seeding
 import MeetupEvent from './models/MeetupEvent.js';
 
 const __filename = fileURLToPath(import.meta.url);
@@ -76,6 +77,7 @@ app.use(cors({
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH', 'HEAD'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']
 }));
+app.use(express.json({ limit: '50mb' })); // Added JSON body parser (CRITICAL)
 app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 // Uploads klasörünü dışarıya aç (Resimlere erişim için)

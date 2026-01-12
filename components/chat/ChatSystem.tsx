@@ -69,29 +69,42 @@ export const ChatSystem: React.FC<ChatSystemProps> = ({ onClose, currentUserId, 
                     if (existing) {
                         handleChatSelect(existing);
                     } else {
-                        // Create temporary chat or initialize it
+                        // Create chat via API to ensure valid ID
                         try {
-                            const uRes = await fetch(`${CONFIG.API_URL}/users/${initialChatId}`, {
-                                headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                            const initRes = await fetch(`${CONFIG.API_URL}/chats/init`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                                },
+                                body: JSON.stringify({ partnerId: initialChatId })
                             });
-                            const uData = await uRes.json();
-                            if (uData.data) {
-                                const tempChat: Chat = {
-                                    id: 'temp',
-                                    partnerId: initialChatId,
-                                    name: uData.data.name,
-                                    avatar: uData.data.profileImage,
-                                    username: uData.data.username,
-                                    lastMessage: '',
-                                    lastMessageTime: new Date().toISOString(),
-                                    unreadCount: 0,
-                                    isOnline: false
-                                };
-                                setActiveChat(tempChat);
-                                setView('CHAT');
+                            const initData = await initRes.json();
+
+                            if (initData.status === 'success') {
+                                const uRes = await fetch(`${CONFIG.API_URL}/users/${initialChatId}`, {
+                                    headers: { 'Authorization': `Bearer ${localStorage.getItem('token')}` }
+                                });
+                                const uData = await uRes.json();
+
+                                if (uData.data) {
+                                    const newChat: Chat = {
+                                        id: initData.data.id, // Valid DB ID
+                                        partnerId: initialChatId,
+                                        name: uData.data.name,
+                                        avatar: uData.data.profileImage,
+                                        username: uData.data.username,
+                                        lastMessage: '',
+                                        lastMessageTime: new Date().toISOString(),
+                                        unreadCount: 0,
+                                        isOnline: false
+                                    };
+                                    setActiveChat(newChat);
+                                    setView('CHAT');
+                                }
                             }
                         } catch (e) {
-                            console.error("User fetch error", e);
+                            console.error("Chat init error", e);
                         }
                     }
                 }

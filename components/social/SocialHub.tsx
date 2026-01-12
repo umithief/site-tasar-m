@@ -722,7 +722,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                         </div>
                         <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                             {activeThreads.map(thread => (
-                                <div key={thread.id} onClick={() => { setInitialChatId(thread.userId); setIsDMOpen(true); }} className="flex items-center gap-3 cursor-pointer hover:bg-white/5 p-2 rounded-xl transition-colors">
+                                <div key={thread.id} onClick={() => onNavigate && onNavigate('messages', { userId: thread.userId })} className="flex items-center gap-3 cursor-pointer hover:bg-white/5 p-2 rounded-xl transition-colors">
                                     <div className="relative">
                                         <UserAvatar src={thread.userAvatar} name={thread.userName} size={40} />
                                         {thread.unreadCount > 0 && <div className="absolute -top-1 -right-1 w-4 h-4 bg-moto-accent rounded-full border-2 border-[#111]" />}
@@ -770,7 +770,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
             </div >
 
             {/* Direct Messages Overlay */}
-            < DirectMessages isOpen={isDMOpen} onClose={() => { setIsDMOpen(false); setInitialChatId(null); }} initialChatUserId={initialChatId || undefined} />
+
 
             {/* Comment Sheet (Shared) */}
             {

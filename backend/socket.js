@@ -58,37 +58,86 @@ export const initSync = (httpServer) => {
         // Join personal room
         socket.join(userId);
 
-        // 3. Private Messaging
+        // 3. Private Messaging (Refactored for Conversation Model)
+        socket.on('join_room', ({ conversationId }) => {
+            if (conversationId) {
+                socket.join(conversationId);
+                // console.log(`⚡ ${username} joined convo: ${conversationId}`);
+            }
+        });
+
         socket.on('send_message', async (data) => {
             try {
-                const { receiverId, content, type = 'text', mediaUrl } = data;
+                // Support both old (userId) and new (conversationId) styles
+                let { conversationId, receiverId, content, text, type = 'TEXT' } = data;
 
-                // Save to DB
-                const newMessage = await Message.create({
-                    sender: userId,
-                    receiver: receiverId,
-                    content,
-                    type,
-                    mediaUrl
-                });
+                const messageText = text || content; // Handle alias
+                const finalType = type.toUpperCase();
 
-                // Emit to Receiver
-                // Option A: Use Room (Preferred)
-                io.to(receiverId).emit('receive_message', {
-                    message: newMessage,
-                    sender: { _id: userId, name: username, avatar: socket.user.avatar }
-                });
+                let convo;
 
-                // Option B: Use Socket Map (Fallback)
-                const receiverSocketId = userSocketMap.get(receiverId);
-                if (receiverSocketId) {
-                    // console.log(`📨 [Socket] Pushing private message to socket: ${receiverSocketId}`);
+                if (conversationId) {
+                    convo = await import('./models/Conversation.js').then(m => m.default.findById(conversationId));
+                    if (!convo) throw new Error('Conversation not found');
+
+                    // Determine receiver from convo participants
+                    receiverId = convo.participants.find(p => p.toString() !== userId).toString();
+                } else if (receiverId) {
+                    // Legacy/Direct fallback: Find or Create Convo
+                    const Conversation = await import('./models/Conversation.js').then(m => m.default);
+                    convo = await Conversation.findOne({
+                        participants: { $all: [userId, receiverId] }
+                    });
+
+                    if (!convo) {
+                        convo = await Conversation.create({
+                            participants: [userId, receiverId],
+                            unreadCounts: { [userId]: 0, [receiverId]: 0 }
+                        });
+                    }
+                    conversationId = convo._id;
                 } else {
-                    console.warn(`⚠️ [Socket] Receiver ${receiverId} not found in socket map (Offline?)`);
+                    throw new Error('No recipient specified');
                 }
 
-                // Ack to Sender
-                socket.emit('message_sent', newMessage);
+                // Save Message
+                const newMessage = await Message.create({
+                    conversationId,
+                    senderId: userId,
+                    receiver: receiverId, // Legacy field
+                    text: messageText,
+                    type: finalType,
+                    isRead: false
+                });
+
+                // Update Conversation
+                if (convo) {
+                    convo.lastMessage = finalType === 'TEXT' ? messageText : `[${finalType}]`;
+                    convo.updatedAt = new Date();
+
+                    // Increment unread for receiver
+                    const currentUnread = convo.unreadCounts.get(receiverId) || 0;
+                    convo.unreadCounts.set(receiverId, currentUnread + 1);
+
+                    await convo.save();
+                }
+
+                // Populate for frontend
+                const populatedMsg = await newMessage.populate('senderId', 'name profileImage');
+
+                // Emit to Conversation Room
+                io.to(conversationId.toString()).emit('receive_message', populatedMsg);
+
+                // Also upd chat list for both users (Real-time sort)
+                const updatePayload = {
+                    conversationId,
+                    lastMessage: convo.lastMessage,
+                    lastMessageTime: convo.updatedAt,
+                    unreadIncrement: true // Hint for frontend to ++
+                };
+
+                io.to(userId).emit('update_chat_list', updatePayload);
+                io.to(receiverId).emit('update_chat_list', updatePayload);
 
             } catch (err) {
                 console.error('Message Send Error:', err);
@@ -97,12 +146,12 @@ export const initSync = (httpServer) => {
         });
 
         // 4. Typing Indicators
-        socket.on('typing_start', ({ receiverId }) => {
-            io.to(receiverId).emit('user_typing', { userId, isTyping: true });
-        });
-
-        socket.on('typing_stop', ({ receiverId }) => {
-            io.to(receiverId).emit('user_typing', { userId, isTyping: false });
+        socket.on('typing_indicator', ({ conversationId, isTyping }) => {
+            socket.to(conversationId).emit('typing_indicator', {
+                conversationId,
+                userId,
+                isTyping
+            });
         });
 
         socket.on('disconnect', () => {

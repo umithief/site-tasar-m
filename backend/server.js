@@ -37,6 +37,7 @@ import uiRoutes from './routes/uiRoutes.js';
 import http from 'http';
 import { initSync } from './socket.js';
 import messageRoutes from './routes/messageRoutes.js';
+import chatRoutes from './routes/chatRoutes.js';
 import notificationRoutes from './routes/notificationRoutes.js';
 
 // Import Models to ensure registration
@@ -563,7 +564,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/posts', postRoutes); // Using postRoutes as requested
 app.use('/api/social', postRoutes); // Map legacy route to new logic
 app.use('/api/reels', reelRoutes);
-app.use('/api/messages', messageRoutes);
+app.use('/api/messages', messageRoutes); // Legacy
+app.use('/api/chats', chatRoutes); // New System
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/showcase', showcaseRoutes);
 app.use('/api/analytics', analyticsRoutes);

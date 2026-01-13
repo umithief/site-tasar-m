@@ -222,6 +222,9 @@ export const App: React.FC = () => {
             // If data has _id, it's a user object or partial user object
             if (data._id) {
                 setViewingUser(data);
+            } else if (data.userId) {
+                // Handle case where specific parts pass userId instead of full object
+                setViewingUser({ _id: data.userId, ...data } as User);
             }
         }
         setView(newView);

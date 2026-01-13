@@ -239,3 +239,46 @@ export const search = catchAsync(async (req, res, next) => {
         hashtags: []
     });
 });
+
+export const deletePost = catchAsync(async (req, res, next) => {
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+        return next(new AppError('Post bulunamadı.', 404));
+    }
+
+    // Check if user is owner or admin (optional admin override)
+    if (post.user.toString() !== req.user.id.toString() && !req.user.isAdmin) {
+        return next(new AppError('Bu işlemi yapmaya yetkiniz yok.', 403));
+    }
+
+    // Use deleteOne or findByIdAndDelete
+    await Post.findByIdAndDelete(req.params.id);
+
+    res.status(204).json({
+        status: 'success',
+        data: null
+    });
+});
+
+export const updatePost = catchAsync(async (req, res, next) => {
+    const { content } = req.body;
+    const post = await Post.findById(req.params.id);
+
+    if (!post) {
+        return next(new AppError('Post bulunamadı.', 404));
+    }
+
+    if (post.user.toString() !== req.user.id.toString()) {
+        return next(new AppError('Bu işlemi yapmaya yetkiniz yok.', 403));
+    }
+
+    if (content) post.content = content;
+
+    await post.save();
+
+    res.status(200).json({
+        status: 'success',
+        data: { post }
+    });
+});

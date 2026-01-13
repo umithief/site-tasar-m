@@ -37,10 +37,10 @@ export const BrandingProvider: React.FC<{ children: React.ReactNode }> = ({ chil
     useEffect(() => {
         const fetchSettings = async () => {
             try {
-                const res = await api.get('/ui/branding');
-                if (res.data) [
-                    setSettings(res.data)
-                ]
+                const res = await api.get('/ui-settings/branding');
+                if (res.data) {
+                    setSettings(res.data);
+                }
             } catch (error) {
                 console.error('Failed to fetch branding settings:', error);
             } finally {
@@ -55,7 +55,7 @@ export const BrandingProvider: React.FC<{ children: React.ReactNode }> = ({ chil
         // Optimistic update
         setSettings(newSettings);
         try {
-            await api.put('/ui/branding', newSettings);
+            await api.put('/ui-settings/branding', newSettings);
         } catch (error) {
             console.error('Failed to update branding settings:', error);
             // Revert changes if needed, but for now we keep optmistic

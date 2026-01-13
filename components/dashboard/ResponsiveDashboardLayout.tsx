@@ -31,7 +31,7 @@ export const ResponsiveDashboardLayout: React.FC<ResponsiveDashboardLayoutProps>
     }, [isMobileDrawerOpen]);
 
     return (
-        <div className="w-full mx-auto grid grid-cols-1 lg:grid-cols-[280px_1fr] xl:grid-cols-[280px_1fr_350px] gap-6 relative items-start max-w-[1800px] px-0 lg:px-6">
+        <div className="w-full mx-auto grid grid-cols-1 lg:grid-cols-[280px_1fr] 2xl:grid-cols-[280px_1fr_350px] gap-6 relative items-start max-w-[1800px] px-0 lg:px-6">
 
             {/* LEFT SIDEBAR (Desktop Only) */}
             <div className="hidden lg:block sticky top-24 h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar space-y-6">
@@ -54,7 +54,7 @@ export const ResponsiveDashboardLayout: React.FC<ResponsiveDashboardLayoutProps>
 
             {/* RIGHT SIDEBAR (Desktop Only, Passed as Prop) */}
             {rightSidebar && (
-                <div className="hidden xl:block sticky top-0 h-screen overflow-y-auto custom-scrollbar p-0 space-y-8 bg-transparent">
+                <div className="hidden 2xl:block sticky top-0 h-screen overflow-y-auto custom-scrollbar p-0 space-y-8 bg-transparent">
                     {rightSidebar}
                 </div>
             )}

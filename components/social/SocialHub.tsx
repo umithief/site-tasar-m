@@ -171,7 +171,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
     const isMobileDrawerOpen = useDashboardStore((state) => state.isOpen);
 
     const rightSidebarContent = (
-        <div className="hidden lg:block sticky top-0 h-screen overflow-y-auto custom-scrollbar p-6 space-y-8 bg-[#09090b] transition-colors duration-300">
+        <div className="p-6 space-y-8 bg-[#09090b] min-h-full transition-colors duration-300">
             {/* Search Field */}
             <div className="relative group z-50">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-moto-accent transition-colors" />

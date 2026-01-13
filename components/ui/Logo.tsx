@@ -11,15 +11,18 @@ export const Logo: React.FC<LogoProps> = ({ variant = 'full', className = "h-8 w
     const { settings, isLoading } = useBranding();
 
     // Default to Velocity if loading or error
-    const activeIcon = LOGO_ASSETS[settings?.iconType || 'VELOCITY'];
+    const activeIcon = LOGO_ASSETS[settings?.iconType || 'VELOCITY']; // Will be undefined if TEXT_ONLY
     const activeFont = FONT_STYLES[settings?.fontStyle || 'TECH'];
 
     // Render Icon based on settings
-    const renderIcon = () => (
-        <g style={{ color: settings?.primaryColor || 'currentColor' }}>
-            {activeIcon.path}
-        </g>
-    );
+    const renderIcon = () => {
+        if (!activeIcon) return null;
+        return (
+            <g style={{ color: settings?.primaryColor || 'currentColor' }}>
+                {activeIcon.path}
+            </g>
+        );
+    };
 
     // Render Text with dynamic font and spacing
     const renderText = (offsetX = 0) => (

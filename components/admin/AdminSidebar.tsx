@@ -1,4 +1,5 @@
 import React from 'react';
+import { Logo } from '../ui/Logo';
 import { LayoutDashboard, Package, ShoppingCart, Users, Grid, Map, Circle, MessageSquare, Image as ImageIcon, Box, Zap, Globe, LogOut, Calendar, Activity, Film, Palette } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -35,15 +36,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, setActive
         >
             {/* Logo Area */}
             <div className={`h-20 flex items-center ${isSidebarOpen ? 'px-8 justify-start' : 'justify-center'} border-b border-white/5`}>
-                <div className="w-10 h-10 bg-[#F2A619] rounded-xl flex items-center justify-center text-black shadow-lg shadow-[#F2A619]/20">
-                    <Zap className="w-6 h-6 fill-current" />
-                </div>
-                {isSidebarOpen && (
-                    <div className="ml-3">
-                        <h1 className="font-display font-black text-xl tracking-tight text-white leading-none">MOTO<span className="text-[#F2A619]">VIBE</span></h1>
-                        <span className="text-[10px] text-gray-500 font-bold tracking-widest uppercase">Admin Panel</span>
-                    </div>
-                )}
+                <Logo variant={isSidebarOpen ? 'full' : 'icon'} className="h-8 text-white w-auto" />
             </div>
 
             {/* Navigation */}

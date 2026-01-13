@@ -75,6 +75,7 @@ import { AIAssistantPage } from './components/AIAssistantPage';
 import { ProductDetail } from './components/ProductDetail';
 import { ProductDetails } from './components/store/ProductDetails';
 import { SocketProvider } from './context/SocketContext';
+import { BrandingProvider } from './context/BrandingContext';
 import { MobileLayout } from './components/mobile/MobileLayout';
 import { MobileExplore } from './components/mobile/MobileExplore';
 import { ReelsPage } from './components/reels/ReelsPage';
@@ -504,198 +505,200 @@ export const App: React.FC = () => {
 
     return (
         <SocketProvider>
-            <div key={animKey} className={`flex flex-col min-h-[100dvh] bg-black text-gray-100 transition-colors duration-1000 ${isFullScreenMode ? 'overflow-hidden h-screen bg-black text-white' : ''}`}>
+            <BrandingProvider>
+                <div key={animKey} className={`flex flex-col min-h-[100dvh] bg-black text-gray-100 transition-colors duration-1000 ${isFullScreenMode ? 'overflow-hidden h-screen bg-black text-white' : ''}`}>
 
-                {!isFullScreenMode && <ScrollProgress />}
+                    {!isFullScreenMode && <ScrollProgress />}
 
-                {/* Global Toast Container */}
-                <ToastContainer toasts={toasts} onRemove={removeToast} />
+                    {/* Global Toast Container */}
+                    <ToastContainer toasts={toasts} onRemove={removeToast} />
 
-                <AnimatePresence>
-                    {flyingItems.map(item => (
-                        <FlyToCart
-                            key={item.id}
-                            image={item.image}
-                            startRect={item.startRect}
-                            targetRect={item.targetRect}
-                            onComplete={() => setFlyingItems(prev => prev.filter(i => i.id !== item.id))}
-                        />
-                    ))}
-
-                    {/* {showTour && <OnboardingTour onComplete={handleTourComplete} />} */}
-                </AnimatePresence>
-
-                {isMobile ? (
-                    isAuthOpen && (
-                        <MobileAuth
-                            onClose={() => setIsAuthOpen(false)}
-                            onSuccess={(user) => {
-                                setIsAuthOpen(false);
-                                if (user) {
-                                    setUser(user);
-                                    useAuthStore.getState().setUser(user); // Sync store
-                                    addToast('success', `Hoş geldin, ${user.name}`);
-                                    navigateTo('home');
-                                } else {
-                                    authService.getCurrentUser().then(u => {
-                                        if (u) {
-                                            setUser(u);
-                                            useAuthStore.getState().setUser(u); // Sync store
-                                            addToast('success', `Hoş geldin, ${u.name}`);
-                                            navigateTo('home');
-                                        }
-                                    });
-                                }
-                            }}
-                        />
-                    )
-                ) : (
-                    <AuthModal
-                        isOpen={isAuthOpen}
-                        onClose={() => setIsAuthOpen(false)}
-                        initialMode={authMode}
-                        onLogin={(u) => { setUser(u); setIsAuthOpen(false); addToast('success', `Hoş geldin, ${u.name}`); }}
-                    />
-                )}
-
-                {isMobile ? (
-                    <CartBottomSheet
-                        isOpen={isCartOpen}
-                        onClose={() => setIsCartOpen(false)}
-                        items={cartItems}
-                        onUpdateQuantity={updateQuantity}
-                        onRemoveItem={(id) => setCartItems(prev => prev.filter(item => item._id !== id))}
-                        onCheckout={handleCheckout}
-                        user={user}
-                    />
-                ) : (
-                    <CartDrawer
-                        isOpen={isCartOpen}
-                        onClose={() => setIsCartOpen(false)}
-                        items={cartItems}
-                        onUpdateQuantity={updateQuantity}
-                        onRemoveItem={(id) => setCartItems(prev => prev.filter(item => item._id !== id))}
-                        onCheckout={handleCheckout}
-                        user={user}
-                    />
-                )}
-
-                <PaymentModal
-                    isOpen={isPaymentOpen}
-                    onClose={() => setIsPaymentOpen(false)}
-                    totalAmount={cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0) * (user?.rank === 'Yol Kaptanı' ? 0.95 : 1)}
-                    items={cartItems}
-                    user={user}
-                    onPaymentComplete={handlePaymentComplete}
-                />
-
-
-
-                {isFullScreenMode ? (
-                    <main className="w-full h-full relative z-10 bg-black">
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={view}
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                exit={{ opacity: 0 }}
-                                transition={{ duration: 0.3 }}
-                                className="w-full h-full"
-                            >
-                                {renderView()}
-                            </motion.div>
-                        </AnimatePresence>
-                    </main>
-                ) : (
-                    <MobileLayout
-                        currentView={view}
-                        onNavigate={navigateTo}
-                        user={user}
-                        cartCount={cartItems.reduce((a, b) => a + b.quantity, 0)}
-                        onOpenAuth={() => setIsAuthOpen(true)}
-                        onOpenFeedback={() => setIsFeedbackOpen(true)}
-
-                    >
-                        {/* Desktop Header & Sidebar */}
-                        <div className="hidden md:block">
-                            {/* Navbar Removed as per user request */}
-                            {/* <Navbar
-                                cartCount={cartItems.reduce((a, b) => a + b.quantity, 0)}
-                                favoritesCount={favoriteIds.length}
-                                onCartClick={() => setIsCartOpen(true)}
-                                onFavoritesClick={() => navigateTo('favorites')}
-                                onSearch={(query) => navigateTo('shop', query)}
-                                onOpenAuth={() => navigateTo('auth')}
-                                onNavigate={navigateTo}
-                                currentView={view}
-                                colorTheme={colorTheme}
-                                onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
-                            /> */}
-
-                            <MotovibeSidebar
-                                activeView={view}
-                                onNavigate={navigateTo}
-                                isExpanded={isSidebarOpen}
-                                onToggleExpand={() => setIsSidebarOpen(!isSidebarOpen)}
+                    <AnimatePresence>
+                        {flyingItems.map(item => (
+                            <FlyToCart
+                                key={item.id}
+                                image={item.image}
+                                startRect={item.startRect}
+                                targetRect={item.targetRect}
+                                onComplete={() => setFlyingItems(prev => prev.filter(i => i.id !== item.id))}
                             />
-                        </div>
+                        ))}
 
-                        {/* Main Content Area - Adjusted for Sidebar */}
-                        <main
-                            className={`min-h-screen pt-20 transition-all duration-300 ${!isMobile
-                                ? (isSidebarOpen ? 'md:pl-[260px]' : 'md:pl-[80px]')
-                                : 'pt-20 pb-20' /* Mobile Padding */
-                                }`}
-                        >
+                        {/* {showTour && <OnboardingTour onComplete={handleTourComplete} />} */}
+                    </AnimatePresence>
+
+                    {isMobile ? (
+                        isAuthOpen && (
+                            <MobileAuth
+                                onClose={() => setIsAuthOpen(false)}
+                                onSuccess={(user) => {
+                                    setIsAuthOpen(false);
+                                    if (user) {
+                                        setUser(user);
+                                        useAuthStore.getState().setUser(user); // Sync store
+                                        addToast('success', `Hoş geldin, ${user.name}`);
+                                        navigateTo('home');
+                                    } else {
+                                        authService.getCurrentUser().then(u => {
+                                            if (u) {
+                                                setUser(u);
+                                                useAuthStore.getState().setUser(u); // Sync store
+                                                addToast('success', `Hoş geldin, ${u.name}`);
+                                                navigateTo('home');
+                                            }
+                                        });
+                                    }
+                                }}
+                            />
+                        )
+                    ) : (
+                        <AuthModal
+                            isOpen={isAuthOpen}
+                            onClose={() => setIsAuthOpen(false)}
+                            initialMode={authMode}
+                            onLogin={(u) => { setUser(u); setIsAuthOpen(false); addToast('success', `Hoş geldin, ${u.name}`); }}
+                        />
+                    )}
+
+                    {isMobile ? (
+                        <CartBottomSheet
+                            isOpen={isCartOpen}
+                            onClose={() => setIsCartOpen(false)}
+                            items={cartItems}
+                            onUpdateQuantity={updateQuantity}
+                            onRemoveItem={(id) => setCartItems(prev => prev.filter(item => item._id !== id))}
+                            onCheckout={handleCheckout}
+                            user={user}
+                        />
+                    ) : (
+                        <CartDrawer
+                            isOpen={isCartOpen}
+                            onClose={() => setIsCartOpen(false)}
+                            items={cartItems}
+                            onUpdateQuantity={updateQuantity}
+                            onRemoveItem={(id) => setCartItems(prev => prev.filter(item => item._id !== id))}
+                            onCheckout={handleCheckout}
+                            user={user}
+                        />
+                    )}
+
+                    <PaymentModal
+                        isOpen={isPaymentOpen}
+                        onClose={() => setIsPaymentOpen(false)}
+                        totalAmount={cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0) * (user?.rank === 'Yol Kaptanı' ? 0.95 : 1)}
+                        items={cartItems}
+                        user={user}
+                        onPaymentComplete={handlePaymentComplete}
+                    />
+
+
+
+                    {isFullScreenMode ? (
+                        <main className="w-full h-full relative z-10 bg-black">
                             <AnimatePresence mode="wait">
                                 <motion.div
                                     key={view}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    animate={{ opacity: 1, y: 0 }}
-                                    exit={{ opacity: 0, y: -20 }}
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
                                     transition={{ duration: 0.3 }}
-                                    className="px-4 md:px-8 max-w-[1600px] mx-auto"
+                                    className="w-full h-full"
                                 >
                                     {renderView()}
                                 </motion.div>
                             </AnimatePresence>
                         </main>
+                    ) : (
+                        <MobileLayout
+                            currentView={view}
+                            onNavigate={navigateTo}
+                            user={user}
+                            cartCount={cartItems.reduce((a, b) => a + b.quantity, 0)}
+                            onOpenAuth={() => setIsAuthOpen(true)}
+                            onOpenFeedback={() => setIsFeedbackOpen(true)}
+
+                        >
+                            {/* Desktop Header & Sidebar */}
+                            <div className="hidden md:block">
+                                {/* Navbar Removed as per user request */}
+                                {/* <Navbar
+                                    cartCount={cartItems.reduce((a, b) => a + b.quantity, 0)}
+                                    favoritesCount={favoriteIds.length}
+                                    onCartClick={() => setIsCartOpen(true)}
+                                    onFavoritesClick={() => navigateTo('favorites')}
+                                    onSearch={(query) => navigateTo('shop', query)}
+                                    onOpenAuth={() => navigateTo('auth')}
+                                    onNavigate={navigateTo}
+                                    currentView={view}
+                                    colorTheme={colorTheme}
+                                    onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
+                                /> */}
+
+                                <MotovibeSidebar
+                                    activeView={view}
+                                    onNavigate={navigateTo}
+                                    isExpanded={isSidebarOpen}
+                                    onToggleExpand={() => setIsSidebarOpen(!isSidebarOpen)}
+                                />
+                            </div>
+
+                            {/* Main Content Area - Adjusted for Sidebar */}
+                            <main
+                                className={`min-h-screen pt-20 transition-all duration-300 ${!isMobile
+                                    ? (isSidebarOpen ? 'md:pl-[260px]' : 'md:pl-[80px]')
+                                    : 'pt-20 pb-20' /* Mobile Padding */
+                                    }`}
+                            >
+                                <AnimatePresence mode="wait">
+                                    <motion.div
+                                        key={view}
+                                        initial={{ opacity: 0, y: 20 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -20 }}
+                                        transition={{ duration: 0.3 }}
+                                        className="px-4 md:px-8 max-w-[1600px] mx-auto"
+                                    >
+                                        {renderView()}
+                                    </motion.div>
+                                </AnimatePresence>
+                            </main>
 
 
 
-                    </MobileLayout>
-                )}
+                        </MobileLayout>
+                    )}
 
-                <ProModal
-                    isOpen={isProModalOpen}
-                    onClose={() => setIsProModalOpen(false)}
-                    onUpgrade={async () => {
-                        // Dummy upgrade handler
-                        await new Promise(r => setTimeout(r, 1000));
-                        addToast('success', 'Tebrikler! Pro üyeliğe geçiş yapıldı.');
-                        setIsProModalOpen(false);
-                    }}
-                />
-                <FeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} user={user} />
+                    <ProModal
+                        isOpen={isProModalOpen}
+                        onClose={() => setIsProModalOpen(false)}
+                        onUpgrade={async () => {
+                            // Dummy upgrade handler
+                            await new Promise(r => setTimeout(r, 1000));
+                            addToast('success', 'Tebrikler! Pro üyeliğe geçiş yapıldı.');
+                            setIsProModalOpen(false);
+                        }}
+                    />
+                    <FeedbackModal isOpen={isFeedbackOpen} onClose={() => setIsFeedbackOpen(false)} user={user} />
 
-                <ProductQuickViewModal
-                    isOpen={!!selectedProduct && view !== 'product-detail'}
-                    product={selectedProduct}
-                    onClose={() => setSelectedProduct(null)}
-                    onAddToCart={(product) => {
-                        addToast('success', `${product.name} sepete eklendi.`);
-                        addToCart(product);
-                        setSelectedProduct(null);
-                        if (isMobile) setIsCartOpen(true);
-                    }}
-                    onViewDetail={(product) => {
-                        setSelectedProduct(null);
-                        navigateTo('product-detail', product);
-                    }}
-                />
+                    <ProductQuickViewModal
+                        isOpen={!!selectedProduct && view !== 'product-detail'}
+                        product={selectedProduct}
+                        onClose={() => setSelectedProduct(null)}
+                        onAddToCart={(product) => {
+                            addToast('success', `${product.name} sepete eklendi.`);
+                            addToCart(product);
+                            setSelectedProduct(null);
+                            if (isMobile) setIsCartOpen(true);
+                        }}
+                        onViewDetail={(product) => {
+                            setSelectedProduct(null);
+                            navigateTo('product-detail', product);
+                        }}
+                    />
 
 
-            </div>
+                </div>
+            </BrandingProvider>
         </SocketProvider>
     );
 };

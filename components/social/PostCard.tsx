@@ -129,26 +129,45 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
                         <AnimatePresence>
                             {showOptions && (
                                 <motion.div
-                                    initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                                    exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                                    className="absolute top-full right-0 mt-2 w-48 bg-[#18181b] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-50 py-1"
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.9 }}
+                                    className="absolute right-0 mt-2 w-48 bg-[#1A1A1A] border border-white/10 rounded-xl shadow-xl overflow-hidden z-20"
                                 >
-                                    {currentUser?._id === post.userId ? (
-                                        <>
-                                            <button
-                                                onClick={() => { setIsEditing(true); setShowOptions(false); }}
-                                                className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors"
-                                            >
-                                                <Edit2 className="w-4 h-4" />
-                                                Düzenle
-                                            </button>
-                                            <button onClick={handleDelete} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-red-500/10 transition-colors">
+                                    {currentUser?._id === post.userId && (
+                                        <button
+                                            onClick={() => {
+                                                if (isEditing) {
+                                                    // Cancel
+                                                    setIsEditing(false);
+                                                    setPostContent(post.content); // Corrected from setEditContent
+                                                } else {
+                                                    setIsEditing(true);
+                                                    setShowOptions(false);
+                                                    // Minimal "toast" or alert could go here
+                                                }
+                                            }}
+                                            className="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/5 flex items-center gap-2"
+                                        >
+                                            <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
+                                                <Edit2 className="w-4 h-4 text-blue-500" />
+                                            </div>
+                                            {isEditing ? 'İptal Et' : 'Düzenle'}
+                                        </button>
+                                    )}
+
+                                    {(currentUser?._id === post.userId || currentUser?.isAdmin) && (
+                                        <button
+                                            onClick={() => handleDelete()}
+                                            className="w-full text-left px-4 py-3 text-sm text-red-500 hover:bg-red-500/10 flex items-center gap-2"
+                                        >
+                                            <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center">
                                                 <Trash2 className="w-4 h-4" />
-                                                Sil
-                                            </button>
-                                        </>
-                                    ) : (
+                                            </div>
+                                            Sil
+                                        </button>
+                                    )}
+                                    {currentUser?._id !== post.userId && (
                                         <>
                                             <button onClick={() => setShowOptions(false)} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors">
                                                 <Bookmark className="w-4 h-4" />

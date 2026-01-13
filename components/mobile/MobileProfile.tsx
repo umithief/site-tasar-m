@@ -8,8 +8,7 @@ import { useFollow } from '../../hooks/useFollow';
 import { UserAvatar } from '../ui/UserAvatar';
 import { UserListModal } from '../UserListModal';
 import { MobilePostCard } from './MobilePostCard';
-
-// ... imports
+import { MobileEditProfile } from './MobileEditProfile';
 import { User } from '../../types';
 
 interface MobileProfileProps {
@@ -45,6 +44,7 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ userId, username: 
 
     // Modal State
     const [isUserListOpen, setIsUserListOpen] = useState(false);
+    const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
     const [userListTitle, setUserListTitle] = useState('');
     const [userListUsers, setUserListUsers] = useState<any[]>([]);
 
@@ -155,6 +155,19 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ userId, username: 
                 onNavigate={onNavigate}
             />
 
+            <AnimatePresence>
+                {isEditProfileOpen && (
+                    <MobileEditProfile
+                        onClose={() => setIsEditProfileOpen(false)}
+                        onSuccess={() => {
+                            setIsEditProfileOpen(false);
+                            // Optional: Refresh profile data
+                            // setProfileUser(prev => ({...updatedUser})) handled by store or refetch
+                        }}
+                    />
+                )}
+            </AnimatePresence>
+
             {/* --- HERO SECTION --- */}
             <div className="relative w-full h-[280px]">
                 {/* Parallax Cover */}
@@ -220,7 +233,7 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ userId, username: 
                     <div className="flex gap-2">
                         {isOwnProfile ? (
                             <button
-                                onClick={() => onNavigate && onNavigate('settings')}
+                                onClick={() => setIsEditProfileOpen(true)}
                                 className="px-6 py-2 rounded-xl bg-white/5 border border-white/10 font-bold text-sm backdrop-blur-md hover:bg-white/10 transition-all"
                             >
                                 Profili Düzenle

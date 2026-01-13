@@ -155,15 +155,17 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                 title="Gönderi Seçenekleri"
             >
                 <div className="space-y-2 p-4">
-                    {currentUserId === post.userId ? (
+                    {currentUserId === post.userId || (currentUser?.isAdmin) ? (
                         <>
-                            <button
-                                onClick={() => { setIsEditing(true); setShowOptions(false); }}
-                                className="w-full flex items-center gap-3 p-4 bg-white/5 text-white rounded-2xl font-bold hover:bg-white/10 transition-colors"
-                            >
-                                <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center"><Edit2 className="w-4 h-4 text-blue-500" /></div>
-                                Düzenle
-                            </button>
+                            {currentUserId === post.userId && (
+                                <button
+                                    onClick={() => { setIsEditing(true); setShowOptions(false); }}
+                                    className="w-full flex items-center gap-3 p-4 bg-white/5 text-white rounded-2xl font-bold hover:bg-white/10 transition-colors"
+                                >
+                                    <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center"><Edit2 className="w-4 h-4 text-blue-500" /></div>
+                                    Düzenle
+                                </button>
+                            )}
                             <button
                                 onClick={handleDelete}
                                 className="w-full flex items-center gap-3 p-4 bg-red-500/10 text-red-500 rounded-2xl font-bold hover:bg-red-500/20 transition-colors"

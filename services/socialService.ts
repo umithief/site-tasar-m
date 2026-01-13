@@ -315,6 +315,27 @@ export const socialService = {
         }
     },
 
+    async updatePost(postId: string, content: string): Promise<SocialPost | null> {
+        const token = localStorage.getItem('token');
+        if (!token) return null;
+
+        try {
+            const response = await fetch(`${CONFIG.API_URL}/social/${postId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({ content })
+            });
+            if (!response.ok) throw new Error('Update Post Failed');
+            return await response.json();
+        } catch (error) {
+            console.error('Update Post Error:', error);
+            return null;
+        }
+    },
+
     // Mock integration with Ride Mode
     async getLatestRideActivity(): Promise<any | null> {
         const token = localStorage.getItem('token');

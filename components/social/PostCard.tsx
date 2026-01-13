@@ -19,9 +19,12 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
     const { user: currentUser } = useAuthStore();
     const [isLiked, setIsLiked] = useState(post.isLiked);
     const [likesCount, setLikesCount] = useState(post.likes);
+    const [postContent, setPostContent] = useState(post.content);
 
     const [showHeartOverlay, setShowHeartOverlay] = useState(false);
     const [showOptions, setShowOptions] = useState(false);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editPending, setEditPending] = useState(false);
 
     const handleLike = async () => {
         if (!currentUser) return;
@@ -45,6 +48,22 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
         if (confirm('Bu gönderiyi silmek istediğine emin misin?')) {
             await socialService.deletePost(post._id);
             setShowOptions(false);
+            // Ideally trigger refresh, but for now we rely on parent or reload
+            window.location.reload();
+        }
+    };
+
+    const handleUpdate = async () => {
+        if (!postContent.trim()) return;
+        setEditPending(true);
+        try {
+            await socialService.updatePost(post._id, postContent);
+            setIsEditing(false);
+            setShowOptions(false);
+        } catch (error) {
+            alert('Güncelleme başarısız.');
+        } finally {
+            setEditPending(false);
         }
     };
 
@@ -117,7 +136,10 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
                                 >
                                     {currentUser?._id === post.userId ? (
                                         <>
-                                            <button onClick={() => { setShowOptions(false); alert('Düzenleme yakında aktif olacak.'); }} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors">
+                                            <button
+                                                onClick={() => { setIsEditing(true); setShowOptions(false); }}
+                                                className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors"
+                                            >
                                                 <Edit2 className="w-4 h-4" />
                                                 Düzenle
                                             </button>
@@ -241,10 +263,36 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
                         </p>
                     </div>
 
-                    <div className="text-sm leading-relaxed">
-                        <span className="font-bold text-white mr-2">{post.userName}</span>
-                        <span className="text-gray-300">{post.content}</span>
-                    </div>
+                    {isEditing ? (
+                        <div className="flex flex-col gap-2">
+                            <textarea
+                                value={postContent}
+                                onChange={(e) => setPostContent(e.target.value)}
+                                className="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm focus:outline-none focus:border-moto-accent resize-none"
+                                rows={3}
+                            />
+                            <div className="flex justify-end gap-2">
+                                <button
+                                    onClick={() => { setIsEditing(false); setPostContent(post.content); }}
+                                    className="text-xs text-gray-400 hover:text-white px-3 py-1"
+                                >
+                                    İptal
+                                </button>
+                                <button
+                                    onClick={handleUpdate}
+                                    disabled={editPending}
+                                    className="text-xs bg-moto-accent text-black font-bold px-3 py-1 rounded hover:opacity-90"
+                                >
+                                    {editPending ? '...' : 'Kaydet'}
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="text-sm leading-relaxed">
+                            <span className="font-bold text-white mr-2">{post.userName}</span>
+                            <span className="text-gray-300">{postContent}</span>
+                        </div>
+                    )}
 
                     <button className="text-xs text-gray-500 font-medium hover:text-gray-300 transition-colors">
                         Tüm {post.comments || 0} yorumu gör

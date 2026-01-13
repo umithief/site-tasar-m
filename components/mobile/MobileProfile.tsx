@@ -7,6 +7,7 @@ import { socialService } from '../../services/socialService';
 import { useFollow } from '../../hooks/useFollow';
 import { UserAvatar } from '../ui/UserAvatar';
 import { UserListModal } from '../UserListModal';
+import { MobilePostCard } from './MobilePostCard';
 
 // ... imports
 import { User } from '../../types';
@@ -338,29 +339,17 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ userId, username: 
             {/* --- CONTENT GRID --- */}
             <div className="min-h-[500px] bg-[#09090b]">
                 {activeTab === 'posts' && (
-                    <div className="p-1">
+                    <div className="pb-24 pt-4">
                         {posts.length > 0 ? (
-                            <div className="columns-2 xs:columns-3 gap-1 space-y-1">
+                            <div className="space-y-4">
                                 {posts.map((post, i) => (
-                                    <motion.div
+                                    <MobilePostCard
                                         key={post._id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        transition={{ delay: i * 0.05 }}
-                                        className="relative aspect-[4/5] bg-[#111] overflow-hidden group cursor-pointer"
-                                        onClick={() => onNavigate && onNavigate('post-detail', { postId: post._id })} // Or open modal
-                                    >
-                                        <img
-                                            src={post.images?.[0] || post.mediaUrl || post.image}
-                                            className="w-full h-full object-cover"
-                                            loading="lazy"
-                                        />
-                                        {post.images && post.images.length > 1 && (
-                                            <div className="absolute top-2 right-2">
-                                                <Grid className="w-4 h-4 text-white drop-shadow-md" />
-                                            </div>
-                                        )}
-                                    </motion.div>
+                                        post={post}
+                                        currentUserId={currentUser?._id}
+                                        onNavigate={onNavigate}
+                                    // onCommentClick could be improved to open a sheet, or rely on card handling
+                                    />
                                 ))}
                             </div>
                         ) : (

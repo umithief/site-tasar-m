@@ -26,6 +26,10 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
             ? (post.likes as number)
             : (Array.isArray(post.likes) ? (post.likes as any[]).length : 0)
     );
+    const [postContent, setPostContent] = useState(post.content);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editPending, setEditPending] = useState(false);
+
     const [lastTap, setLastTap] = useState(0);
     const [showHeartOverlay, setShowHeartOverlay] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
@@ -83,6 +87,20 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
             await socialService.deletePost(post._id);
             // In a real app, we'd invalidate queries here
             setShowOptions(false);
+            window.location.reload();
+        }
+    };
+
+    const handleUpdate = async () => {
+        if (!postContent.trim()) return;
+        setEditPending(true);
+        try {
+            await socialService.updatePost(post._id, postContent);
+            setIsEditing(false);
+        } catch (error) {
+            alert('Güncelleme başarısız.');
+        } finally {
+            setEditPending(false);
         }
     };
 
@@ -106,6 +124,7 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                     className="flex items-center gap-3 pointer-events-auto"
                     onClick={(e) => {
                         e.stopPropagation();
+                        // Direct navigation to profile
                         if (onNavigate && post.userId) {
                             const target = (post as any).username || post.userId;
                             onNavigate('public-profile', { userId: post.userId, username: target });
@@ -139,7 +158,7 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                     {currentUserId === post.userId ? (
                         <>
                             <button
-                                onClick={() => { setShowOptions(false); alert('Düzenleme yakında aktif olacak.'); }}
+                                onClick={() => { setIsEditing(true); setShowOptions(false); }}
                                 className="w-full flex items-center gap-3 p-4 bg-white/5 text-white rounded-2xl font-bold hover:bg-white/10 transition-colors"
                             >
                                 <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center"><Edit2 className="w-4 h-4 text-blue-500" /></div>
@@ -276,22 +295,47 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
 
                 {/* Caption */}
                 <div className="">
-                    <p className="text-sm text-gray-300 leading-relaxed">
-                        <span className="font-bold text-white mr-2 text-[15px]">{post.userName}</span>
-                        {isExpanded ? post.content : (
-                            <>
-                                <span className="line-clamp-2 inline">{post.content}</span>
-                                {post.content && post.content.length > 80 && (
-                                    <button
-                                        onClick={() => setIsExpanded(true)}
-                                        className="text-gray-500 text-xs ml-1 font-bold"
-                                    >
-                                        devamını oku
-                                    </button>
-                                )}
-                            </>
-                        )}
-                    </p>
+                    {isEditing ? (
+                        <div className="flex flex-col gap-2 mb-2">
+                            <textarea
+                                value={postContent}
+                                onChange={(e) => setPostContent(e.target.value)}
+                                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-moto-accent resize-none min-h-[80px]"
+                            />
+                            <div className="flex justify-end gap-2">
+                                <button
+                                    onClick={() => { setIsEditing(false); setPostContent(post.content); }}
+                                    className="px-4 py-2 bg-white/5 rounded-lg text-xs font-bold text-gray-400"
+                                >
+                                    İptal
+                                </button>
+                                <button
+                                    onClick={handleUpdate}
+                                    disabled={editPending}
+                                    className="px-4 py-2 bg-moto-accent rounded-lg text-xs font-bold text-black"
+                                >
+                                    {editPending ? '...' : 'Kaydet'}
+                                </button>
+                            </div>
+                        </div>
+                    ) : (
+                        <p className="text-sm text-gray-300 leading-relaxed">
+                            <span className="font-bold text-white mr-2 text-[15px]">{post.userName}</span>
+                            {isExpanded ? postContent : (
+                                <>
+                                    <span className="line-clamp-2 inline">{postContent}</span>
+                                    {postContent && postContent.length > 80 && (
+                                        <button
+                                            onClick={() => setIsExpanded(true)}
+                                            className="text-gray-500 text-xs ml-1 font-bold"
+                                        >
+                                            devamını oku
+                                        </button>
+                                    )}
+                                </>
+                            )}
+                        </p>
+                    )}
                 </div>
 
                 {/* Time */}

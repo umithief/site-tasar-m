@@ -13,6 +13,7 @@ import {
 import { notify } from '../../services/notificationService';
 import { useFollow } from '../../hooks/useFollow';
 import { UserListModal } from '../UserListModal';
+import { PostCard } from '../social/PostCard';
 
 interface WebProfileProps {
     user: User | SocialProfile;
@@ -323,33 +324,16 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user: initialUser, onNav
                                 initial="hidden"
                                 animate="visible"
                                 exit={{ opacity: 0 }}
-                                className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 pb-24"
+                                className="space-y-6 max-w-2xl mx-auto pb-24"
                             >
                                 {posts.map((post) => (
-                                    <motion.div
-                                        key={post._id}
-                                        variants={itemVariants}
-                                        className="relative aspect-square bg-[#111] rounded-xl overflow-hidden group cursor-pointer border border-white/5"
-                                        onClick={() => onNavigate && onNavigate('post-detail' as any, { postId: post._id })}
-                                    >
-                                        <img src={post.images?.[0] || 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?q=80&w=800&auto=format&fit=crop'} alt="Post" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
-
-                                        {/* Hover Overlay */}
-                                        <div className="absolute inset-0 bg-black/60 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-center gap-4">
-                                            <div className="flex items-center gap-6">
-                                                <div className="flex items-center gap-2 text-white font-bold">
-                                                    <Heart className="w-6 h-6 fill-white" />
-                                                    {post.likes}
-                                                </div>
-                                                <div className="flex items-center gap-2 text-white font-bold">
-                                                    <MessageCircle className="w-6 h-6 fill-white" />
-                                                    {post.comments}
-                                                </div>
-                                            </div>
-                                            <span className="text-moto-accent text-xs font-black uppercase tracking-widest border-b border-moto-accent pb-1">Gönderiyi Gör</span>
-                                        </div>
-                                    </motion.div>
+                                    <PostCard key={post._id} post={post} />
                                 ))}
+                                {posts.length === 0 && (
+                                    <div className="text-center py-20 text-gray-500">
+                                        <p className="text-lg">Henüz gönderi yok.</p>
+                                    </div>
+                                )}
                             </motion.div>
                         )}
 

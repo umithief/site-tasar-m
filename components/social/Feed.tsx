@@ -44,7 +44,8 @@ export const Feed: React.FC<FeedProps> = ({ onNavigate }) => {
     return (
         <div className="max-w-7xl mx-auto px-4 lg:px-0 py-8 relative">
             {/* Theme Toggle Overlay for Desktop Feed */}
-            <div className="absolute top-8 right-0 lg:right-[-60px] hidden xl:block">
+            {/* Theme Toggle Overlay for Desktop Feed - Now visible on all screens */}
+            <div className="absolute top-0 right-4 lg:right-0 z-50">
                 <ThemeToggle />
             </div>
 

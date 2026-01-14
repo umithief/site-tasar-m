@@ -80,262 +80,225 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
     };
 
     return (
+
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            transition={{ type: "spring", stiffness: 40, damping: 15 }}
-            className="w-full max-w-[500px] mx-auto bg-black border border-white/10 shadow-[0_0_40px_-10px_rgba(0,0,0,0.5)] rounded-[2.5rem] overflow-hidden group relative mb-6"
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ type: "spring", stiffness: 40, damping: 20 }}
+            className="w-full max-w-[550px] mx-auto mb-12 group relative perspective-1000"
         >
-            {/* Header - Cinematic Gradient & Glass */}
-            <div className="absolute top-0 left-0 right-0 p-5 z-20 bg-gradient-to-b from-black/90 via-black/50 to-transparent pointer-events-none">
-                <div className="flex items-center justify-between pointer-events-auto">
-                    <div className="flex items-center gap-3.5">
-                        <div className="relative cursor-pointer group/avatar">
-                            <div className="absolute -inset-0.5 bg-gradient-to-tr from-moto-accent to-yellow-200 rounded-full opacity-75 blur-[2px] group-hover/avatar:opacity-100 transition-opacity" />
-                            <div className="relative p-[2px] rounded-full bg-black">
-                                <img
-                                    src={post.userAvatar || 'https://via.placeholder.com/40'}
-                                    alt={post.userName}
-                                    className="w-10 h-10 rounded-full object-cover border border-white/10"
-                                />
-                            </div>
-                            {/* Pro Badge */}
-                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-moto-accent rounded-full border-[3px] border-black flex items-center justify-center">
-                                <Zap className="w-2 h-2 text-black fill-current" />
-                            </div>
-                        </div>
-                        <div>
-                            <div className="flex items-center gap-2 mb-0.5">
-                                <h3 className="text-sm font-bold text-white tracking-wide shadow-black drop-shadow-md">{post.userName || 'Anonim'}</h3>
+            {/* Main Card Container - Ultra Minimal */}
+            <div className="relative bg-[#0A0A0A] rounded-[2.5rem] overflow-hidden shadow-2xl transition-all duration-500 hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)] border border-white/5">
+
+                {/* 1. Cinematic Header (Floating) */}
+                <div className="absolute top-0 left-0 right-0 p-6 z-30 bg-gradient-to-b from-black/80 via-black/40 to-transparent pointer-events-none">
+                    <div className="flex items-center justify-between pointer-events-auto">
+                        <div className="flex items-center gap-4">
+                            {/* Avatar with Glow Ring */}
+                            <div className="relative group/avatar cursor-pointer">
+                                <div className="absolute -inset-2 bg-moto-accent/20 rounded-full blur-md opacity-0 group-hover/avatar:opacity-100 transition-opacity duration-500" />
+                                <div className="relative p-[2px] rounded-full bg-gradient-to-br from-moto-accent to-white/10">
+                                    <div className="p-[2px] bg-black rounded-full">
+                                        <img
+                                            src={post.userAvatar || 'https://via.placeholder.com/40'}
+                                            alt={post.userName}
+                                            className="w-10 h-10 rounded-full object-cover"
+                                        />
+                                    </div>
+                                </div>
                                 {post.userRank && (
-                                    <div className="px-1.5 py-[1px] bg-white/10 backdrop-blur-md rounded text-[9px] font-black text-moto-accent tracking-wider border border-white/5 shadow-sm">
-                                        {post.userRank}
+                                    <div className="absolute -bottom-1 -right-1 bg-black text-moto-accent text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded border border-moto-accent">
+                                        PRO
                                     </div>
                                 )}
                             </div>
-                            <p className="text-[10px] text-gray-300 font-medium flex items-center gap-1.5 drop-shadow-md">
-                                {post.location && (
-                                    <>
-                                        <span className="flex items-center gap-0.5"><MapPin className="w-3 h-3 text-moto-accent" /> {post.location}</span>
-                                        <span className="w-0.5 h-0.5 rounded-full bg-gray-400" />
-                                    </>
-                                )}
-                                <span className="opacity-80">{formatDistanceToNow(new Date(post.timestamp || Date.now()), { addSuffix: true, locale: tr })}</span>
-                            </p>
+
+                            {/* User Info */}
+                            <div>
+                                <h3 className="text-sm font-bold text-white tracking-wide font-display drop-shadow-md">
+                                    {post.userName}
+                                </h3>
+                                <div className="flex items-center gap-2 text-[10px] text-gray-300 font-medium tracking-wide opacity-90">
+                                    {post.location && (
+                                        <span className="flex items-center gap-1">
+                                            <MapPin className="w-2.5 h-2.5 text-moto-accent" />
+                                            {post.location}
+                                        </span>
+                                    )}
+                                    <span className="w-0.5 h-0.5 rounded-full bg-gray-500" />
+                                    <span>
+                                        {formatDistanceToNow(new Date(post.timestamp || Date.now()), { addSuffix: true, locale: tr })}
+                                    </span>
+                                </div>
+                            </div>
                         </div>
-                    </div>
 
-                    <div className="relative">
-                        <button
-                            onClick={() => setShowOptions(!showOptions)}
-                            className="w-9 h-9 rounded-full bg-black/40 backdrop-blur-md border border-white/5 flex items-center justify-center text-white hover:bg-white/10 hover:border-white/20 transition-all"
-                        >
-                            <MoreVertical className="w-4 h-4" />
-                        </button>
-
-                        <AnimatePresence>
-                            {showOptions && (
-                                <motion.div
-                                    initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                                    exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                                    className="absolute right-0 mt-2 w-52 bg-[#151515] border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-30"
-                                >
-                                    <div className="p-1 space-y-0.5">
-                                        {currentUser?._id === post.userId && (
-                                            <button
-                                                onClick={() => {
-                                                    if (isEditing) {
-                                                        setIsEditing(false);
-                                                        setPostContent(post.content);
-                                                    } else {
-                                                        setIsEditing(true);
-                                                        setShowOptions(false);
-                                                    }
-                                                }}
-                                                className="w-full text-left px-3 py-2.5 text-xs font-medium text-gray-300 hover:bg-white/5 hover:text-white rounded-xl flex items-center gap-3 transition-colors"
-                                            >
-                                                <Edit2 className="w-4 h-4" />
-                                                {isEditing ? 'İptal Et' : 'Düzenle'}
-                                            </button>
-                                        )}
-
-                                        {(currentUser?._id === post.userId || currentUser?.isAdmin) && (
-                                            <button
-                                                onClick={() => handleDelete()}
-                                                className="w-full text-left px-3 py-2.5 text-xs font-medium text-red-500 hover:bg-red-500/10 rounded-xl flex items-center gap-3 transition-colors"
-                                            >
-                                                <Trash2 className="w-4 h-4" />
-                                                Sil
-                                            </button>
-                                        )}
-                                        {currentUser?._id !== post.userId && (
-                                            <>
-                                                <button onClick={() => setShowOptions(false)} className="w-full flex items-center gap-3 px-3 py-2.5 text-xs font-medium text-gray-300 hover:bg-white/5 hover:text-white rounded-xl transition-colors">
-                                                    <Bookmark className="w-4 h-4" />
-                                                    Kaydet
+                        {/* Options Menu */}
+                        <div className="relative">
+                            <button
+                                onClick={() => setShowOptions(!showOptions)}
+                                className="w-10 h-10 rounded-full bg-white/5 backdrop-blur-md border border-white/10 flex items-center justify-center text-white hover:bg-white/10 transition-colors"
+                            >
+                                <MoreVertical className="w-4 h-4" />
+                            </button>
+                            <AnimatePresence>
+                                {showOptions && (
+                                    <motion.div
+                                        initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                                        animate={{ opacity: 1, scale: 1, y: 0 }}
+                                        exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                                        className="absolute right-0 mt-2 w-48 bg-[#111] border border-white/10 rounded-2xl shadow-xl overflow-hidden z-40"
+                                    >
+                                        <div className="p-1">
+                                            {currentUser?._id === post.userId ? (
+                                                <>
+                                                    <button onClick={() => { setIsEditing(true); setShowOptions(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-gray-300 hover:bg-white/5 rounded-xl transition-colors">
+                                                        <Edit2 className="w-3.5 h-3.5" /> Düzenle
+                                                    </button>
+                                                    <button onClick={handleDelete} className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-red-500 hover:bg-red-500/10 rounded-xl transition-colors">
+                                                        <Trash2 className="w-3.5 h-3.5" /> Sil
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <button onClick={handleReport} className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-red-400 hover:bg-red-500/10 rounded-xl transition-colors">
+                                                    <Flag className="w-3.5 h-3.5" /> Bildir
                                                 </button>
-                                                <button onClick={handleShareToAdmin} className="w-full flex items-center gap-3 px-3 py-2.5 text-xs font-medium text-moto-accent hover:bg-moto-accent/10 rounded-xl transition-colors">
-                                                    <ShieldAlert className="w-4 h-4" />
-                                                    Admine İlet
-                                                </button>
-                                                <button onClick={handleReport} className="w-full flex items-center gap-3 px-3 py-2.5 text-xs font-medium text-red-400 hover:bg-red-500/10 rounded-xl transition-colors">
-                                                    <Flag className="w-4 h-4" />
-                                                    Şikayet Et
-                                                </button>
-                                            </>
-                                        )}
-                                    </div>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                                            )}
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
                     </div>
                 </div>
-            </div>
 
-            {/* Content / Media with Parallax-like feel */}
-            <div
-                className="relative aspect-[4/5] w-full bg-[#050505] overflow-hidden cursor-pointer group/image"
-                onDoubleClick={handleLike}
-            >
-                {post.images && post.images.length > 0 ? (
-                    <img
-                        src={post.images[0]}
-                        alt="Post"
-                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover/image:scale-105"
-                    />
-                ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-700 gap-4 bg-zinc-900/50">
-                        <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center">
-                            <Zap className="w-6 h-6 text-gray-600" />
+                {/* 2. Immersive Media Content */}
+                <div
+                    className="relative w-full aspect-[4/5] bg-neutral-900 cursor-pointer overflow-hidden"
+                    onDoubleClick={handleLike}
+                >
+                    {post.images && post.images.length > 0 ? (
+                        <motion.img
+                            whileHover={{ scale: 1.03 }}
+                            transition={{ duration: 0.7, ease: "easeOut" }}
+                            src={post.images[0]}
+                            alt="Post"
+                            className="w-full h-full object-cover"
+                        />
+                    ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center gap-4 bg-zinc-900/50">
+                            <div className="w-20 h-20 rounded-full bg-white/5 border border-white/5 flex items-center justify-center">
+                                <Zap className="w-8 h-8 text-gray-600" />
+                            </div>
                         </div>
-                        <span className="font-display font-bold text-sm tracking-widest uppercase opacity-50">Görsel Yok</span>
-                    </div>
-                )}
-
-                {/* Heart Animation Overlay */}
-                <AnimatePresence>
-                    {showHeartOverlay && (
-                        <motion.div
-                            initial={{ scale: 0.5, opacity: 0, rotate: -20 }}
-                            animate={{ scale: 1.2, opacity: 1, rotate: 0 }}
-                            exit={{ scale: 0.8, opacity: 0 }}
-                            transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                            className="absolute inset-0 flex items-center justify-center pointer-events-none z-30"
-                        >
-                            <Heart className="w-28 h-28 text-moto-accent fill-moto-accent drop-shadow-[0_0_30px_rgba(242,166,25,0.6)]" />
-                        </motion.div>
                     )}
-                </AnimatePresence>
 
-                {/* Image Gradient Bottom */}
-                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black via-black/60 to-transparent opacity-80" />
-            </div>
+                    {/* Bottom Gradient for Text Legibility */}
+                    <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none" />
 
-            {/* Micro-Interaction Bar */}
-            <div className="px-5 pt-3 pb-6 bg-black relative z-20 -mt-4 rounded-t-3xl border-t border-white/5">
-                <div className="flex items-center justify-between mb-5">
-                    <div className="flex items-center gap-5">
-                        <motion.button
-                            whileTap={{ scale: 0.8 }}
-                            onClick={handleLike}
-                            className={`group flex items-center gap-2 outline-none`}
-                        >
-                            <div className={`p-2 rounded-full transition-all duration-300 ${isLiked ? 'bg-moto-accent/10' : 'bg-transparent group-hover:bg-white/5'}`}>
-                                <Heart
-                                    className={`w-6 h-6 transition-all duration-300 ${isLiked ? 'text-moto-accent fill-moto-accent scale-110 drop-shadow-[0_0_10px_rgba(242,166,25,0.5)]' : 'text-white group-hover:text-gray-200'}`}
-                                    strokeWidth={isLiked ? 0 : 2}
-                                />
-                            </div>
-                        </motion.button>
+                    {/* Heart Animation */}
+                    <AnimatePresence>
+                        {showHeartOverlay && (
+                            <motion.div
+                                initial={{ scale: 0.5, opacity: 0 }}
+                                animate={{ scale: 1, opacity: 1 }}
+                                exit={{ scale: 0.8, opacity: 0 }}
+                                className="absolute inset-0 flex items-center justify-center pointer-events-none z-40"
+                            >
+                                <Heart className="w-32 h-32 text-moto-accent fill-moto-accent drop-shadow-[0_0_50px_rgba(242,166,25,0.8)]" />
+                            </motion.div>
+                        )}
+                    </AnimatePresence>
+
+                    {/* Media Stats Overlay */}
+                    <div className="absolute bottom-6 right-6 flex items-center gap-3 z-30">
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-black/40 backdrop-blur-md rounded-full border border-white/10 text-xs font-bold text-white">
+                            <Heart className={`w-3.5 h-3.5 ${isLiked ? 'text-moto-accent fill-moto-accent' : 'text-white'}`} />
+                            {likesCount}
+                        </div>
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-black/40 backdrop-blur-md rounded-full border border-white/10 text-xs font-bold text-white">
+                            <MessageCircle className="w-3.5 h-3.5 text-white" />
+                            {post.comments}
+                        </div>
+                    </div>
+                </div>
+
+                {/* 3. Action & Info Area */}
+                <div className="relative p-6 bg-black z-20">
+                    {/* Action Bar */}
+                    <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center gap-2">
+                            <motion.button
+                                whileTap={{ scale: 0.9 }}
+                                onClick={handleLike}
+                                className={`h-12 px-6 rounded-2xl flex items-center gap-2 text-sm font-bold transition-all ${isLiked ? 'bg-moto-accent text-black shadow-[0_0_20px_rgba(242,166,25,0.3)]' : 'bg-white/5 text-white hover:bg-white/10 border border-white/5'}`}
+                            >
+                                <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
+                                <span className="hidden sm:inline">{isLiked ? 'Beğenildi' : 'Beğen'}</span>
+                            </motion.button>
+
+                            <motion.button
+                                whileTap={{ scale: 0.9 }}
+                                onClick={() => onComment && onComment(post._id)}
+                                className="h-12 w-12 sm:w-auto sm:px-6 rounded-2xl bg-white/5 border border-white/5 text-white hover:bg-white/10 flex items-center justify-center gap-2 transition-all"
+                            >
+                                <MessageCircle className="w-4 h-4" />
+                                <span className="hidden sm:inline">Yorum Yap</span>
+                            </motion.button>
+
+                            <motion.button
+                                whileTap={{ scale: 0.9 }}
+                                className="h-12 w-12 rounded-2xl bg-white/5 border border-white/5 text-white hover:bg-white/10 flex items-center justify-center transition-all"
+                            >
+                                <Share2 className="w-4 h-4" />
+                            </motion.button>
+                        </div>
 
                         <motion.button
                             whileTap={{ scale: 0.9 }}
-                            onClick={() => onComment && onComment(post._id)}
-                            className="group outline-none"
+                            className="h-12 w-12 rounded-2xl bg-transparent border border-white/10 text-gray-400 hover:text-white hover:border-white/30 flex items-center justify-center transition-all"
                         >
-                            <div className="p-2 rounded-full bg-transparent group-hover:bg-white/5 transition-all">
-                                <MessageCircle className="w-6 h-6 text-white group-hover:text-moto-accent transition-colors" strokeWidth={2} />
-                            </div>
-                        </motion.button>
-
-                        <motion.button
-                            whileTap={{ scale: 0.9 }}
-                            className="group outline-none"
-                        >
-                            <div className="p-2 rounded-full bg-transparent group-hover:bg-white/5 transition-all">
-                                <Share2 className="w-6 h-6 text-white group-hover:text-moto-accent transition-colors" strokeWidth={2} />
-                            </div>
+                            <Bookmark className="w-4 h-4" />
                         </motion.button>
                     </div>
 
-                    <motion.button whileTap={{ scale: 0.9 }} className="group outline-none">
-                        <div className="p-2 rounded-full bg-transparent group-hover:bg-white/5 transition-all">
-                            <Bookmark className="w-6 h-6 text-white group-hover:text-moto-accent transition-colors" strokeWidth={2} />
-                        </div>
-                    </motion.button>
-                </div>
-
-                {/* Info Text */}
-                <div className="space-y-3">
-                    {/* Likes */}
-                    <div className="flex items-center gap-2.5 pl-1">
-                        {likesCount > 0 && (
-                            <div className="flex -space-x-2">
-                                {[1, 2, 3].slice(0, Math.min(3, likesCount)).map(i => (
-                                    <div key={i} className="w-5 h-5 rounded-full bg-zinc-800 border border-black ring-1 ring-white/10 flex items-center justify-center">
-                                        <Zap className="w-2.5 h-2.5 text-gray-500" />
-                                    </div>
-                                ))}
+                    {/* Content Text */}
+                    <div className="space-y-3">
+                        {isEditing ? (
+                            <div className="bg-white/5 p-4 rounded-2xl border border-white/10">
+                                <textarea
+                                    value={postContent}
+                                    onChange={(e) => setPostContent(e.target.value)}
+                                    className="w-full bg-black/50 border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-moto-accent resize-none placeholder-gray-600 mb-3"
+                                    rows={3}
+                                />
+                                <div className="flex justify-end gap-2">
+                                    <button onClick={() => { setIsEditing(false); setPostContent(post.content); }} className="text-xs font-bold text-gray-500 hover:text-white px-4 py-2">
+                                        İptal
+                                    </button>
+                                    <button onClick={handleUpdate} className="text-xs bg-moto-accent text-black font-black uppercase tracking-wider px-6 py-2 rounded-xl">
+                                        Kaydet
+                                    </button>
+                                </div>
+                            </div>
+                        ) : (
+                            <div className="text-sm leading-relaxed text-gray-300">
+                                <span className="font-bold text-white font-display mr-2 text-base">{post.userName}</span>
+                                {postContent}
                             </div>
                         )}
-                        <p className="text-sm font-medium text-white">
-                            <span className="font-bold font-display">{likesCount.toLocaleString()}</span> beğenme
-                        </p>
+
+                        {/* View all comments */}
+                        {post.comments > 0 && (
+                            <button className="text-xs text-gray-500 font-bold hover:text-white transition-colors">
+                                {post.comments} yorumun tümünü gör
+                            </button>
+                        )}
                     </div>
-
-                    {/* Caption */}
-                    {isEditing ? (
-                        <div className="flex flex-col gap-3 mt-2 bg-white/5 p-3 rounded-xl border border-white/10">
-                            <textarea
-                                value={postContent}
-                                onChange={(e) => setPostContent(e.target.value)}
-                                className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white text-sm focus:outline-none focus:border-moto-accent resize-none placeholder-gray-600"
-                                rows={3}
-                                placeholder="Açıklama yaz..."
-                            />
-                            <div className="flex justify-end gap-2">
-                                <button
-                                    onClick={() => { setIsEditing(false); setPostContent(post.content); }}
-                                    className="text-xs font-bold text-gray-400 hover:text-white px-3 py-2 rounded-lg hover:bg-white/5 transition-colors"
-                                >
-                                    Vazgeç
-                                </button>
-                                <button
-                                    onClick={handleUpdate}
-                                    disabled={editPending}
-                                    className="text-xs bg-moto-accent text-black font-black uppercase tracking-wider px-4 py-2 rounded-lg hover:brightness-110 transition-all flex items-center gap-2"
-                                >
-                                    {editPending ? <span className="animate-spin">⌛</span> : <Save className="w-3 h-3" />}
-                                    Kaydet
-                                </button>
-                            </div>
-                        </div>
-                    ) : (
-                        <div className="text-sm leading-relaxed pl-1 text-gray-300">
-                            <span className="font-bold text-white mr-2 font-display">{post.userName}</span>
-                            {postContent}
-                        </div>
-                    )}
-
-                    {post.comments && post.comments > 0 ? (
-                        <button className="text-xs text-gray-500 font-medium hover:text-moto-accent transition-colors pl-1">
-                            {post.comments} yorumu gör
-                        </button>
-                    ) : null}
                 </div>
             </div>
         </motion.div>
     );
+
 };

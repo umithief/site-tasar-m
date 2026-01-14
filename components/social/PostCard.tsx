@@ -232,9 +232,9 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
                             <motion.button
                                 whileTap={{ scale: 0.9 }}
                                 onClick={handleLike}
-                                className={`h-12 px-6 rounded-2xl flex items-center gap-2 text-sm font-bold transition-all ${isLiked ? 'bg-moto-accent text-black shadow-[0_0_20px_rgba(242,166,25,0.3)]' : 'bg-white/5 text-white hover:bg-white/10 border border-white/5'}`}
+                                className={`h-12 px-6 rounded-2xl flex items-center gap-2 text-sm font-bold transition-all border ${isLiked ? 'bg-moto-accent/10 border-moto-accent/50 text-moto-accent shadow-[0_0_20px_rgba(226,255,59,0.2)]' : 'bg-white/5 border-white/5 text-white hover:bg-white/10'}`}
                             >
-                                <Heart className={`w-4 h-4 ${isLiked ? 'fill-current' : ''}`} />
+                                <Heart className={`w-4 h-4 ${isLiked ? 'fill-current drop-shadow-md' : ''}`} />
                                 <span className="hidden sm:inline">{isLiked ? 'Beğenildi' : 'Beğen'}</span>
                             </motion.button>
 

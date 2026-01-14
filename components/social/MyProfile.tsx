@@ -392,7 +392,7 @@ export const MyProfile: React.FC = () => {
                                 {activeTab === 'posts' && (
                                     <div className="max-w-2xl px-1">
                                         {MOCK_MY_POSTS.map(post => (
-                                            <PostCard key={post._id} post={post} currentUserId={user._id} />
+                                            <PostCard key={post._id} post={post} />
                                         ))}
                                     </div>
                                 )}

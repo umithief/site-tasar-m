@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, MessageCircle, Share2, Zap, Gauge, Navigation, MapPin, MoreVertical, Trash2, Edit2, Flag, ShieldAlert, Bookmark } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Zap, Gauge, Navigation, MapPin, MoreVertical, Trash2, Edit2, Flag, ShieldAlert, Bookmark, Save } from 'lucide-react';
 import { SocialPost } from '../../types';
 import { useAuthStore } from '../../store/authStore';
 import { socialService } from '../../services/socialService';
@@ -81,47 +81,55 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
-            transition={{ type: "spring", stiffness: 50, damping: 20 }}
-            className="w-full max-w-[500px] mx-auto bg-[#0A0A0A] border border-white/5 shadow-2xl rounded-3xl overflow-hidden group relative"
+            transition={{ type: "spring", stiffness: 40, damping: 15 }}
+            className="w-full max-w-[500px] mx-auto bg-black border border-white/10 shadow-[0_0_40px_-10px_rgba(0,0,0,0.5)] rounded-[2.5rem] overflow-hidden group relative mb-6"
         >
-            {/* Header - Floating Glass */}
-            <div className="absolute top-0 left-0 right-0 p-4 z-20 bg-gradient-to-b from-black/90 via-black/40 to-transparent">
-                <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <div className="relative cursor-pointer">
-                            <div className="p-[2px] rounded-full bg-gradient-to-tr from-moto-accent to-transparent">
+            {/* Header - Cinematic Gradient & Glass */}
+            <div className="absolute top-0 left-0 right-0 p-5 z-20 bg-gradient-to-b from-black/90 via-black/50 to-transparent pointer-events-none">
+                <div className="flex items-center justify-between pointer-events-auto">
+                    <div className="flex items-center gap-3.5">
+                        <div className="relative cursor-pointer group/avatar">
+                            <div className="absolute -inset-0.5 bg-gradient-to-tr from-moto-accent to-yellow-200 rounded-full opacity-75 blur-[2px] group-hover/avatar:opacity-100 transition-opacity" />
+                            <div className="relative p-[2px] rounded-full bg-black">
                                 <img
                                     src={post.userAvatar || 'https://via.placeholder.com/40'}
                                     alt={post.userName}
-                                    className="w-10 h-10 rounded-full object-cover border-2 border-black"
+                                    className="w-10 h-10 rounded-full object-cover border border-white/10"
                                 />
                             </div>
                             {/* Pro Badge */}
-                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-moto-accent rounded-full border-2 border-black flex items-center justify-center">
-                                <Zap className="w-2.5 h-2.5 text-black fill-current" />
+                            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-moto-accent rounded-full border-[3px] border-black flex items-center justify-center">
+                                <Zap className="w-2 h-2 text-black fill-current" />
                             </div>
                         </div>
                         <div>
-                            <div className="flex items-center gap-2">
-                                <h3 className="text-sm font-bold text-white tracking-wide">{post.userName || 'Anonim'}</h3>
-                                <div className="px-1.5 py-[2px] bg-white/10 backdrop-blur-md rounded text-[9px] font-black text-moto-accent tracking-wider flex items-center gap-1 border border-white/5">
-                                    PRO
-                                </div>
+                            <div className="flex items-center gap-2 mb-0.5">
+                                <h3 className="text-sm font-bold text-white tracking-wide shadow-black drop-shadow-md">{post.userName || 'Anonim'}</h3>
+                                {post.userRank && (
+                                    <div className="px-1.5 py-[1px] bg-white/10 backdrop-blur-md rounded text-[9px] font-black text-moto-accent tracking-wider border border-white/5 shadow-sm">
+                                        {post.userRank}
+                                    </div>
+                                )}
                             </div>
-                            <p className="text-[11px] text-gray-400 font-medium flex items-center gap-1">
-                                <span>{post.location || 'Konum Yok'}</span>
-                                <span className="w-0.5 h-0.5 rounded-full bg-gray-500" />
-                                <span>{formatDistanceToNow(new Date(post.timestamp || Date.now()), { addSuffix: true, locale: tr })}</span>
+                            <p className="text-[10px] text-gray-300 font-medium flex items-center gap-1.5 drop-shadow-md">
+                                {post.location && (
+                                    <>
+                                        <span className="flex items-center gap-0.5"><MapPin className="w-3 h-3 text-moto-accent" /> {post.location}</span>
+                                        <span className="w-0.5 h-0.5 rounded-full bg-gray-400" />
+                                    </>
+                                )}
+                                <span className="opacity-80">{formatDistanceToNow(new Date(post.timestamp || Date.now()), { addSuffix: true, locale: tr })}</span>
                             </p>
                         </div>
                     </div>
+
                     <div className="relative">
                         <button
                             onClick={() => setShowOptions(!showOptions)}
-                            className="w-8 h-8 rounded-full bg-white/5 backdrop-blur-sm flex items-center justify-center text-white hover:bg-white/10 transition-colors"
+                            className="w-9 h-9 rounded-full bg-black/40 backdrop-blur-md border border-white/5 flex items-center justify-center text-white hover:bg-white/10 hover:border-white/20 transition-all"
                         >
                             <MoreVertical className="w-4 h-4" />
                         </button>
@@ -129,60 +137,56 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
                         <AnimatePresence>
                             {showOptions && (
                                 <motion.div
-                                    initial={{ opacity: 0, scale: 0.9 }}
-                                    animate={{ opacity: 1, scale: 1 }}
-                                    exit={{ opacity: 0, scale: 0.9 }}
-                                    className="absolute right-0 mt-2 w-48 bg-[#1A1A1A] border border-white/10 rounded-xl shadow-xl overflow-hidden z-20"
+                                    initial={{ opacity: 0, scale: 0.9, y: 10 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.9, y: 10 }}
+                                    className="absolute right-0 mt-2 w-52 bg-[#151515] border border-white/10 rounded-2xl shadow-2xl overflow-hidden z-30"
                                 >
-                                    {currentUser?._id === post.userId && (
-                                        <button
-                                            onClick={() => {
-                                                if (isEditing) {
-                                                    // Cancel
-                                                    setIsEditing(false);
-                                                    setPostContent(post.content); // Corrected from setEditContent
-                                                } else {
-                                                    setIsEditing(true);
-                                                    setShowOptions(false);
-                                                    // Minimal "toast" or alert could go here
-                                                }
-                                            }}
-                                            className="w-full text-left px-4 py-3 text-sm text-gray-300 hover:bg-white/5 flex items-center gap-2"
-                                        >
-                                            <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
-                                                <Edit2 className="w-4 h-4 text-blue-500" />
-                                            </div>
-                                            {isEditing ? 'İptal Et' : 'Düzenle'}
-                                        </button>
-                                    )}
+                                    <div className="p-1 space-y-0.5">
+                                        {currentUser?._id === post.userId && (
+                                            <button
+                                                onClick={() => {
+                                                    if (isEditing) {
+                                                        setIsEditing(false);
+                                                        setPostContent(post.content);
+                                                    } else {
+                                                        setIsEditing(true);
+                                                        setShowOptions(false);
+                                                    }
+                                                }}
+                                                className="w-full text-left px-3 py-2.5 text-xs font-medium text-gray-300 hover:bg-white/5 hover:text-white rounded-xl flex items-center gap-3 transition-colors"
+                                            >
+                                                <Edit2 className="w-4 h-4" />
+                                                {isEditing ? 'İptal Et' : 'Düzenle'}
+                                            </button>
+                                        )}
 
-                                    {(currentUser?._id === post.userId || currentUser?.isAdmin) && (
-                                        <button
-                                            onClick={() => handleDelete()}
-                                            className="w-full text-left px-4 py-3 text-sm text-red-500 hover:bg-red-500/10 flex items-center gap-2"
-                                        >
-                                            <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center">
+                                        {(currentUser?._id === post.userId || currentUser?.isAdmin) && (
+                                            <button
+                                                onClick={() => handleDelete()}
+                                                className="w-full text-left px-3 py-2.5 text-xs font-medium text-red-500 hover:bg-red-500/10 rounded-xl flex items-center gap-3 transition-colors"
+                                            >
                                                 <Trash2 className="w-4 h-4" />
-                                            </div>
-                                            Sil
-                                        </button>
-                                    )}
-                                    {currentUser?._id !== post.userId && (
-                                        <>
-                                            <button onClick={() => setShowOptions(false)} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors">
-                                                <Bookmark className="w-4 h-4" />
-                                                Kaydet
+                                                Sil
                                             </button>
-                                            <button onClick={handleShareToAdmin} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-moto-accent hover:bg-moto-accent/10 transition-colors">
-                                                <ShieldAlert className="w-4 h-4" />
-                                                Admine İlet
-                                            </button>
-                                            <button onClick={handleReport} className="w-full flex items-center gap-2 px-4 py-2 text-sm text-red-500 hover:bg-red-500/10 transition-colors">
-                                                <Flag className="w-4 h-4" />
-                                                Şikayet Et
-                                            </button>
-                                        </>
-                                    )}
+                                        )}
+                                        {currentUser?._id !== post.userId && (
+                                            <>
+                                                <button onClick={() => setShowOptions(false)} className="w-full flex items-center gap-3 px-3 py-2.5 text-xs font-medium text-gray-300 hover:bg-white/5 hover:text-white rounded-xl transition-colors">
+                                                    <Bookmark className="w-4 h-4" />
+                                                    Kaydet
+                                                </button>
+                                                <button onClick={handleShareToAdmin} className="w-full flex items-center gap-3 px-3 py-2.5 text-xs font-medium text-moto-accent hover:bg-moto-accent/10 rounded-xl transition-colors">
+                                                    <ShieldAlert className="w-4 h-4" />
+                                                    Admine İlet
+                                                </button>
+                                                <button onClick={handleReport} className="w-full flex items-center gap-3 px-3 py-2.5 text-xs font-medium text-red-400 hover:bg-red-500/10 rounded-xl transition-colors">
+                                                    <Flag className="w-4 h-4" />
+                                                    Şikayet Et
+                                                </button>
+                                            </>
+                                        )}
+                                    </div>
                                 </motion.div>
                             )}
                         </AnimatePresence>
@@ -190,16 +194,23 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
                 </div>
             </div>
 
-            {/* Content / Media */}
+            {/* Content / Media with Parallax-like feel */}
             <div
-                className="relative aspect-[4/5] w-full bg-[#111] overflow-hidden cursor-pointer"
+                className="relative aspect-[4/5] w-full bg-[#050505] overflow-hidden cursor-pointer group/image"
                 onDoubleClick={handleLike}
             >
                 {post.images && post.images.length > 0 ? (
-                    <img src={post.images[0]} alt="Post" className="w-full h-full object-cover" />
+                    <img
+                        src={post.images[0]}
+                        alt="Post"
+                        className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover/image:scale-105"
+                    />
                 ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-600 font-display">
-                        Görsel Yok
+                    <div className="w-full h-full flex flex-col items-center justify-center text-gray-700 gap-4 bg-zinc-900/50">
+                        <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center">
+                            <Zap className="w-6 h-6 text-gray-600" />
+                        </div>
+                        <span className="font-display font-bold text-sm tracking-widest uppercase opacity-50">Görsel Yok</span>
                     </div>
                 )}
 
@@ -207,119 +218,122 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
                 <AnimatePresence>
                     {showHeartOverlay && (
                         <motion.div
-                            initial={{ scale: 0, opacity: 0 }}
-                            animate={{ scale: 1.5, opacity: 1 }}
-                            exit={{ scale: 0, opacity: 0 }}
-                            transition={{ duration: 0.5 }}
-                            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+                            initial={{ scale: 0.5, opacity: 0, rotate: -20 }}
+                            animate={{ scale: 1.2, opacity: 1, rotate: 0 }}
+                            exit={{ scale: 0.8, opacity: 0 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                            className="absolute inset-0 flex items-center justify-center pointer-events-none z-30"
                         >
-                            <Heart className="w-24 h-24 text-white fill-white drop-shadow-2xl opacity-80" />
+                            <Heart className="w-28 h-28 text-moto-accent fill-moto-accent drop-shadow-[0_0_30px_rgba(242,166,25,0.6)]" />
                         </motion.div>
                     )}
                 </AnimatePresence>
+
+                {/* Image Gradient Bottom */}
+                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black via-black/60 to-transparent opacity-80" />
             </div>
 
-            {/* Premium Footer */}
-            <div className="p-4 bg-[#0A0A0A] relative z-20">
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-4">
+            {/* Micro-Interaction Bar */}
+            <div className="px-5 pt-3 pb-6 bg-black relative z-20 -mt-4 rounded-t-3xl border-t border-white/5">
+                <div className="flex items-center justify-between mb-5">
+                    <div className="flex items-center gap-5">
                         <motion.button
                             whileTap={{ scale: 0.8 }}
                             onClick={handleLike}
-                            className={`group flex items-center gap-2 transition-colors`}
+                            className={`group flex items-center gap-2 outline-none`}
                         >
-                            <Heart
-                                className={`w-7 h-7 transition-all ${isLiked ? 'text-red-500 fill-red-500' : 'text-white group-hover:text-gray-300'}`}
-                                strokeWidth={1.5}
-                            />
+                            <div className={`p-2 rounded-full transition-all duration-300 ${isLiked ? 'bg-moto-accent/10' : 'bg-transparent group-hover:bg-white/5'}`}>
+                                <Heart
+                                    className={`w-6 h-6 transition-all duration-300 ${isLiked ? 'text-moto-accent fill-moto-accent scale-110 drop-shadow-[0_0_10px_rgba(242,166,25,0.5)]' : 'text-white group-hover:text-gray-200'}`}
+                                    strokeWidth={isLiked ? 0 : 2}
+                                />
+                            </div>
                         </motion.button>
 
                         <motion.button
                             whileTap={{ scale: 0.9 }}
                             onClick={() => onComment && onComment(post._id)}
-                            className="group"
+                            className="group outline-none"
                         >
-                            <MessageCircle className="w-7 h-7 text-white group-hover:text-gray-300 transition-colors" strokeWidth={1.5} />
+                            <div className="p-2 rounded-full bg-transparent group-hover:bg-white/5 transition-all">
+                                <MessageCircle className="w-6 h-6 text-white group-hover:text-moto-accent transition-colors" strokeWidth={2} />
+                            </div>
                         </motion.button>
 
                         <motion.button
                             whileTap={{ scale: 0.9 }}
-                            className="group"
+                            className="group outline-none"
                         >
-                            <Share2 className="w-7 h-7 text-white group-hover:text-gray-300 transition-colors" strokeWidth={1.5} />
+                            <div className="p-2 rounded-full bg-transparent group-hover:bg-white/5 transition-all">
+                                <Share2 className="w-6 h-6 text-white group-hover:text-moto-accent transition-colors" strokeWidth={2} />
+                            </div>
                         </motion.button>
                     </div>
 
-                    {/* Save/Bookmark */}
-                    <motion.button whileTap={{ scale: 0.9 }}>
-                        <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="24"
-                            height="24"
-                            viewBox="0 0 24 24"
-                            fill="none"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            className="w-7 h-7 text-white hover:text-gray-300 transition-colors"
-                        >
-                            <path d="m19 21-7-4-7 4V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16z" />
-                        </svg>
+                    <motion.button whileTap={{ scale: 0.9 }} className="group outline-none">
+                        <div className="p-2 rounded-full bg-transparent group-hover:bg-white/5 transition-all">
+                            <Bookmark className="w-6 h-6 text-white group-hover:text-moto-accent transition-colors" strokeWidth={2} />
+                        </div>
                     </motion.button>
                 </div>
 
-                {/* Likes & Caption */}
-                <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                        <div className="flex -space-x-2">
-                            {[1, 2, 3].map(i => (
-                                <div key={i} className="w-5 h-5 rounded-full bg-gray-800 border-[1.5px] border-[#0A0A0A]"></div>
-                            ))}
-                        </div>
+                {/* Info Text */}
+                <div className="space-y-3">
+                    {/* Likes */}
+                    <div className="flex items-center gap-2.5 pl-1">
+                        {likesCount > 0 && (
+                            <div className="flex -space-x-2">
+                                {[1, 2, 3].slice(0, Math.min(3, likesCount)).map(i => (
+                                    <div key={i} className="w-5 h-5 rounded-full bg-zinc-800 border border-black ring-1 ring-white/10 flex items-center justify-center">
+                                        <Zap className="w-2.5 h-2.5 text-gray-500" />
+                                    </div>
+                                ))}
+                            </div>
+                        )}
                         <p className="text-sm font-medium text-white">
-                            <span className="font-bold">{likesCount.toLocaleString()}</span> beğeni
+                            <span className="font-bold font-display">{likesCount.toLocaleString()}</span> beğenme
                         </p>
                     </div>
 
+                    {/* Caption */}
                     {isEditing ? (
-                        <div className="flex flex-col gap-2">
+                        <div className="flex flex-col gap-3 mt-2 bg-white/5 p-3 rounded-xl border border-white/10">
                             <textarea
                                 value={postContent}
                                 onChange={(e) => setPostContent(e.target.value)}
-                                className="w-full bg-white/5 border border-white/10 rounded-lg p-2 text-white text-sm focus:outline-none focus:border-moto-accent resize-none"
+                                className="w-full bg-black/50 border border-white/10 rounded-lg p-3 text-white text-sm focus:outline-none focus:border-moto-accent resize-none placeholder-gray-600"
                                 rows={3}
+                                placeholder="Açıklama yaz..."
                             />
                             <div className="flex justify-end gap-2">
                                 <button
                                     onClick={() => { setIsEditing(false); setPostContent(post.content); }}
-                                    className="text-xs text-gray-400 hover:text-white px-3 py-1"
+                                    className="text-xs font-bold text-gray-400 hover:text-white px-3 py-2 rounded-lg hover:bg-white/5 transition-colors"
                                 >
-                                    İptal
+                                    Vazgeç
                                 </button>
                                 <button
                                     onClick={handleUpdate}
                                     disabled={editPending}
-                                    className="text-xs bg-moto-accent text-black font-bold px-3 py-1 rounded hover:opacity-90"
+                                    className="text-xs bg-moto-accent text-black font-black uppercase tracking-wider px-4 py-2 rounded-lg hover:brightness-110 transition-all flex items-center gap-2"
                                 >
-                                    {editPending ? '...' : 'Kaydet'}
+                                    {editPending ? <span className="animate-spin">⌛</span> : <Save className="w-3 h-3" />}
+                                    Kaydet
                                 </button>
                             </div>
                         </div>
                     ) : (
-                        <div className="text-sm leading-relaxed">
-                            <span className="font-bold text-white mr-2">{post.userName}</span>
-                            <span className="text-gray-300">{postContent}</span>
+                        <div className="text-sm leading-relaxed pl-1 text-gray-300">
+                            <span className="font-bold text-white mr-2 font-display">{post.userName}</span>
+                            {postContent}
                         </div>
                     )}
 
-                    <button className="text-xs text-gray-500 font-medium hover:text-gray-300 transition-colors">
-                        Tüm {post.comments || 0} yorumu gör
-                    </button>
-
-                    <p className="text-[10px] text-gray-600 uppercase tracking-wider font-medium">
-                        {formatDistanceToNow(new Date(post.timestamp || Date.now()), { addSuffix: true, locale: tr })}
-                    </p>
+                    {post.comments && post.comments > 0 ? (
+                        <button className="text-xs text-gray-500 font-medium hover:text-moto-accent transition-colors pl-1">
+                            {post.comments} yorumu gör
+                        </button>
+                    ) : null}
                 </div>
             </div>
         </motion.div>

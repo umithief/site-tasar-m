@@ -20,7 +20,10 @@ export const ResponsivePostCard: React.FC<ResponsivePostCardProps> = memo((props
 
             {/* Desktop View */}
             <div className="hidden md:block">
-                <PostCard {...props} onCommentClick={props.onCommentClick} />
+                <PostCard
+                    post={props.post}
+                    onComment={() => props.onCommentClick?.()}
+                />
             </div>
         </div>
     );

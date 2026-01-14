@@ -172,7 +172,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
     const isMobileDrawerOpen = useDashboardStore((state) => state.isOpen);
 
     const rightSidebarContent = (
-        <div className="p-6 space-y-8 bg-[#09090b] min-h-full transition-colors duration-300">
+        <div className="p-6 space-y-8 bg-gray-50 dark:bg-[#09090b] min-h-full transition-colors duration-300">
             {/* Search Field */}
             <div className="relative group z-50">
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 group-focus-within:text-moto-accent transition-colors" />
@@ -182,7 +182,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onFocus={() => searchQuery.length >= 2 && setShowSearchResults(true)}
                     placeholder="Sürücü, rota veya etkinlik ara..."
-                    className="w-full bg-[#111] border border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-moto-accent/50 transition-colors shadow-lg"
+                    className="w-full bg-white dark:bg-[#111] border border-gray-200 dark:border-white/5 rounded-2xl py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-moto-accent/50 transition-colors shadow-lg text-gray-900 dark:text-white"
                 />
 
                 {/* Search Dropdown */}
@@ -192,7 +192,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                             initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
                             exit={{ opacity: 0, y: 10 }}
-                            className="absolute top-full left-0 right-0 mt-2 bg-[#18181b] border border-white/10 rounded-2xl shadow-xl overflow-hidden max-h-[500px] overflow-y-auto custom-scrollbar"
+                            className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-[#18181b] border border-gray-200 dark:border-white/10 rounded-2xl shadow-xl overflow-hidden max-h-[500px] overflow-y-auto custom-scrollbar"
                         >
                             {isSearching ? (
                                 <div className="p-4 text-center text-gray-500 text-xs">Aranıyor...</div>
@@ -316,7 +316,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
     );
 
     return (
-        <div className="bg-transparent min-h-screen text-white pt-0 pb-0 font-sans selection:bg-moto-accent/30 relative transition-colors duration-300">
+        <div className="bg-transparent min-h-screen text-gray-900 dark:text-white pt-0 pb-0 font-sans selection:bg-moto-accent/30 relative transition-colors duration-300">
             {/* Hidden File Input for Stories */}
             <input
                 type="file"
@@ -432,7 +432,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                                 initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                                className="absolute top-full right-0 mt-2 w-80 bg-[#18181b] border border-white/10 rounded-xl shadow-2xl overflow-hidden z-[60]"
+                                                className="absolute top-full right-0 mt-2 w-80 bg-white dark:bg-[#18181b] border border-gray-200 dark:border-white/10 rounded-xl shadow-2xl overflow-hidden z-[60]"
                                             >
                                                 <div className="p-3 border-b border-white/5 flex justify-between items-center">
                                                     <h4 className="font-bold text-sm">Bildirimler</h4>
@@ -447,7 +447,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                                                         <Bell className="w-4 h-4 text-moto-accent" />
                                                                     </div>
                                                                     <div>
-                                                                        <p className="text-xs text-zinc-300 leading-snug">{notif.message}</p>
+                                                                        <p className="text-xs text-gray-700 dark:text-zinc-300 leading-snug">{notif.message}</p>
                                                                         <span className="text-[10px] text-zinc-500 mt-1 block">{notif.time || 'Az önce'}</span>
                                                                     </div>
                                                                 </div>
@@ -684,7 +684,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                         </>
                     ) : (
                         /* WIDE VIEW AREA (Map/Routes/Events) */
-                        <div className="h-[calc(100vh-140px)] sticky top-28 bg-[#111] rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl">
+                        <div className="h-[calc(100vh-140px)] sticky top-28 bg-white dark:bg-[#111] rounded-[2.5rem] border border-gray-200 dark:border-white/5 overflow-hidden shadow-2xl">
                             {view === 'vlog' && <MotoVlogMap user={currentUser} isEmbedded onNavigate={() => { }} onAddToCart={() => { }} onProductClick={() => { }} />}
                             {view === 'routes' && <RouteExplorer user={currentUser} isEmbedded />}
                             {view === 'events' && <MotoMeetup user={currentUser} isEmbedded />}

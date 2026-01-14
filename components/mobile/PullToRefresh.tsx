@@ -55,8 +55,8 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({ onRefresh, childre
             }
         };
 
-        container.addEventListener('touchstart', handleTouchStart);
-        container.addEventListener('touchmove', handleTouchMove);
+        container.addEventListener('touchstart', handleTouchStart, { passive: true });
+        container.addEventListener('touchmove', handleTouchMove, { passive: true });
         container.addEventListener('touchend', handleTouchEnd);
 
         return () => {

@@ -4,7 +4,7 @@ import {
     Settings, Camera, Edit2, MapPin, Grid, Bookmark, Bell,
     Plus, Save, X, Trophy, Zap, Wind, Cpu, LogOut,
     LayoutDashboard, Shield, Bike, Image as ImageIcon,
-    Activity, Calendar, MessageSquare, Play, Film, Share2, Heart, Award, Wrench
+    Activity, Calendar, MessageSquare, Play, Film, Share2, Heart, Award, Wrench, Gauge, ArrowUpRight
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { UserAvatar } from '../ui/UserAvatar';
@@ -214,43 +214,91 @@ export const MyProfile: React.FC = () => {
     const GarageCard: React.FC<{ bike?: UserBike, isAdd?: boolean }> = ({ bike, isAdd }) => {
         if (isAdd) return (
             <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={{ scale: 0.99 }}
+                whileTap={{ scale: 0.97 }}
                 onClick={() => notify.info('Yeni araç ekleme yakında!')}
-                className="group relative h-[280px] w-full rounded-xl border border-dashed border-zinc-800 hover:border-zinc-600 hover:bg-zinc-900/30 transition-all flex flex-col items-center justify-center gap-3 text-zinc-600 hover:text-zinc-300"
+                className="group relative h-[380px] w-full rounded-[2rem] border border-dashed border-zinc-800 bg-[#0A0A0A] hover:bg-zinc-900/30 hover:border-moto-accent/40 transition-all flex flex-col items-center justify-center overflow-hidden"
             >
-                <div className="p-3 rounded-full bg-zinc-900 group-hover:bg-zinc-800 transition-colors">
-                    <Plus className="w-6 h-6" />
+                {/* Blueprint Grid Background */}
+                <div className="absolute inset-0 opacity-10 bg-[linear-gradient(rgba(242,166,25,0.1)_1px,transparent_1px),linear-gradient(90deg,rgba(242,166,25,0.1)_1px,transparent_1px)] bg-[size:20px_20px]" />
+
+                <div className="relative z-10 w-16 h-16 rounded-full bg-zinc-900 border border-white/10 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:border-moto-accent transition-all duration-500 shadow-[0_0_30px_rgba(0,0,0,0.5)]">
+                    <Plus className="w-8 h-8 text-zinc-600 group-hover:text-moto-accent transition-colors duration-300" />
                 </div>
-                <span className="text-xs font-medium uppercase tracking-wider">Add Motorcycle</span>
+
+                <h3 className="relative z-10 text-lg font-display font-black text-zinc-500 group-hover:text-white uppercase tracking-widest transition-colors duration-300">
+                    Acquire Machine
+                </h3>
+                <p className="relative z-10 text-[10px] text-zinc-700 font-mono mt-2 uppercase tracking-widest group-hover:text-moto-accent transition-colors duration-300">
+                    Initialize New Protocol
+                </p>
             </motion.button>
         );
 
         return (
             <motion.div
-                layoutId={`bike-${bike?._id}`}
-                className="group relative h-[280px] w-full rounded-xl bg-zinc-900/20 hover:bg-zinc-900/40 border border-white/5 hover:border-white/10 transition-all overflow-hidden cursor-pointer"
+                layoutId={`bike-card-${bike?._id}`}
+                className="group relative h-[380px] w-full rounded-[2rem] overflow-hidden cursor-pointer bg-[#0A0A0A] border border-white/5 hover:border-white/20 transition-all duration-500"
             >
-                <div className="h-2/3 w-full overflow-hidden">
-                    <img
+                {/* Image Layer - Full Bleed */}
+                <div className="absolute inset-0 z-0">
+                    <motion.img
+                        whileHover={{ scale: 1.05 }}
+                        transition={{ duration: 0.7, ease: "easeOut" }}
                         src={bike?.image}
                         alt={bike?.model}
-                        className="w-full h-full object-cover grayscale-[20%] group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700"
+                        className="w-full h-full object-cover filter grayscale-[10%] group-hover:grayscale-0 transition-all duration-700"
                     />
+                    {/* Dramatic Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90 group-hover:opacity-75 transition-opacity duration-500" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-transparent opacity-60" />
                 </div>
-                <div className="p-4">
+
+                {/* Floating Glass Content */}
+                <div className="absolute inset-0 p-6 flex flex-col justify-between z-10">
+                    {/* Top: Status Badge */}
                     <div className="flex justify-between items-start">
-                        <div>
-                            <h3 className="text-[10px] font-bold text-gray-500 uppercase tracking-wider mb-1">{bike?.brand}</h3>
-                            <p className="text-sm font-bold text-white tracking-tight leading-tight">{bike?.model}</p>
+                        <div className="px-3 py-1 bg-black/40 backdrop-blur-md rounded-full border border-white/10 shadow-lg flex items-center gap-2">
+                            <div className="w-1.5 h-1.5 rounded-full bg-moto-accent animate-pulse" />
+                            <span className="text-[9px] font-black text-white uppercase tracking-widest">{bike?.brand}</span>
                         </div>
-                        <div className="p-1.5 rounded-full bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <Settings className="w-3 h-3 text-white" />
+
+                        <div className="w-8 h-8 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center opacity-0 group-hover:opacity-100 transform -translate-y-4 group-hover:translate-y-0 transition-all duration-300 hover:bg-moto-accent hover:border-moto-accent hover:text-black hover:scale-110">
+                            <ArrowUpRight className="w-4 h-4" />
                         </div>
                     </div>
-                    <div className="mt-2 flex gap-2 opacity-0 group-hover:opacity-100 transition-all translate-y-2 group-hover:translate-y-0">
-                        {bike?.year && <span className="text-[10px] text-gray-500">{bike.year}</span>}
-                        {bike?.km && <span className="text-[10px] text-gray-500">• {bike.km} km</span>}
+
+                    {/* Bottom: Info & Specs */}
+                    <div className="transform translate-y-2 group-hover:translate-y-0 transition-transform duration-500">
+                        <h3 className="text-2xl font-display font-black text-white uppercase leading-[0.9] mb-3 italic drop-shadow-2xl">
+                            {bike?.model}
+                        </h3>
+
+                        {/* Tech Specs Grid */}
+                        <div className="grid grid-cols-2 gap-2 max-h-0 opacity-0 group-hover:max-h-24 group-hover:opacity-100 transition-all duration-500 overflow-hidden">
+                            <div className="bg-white/5 backdrop-blur-sm rounded-lg p-2 border border-white/10 flex flex-col justify-center">
+                                <div className="flex items-center gap-1 mb-1">
+                                    <Gauge className="w-3 h-3 text-moto-accent" />
+                                    <span className="text-[8px] text-gray-400 uppercase tracking-widest font-bold">Mileage</span>
+                                </div>
+                                <span className="text-sm font-mono font-bold text-white leading-none">{bike?.km} <span className="text-[9px] text-gray-500">KM</span></span>
+                            </div>
+                            <div className="bg-white/5 backdrop-blur-sm rounded-lg p-2 border border-white/10 flex flex-col justify-center">
+                                <div className="flex items-center gap-1 mb-1">
+                                    <Calendar className="w-3 h-3 text-moto-accent" />
+                                    <span className="text-[8px] text-gray-400 uppercase tracking-widest font-bold">Year</span>
+                                </div>
+                                <span className="text-sm font-mono font-bold text-white leading-none">{bike?.year}</span>
+                            </div>
+                        </div>
+
+                        {/* Default View (Hidden on Hover) */}
+                        <div className="flex items-center gap-4 mt-2 group-hover:hidden transition-all delay-75">
+                            <div className="flex items-center gap-2">
+                                <Wrench className="w-3 h-3 text-gray-400" />
+                                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">{bike?.modifications?.length || 0} Improvements</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </motion.div>

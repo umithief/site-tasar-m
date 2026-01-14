@@ -60,6 +60,7 @@ import { useAppSounds } from './hooks/useAppSounds';
 import { ArrowUp, Zap, Instagram, Twitter, Youtube, Facebook, MapPin, Phone, Mail } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { useLivingTime } from './hooks/useLivingTime';
+import { useThemeStore } from './store/useThemeStore';
 
 // Import Components
 import { Home } from './components/Home';
@@ -131,12 +132,16 @@ export const App: React.FC = () => {
 
     const [socialHubData, setSocialHubData] = useState<any>(null); // Placeholder for initial data
 
-    // Force Dark Mode & Fetch UI Settings
+    // Theme Management
+    const { theme } = useThemeStore();
+
     useEffect(() => {
-        if (typeof window !== 'undefined') {
-            document.documentElement.classList.remove('light');
-            document.documentElement.classList.add('dark');
-        }
+        const root = window.document.documentElement;
+        root.classList.remove('light', 'dark');
+        root.classList.add(theme);
+    }, [theme]);
+
+    useEffect(() => {
         // Fetch global UI settings
         useUIStore.getState().fetchSettings();
     }, []);
@@ -506,7 +511,7 @@ export const App: React.FC = () => {
     return (
         <SocketProvider>
             <BrandingProvider>
-                <div key={animKey} className={`flex flex-col min-h-[100dvh] bg-black text-gray-100 transition-colors duration-1000 ${isFullScreenMode ? 'overflow-hidden h-screen bg-black text-white' : ''}`}>
+                <div key={animKey} className={`flex flex-col min-h-[100dvh] transition-colors duration-1000 ${theme === 'dark' ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'} ${isFullScreenMode ? 'overflow-hidden h-screen bg-black text-white' : ''}`}>
 
                     {!isFullScreenMode && <ScrollProgress />}
 

@@ -5,6 +5,7 @@ import { socialService } from '../../services/socialService';
 import { PostCard } from './PostCard';
 import { MapPin, Navigation, User as UserIcon, Gauge, ChevronRight } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import { ThemeToggle } from '../ui/ThemeToggle';
 
 interface FeedProps {
     onNavigate?: (view: any) => void;
@@ -16,21 +17,20 @@ export const Feed: React.FC<FeedProps> = ({ onNavigate }) => {
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
-        const loadFeed = async () => {
+        const fetchPosts = async () => {
             try {
-                // In a real app, this would be a specific endpoint for the tailored feed
-                const data = await socialService.getFeed();
-                setPosts(data);
+                const fetchedPosts = await socialService.getFeed();
+                setPosts(fetchedPosts);
             } catch (error) {
-                console.error("Feed loading failed", error);
+                console.error('Error fetching posts:', error);
             } finally {
                 setIsLoading(false);
             }
         };
-        loadFeed();
+
+        fetchPosts();
     }, []);
 
-    // Layout Animation Variants
     const container = {
         hidden: { opacity: 0 },
         show: {
@@ -42,8 +42,14 @@ export const Feed: React.FC<FeedProps> = ({ onNavigate }) => {
     };
 
     return (
-        <div className="max-w-7xl mx-auto px-4 lg:px-0 py-8">
+        <div className="max-w-7xl mx-auto px-4 lg:px-0 py-8 relative">
+            {/* Theme Toggle Overlay for Desktop Feed */}
+            <div className="absolute top-8 right-0 lg:right-[-60px] hidden xl:block">
+                <ThemeToggle />
+            </div>
+
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+                {/* ... rest of the grid */}
 
                 {/* LEFT SIDEBAR - Profile Summary (Desktop Only) */}
                 <div className="hidden lg:col-span-3 lg:block">
@@ -143,7 +149,7 @@ export const Feed: React.FC<FeedProps> = ({ onNavigate }) => {
                                             <img src={route.img} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-500" alt={route.name} />
                                             <div className="absolute bottom-2 left-2 z-20 flex items-center gap-2">
                                                 <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${route.diff === 'Zor' ? 'bg-red-500/80' :
-                                                        route.diff === 'Orta' ? 'bg-orange-500/80' : 'bg-green-500/80'
+                                                    route.diff === 'Orta' ? 'bg-orange-500/80' : 'bg-green-500/80'
                                                     } text-white`}>
                                                     {route.diff}
                                                 </span>

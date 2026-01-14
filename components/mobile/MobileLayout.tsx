@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Bell, Zap, MessageCircle } from 'lucide-react';
+import { ThemeToggle } from '../ui/ThemeToggle';
 import { BottomNav } from '../layout/BottomNav';
 import { ViewState, User } from '../../types';
 import { UserAvatar } from '../ui/UserAvatar';
@@ -98,6 +99,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
 
                         {/* Actions (Right - Glass Containers) */}
                         <div className="flex items-center gap-3 pointer-events-auto">
+                            <ThemeToggle />
                             {/* Notifications */}
                             <button className="relative w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center backdrop-blur-md border border-white/10 shadow-lg active:scale-90 transition-all">
                                 <Bell className="w-5 h-5 text-white" />

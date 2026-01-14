@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { Compass, Home, MessageSquare, Calendar, User, Search, Map as MapIcon, Navigation, Plus, Image, Grid, Users, Bell, ShoppingBag, Settings, LogOut, PlusCircle, Archive, Heart, MessageCircle, Sun, Moon, Gauge } from 'lucide-react';
+import { ThemeToggle } from '../ui/ThemeToggle';
 import { ResponsivePostCard } from './ResponsivePostCard';
 import { PostComposer } from './PostComposer';
 import { FollowButton } from './FollowButton';
@@ -395,7 +396,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                             {/* Right Actions (Desktop Only) */}
                             <div className="hidden lg:flex items-center gap-3 pl-4 border-l border-white/10 ml-4 pointer-events-auto">
                                 {/* Theme Toggle */}
-
+                                <ThemeToggle />
 
                                 {/* Notifications */}
                                 <div className="relative">

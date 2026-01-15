@@ -57,7 +57,7 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
     return (
         <motion.aside
             layout
-            className={`hidden md:flex flex-col h-screen fixed left-0 top-0 z-[1000] bg-black/95 backdrop-blur-2xl border-r border-white/5 ${className}`}
+            className={`hidden md:flex flex-col h-screen fixed left-0 top-0 z-[1000] bg-white/95 dark:bg-black/95 backdrop-blur-2xl border-r border-gray-200 dark:border-white/5 ${className}`}
             initial={false}
             animate={{ width: isExpanded ? 260 : 80 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
@@ -66,7 +66,7 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
             <div className={`h-20 flex items-center ${isExpanded ? 'px-6 justify-start' : 'justify-center'} relative transition-all duration-300`}>
                 <button
                     onClick={onToggleExpand}
-                    className={`absolute ${isExpanded ? 'right-4' : 'center'} p-2 rounded-full hover:bg-white/5 transition-all text-white/80 hover:text-white z-50`}
+                    className={`absolute ${isExpanded ? 'right-4' : 'center'} p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-gray-500 dark:text-white/80 hover:text-gray-900 dark:hover:text-white z-50`}
                 >
                     <Menu strokeWidth={1} className="w-6 h-6" />
                 </button>
@@ -79,7 +79,7 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
                             exit={{ opacity: 0, x: -10 }}
                             className="mr-8"
                         >
-                            <Logo variant="full" className="h-8 w-auto text-white" />
+                            <Logo variant="full" className="h-8 w-auto text-gray-900 dark:text-white" />
                         </motion.div>
                     )}
                     {!isExpanded && (
@@ -88,7 +88,7 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
                             animate={{ opacity: 1, scale: 1 }}
                             exit={{ opacity: 0, scale: 0.8 }}
                         >
-                            <Logo variant="icon" className="h-8 w-auto text-white" />
+                            <Logo variant="icon" className="h-8 w-auto text-gray-900 dark:text-white" />
                         </motion.div>
                     )}
                 </AnimatePresence>

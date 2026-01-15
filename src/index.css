@@ -44,18 +44,31 @@ body {
 }
 
 :root {
+    color-scheme: light;
+
+    /* Light Mode Defaults */
+    --bg-primary: #f9fafb;
+    /* gray-50 */
+    --text-primary: #111827;
+    /* gray-900 */
+    --scrollbar-track: #f3f4f6;
+    --scrollbar-thumb: #d1d5db;
+    --scrollbar-thumb-hover: #9ca3af;
+
+    --moto-accent: #F2A619;
+    --moto-accent-hover: #d98e04;
+    --moto-accent-rgb: 242 166 25;
+}
+
+.dark {
     color-scheme: dark;
 
-    /* Permanent Dark Mode Variables */
+    /* Dark Mode Overrides */
     --bg-primary: #09090b;
     --text-primary: #ffffff;
     --scrollbar-track: #09090b;
     --scrollbar-thumb: #27272a;
     --scrollbar-thumb-hover: #3f3f46;
-
-    --moto-accent: #F2A619;
-    --moto-accent-hover: #d98e04;
-    --moto-accent-rgb: 242 166 25;
 }
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');

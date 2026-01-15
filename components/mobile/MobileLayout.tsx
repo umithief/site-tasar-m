@@ -66,7 +66,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
 
     return (
         <div
-            className="min-h-screen bg-black text-white pb-24 md:pb-0"
+            className="min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-white pb-24 md:pb-0"
             style={{
                 '--mobile-header-height': headerHeightVar,
             } as React.CSSProperties}
@@ -74,7 +74,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
             {/* --- TOP APP BAR --- */}
             {!isImmersive && (
                 <motion.div
-                    className={`top-0 left-0 right-0 z-[130] px-6 pt-safe-top pt-4 md:hidden will-change-transform transform-gpu ${isAtTop ? 'absolute' : 'fixed backdrop-blur-md bg-black/80 border-b border-white/5'}`}
+                    className={`top-0 left-0 right-0 z-[130] px-6 pt-safe-top pt-4 md:hidden will-change-transform transform-gpu ${isAtTop ? 'absolute' : 'fixed backdrop-blur-md bg-white/80 dark:bg-black/80 border-b border-gray-200 dark:border-white/5'}`}
                     initial={{ y: 0 }}
                     animate={{
                         y: (isAtTop || showTopBar) ? 0 : -100,
@@ -86,12 +86,12 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
                         <div className="flex items-center gap-3">
                             {/* Avatar Trigger (Left) */}
                             <div className="pointer-events-auto" onClick={() => useDashboardStore.getState().toggle()}>
-                                <UserAvatar src={(user as any)?.profileImage || user?.avatar} name={user?.name} size={32} className="ring-2 ring-white/10" />
+                                <UserAvatar src={(user as any)?.profileImage || user?.avatar} name={user?.name} size={32} className="ring-2 ring-gray-200 dark:ring-white/10" />
                             </div>
 
                             {/* Logo */}
                             <div className="pointer-events-auto" onClick={() => onNavigate('home')}>
-                                <span className="font-display font-black text-xl tracking-tighter text-white drop-shadow-xl italic">
+                                <span className="font-display font-black text-xl tracking-tighter text-gray-900 dark:text-white drop-shadow-xl italic">
                                     MOTO<span className="text-[#E2FF3B]">VIBE</span>
                                 </span>
                             </div>
@@ -101,13 +101,13 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({
                         <div className="flex items-center gap-3 pointer-events-auto">
                             <ThemeToggle />
                             {/* Notifications */}
-                            <button className="relative w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center backdrop-blur-md border border-white/10 shadow-lg active:scale-90 transition-all">
-                                <Bell className="w-5 h-5 text-white" />
+                            <button className="relative w-10 h-10 rounded-full bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 flex items-center justify-center backdrop-blur-md border border-gray-200 dark:border-white/10 shadow-lg active:scale-90 transition-all">
+                                <Bell className="w-5 h-5 text-gray-700 dark:text-white" />
                                 <span className="absolute top-2.5 right-3 w-1.5 h-1.5 bg-[#E2FF3B] rounded-full animate-pulse shadow-[0_0_8px_#E2FF3B]"></span>
                             </button>
                             {/* Messages */}
-                            <button onClick={() => onNavigate('forum')} className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center backdrop-blur-md border border-white/10 shadow-lg active:scale-90 transition-all">
-                                <MessageCircle className="w-5 h-5 text-white" />
+                            <button onClick={() => onNavigate('forum')} className="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 flex items-center justify-center backdrop-blur-md border border-gray-200 dark:border-white/10 shadow-lg active:scale-90 transition-all">
+                                <MessageCircle className="w-5 h-5 text-gray-700 dark:text-white" />
                             </button>
                         </div>
                     </div>

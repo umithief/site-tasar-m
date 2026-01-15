@@ -284,17 +284,17 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
             </div>
 
             {/* Trending Riders */}
-            <div className="bg-[#111] rounded-3xl p-6 border border-white/5 shadow-xl relative overflow-hidden">
+            <div className="bg-white dark:bg-[#111] rounded-3xl p-6 border border-gray-100 dark:border-white/5 shadow-xl relative overflow-hidden transition-colors duration-300">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-purple-500/10 blur-[60px] rounded-full pointer-events-none" />
-                <h3 className="font-bold text-white tracking-wide text-sm mb-6 relative z-10">ÖNERİLEN SÜRÜCÜLER</h3>
+                <h3 className="font-bold text-gray-900 dark:text-white tracking-wide text-sm mb-6 relative z-10">ÖNERİLEN SÜRÜCÜLER</h3>
                 <div className="space-y-5 relative z-10">
                     {suggestedRiders.slice(0, 4).map(rider => (
                         <div key={rider._id} className="flex items-center justify-between group/rider">
                             <div className="flex items-center gap-3 cursor-pointer flex-1" onClick={() => onNavigate && onNavigate('public-profile', { _id: rider._id })}>
                                 <UserAvatar src={rider.avatar} name={rider.name} size={36} />
                                 <div className="overflow-hidden">
-                                    <div className="font-bold text-xs text-white truncate">{rider.name}</div>
-                                    <div className="text-[10px] text-gray-400 truncate">{rider.bike || 'Rider'}</div>
+                                    <div className="font-bold text-xs text-gray-900 dark:text-white truncate">{rider.name}</div>
+                                    <div className="text-[10px] text-gray-500 truncate">{rider.bike || 'Rider'}</div>
                                 </div>
                             </div>
                             <div className="opacity-100 transition-opacity">
@@ -362,11 +362,11 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                         style={{ top: 'var(--mobile-header-height, 0px)' }}
                     >
                         {/* Background for the sticky area to prevent bleed-through */}
-                        <div className="absolute inset-0 bg-black/80 backdrop-blur-md border-b border-white/5 shadow-2xl z-[-1]" />
+                        <div className="absolute inset-0 bg-white/80 dark:bg-black/80 backdrop-blur-md border-b border-gray-200 dark:border-white/5 shadow-sm dark:shadow-2xl z-[-1] transition-colors duration-300" />
 
                         {/* Top Navigation Tabs */}
                         <div className="bg-transparent px-4 py-2 flex items-center justify-center">
-                            <div className="flex items-center gap-6 overflow-x-auto no-scrollbar bg-white/5 rounded-full px-6 py-2 border border-white/5">
+                            <div className="flex items-center gap-6 overflow-x-auto no-scrollbar bg-gray-100/50 dark:bg-white/5 rounded-full px-6 py-2 border border-gray-200 dark:border-white/5 transition-colors duration-300">
                                 {[
                                     { id: 'feed', label: 'AKIŞ' },
                                     { id: 'vlog', label: 'MAP (CANLI)' },
@@ -378,14 +378,14 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                         onClick={() => setView(item.id as HubView)}
                                         className={`relative text-sm font-bold tracking-wider transition-all whitespace-nowrap py-1
                                         ${view === item.id
-                                                ? 'text-[#E2FF3B] drop-shadow-[0_0_8px_rgba(226,255,59,0.5)]'
-                                                : 'text-white/40 hover:text-white'}`}
+                                                ? 'text-black dark:text-[#E2FF3B] dark:drop-shadow-[0_0_8px_rgba(226,255,59,0.5)]'
+                                                : 'text-gray-500 dark:text-white/40 hover:text-gray-900 dark:hover:text-white'}`}
                                     >
                                         <span>{item.label}</span>
                                         {view === item.id && (
                                             <motion.div
                                                 layoutId="activeTabUnderline"
-                                                className="absolute -bottom-1 left-0 right-0 h-[2px] bg-[#E2FF3B] shadow-[0_0_8px_#E2FF3B]"
+                                                className="absolute -bottom-1 left-0 right-0 h-[2px] bg-black dark:bg-[#E2FF3B] shadow-none dark:shadow-[0_0_8px_#E2FF3B]"
                                             />
                                         )}
                                     </button>

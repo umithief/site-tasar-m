@@ -6,35 +6,32 @@ export const ActiveMachine = () => {
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-[#111] rounded-3xl p-6 border border-white/5 shadow-xl relative overflow-hidden group"
+            className="bg-white dark:bg-[#111] rounded-3xl p-6 border border-gray-100 dark:border-white/5 shadow-lg dark:shadow-xl relative overflow-hidden transition-colors duration-300"
         >
             <div className="absolute top-0 right-0 w-24 h-24 bg-moto-accent/10 blur-[40px] rounded-full pointer-events-none group-hover:bg-moto-accent/20 transition-colors" />
-            <h3 className="font-bold text-white tracking-wide text-sm mb-4 flex items-center gap-2">
-                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.5)]" />
-                CANLI VERİLER
-            </h3>
-            <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white/5 rounded-xl p-3">
-                    <span className="text-[10px] text-gray-500 uppercase font-bold block mb-1">Anlık Hız</span>
-                    <div className="flex items-baseline gap-1">
-                        <span className="text-2xl font-mono font-bold text-white">0</span>
-                        <span className="text-[10px] text-moto-accent font-bold">km/h</span>
+            <div className="flex items-center gap-2 mb-6">
+                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                <h3 className="font-bold text-gray-900 dark:text-white tracking-wide text-xs uppercase">CANLI VERİLER</h3>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4 mb-6">
+                <div className="bg-gray-50 dark:bg-white/5 rounded-2xl p-4 border border-gray-100 dark:border-transparent">
+                    <div className="text-[10px] text-gray-500 uppercase mb-1">ANLIK HIZ</div>
+                    <div className="text-2xl font-black text-gray-900 dark:text-white font-mono flex items-end gap-1">
+                        0 <span className="text-[10px] text-gray-400 font-sans font-bold mb-1">km/h</span>
                     </div>
                 </div>
-                <div className="bg-white/5 rounded-xl p-3">
-                    <span className="text-[10px] text-gray-500 uppercase font-bold block mb-1">Mesafe</span>
-                    <div className="flex items-baseline gap-1">
-                        <span className="text-2xl font-mono font-bold text-white">0.0</span>
-                        <span className="text-[10px] text-moto-accent font-bold">km</span>
+                <div className="bg-gray-50 dark:bg-white/5 rounded-2xl p-4 border border-gray-100 dark:border-transparent">
+                    <div className="text-[10px] text-gray-500 uppercase mb-1">MESAFE</div>
+                    <div className="text-2xl font-black text-gray-900 dark:text-white font-mono flex items-end gap-1">
+                        0.0 <span className="text-[10px] text-gray-400 font-sans font-bold mb-1">km</span>
                     </div>
                 </div>
             </div>
 
-            <div className="mt-4 pt-4 border-t border-white/5">
-                <div className="flex justify-between items-center">
-                    <span className="text-[10px] text-gray-400">Aktif Motor</span>
-                    <span className="text-xs font-bold text-white">Yamaha MT-07</span>
-                </div>
+            <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-white/5">
+                <span className="text-[10px] text-gray-500 font-bold">Aktif Motor</span>
+                <span className="text-xs font-bold text-gray-900 dark:text-white">Yamaha MT-07</span>
             </div>
         </motion.div>
     );

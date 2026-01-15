@@ -117,9 +117,9 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
     };
 
     return (
-        <div className="mx-2 mb-6 bg-[#121212] rounded-[40px] overflow-hidden border border-white/5 shadow-2xl snap-center relative">
+        <div className="mx-2 mb-6 bg-white dark:bg-[#121212] rounded-[40px] overflow-hidden border border-gray-100 dark:border-white/5 shadow-xl dark:shadow-2xl snap-center relative transition-colors duration-300">
             {/* Header */}
-            <div className="px-5 py-4 flex items-center justify-between bg-gradient-to-b from-black/50 to-transparent absolute top-0 left-0 right-0 z-10 pointer-events-none">
+            <div className="px-5 py-4 flex items-center justify-between bg-gradient-to-b from-white/90 dark:from-black/50 to-transparent absolute top-0 left-0 right-0 z-10 pointer-events-none">
                 <div
                     className="flex items-center gap-3 pointer-events-auto"
                     onClick={(e) => {
@@ -131,18 +131,18 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                         }
                     }}
                 >
-                    <div className="p-0.5 bg-white/20 backdrop-blur-md rounded-full">
+                    <div className="p-0.5 bg-black/5 dark:bg-white/20 backdrop-blur-md rounded-full">
                         <UserAvatar name={post.userName} src={post.userAvatar} size={36} />
                     </div>
                     <div className="flex flex-col drop-shadow-md">
-                        <span className="text-white font-bold text-sm leading-none tracking-wide">{post.userName}</span>
+                        <span className="text-gray-900 dark:text-white font-bold text-sm leading-none tracking-wide">{post.userName}</span>
                         {post.bikeModel && (
-                            <span className="text-white/80 text-[10px] font-medium">{post.bikeModel}</span>
+                            <span className="text-gray-600 dark:text-white/80 text-[10px] font-medium">{post.bikeModel}</span>
                         )}
                     </div>
                 </div>
                 <button
-                    className="w-8 h-8 rounded-full bg-black/20 backdrop-blur-md flex items-center justify-center text-white border border-white/10 pointer-events-auto active:scale-90 transition-transform"
+                    className="w-8 h-8 rounded-full bg-black/5 dark:bg-black/20 backdrop-blur-md flex items-center justify-center text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 pointer-events-auto active:scale-90 transition-transform"
                     onClick={() => setShowOptions(true)}
                 >
                     <MoreHorizontal className="w-5 h-5" />
@@ -160,9 +160,9 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                             {currentUserId === post.userId && (
                                 <button
                                     onClick={() => { setIsEditing(true); setShowOptions(false); }}
-                                    className="w-full flex items-center gap-3 p-4 bg-white/5 text-white rounded-2xl font-bold hover:bg-white/10 transition-colors"
+                                    className="w-full flex items-center gap-3 p-4 bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white rounded-2xl font-bold hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
                                 >
-                                    <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center"><Edit2 className="w-4 h-4 text-blue-500" /></div>
+                                    <div className="w-8 h-8 rounded-full bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center"><Edit2 className="w-4 h-4 text-blue-500" /></div>
                                     Düzenle
                                 </button>
                             )}
@@ -176,15 +176,15 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                         </>
                     ) : (
                         <>
-                            <button className="w-full flex items-center gap-3 p-4 bg-white/5 text-white rounded-2xl font-bold hover:bg-white/10 transition-colors">
+                            <button className="w-full flex items-center gap-3 p-4 bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white rounded-2xl font-bold hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
                                 <Bookmark className="w-5 h-5" /> Kaydet
                             </button>
 
                             <button
                                 onClick={handleShareToAdmin}
-                                className="w-full flex items-center gap-3 p-4 bg-white/5 text-white rounded-2xl font-bold hover:bg-white/10 transition-colors"
+                                className="w-full flex items-center gap-3 p-4 bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white rounded-2xl font-bold hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
                             >
-                                <div className="w-8 h-8 rounded-full bg-moto-accent/20 flex items-center justify-center"><ShieldAlert className="w-4 h-4 text-moto-accent" /></div>
+                                <div className="w-8 h-8 rounded-full bg-moto-accent/10 dark:bg-moto-accent/20 flex items-center justify-center"><ShieldAlert className="w-4 h-4 text-moto-accent" /></div>
                                 Admine İlet
                             </button>
 
@@ -202,7 +202,7 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
 
             {/* Media */}
             <div
-                className="relative w-full aspect-[4/5] bg-gray-900 overflow-hidden"
+                className="relative w-full aspect-[4/5] bg-gray-100 dark:bg-gray-900 overflow-hidden"
                 onClick={handleDoubleTap}
             >
                 <img
@@ -214,12 +214,12 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
 
                 {/* HUD Overlay (Mock or Real) */}
                 <div className="absolute bottom-4 left-4 flex items-center gap-2">
-                    <div className="bg-black/60 backdrop-blur-md border border-white/10 rounded-full px-3 py-1.5 flex items-center gap-2">
+                    <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-full px-3 py-1.5 flex items-center gap-2">
                         <div className="w-1.5 h-1.5 bg-[#E2FF3B] rounded-full animate-pulse" />
-                        <span className="text-white text-[10px] font-bold tracking-wider font-mono">124 KM/S</span>
+                        <span className="text-gray-900 dark:text-white text-[10px] font-bold tracking-wider font-mono">124 KM/S</span>
                     </div>
-                    <div className="bg-black/60 backdrop-blur-md border border-white/10 rounded-full px-3 py-1.5 flex items-center gap-2">
-                        <span className="text-white text-[10px] font-bold tracking-wider font-mono">42° EĞİM</span>
+                    <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-full px-3 py-1.5 flex items-center gap-2">
+                        <span className="text-gray-900 dark:text-white text-[10px] font-bold tracking-wider font-mono">42° EĞİM</span>
                     </div>
                 </div>
 
@@ -250,32 +250,32 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                             onClick={handleLike}
                             className={`w-12 h-12 rounded-full flex items-center justify-center border transition-all duration-300 ${isLiked
                                 ? 'bg-[#E2FF3B] border-[#E2FF3B] shadow-[0_0_15px_rgba(226,255,59,0.4)]'
-                                : 'bg-white/5 border-white/10 hover:bg-white/10'
+                                : 'bg-gray-100 dark:bg-white/5 border-gray-200 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10'
                                 }`}
                         >
-                            <Heart className={`w-6 h-6 ${isLiked ? 'text-black fill-black' : 'text-white'}`} />
+                            <Heart className={`w-6 h-6 ${isLiked ? 'text-black fill-black' : 'text-gray-900 dark:text-white'}`} />
                         </motion.button>
 
                         <motion.button
                             whileTap={{ scale: 0.8 }}
                             onClick={() => onCommentClick && onCommentClick()}
-                            className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+                            className="w-12 h-12 rounded-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
                         >
-                            <MessageCircle className="w-6 h-6 text-white" />
+                            <MessageCircle className="w-6 h-6 text-gray-900 dark:text-white" />
                         </motion.button>
 
                         <motion.button
                             whileTap={{ scale: 0.8 }}
-                            className="w-12 h-12 rounded-full bg-white/5 border border-white/10 flex items-center justify-center hover:bg-white/10 transition-colors"
+                            className="w-12 h-12 rounded-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
                         >
-                            <Share2 className="w-6 h-6 text-white" />
+                            <Share2 className="w-6 h-6 text-gray-900 dark:text-white" />
                         </motion.button>
                     </div>
 
                     {/* Bookmark (Right) */}
                     <motion.button
                         whileTap={{ scale: 0.8 }}
-                        className="w-10 h-10 rounded-full bg-transparent flex items-center justify-center text-zinc-500 hover:text-white transition-colors"
+                        className="w-10 h-10 rounded-full bg-transparent flex items-center justify-center text-gray-400 dark:text-zinc-500 hover:text-gray-900 dark:hover:text-white transition-colors"
                     >
                         <Bookmark className="w-6 h-6" />
                     </motion.button>
@@ -286,10 +286,10 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                     <div className="mb-2 flex items-center gap-2">
                         <div className="flex -space-x-2">
                             {[...Array(3)].map((_, i) => (
-                                <div key={i} className="w-5 h-5 rounded-full bg-zinc-800 border border-[#121212]" />
+                                <div key={i} className="w-5 h-5 rounded-full bg-gray-200 dark:bg-zinc-800 border border-white dark:border-[#121212]" />
                             ))}
                         </div>
-                        <span className="text-sm font-bold text-white">
+                        <span className="text-sm font-bold text-gray-900 dark:text-white">
                             {likeCount} beğenme
                         </span>
                     </div>
@@ -302,12 +302,12 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                             <textarea
                                 value={postContent}
                                 onChange={(e) => setPostContent(e.target.value)}
-                                className="w-full bg-white/5 border border-white/10 rounded-xl p-3 text-white text-sm focus:outline-none focus:border-moto-accent resize-none min-h-[80px]"
+                                className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-3 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-moto-accent resize-none min-h-[80px]"
                             />
                             <div className="flex justify-end gap-2">
                                 <button
                                     onClick={() => { setIsEditing(false); setPostContent(post.content); }}
-                                    className="px-4 py-2 bg-white/5 rounded-lg text-xs font-bold text-gray-400"
+                                    className="px-4 py-2 bg-gray-100 dark:bg-white/5 rounded-lg text-xs font-bold text-gray-500 hover:text-gray-900 dark:hover:text-white"
                                 >
                                     İptal
                                 </button>
@@ -321,8 +321,8 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                             </div>
                         </div>
                     ) : (
-                        <p className="text-sm text-gray-300 leading-relaxed">
-                            <span className="font-bold text-white mr-2 text-[15px]">{post.userName}</span>
+                        <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                            <span className="font-bold text-gray-900 dark:text-white mr-2 text-[15px]">{post.userName}</span>
                             {isExpanded ? postContent : (
                                 <>
                                     <span className="line-clamp-2 inline">{postContent}</span>
@@ -342,7 +342,7 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
 
                 {/* Time */}
                 <div className="mt-2">
-                    <span className="text-[10px] text-gray-600 uppercase tracking-widest font-bold">
+                    <span className="text-[10px] text-gray-400 dark:text-gray-600 uppercase tracking-widest font-bold">
                         {new Date((post as any).createdAt || (post as any).timestamp || Date.now()).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}
                     </span>
                 </div>

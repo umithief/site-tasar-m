@@ -10,9 +10,9 @@ interface ThemeState {
 export const useThemeStore = create<ThemeState>()(
     persist(
         (set) => ({
-            theme: 'dark',
-            toggleTheme: () => set((state) => ({ theme: state.theme === 'dark' ? 'light' : 'dark' })),
-            setTheme: (theme) => set({ theme }),
+            theme: 'light',
+            toggleTheme: () => set({ theme: 'light' }),
+            setTheme: () => set({ theme: 'light' }),
         }),
         {
             name: 'mv_theme_storage',

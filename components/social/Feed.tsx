@@ -5,7 +5,7 @@ import { socialService } from '../../services/socialService';
 import { PostCard } from './PostCard';
 import { MapPin, Navigation, User as UserIcon, Gauge, ChevronRight } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
-import { ThemeToggle } from '../ui/ThemeToggle';
+
 
 interface FeedProps {
     onNavigate?: (view: any) => void;
@@ -43,11 +43,6 @@ export const Feed: React.FC<FeedProps> = ({ onNavigate }) => {
 
     return (
         <div className="max-w-7xl mx-auto px-4 lg:px-0 py-8 relative">
-            {/* Theme Toggle - In flow for mobile, absolute for desktop */}
-            <div className="flex justify-end mb-4 xl:absolute xl:top-8 xl:right-[-60px] xl:mb-0 z-40">
-                <ThemeToggle />
-            </div>
-
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
                 {/* ... rest of the grid */}
 

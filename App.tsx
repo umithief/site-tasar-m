@@ -132,14 +132,14 @@ export const App: React.FC = () => {
 
     const [socialHubData, setSocialHubData] = useState<any>(null); // Placeholder for initial data
 
-    // Theme Management
+    // Theme Management - Enforced Light Mode
     const { theme } = useThemeStore();
 
     useEffect(() => {
         const root = window.document.documentElement;
-        root.classList.remove('light', 'dark');
-        root.classList.add(theme);
-    }, [theme]);
+        root.classList.remove('dark');
+        root.classList.add('light'); // Enforce light mode
+    }, []);
 
     useEffect(() => {
         // Fetch global UI settings

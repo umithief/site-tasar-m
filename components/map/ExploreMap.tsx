@@ -102,8 +102,8 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate, variant = 'd
             zoom: 13
         });
 
-        // Dark Matter Tiles (CartoDB) - Premium Look
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+        // Light Matter Tiles (CartoDB) - Premium Look
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
             maxZoom: 20,
             subdomains: 'abcd',
         }).addTo(map.current);
@@ -142,11 +142,11 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate, variant = 'd
 
             L.marker([rider.lat, rider.lng], { icon })
                 .bindPopup(`
-                    <div class="p-2 bg-black text-white font-mono text-xs">
-                        <strong class="text-cyan-400">${rider.name}</strong><br/>
+                    <div class="p-2 bg-white text-gray-900 font-mono text-xs shadow-lg rounded-lg border border-gray-200">
+                        <strong class="text-moto-accent-dark">${rider.name}</strong><br/>
                         ${rider.speed}
                     </div>
-                `, { closeButton: false, className: 'leaflet-popup-dark' })
+                `, { closeButton: false, className: 'leaflet-popup-light' })
                 .addTo(ridersLayer.current!);
         });
 
@@ -168,15 +168,15 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate, variant = 'd
 
             // Base Line (Outer Glow)
             L.polyline(route.coordinates, {
-                color: isSelected ? '#E2FF3B' : '#E2FF3B',
+                color: isSelected ? '#111' : '#666',
                 weight: isSelected ? 8 : 4,
                 opacity: isSelected ? 0.6 : 0.3,
-                className: isSelected ? 'drop-shadow-[0_0_10px_rgba(226,255,59,0.5)]' : ''
+                className: isSelected ? 'drop-shadow-[0_0_10px_rgba(0,0,0,0.2)]' : ''
             }).addTo(routesLayer.current!);
 
             // Core Line
             const poly = L.polyline(route.coordinates, {
-                color: '#E2FF3B',
+                color: '#E2FF3B', // Keep moto accent but maybe darker or specific color? Let's use accent.
                 weight: isSelected ? 4 : 2,
                 opacity: 1
             }).addTo(routesLayer.current!);
@@ -283,10 +283,10 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate, variant = 'd
                 navLayer.current.clearLayers();
                 // Draw Calculated Path
                 L.polyline(coords, {
-                    color: '#06b6d4', // Cyan for Navigation
+                    color: '#0ea5e9', // Sky blue for Light Mode Navigation
                     weight: 6,
                     opacity: 0.9,
-                    className: 'drop-shadow-[0_0_15px_rgba(6,182,212,0.5)]'
+                    className: 'drop-shadow-[0_0_15px_rgba(14,165,233,0.5)]'
                 }).addTo(navLayer.current);
             }
 
@@ -339,16 +339,16 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate, variant = 'd
     };
 
     return (
-        <div className={`relative w-full bg-[#0A0A0A] overflow-hidden ${variant === 'mobile'
+        <div className={`relative w-full bg-gray-100 overflow-hidden ${variant === 'mobile'
             ? 'h-[100dvh] rounded-none border-none'
-            : 'h-[85vh] rounded-3xl border border-white/10 shadow-2xl'
+            : 'h-[85vh] rounded-3xl border border-gray-200 shadow-xl'
             }`}>
             {/* Map Container */}
             <div ref={mapContainer} className="w-full h-full z-0" />
 
             {loading && (
-                <div className="absolute inset-0 z-50 bg-black flex items-center justify-center">
-                    <div className="text-lime-400 font-mono animate-pulse">SYSTEM INITIALIZING...</div>
+                <div className="absolute inset-0 z-50 bg-white flex items-center justify-center">
+                    <div className="text-moto-accent font-mono animate-pulse">SYSTEM INITIALIZING...</div>
                 </div>
             )}
 
@@ -367,9 +367,9 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate, variant = 'd
                     {/* Mobile: Toggle Routes Button */}
                     <button
                         onClick={() => setIsMobileRoutesOpen(!isMobileRoutesOpen)}
-                        className="md:hidden absolute bottom-24 left-4 z-[950] bg-black/80 backdrop-blur border border-white/10 p-3 rounded-xl text-white shadow-lg flex items-center gap-2"
+                        className="md:hidden absolute bottom-24 left-4 z-[950] bg-white/90 backdrop-blur border border-gray-100 p-3 rounded-xl text-gray-900 shadow-lg flex items-center gap-2"
                     >
-                        <Layers className="w-5 h-5 text-lime-400" />
+                        <Layers className="w-5 h-5 text-moto-accent" />
                         <span className="text-xs font-bold uppercase">Rotalar</span>
                     </button>
 
@@ -390,18 +390,18 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate, variant = 'd
             {isNavigating && navigationData && (
                 <>
                     {/* Top Bar - Turn Instructions */}
-                    <div className="absolute top-4 left-1/2 -translate-x-1/2 w-[90%] md:w-[400px] z-[1200] bg-black/90 backdrop-blur-xl border border-white/10 p-4 rounded-2xl shadow-2xl flex items-center gap-4">
-                        <div className="w-12 h-12 bg-cyan-400 rounded-xl flex items-center justify-center text-black shadow-[0_0_20px_rgba(34,211,238,0.3)] animate-pulse">
+                    <div className="absolute top-4 left-1/2 -translate-x-1/2 w-[90%] md:w-[400px] z-[1200] bg-white/90 backdrop-blur-xl border border-gray-100 p-4 rounded-2xl shadow-xl flex items-center gap-4">
+                        <div className="w-12 h-12 bg-moto-accent rounded-xl flex items-center justify-center text-black shadow-[0_0_20px_rgba(226,255,59,0.3)] animate-pulse">
                             <span className="text-2xl font-black">
                                 {navigationData.steps[currentStepIndex]?.maneuver?.type === 'arrive' ? '🏁' : '↱'}
                             </span>
                         </div>
                         <div className="flex-1">
-                            <div className="text-xs text-gray-400 font-bold uppercase tracking-widest flex justify-between">
+                            <div className="text-xs text-gray-500 font-bold uppercase tracking-widest flex justify-between">
                                 <span>Action</span>
-                                <span className="text-cyan-400">{currentStepIndex + 1} / {navigationData.steps.length}</span>
+                                <span className="text-moto-accent-dark">{currentStepIndex + 1} / {navigationData.steps.length}</span>
                             </div>
-                            <div className="text-lg leading-tight font-black text-white mt-1">
+                            <div className="text-lg leading-tight font-black text-gray-900 mt-1">
                                 {navigationData.steps[currentStepIndex]?.maneuver?.instruction || "Proceed on route"}
                             </div>
                         </div>
@@ -409,26 +409,26 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate, variant = 'd
 
                     {/* Bottom Data Bar */}
                     <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] md:w-[600px] z-[1200] grid grid-cols-3 gap-2">
-                        <div className="bg-black/90 backdrop-blur-xl border border-white/10 p-3 rounded-2xl text-center">
+                        <div className="bg-white/90 backdrop-blur-xl border border-gray-100 p-3 rounded-2xl text-center">
                             <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Estimated Arrival</div>
-                            <div className="text-xl font-black text-white">
+                            <div className="text-xl font-black text-gray-900">
                                 {new Date(new Date().getTime() + navigationData.duration * 60000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                             </div>
                         </div>
-                        <div className="bg-black/90 backdrop-blur-xl border border-white/10 p-3 rounded-2xl text-center">
+                        <div className="bg-white/90 backdrop-blur-xl border border-gray-100 p-3 rounded-2xl text-center">
                             <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Remaining</div>
-                            <div className="text-xl font-black text-cyan-400">{navigationData.duration} min</div>
+                            <div className="text-xl font-black text-moto-accent-dark">{navigationData.duration} min</div>
                         </div>
-                        <div className="bg-black/90 backdrop-blur-xl border border-white/10 p-3 rounded-2xl text-center">
+                        <div className="bg-white/90 backdrop-blur-xl border border-gray-100 p-3 rounded-2xl text-center">
                             <div className="text-[10px] text-gray-500 font-bold uppercase tracking-wider">Distance</div>
-                            <div className="text-xl font-black text-white">{navigationData.distance} km</div>
+                            <div className="text-xl font-black text-gray-900">{navigationData.distance} km</div>
                         </div>
                     </div>
 
                     {/* Exit Button */}
                     <button
                         onClick={handleStopNavigation}
-                        className="absolute top-6 right-6 z-[1200] w-10 h-10 bg-red-500/20 text-red-500 border border-red-500/50 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"
+                        className="absolute top-6 right-6 z-[1200] w-10 h-10 bg-red-500/10 text-red-500 border border-red-500/20 rounded-full flex items-center justify-center hover:bg-red-500 hover:text-white transition-all"
                     >
                         <span className="font-bold">X</span>
                     </button>
@@ -436,8 +436,8 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate, variant = 'd
             )}
 
             {isNavigating && !navigationData && (
-                <div className="absolute top-24 left-1/2 -translate-x-1/2 bg-black/80 backdrop-blur border border-cyan-400/50 text-cyan-400 px-6 py-3 rounded-full flex items-center gap-3 z-[1500] shadow-[0_0_30px_rgba(6,182,212,0.2)]">
-                    <div className="w-2 h-2 bg-cyan-400 rounded-full animate-ping" />
+                <div className="absolute top-24 left-1/2 -translate-x-1/2 bg-white/90 backdrop-blur border border-gray-200 text-gray-900 px-6 py-3 rounded-full flex items-center gap-3 z-[1500] shadow-lg">
+                    <div className="w-2 h-2 bg-moto-accent rounded-full animate-ping" />
                     <span className="font-bold tracking-widest text-xs uppercase">CALCULATING VECTOR...</span>
                 </div>
             )}

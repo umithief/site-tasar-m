@@ -95,7 +95,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
           initial={{ opacity: 0, scale: 0.9, y: 20 }}
           animate={{ opacity: 1, scale: 1, y: 0 }}
           exit={{ opacity: 0, scale: 0.9, y: 20 }}
-          className="relative flex w-full max-w-5xl bg-[#f8f9fc] dark:bg-[#0a0a0a] rounded-[2.5rem] text-left overflow-hidden shadow-2xl transform transition-all min-h-[650px]"
+          className="relative flex w-full max-w-5xl bg-[#f8f9fc] rounded-[2.5rem] text-left overflow-hidden shadow-2xl transform transition-all min-h-[650px]"
         >
 
           {/* Close Button */}
@@ -103,43 +103,43 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
             onClick={onClose}
             variant="icon-glass"
             size="icon"
-            className="absolute top-6 right-6 z-50 bg-black/5 dark:bg-white/10 hover:bg-black/10 dark:hover:bg-white/20 text-gray-500 dark:text-gray-400 rounded-full"
+            className="absolute top-6 right-6 z-50 bg-black/5 hover:bg-black/10 text-gray-500 rounded-full"
           >
             <X className="w-5 h-5" />
           </Button>
 
           {/* LEFT SIDE: FORM */}
-          <div className="w-full lg:w-1/2 p-8 md:p-12 lg:p-16 flex flex-col justify-center bg-white dark:bg-[#121212] relative z-10">
+          <div className="w-full lg:w-1/2 p-8 md:p-12 lg:p-16 flex flex-col justify-center bg-white relative z-10">
 
             {/* Logo Header */}
             <div className="flex items-center gap-2 mb-8">
-              <div className="w-8 h-8 bg-black dark:bg-white rounded-lg flex items-center justify-center">
-                <Zap className="w-5 h-5 text-white dark:text-black fill-current" />
+              <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
+                <Zap className="w-5 h-5 text-white fill-current" />
               </div>
-              <span className="font-display font-bold text-xl text-black dark:text-white tracking-tight">MotoVibe</span>
+              <span className="font-display font-bold text-xl text-black tracking-tight">MotoVibe</span>
             </div>
 
             {/* Title */}
             <div className="mb-8">
-              <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white mb-2">
+              <h2 className="text-3xl font-display font-bold text-gray-900 mb-2">
                 {mode === 'login' ? t('auth.welcome_back') : t('auth.join_us')}
               </h2>
-              <p className="text-gray-500 dark:text-gray-400 text-sm font-medium">
+              <p className="text-gray-500 text-sm font-medium">
                 {mode === 'login' ? t('auth.login_desc') : t('auth.register_desc')}
               </p>
             </div>
 
             {/* Custom Tab Switcher (Pill Shape) */}
-            <div className="w-full bg-[#F3F4F6] dark:bg-[#1c1c1c] p-1.5 rounded-full flex mb-8 border border-gray-200 dark:border-white/5">
+            <div className="w-full bg-[#F3F4F6] p-1.5 rounded-full flex mb-8 border border-gray-200">
               <button
                 onClick={() => setMode('login')}
-                className={`flex-1 py-3 text-sm font-bold rounded-full transition-all duration-300 ${mode === 'login' ? 'bg-[#3B82F6] text-white shadow-md' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
+                className={`flex-1 py-3 text-sm font-bold rounded-full transition-all duration-300 ${mode === 'login' ? 'bg-[#3B82F6] text-white shadow-md' : 'text-gray-500 hover:text-gray-900'}`}
               >
                 {t('auth.login')}
               </button>
               <button
                 onClick={() => setMode('register')}
-                className={`flex-1 py-3 text-sm font-bold rounded-full transition-all duration-300 ${mode === 'register' ? 'bg-[#3B82F6] text-white shadow-md' : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
+                className={`flex-1 py-3 text-sm font-bold rounded-full transition-all duration-300 ${mode === 'register' ? 'bg-[#3B82F6] text-white shadow-md' : 'text-gray-500 hover:text-gray-900'}`}
               >
                 {t('auth.register')}
               </button>
@@ -162,7 +162,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
                         name="name"
                         type="text"
                         required={mode === 'register'}
-                        className="block w-full px-6 py-4 bg-[#F3F4F6] dark:bg-[#1c1c1c] border-2 border-transparent focus:border-[#3B82F6] focus:bg-white dark:focus:bg-black rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none transition-all font-medium text-sm"
+                        className="block w-full px-6 py-4 bg-[#F3F4F6] border-2 border-transparent focus:border-[#3B82F6] focus:bg-white rounded-2xl text-gray-900 placeholder-gray-400 focus:outline-none transition-all font-medium text-sm"
                         placeholder={t('auth.name_placeholder')}
                         value={formData.name}
                         onChange={handleChange}
@@ -180,7 +180,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
                   name="email"
                   type="email"
                   required
-                  className="block w-full px-6 py-4 bg-[#F3F4F6] dark:bg-[#1c1c1c] border-2 border-transparent focus:border-[#3B82F6] focus:bg-white dark:focus:bg-black rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none transition-all font-medium text-sm"
+                  className="block w-full px-6 py-4 bg-[#F3F4F6] border-2 border-transparent focus:border-[#3B82F6] focus:bg-white rounded-2xl text-gray-900 placeholder-gray-400 focus:outline-none transition-all font-medium text-sm"
                   placeholder={t('auth.email_placeholder')}
                   value={formData.email}
                   onChange={handleChange}
@@ -192,7 +192,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="text-gray-400 hover:text-gray-600 dark:hover:text-white transition-colors"
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
                   >
                     {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                   </button>
@@ -201,7 +201,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
                   name="password"
                   type={showPassword ? "text" : "password"}
                   required
-                  className="block w-full px-6 py-4 bg-[#F3F4F6] dark:bg-[#1c1c1c] border-2 border-transparent focus:border-[#3B82F6] focus:bg-white dark:focus:bg-black rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none transition-all font-medium text-sm"
+                  className="block w-full px-6 py-4 bg-[#F3F4F6] border-2 border-transparent focus:border-[#3B82F6] focus:bg-white rounded-2xl text-gray-900 placeholder-gray-400 focus:outline-none transition-all font-medium text-sm"
                   placeholder={t('auth.password_placeholder')}
                   value={formData.password}
                   onChange={handleChange}
@@ -211,11 +211,11 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
               {/* Remember Me & Forgot Password */}
               <div className="flex items-center justify-between text-sm mt-2">
                 <label className="flex items-center gap-2 cursor-pointer group select-none">
-                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${rememberMe ? 'bg-[#3B82F6] border-[#3B82F6]' : 'border-gray-300 dark:border-white/20'}`}>
+                  <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${rememberMe ? 'bg-[#3B82F6] border-[#3B82F6]' : 'border-gray-300'}`}>
                     {rememberMe && <div className="w-2 h-2 bg-white rounded-full"></div>}
                   </div>
                   <input type="checkbox" className="hidden" checked={rememberMe} onChange={() => setRememberMe(!rememberMe)} />
-                  <span className="text-gray-500 dark:text-gray-400 font-medium group-hover:text-gray-800 dark:group-hover:text-white transition-colors">{t('auth.remember_me')}</span>
+                  <span className="text-gray-500 font-medium group-hover:text-gray-800 transition-colors">{t('auth.remember_me')}</span>
                 </label>
 
                 {mode === 'login' && (
@@ -230,7 +230,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
                 {error && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                    className="bg-red-50 dark:bg-red-900/20 text-red-500 dark:text-red-400 p-4 rounded-xl text-sm flex items-center gap-2 font-medium"
+                    className="bg-red-50 text-red-500 p-4 rounded-xl text-sm flex items-center gap-2 font-medium"
                   >
                     <AlertCircle className="w-5 h-5 flex-shrink-0" />
                     {error}
@@ -239,7 +239,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
                 {successMsg && (
                   <motion.div
                     initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                    className="bg-green-50 dark:bg-green-900/20 text-green-600 dark:text-green-400 p-4 rounded-xl text-sm flex items-center gap-2 font-medium"
+                    className="bg-green-50 text-green-600 p-4 rounded-xl text-sm flex items-center gap-2 font-medium"
                   >
                     <Check className="w-5 h-5 flex-shrink-0" />
                     {successMsg}
@@ -261,10 +261,10 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
             {/* Divider */}
             <div className="relative my-8">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-gray-200 dark:border-white/10"></div>
+                <div className="w-full border-t border-gray-200"></div>
               </div>
               <div className="relative flex justify-center text-xs uppercase tracking-wider font-bold">
-                <span className="px-4 bg-white dark:bg-[#121212] text-gray-400">{t('auth.or')}</span>
+                <span className="px-4 bg-white text-gray-400">{t('auth.or')}</span>
               </div>
             </div>
 
@@ -273,7 +273,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
               <Button
                 type="button"
                 variant="secondary"
-                className="gap-3 py-3.5 bg-black dark:bg-white text-white dark:text-black hover:opacity-90 shadow-lg justify-center w-full"
+                className="gap-3 py-3.5 bg-black text-white hover:opacity-90 shadow-lg justify-center w-full"
                 leftIcon={<Apple className="w-5 h-5 fill-current" />}
               >
                 {t('auth.continue_with_apple')}
@@ -281,8 +281,8 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose, initialMo
               <Button
                 type="button"
                 variant="outline"
-                className="gap-3 py-3.5 bg-white dark:bg-transparent border-gray-200 dark:border-white/20 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/5 justify-center w-full"
-                leftIcon={<Chrome className="w-5 h-5 text-gray-600 dark:text-white" />}
+                className="gap-3 py-3.5 bg-white border-gray-200 text-gray-700 hover:bg-gray-50 justify-center w-full"
+                leftIcon={<Chrome className="w-5 h-5 text-gray-600" />}
               >
                 {t('auth.continue_with_google')}
               </Button>

@@ -1,139 +1,160 @@
-import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import { Bell, Zap, MessageCircle } from 'lucide-react';
-import { BottomNav } from '../layout/BottomNav';
-import { ViewState, User } from '../../types';
-import { UserAvatar } from '../ui/UserAvatar';
-import { useDashboardStore } from '../../store/dashboardStore';
+import React, { useEffect, useState } from 'react';
+import { Home, Compass, PlusSquare, ShoppingBag, User, Bell, Menu } from 'lucide-react';
+import { useAuthStore } from '../../store/authStore';
+import { useNotificationStore } from '../../store/useNotificationStore';
+import { AnimatePresence, motion } from 'framer-motion';
+import { DashboardDrawer } from '../dashboard/DashboardDrawer';
 
 interface MobileLayoutProps {
-    children: React.ReactNode;
-    currentView: ViewState;
-    onNavigate: (view: ViewState) => void;
-    user: User | null;
-    cartCount: number;
-    onOpenAuth: () => void;
-    onOpenFeedback: () => void;
+    children?: React.ReactNode;
+    currentView?: string;
+    onNavigate?: (view: any) => void;
+    user?: any;
+    cartCount?: number;
+    onOpenAuth?: () => void;
+    onOpenFeedback?: () => void;
 }
 
-export const MobileLayout: React.FC<MobileLayoutProps> = ({
-    children,
-    currentView,
-    onNavigate,
-    user,
-    cartCount,
-    onOpenAuth,
-    onOpenFeedback
-}) => {
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const [showTopBar, setShowTopBar] = useState(true);
-    const [isAtTop, setIsAtTop] = useState(true);
-    const [lastScrollY, setLastScrollY] = useState(0);
+export const MobileLayout: React.FC<MobileLayoutProps> = ({ children, currentView, onNavigate, user, cartCount }) => {
+    const { user: authUser } = useAuthStore();
+    const { unreadCount, fetchNotifications } = useNotificationStore();
+    const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-    // Hide Top Bar on Scroll
     useEffect(() => {
-        const handleScroll = () => {
-            const currentScrollY = window.scrollY;
-            const scrollThreshold = 60; // Approximate header height
+        // fetchNotifications();
+        // const interval = setInterval(fetchNotifications, 30000);
+        // return () => clearInterval(interval);
+    }, [fetchNotifications]);
 
-            setIsAtTop(currentScrollY < scrollThreshold);
+    const handleNavigate = (view: string) => {
+        if (onNavigate) {
+            onNavigate(view);
+        }
+    };
 
-            if (currentScrollY > scrollThreshold) {
-                if (currentScrollY > lastScrollY) {
-                    setShowTopBar(false); // Scrolling down
-                } else {
-                    setShowTopBar(true); // Scrolling up
-                }
-            } else {
-                setShowTopBar(true);
-            }
-            setLastScrollY(currentScrollY);
-        };
-
-        window.addEventListener('scroll', handleScroll, { passive: true });
-        return () => window.removeEventListener('scroll', handleScroll);
-    }, [lastScrollY]);
-
-    // Calculate header offset for children (sticky tabs)
-    // If we are at the top, header is absolute/part of flow, so offset is 0 for sticky calculations relative to viewport? 
-    // No, if I want tabs to stick BELOW the header when it's visible (scrolling up), I need 60px.
-    // If I'm strictly at the top, the header occupies space. The sticky element is naturally below it. sticky top-0 will catch it at 0.
-    // So 0px is correct for 'isAtTop'. 
-    // When 'fixed' and 'visible', we need 60px.
-    const isImmersive = currentView === 'ride-mode' || currentView === 'create';
-    const headerHeightVar = (!isAtTop && showTopBar && !isImmersive) ? '60px' : '0px';
+    const isActive = (view: string) => {
+        return currentView === view;
+    };
 
     return (
-        <div
-            className="min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-white pb-24 md:pb-0"
-            style={{
-                '--mobile-header-height': headerHeightVar,
-            } as React.CSSProperties}
-        >
-            {/* --- TOP APP BAR --- */}
-            {!isImmersive && (
-                <motion.div
-                    className={`top-0 left-0 right-0 z-[130] px-6 pt-safe-top pt-4 md:hidden will-change-transform transform-gpu ${isAtTop ? 'absolute' : 'fixed backdrop-blur-md bg-white/80 dark:bg-black/80 border-b border-gray-200 dark:border-white/5'}`}
-                    initial={{ y: 0 }}
-                    animate={{
-                        y: (isAtTop || showTopBar) ? 0 : -100,
-                    }}
-                    transition={{ duration: 0.3, ease: 'circOut' }}
-                >
-                    <div className="flex items-center justify-between h-[44px]"> {/* Explicit Height */}
+        <div className="min-h-screen bg-gray-50 pb-20 md:pb-0">
+            {/* Mobile Header */}
+            <header className="fixed top-0 left-0 right-0 h-16 bg-white/90 backdrop-blur-md border-b border-gray-100 z-50 flex items-center justify-between px-4 lg:hidden">
+                <div className="flex items-center gap-3">
+                    <button
+                        onClick={() => setIsDrawerOpen(true)}
+                        className="p-2 -ml-2 text-gray-700 hover:bg-gray-50 rounded-full transition-colors"
+                    >
+                        <Menu className="w-6 h-6" />
+                    </button>
+                    <span className="text-xl font-display font-black italic tracking-tighter text-gray-900">
+                        MOTO<span className="text-blue-600">VIBE</span>
+                    </span>
+                </div>
 
-                        <div className="flex items-center gap-3">
-                            {/* Avatar Trigger (Left) */}
-                            <div className="pointer-events-auto" onClick={() => useDashboardStore.getState().toggle()}>
-                                <UserAvatar src={(user as any)?.profileImage || user?.avatar} name={user?.name} size={32} className="ring-2 ring-gray-200 dark:ring-white/10" />
-                            </div>
+                <div className="flex items-center gap-2">
+                    <button onClick={() => handleNavigate('notifications')} className="p-2 relative text-gray-700 hover:bg-gray-50 rounded-full transition-colors">
+                        <Bell className="w-6 h-6" />
+                        {unreadCount > 0 && (
+                            <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white animate-pulse" />
+                        )}
+                    </button>
+                </div>
+            </header>
 
-                            {/* Logo */}
-                            <div className="pointer-events-auto" onClick={() => onNavigate('home')}>
-                                <span className="font-display font-black text-xl tracking-tighter text-gray-900 dark:text-white drop-shadow-xl italic">
-                                    MOTO<span className="text-[#E2FF3B]">VIBE</span>
-                                </span>
-                            </div>
-                        </div>
+            {/* Mobile Drawer */}
+            <DashboardDrawer
+                isOpen={isDrawerOpen}
+                onClose={() => setIsDrawerOpen(false)}
+                user={user || authUser}
+            />
 
-                        {/* Actions (Right - Glass Containers) */}
-                        <div className="flex items-center gap-3 pointer-events-auto">
-                            {/* Notifications */}
-                            <button className="relative w-10 h-10 rounded-full bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 flex items-center justify-center backdrop-blur-md border border-gray-200 dark:border-white/10 shadow-lg active:scale-90 transition-all">
-                                <Bell className="w-5 h-5 text-gray-700 dark:text-white" />
-                                <span className="absolute top-2.5 right-3 w-1.5 h-1.5 bg-[#E2FF3B] rounded-full animate-pulse shadow-[0_0_8px_#E2FF3B]"></span>
-                            </button>
-                            {/* Messages */}
-                            <button onClick={() => onNavigate('forum')} className="w-10 h-10 rounded-full bg-gray-100 dark:bg-white/10 hover:bg-gray-200 dark:hover:bg-white/20 flex items-center justify-center backdrop-blur-md border border-gray-200 dark:border-white/10 shadow-lg active:scale-90 transition-all">
-                                <MessageCircle className="w-5 h-5 text-gray-700 dark:text-white" />
-                            </button>
-                        </div>
-                    </div>
-                </motion.div>
-            )}
-
-            {/* --- MAIN CONTENT --- */}
-            {/* When absolute, we need padding to push content down? Header is absolute top-0. Content starts at top-0. */}
-            {/* Yes, we need padding top equal to header height + safe area. */}
-            <main className={`${isImmersive ? 'pt-0 pb-0' : 'pt-[80px] pb-20'} px-0 md:pt-0 w-full transition-[padding] duration-300`}>
+            {/* Main Content */}
+            <main className="pt-16 lg:pt-0 min-h-screen bg-transparent">
                 {children}
             </main>
 
-            {/* --- BOTTOM NAV --- */}
-            {!isImmersive && (
-                <BottomNav
-                    currentView={currentView}
-                    onNavigate={onNavigate}
-                    cartCount={cartCount}
-                    isOpen={isMenuOpen}
-                    onClose={() => setIsMenuOpen(false)}
-                    user={user}
-                    onOpenAuth={onOpenAuth}
-                    onOpenFeedback={onOpenFeedback}
-                    onToggle={() => setIsMenuOpen(!isMenuOpen)}
+            {/* Bottom Navigation Bar */}
+            <nav className="fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 pb-safe z-50 lg:hidden shadow-[0_-5px_20px_rgba(0,0,0,0.03)]">
+                <div className="flex items-center justify-around h-16 px-2">
+                    <button
+                        onClick={() => handleNavigate('home')}
+                        className={`relative flex flex-col items-center justify-center w-full h-full gap-1 transition-colors ${isActive('home') ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}
+                    >
+                        <div className="relative p-1.5">
+                            <Home className={`w-6 h-6 ${isActive('home') ? 'fill-current' : ''}`} strokeWidth={isActive('home') ? 2.5 : 2} />
+                            {isActive('home') && (
+                                <motion.div
+                                    layoutId="nav-pill"
+                                    className="absolute inset-0 bg-blue-50 rounded-xl -z-10"
+                                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                />
+                            )}
+                        </div>
+                        <span className="text-[10px] font-bold">Akış</span>
+                    </button>
 
-                />
-            )}
+                    <button
+                        onClick={() => handleNavigate('explore')}
+                        className={`relative flex flex-col items-center justify-center w-full h-full gap-1 transition-colors ${isActive('explore') ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}
+                    >
+                        <div className="relative p-1.5">
+                            <Compass className={`w-6 h-6 ${isActive('explore') ? 'fill-current' : ''}`} strokeWidth={isActive('explore') ? 2.5 : 2} />
+                            {isActive('explore') && (
+                                <motion.div
+                                    layoutId="nav-pill"
+                                    className="absolute inset-0 bg-blue-50 rounded-xl -z-10"
+                                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                />
+                            )}
+                        </div>
+                        <span className="text-[10px] font-bold">Keşfet</span>
+                    </button>
+
+                    <button
+                        onClick={() => handleNavigate('create')}
+                        className="relative -top-6"
+                    >
+                        <div className="w-14 h-14 rounded-full bg-gray-900 flex items-center justify-center shadow-lg shadow-gray-300 transform transition-transform active:scale-95 border-4 border-gray-50">
+                            <PlusSquare className="w-6 h-6 text-white" />
+                        </div>
+                    </button>
+
+                    <button
+                        onClick={() => handleNavigate('shop')}
+                        className={`relative flex flex-col items-center justify-center w-full h-full gap-1 transition-colors ${isActive('shop') ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}
+                    >
+                        <div className="relative p-1.5">
+                            <ShoppingBag className={`w-6 h-6 ${isActive('shop') ? 'fill-current' : ''}`} strokeWidth={isActive('shop') ? 2.5 : 2} />
+                            {isActive('shop') && (
+                                <motion.div
+                                    layoutId="nav-pill"
+                                    className="absolute inset-0 bg-blue-50 rounded-xl -z-10"
+                                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                />
+                            )}
+                        </div>
+                        <span className="text-[10px] font-bold">Mağaza</span>
+                    </button>
+
+                    <button
+                        onClick={() => handleNavigate('my-profile')}
+                        className={`relative flex flex-col items-center justify-center w-full h-full gap-1 transition-colors ${isActive('my-profile') || isActive('profile') ? 'text-blue-600' : 'text-gray-400 hover:text-gray-600'}`}
+                    >
+                        <div className="relative p-1.5">
+                            <User className={`w-6 h-6 ${isActive('my-profile') || isActive('profile') ? 'fill-current' : ''}`} strokeWidth={isActive('my-profile') || isActive('profile') ? 2.5 : 2} />
+                            {(isActive('my-profile') || isActive('profile')) && (
+                                <motion.div
+                                    layoutId="nav-pill"
+                                    className="absolute inset-0 bg-blue-50 rounded-xl -z-10"
+                                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                />
+                            )}
+                        </div>
+                        <span className="text-[10px] font-bold">Profil</span>
+                    </button>
+                </div>
+            </nav>
         </div>
     );
 };

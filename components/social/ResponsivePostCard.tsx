@@ -13,18 +13,11 @@ interface ResponsivePostCardProps {
 export const ResponsivePostCard: React.FC<ResponsivePostCardProps> = memo((props) => {
     return (
         <div className="w-full">
-            {/* Mobile View */}
-            <div className="md:hidden">
-                <MobilePostCard {...props} onCommentClick={props.onCommentClick} />
-            </div>
-
-            {/* Desktop View */}
-            <div className="hidden md:block">
-                <PostCard
-                    post={props.post}
-                    onComment={() => props.onCommentClick?.()}
-                />
-            </div>
+            <PostCard
+                post={props.post}
+                onComment={() => props.onCommentClick?.()}
+                onNavigate={props.onNavigate}
+            />
         </div>
     );
 });

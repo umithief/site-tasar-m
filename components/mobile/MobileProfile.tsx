@@ -1,389 +1,227 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, MoreVertical, MessageCircle, Settings, MapPin, Grid, Calendar, Map as MapIcon, Share2 } from 'lucide-react';
-import { useNavigate, useParams } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import {
+    Settings, Camera, Edit2, MapPin, Grid, Bookmark, Bell,
+    Plus, Save, X, Trophy, Zap, Wind, Cpu, LogOut,
+    LayoutDashboard, Shield, Bike, Image as ImageIcon,
+    Activity, Calendar, MessageSquare, Play, Film, Share2, Heart, Award, Wrench, Gauge, ArrowUpRight, Check
+} from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
-import { socialService } from '../../services/socialService';
-import { useFollow } from '../../hooks/useFollow';
 import { UserAvatar } from '../ui/UserAvatar';
+import { notify } from '../../services/notificationService';
+import { PostCard } from '../social/PostCard'; // Using the unified PostCard
+import { SocialPost, UserBike } from '../../types';
+import { authService } from '../../services/auth';
+import { gamificationService, RANKS } from '../../services/gamificationService';
 import { UserListModal } from '../UserListModal';
-import { MobilePostCard } from './MobilePostCard';
-import { MobileEditProfile } from './MobileEditProfile';
-import { User } from '../../types';
 
-interface MobileProfileProps {
-    userId?: string;
-    username?: string;
-    onNavigate?: (view: any, data?: any) => void; // align with App.tsx naming
-    onBack?: () => void;
-}
+// Mock Data
+const MOCK_REELS = [
+    { id: 'r1', thumbnail: 'https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?q=80&w=800', views: '12K', likes: '1.2K' },
+    { id: 'r2', thumbnail: 'https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=800', views: '8.5K', likes: '950' },
+    { id: 'r3', thumbnail: 'https://images.unsplash.com/photo-1449426468159-d96dbf08f19f?q=80&w=800', views: '22K', likes: '2.5K' },
+];
 
-export const MobileProfile: React.FC<MobileProfileProps> = ({ userId, username: propUsername, onNavigate, onBack }) => {
-    const { username: paramUsername } = useParams<{ username: string }>();
-    const effectiveUsername = propUsername || paramUsername || userId;
+export const MobileProfile: React.FC = () => {
+    const { user, updateProfile, logout } = useAuthStore();
+    const [activeTab, setActiveTab] = useState<'posts' | 'reels' | 'garage' | 'saved'>('posts');
+    const [isEditing, setIsEditing] = useState(false);
+    const [rankProgress, setRankProgress] = useState(65); // Mock
 
-    // Internal navigation helper to bridge gap if needed
-    const safeNavigate = (path: string | number) => {
-        if (typeof path === 'number' && path === -1) {
-            if (onBack) onBack();
-            else if (onNavigate) onNavigate('home');
-        } else if (typeof path === 'string') {
-            // Handle specific routes if needed, otherwise ignore or mapped
-        }
-    };
-
-    // const navigate = useNavigate(); // We might not be in a router context for this app structure, relying on onNavigate from props mostly.
-    const { user: currentUser } = useAuthStore();
-
-    // State
-    const [profileUser, setProfileUser] = useState<any>(null);
-    const [posts, setPosts] = useState<any[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
-    const [activeTab, setActiveTab] = useState<'posts' | 'garage' | 'routes'>('posts');
-    const [isFollowing, setIsFollowing] = useState(false);
-
-    // Modal State
+    // User List Modal
     const [isUserListOpen, setIsUserListOpen] = useState(false);
-    const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
-    const [userListTitle, setUserListTitle] = useState('');
-    const [userListUsers, setUserListUsers] = useState<any[]>([]);
+    const [userListType, setUserListType] = useState<'followers' | 'following'>('followers');
 
-    // Scroll Animations
-    const containerRef = useRef<HTMLDivElement>(null);
-    const { scrollY } = useScroll({ container: containerRef });
-
-    // Parallax logic (Adjusted for typical mobile scroll behavior)
-    // Note: useScroll targeting containerRef works best if the container itself scrolls.
-    // If window scrolls, we'd use no ref. Assuming main layout handles scroll or we are in a full-height overflow container.
-    const headerHeight = 280;
-    const backgroundY = useTransform(scrollY, [0, headerHeight], [0, headerHeight * 0.5]);
-    const avatarScale = useTransform(scrollY, [0, 100], [1, 0.8]);
-    const avatarY = useTransform(scrollY, [0, 100], [0, 20]);
-    const blurAmount = useTransform(scrollY, [0, 200], [0, 10]);
-
-    // Fetch Data
-    useEffect(() => {
-        const fetchProfile = async () => {
-            if (!effectiveUsername && !userId) return;
-            const lookupId = effectiveUsername || userId;
-
-            setIsLoading(true);
-            try {
-                // Fetch profile data (which now includes posts)
-                let data = await socialService.getUserProfile(lookupId!);
-
-                // Fallback for "Me" if API fails or special handling needed
-                if (!data && currentUser && (currentUser.username === effectiveUsername || currentUser._id === effectiveUsername || effectiveUsername === 'me')) {
-                    // Since backend getProfile is updated, this might not be needed if API call succeeds.
-                    // But keeps robust fallback.
-                    // Note: socialService.getUserProfile creates the fetch call.
-                }
-
-                if (data) {
-                    setProfileUser(data.user || data); // Handle potential data.user wrapper
-                    setPosts(data.user?.posts || data.posts || []);
-
-                    // Check follow status (if looking at someone else)
-                    if (currentUser && data.user?.followers) {
-                        const isFollowingBool = data.user.followers.some((f: any) =>
-                            (typeof f === 'string' ? f : f._id) === currentUser._id
-                        );
-                        setIsFollowing(isFollowingBool);
-                    }
-                }
-            } catch (error) {
-                console.error('Profile Load Error:', error);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchProfile();
-    }, [effectiveUsername, userId, currentUser]);
-
-    // Live Follow Hook
-    const { mutate: toggleFollow, isPending: isFollowPending } = useFollow();
-
-    const handleFollow = () => {
-        if (!currentUser || !profileUser) return;
-
-        const newStatus = !isFollowing;
-        toggleFollow({ targetUserId: profileUser._id, isCurrentlyFollowing: isFollowing });
-        setIsFollowing(newStatus); // Optimistic local toggle
-
-        // Optimistic Stats Update
-        setProfileUser((prev: any) => ({
-            ...prev,
-            followersCount: (prev.followersCount || 0) + (newStatus ? 1 : -1)
-        }));
-    };
-
-    const handleStatClick = (type: 'followers' | 'following') => {
-        if (!profileUser) return;
-
-        // Ensure we have an array, or fallback via API if needed (assuming populated for now based on earlier work)
-        const list = type === 'followers' ? profileUser.followers : profileUser.following;
-        const normalizedList = Array.isArray(list) ? list.map((u: any) => typeof u === 'string' ? { _id: u, name: 'User', avatar: '', username: '' } : u) : [];
-
-        setUserListUsers(normalizedList);
-        setUserListTitle(type === 'followers' ? 'Takipçiler' : 'Takip Edilenler');
+    const handleOpenUserList = (type: 'followers' | 'following') => {
+        setUserListType(type);
         setIsUserListOpen(true);
     };
 
-    if (isLoading) {
-        return (
-            <div className="flex items-center justify-center min-h-screen bg-black">
-                <div className="w-8 h-8 border-2 border-moto-accent border-t-transparent rounded-full animate-spin" />
-            </div>
-        );
-    }
-
-    if (!profileUser) {
-        return <div className="min-h-screen bg-black text-white p-8 text-center pt-20">Kullanıcı bulunamadı.</div>;
-    }
-
-    const isOwnProfile = currentUser?._id === profileUser._id;
+    if (!user) return null;
 
     return (
-        <div ref={containerRef} className="h-screen overflow-y-auto bg-[#09090b] text-white scroll-smooth no-scrollbar">
-            {/* User List Modal */}
-            <UserListModal
-                isOpen={isUserListOpen}
-                onClose={() => setIsUserListOpen(false)}
-                title={userListTitle}
-                users={userListUsers}
-                onNavigate={onNavigate}
-            />
-
-            <AnimatePresence>
-                {isEditProfileOpen && (
-                    <MobileEditProfile
-                        onClose={() => setIsEditProfileOpen(false)}
-                        onSuccess={() => {
-                            setIsEditProfileOpen(false);
-                            // Optional: Refresh profile data
-                            // setProfileUser(prev => ({...updatedUser})) handled by store or refetch
-                        }}
-                    />
-                )}
-            </AnimatePresence>
-
-            {/* --- HERO SECTION --- */}
-            <div className="relative w-full h-[280px]">
-                {/* Parallax Cover */}
-                <motion.div
-                    style={{ y: backgroundY, filter: `blur(${blurAmount}px)` }}
-                    className="absolute inset-0 z-0"
-                >
+        <div className="min-h-screen bg-gray-50 pb-24">
+            {/* 1. Header & Cover - Clean & Light */}
+            <div className="relative">
+                <div className="h-48 w-full overflow-hidden">
                     <img
-                        src={profileUser.coverImage || "https://images.unsplash.com/photo-1558981403-c5f9899a28bc?auto=format&fit=crop&q=80"}
-                        className="w-full h-full object-cover opacity-80"
-                        alt="cover"
+                        src={user.coverImage || 'https://images.unsplash.com/photo-1625055088214-5d8f6155680d?q=80&w=2069'}
+                        alt="Cover"
+                        className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-[#09090b]" />
-                </motion.div>
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-white/90" />
+                </div>
 
-                {/* Navbar (Absolute) */}
-                <div className="absolute top-0 left-0 right-0 p-4 flex justify-between items-center z-50 pt-12">
-                    <button onClick={() => onBack ? onBack() : safeNavigate(-1)} className="p-2 bg-black/20 backdrop-blur-md rounded-full text-white hover:bg-white/10">
-                        <ChevronLeft className="w-6 h-6" />
+                <div className="absolute top-4 right-4 z-10 flex gap-2">
+                    <button
+                        onClick={() => setIsEditing(true)}
+                        className="p-2 bg-white/80 backdrop-blur-md rounded-full text-gray-700 shadow-sm border border-gray-200"
+                    >
+                        <Settings className="w-5 h-5" />
                     </button>
-                    {isOwnProfile && (
-                        <button className="p-2 bg-black/20 backdrop-blur-md rounded-full text-white hover:bg-white/10">
-                            <Settings className="w-5 h-5" />
-                        </button>
-                    )}
-                    {!isOwnProfile && (
-                        <button className="p-2 bg-black/20 backdrop-blur-md rounded-full text-white hover:bg-white/10">
-                            <MoreVertical className="w-5 h-5" />
-                        </button>
-                    )}
+                    <button
+                        onClick={logout}
+                        className="p-2 bg-red-50 backdrop-blur-md rounded-full text-red-600 shadow-sm border border-red-100"
+                    >
+                        <LogOut className="w-5 h-5" />
+                    </button>
                 </div>
-
-                {/* Avatar & Identity Overlap */}
-                <motion.div
-                    style={{ scale: avatarScale, y: avatarY }}
-                    className="absolute -bottom-12 left-6 z-20"
-                >
-                    <div className="relative w-24 h-24 rounded-full border-[3px] border-moto-accent p-1 bg-[#09090b]">
-                        <UserAvatar
-                            src={profileUser.profileImage || profileUser.avatar}
-                            name={profileUser.name}
-                            size={86} // Inner size
-                            className="w-full h-full rounded-full"
-                        />
-                        {profileUser.rank && (
-                            <div className="absolute -bottom-2 -right-2 bg-moto-accent text-black text-[10px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter">
-                                {profileUser.rank}
-                            </div>
-                        )}
-                    </div>
-                </motion.div>
             </div>
 
-            {/* --- IDENTITY & BIO --- */}
-            <div className="mt-14 px-6 relative z-10">
-                <div className="flex justify-between items-start">
-                    <div>
-                        <h1 className="text-2xl font-bold text-white tracking-tight">{profileUser.name}</h1>
-                        <p className="text-gray-400 text-sm font-medium">@{profileUser.username || profileUser.name.toLowerCase().replace(/\s/g, '')}</p>
-                    </div>
-
-                    {/* Interaction Buttons */}
-                    <div className="flex gap-2">
-                        {isOwnProfile ? (
-                            <button
-                                onClick={() => setIsEditProfileOpen(true)}
-                                className="px-6 py-2 rounded-xl bg-white/5 border border-white/10 font-bold text-sm backdrop-blur-md hover:bg-white/10 transition-all"
-                            >
-                                Profili Düzenle
-                            </button>
-                        ) : (
-                            <>
-                                <button
-                                    onClick={handleFollow}
-                                    disabled={isFollowPending}
-                                    className={`px-6 py-2 rounded-xl font-bold text-sm transition-all shadow-lg active:scale-95
-                                    ${isFollowing
-                                            ? 'bg-zinc-800 text-gray-400 border border-white/5'
-                                            : 'bg-moto-accent text-black shadow-moto-accent/20'}`}
-                                >
-                                    {isFollowing ? 'Takip Ediliyor' : 'Takip Et'}
-                                </button>
-
-                            </>
-                        )}
-                    </div>
-                </div>
-
-                {/* Bio */}
-                {profileUser.bio && (
-                    <p className="mt-4 text-gray-300 text-sm leading-relaxed font-light">
-                        {profileUser.bio}
-                    </p>
-                )}
-
-                {/* Location & Meta */}
-                <div className="flex items-center gap-4 mt-4 text-gray-500 text-xs font-medium">
-                    {profileUser.location && (
-                        <div className="flex items-center gap-1">
-                            <MapPin className="w-3 h-3 text-moto-accent" />
-                            {profileUser.location}
+            {/* 2. Identity Section - Card Style */}
+            <div className="px-4 -mt-16 relative z-10">
+                <div className="bg-white rounded-3xl p-6 shadow-xl shadow-gray-200/50 border border-gray-100 text-center">
+                    <div className="relative inline-block mb-3">
+                        <UserAvatar name={user.name} size={100} className="border-4 border-white shadow-lg" />
+                        <div className="absolute bottom-0 right-0 bg-blue-500 rounded-full p-1.5 border-4 border-white">
+                            {user.rank === 'Yol Kaptanı' ? <Shield className="w-3 h-3 text-white fill-current" /> : <Award className="w-3 h-3 text-white" />}
                         </div>
-                    )}
-                    <div className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        Katıldı: {profileUser.joinDate}
                     </div>
+
+                    <h1 className="text-2xl font-black text-gray-900 mb-1">{user.name}</h1>
+                    <p className="text-xs font-medium text-gray-500 mb-4 bg-gray-50 inline-block px-3 py-1 rounded-full border border-gray-100">
+                        @{user.username || 'rider'}
+                    </p>
+
+                    {/* Stats Grid */}
+                    <div className="grid grid-cols-3 gap-4 border-t border-gray-100 pt-4 mb-4">
+                        <div onClick={() => handleOpenUserList('followers')} className="active:scale-95 transition-transform">
+                            <div className="text-lg font-black text-gray-900">{Array.isArray(user.followers) ? user.followers.length : (user.followersCount || 0)}</div>
+                            <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Followers</div>
+                        </div>
+                        <div onClick={() => handleOpenUserList('following')} className="active:scale-95 transition-transform">
+                            <div className="text-lg font-black text-gray-900">{Array.isArray(user.following) ? user.following.length : (user.followingCount || 0)}</div>
+                            <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Following</div>
+                        </div>
+                        <div>
+                            <div className="text-lg font-black text-gray-900">{user.garage?.length || 0}</div>
+                            <div className="text-[9px] font-bold text-gray-400 uppercase tracking-wider">Garage</div>
+                        </div>
+                    </div>
+
+                    {/* Bio */}
+                    <p className="text-sm text-gray-600 leading-relaxed font-medium">
+                        {user.bio || "Just riding along..."}
+                    </p>
                 </div>
             </div>
 
-            {/* --- STATS DASHBOARD --- */}
-            <div className="mt-8 px-4 grid grid-cols-3 gap-3">
-                <div
-                    onClick={() => handleStatClick('followers')}
-                    className="bg-[#111] border border-white/5 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer hover:border-white/10 transition-colors active:scale-95 duration-200"
-                >
-                    <span className="font-mono text-xl font-bold text-white mb-1">{profileUser.followersCount || (profileUser.followers?.length) || 0}</span>
-                    <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Takipçi</span>
-                </div>
-                <div
-                    onClick={() => handleStatClick('following')}
-                    className="bg-[#111] border border-white/5 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer hover:border-white/10 transition-colors active:scale-95 duration-200"
-                >
-                    <span className="font-mono text-xl font-bold text-white mb-1">{profileUser.followingCount || (profileUser.following?.length) || 0}</span>
-                    <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Takip</span>
-                </div>
-                <div className="bg-[#111] border border-white/5 rounded-2xl p-4 flex flex-col items-center justify-center cursor-pointer hover:border-white/10 transition-colors">
-                    <span className="font-mono text-xl font-bold text-white mb-1">{profileUser.totalRides || profileUser.posts?.length || 0}</span>
-                    <span className="text-[10px] text-gray-500 uppercase tracking-widest font-bold">Sürüş</span>
-                </div>
-            </div>
-
-            {/* --- DIGITAL GARAGE --- */}
-            {profileUser.garage && profileUser.garage.length > 0 && (
-                <div className="mt-10 pl-6">
-                    <div className="flex items-center justify-between pr-6 mb-4">
-                        <h3 className="text-sm font-bold tracking-widest text-gray-400 flex items-center gap-2">
-                            THE GARAGE <div className="h-[1px] w-8 bg-moto-accent" />
-                        </h3>
-                    </div>
-                    <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4 pr-6">
-                        {profileUser.garage.map((bike: any, i: number) => (
-                            <div key={i} className="flex-shrink-0 w-64 aspect-[16/9] relative rounded-xl overflow-hidden group border border-white/10">
-                                <img src={bike.image} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-                                <div className="absolute bottom-3 left-3">
-                                    <div className="text-white font-bold text-sm">{bike.brand} {bike.model}</div>
-                                    <div className="text-moto-accent text-xs font-mono">{bike.year}</div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )}
-
-            {/* --- CONTENT TABS --- */}
-            <div className="sticky top-0 z-40 bg-[#09090b]/90 backdrop-blur-xl mt-8 border-b border-white/10">
-                <div className="flex">
+            {/* 3. Navigation Tabs - Sticky */}
+            <div className="sticky top-16 z-30 bg-gray-50 pt-2 pb-2 mt-4 px-4 overflow-x-auto no-scrollbar">
+                <div className="flex gap-3 justify-center">
                     {[
-                        { id: 'posts', icon: Grid, label: 'Gönderiler' },
-                        { id: 'garage', icon: MapIcon, label: 'Rota' }, // Repurposing garage tab logic if needed, or keeping simpler
-                        { id: 'routes', icon: Share2, label: 'Tag' },
+                        { id: 'posts', label: 'Feed', icon: Grid },
+                        { id: 'reels', label: 'Reels', icon: Film },
+                        { id: 'garage', label: 'Garage', icon: Bike },
+                        { id: 'saved', label: 'Saved', icon: Bookmark },
                     ].map((tab) => (
                         <button
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
-                            className={`flex-1 py-4 flex flex-col items-center gap-1 transition-colors relative
-                            ${activeTab === tab.id ? 'text-white' : 'text-gray-600 hover:text-gray-400'}`}
+                            className={`flex flex-col items-center gap-1 min-w-[70px] py-2 rounded-xl transition-all ${activeTab === tab.id
+                                ? 'bg-white text-blue-600 shadow-md transform scale-105 border border-gray-100'
+                                : 'text-gray-400 hover:bg-white hover:text-gray-600'
+                                }`}
                         >
-                            <tab.icon className={`w-5 h-5 ${activeTab === tab.id ? 'stroke-[2.5px]' : ''}`} />
-                            {activeTab === tab.id && (
-                                <motion.div
-                                    layoutId="activeTab"
-                                    className="absolute bottom-0 w-12 h-1 bg-moto-accent rounded-t-full"
-                                />
-                            )}
+                            <tab.icon className={`w-5 h-5 ${activeTab === tab.id ? 'fill-current' : ''}`} strokeWidth={2} />
+                            <span className="text-[9px] font-bold uppercase tracking-wider">{tab.label}</span>
                         </button>
                     ))}
                 </div>
             </div>
 
-            {/* --- CONTENT GRID --- */}
-            <div className="min-h-[500px] bg-[#09090b]">
-                {activeTab === 'posts' && (
-                    <div className="pb-24 pt-4">
-                        {posts.length > 0 ? (
-                            <div className="space-y-4">
-                                {posts.map((post, i) => (
-                                    <MobilePostCard
-                                        key={post._id}
-                                        post={post}
-                                        currentUserId={currentUser?._id}
-                                        onNavigate={onNavigate}
-                                    // onCommentClick could be improved to open a sheet, or rely on card handling
-                                    />
-                                ))}
-                            </div>
-                        ) : (
-                            <div className="py-20 text-center text-gray-500 flex flex-col items-center">
-                                <Grid className="w-12 h-12 mb-4 opacity-20" />
-                                <p>Henüz gönderi yok.</p>
+            {/* 4. Content Area */}
+            <div className="px-2 mt-2 min-h-[300px]">
+                <AnimatePresence mode="wait">
+                    <motion.div
+                        key={activeTab}
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -10 }}
+                        transition={{ duration: 0.2 }}
+                    >
+                        {activeTab === 'posts' && (
+                            <div className="space-y-4 pb-4">
+                                {/* PostCard handles its own rendering. Just need to ensure they look good on mobile background. */}
+                                {/* Example placeholder logic (we don't fetch posts here yet in this snippet) */}
+                                <div className="text-center py-10 text-gray-400">
+                                    <Grid className="w-10 h-10 mx-auto mb-2 text-gray-300" />
+                                    <p className="text-xs font-bold">No posts yet</p>
+                                </div>
                             </div>
                         )}
-                    </div>
-                )}
-                {activeTab !== 'posts' && (
-                    <div className="py-20 text-center text-gray-500">
-                        <p>Bu özellik yakında geliyor.</p>
-                    </div>
-                )}
+
+                        {activeTab === 'reels' && (
+                            <div className="grid grid-cols-2 gap-2">
+                                {MOCK_REELS.map(reel => (
+                                    <div key={reel.id} className="relative aspect-[9/16] bg-gray-200 rounded-xl overflow-hidden shadow-sm">
+                                        <img src={reel.thumbnail} className="w-full h-full object-cover" />
+                                        <div className="absolute bottom-2 left-2 flex items-center gap-1 text-[10px] text-white font-bold drop-shadow-md">
+                                            <Play className="w-3 h-3 fill-current" /> {reel.views}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+
+                        {activeTab === 'garage' && (
+                            <div className="space-y-4">
+                                {user.garage?.map(bike => (
+                                    <div key={bike._id} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex gap-4">
+                                        <div className="w-20 h-20 bg-gray-100 rounded-xl overflow-hidden shrink-0">
+                                            <img src={bike.image} className="w-full h-full object-cover" />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-black text-gray-900">{bike.model}</h3>
+                                            <p className="text-xs text-gray-500 font-bold uppercase">{bike.brand}</p>
+                                            <div className="flex gap-2 mt-2">
+                                                <span className="px-2 py-1 bg-gray-50 rounded-md text-[10px] font-mono text-gray-600 border border-gray-100">{bike.km} KM</span>
+                                                <span className="px-2 py-1 bg-gray-50 rounded-md text-[10px] font-mono text-gray-600 border border-gray-100">{bike.year}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                                {(!user.garage || user.garage.length === 0) && (
+                                    <div className="text-center py-10 bg-white rounded-2xl border-2 border-dashed border-gray-100">
+                                        <Bike className="w-10 h-10 mx-auto mb-2 text-gray-300" />
+                                        <p className="text-gray-400 text-xs font-bold">Garage is empty</p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {activeTab === 'saved' && (
+                            <div className="flex flex-col items-center justify-center py-12 text-center text-gray-400">
+                                <Bookmark className="w-12 h-12 mb-3 text-gray-200" />
+                                <p className="text-sm font-medium text-gray-500">Henüz kaydedilen yok</p>
+                            </div>
+                        )}
+
+                    </motion.div>
+                </AnimatePresence>
             </div>
 
-            {/* Bottom Padding for Nav */}
-            <div className="h-20" />
+            <UserListModal
+                isOpen={isUserListOpen}
+                onClose={() => setIsUserListOpen(false)}
+                title={userListType === 'followers' ? 'Takipçiler' : 'Takip Edilenler'}
+                users={userListType === 'followers' ? (user.followers || []) : (user.following || [])}
+            />
+
+            {/* Mobile Edit Profile Modal - Placeholder for full implementation */}
+            {isEditing && (
+                <div className="fixed inset-0 z-50 bg-white flex flex-col">
+                    <div className="flex items-center justify-between p-4 border-b border-gray-100">
+                        <h2 className="text-lg font-black text-gray-900">Profili Düzenle</h2>
+                        <button onClick={() => setIsEditing(false)} className="p-2 bg-gray-50 rounded-full">
+                            <X className="w-5 h-5 text-gray-500" />
+                        </button>
+                    </div>
+                    <div className="flex-1 p-8 flex items-center justify-center text-gray-400">
+                        <p>Edit Form Component Here</p>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
-
-export default MobileProfile;

@@ -88,6 +88,7 @@ import { OrderTracking } from './components/checkout/OrderTracking';
 import { WebSettings } from './components/desktop/WebSettings';
 import { Garage } from './components/garage/Garage';
 import { ExploreMap } from './components/map/ExploreMap';
+import { MobileNotifications } from './components/mobile/MobileNotifications';
 
 export const App: React.FC = () => {
     const [view, setView] = useState<ViewState>('home');
@@ -442,8 +443,8 @@ export const App: React.FC = () => {
             case 'social-hub': return <SocialHub user={user} onNavigate={navigateTo} onLogout={handleLogout} onUpdateUser={setUser} initialData={socialHubData} cartCount={cartItems.reduce((a, b) => a + b.quantity, 0)} onCartClick={() => setIsCartOpen(true)} />;
             case 'riders': return <RidersDirectory onViewProfile={handleViewProfile} onNavigate={navigateTo} />;
             case 'reels': return <ReelsPage onNavigate={navigateTo} />;
-            case 'reels': return <ReelsPage onNavigate={navigateTo} />;
             case 'explore': return isMobile ? <MobileExplore onNavigate={navigateTo} /> : <ExploreMap onNavigate={navigateTo} />;
+            case 'notifications': return <MobileNotifications />;
             case 'create': return <RideMode route={activeRoute} onNavigate={navigateTo} />; // Placeholder
             case 'garage': return <Garage />;
             case 'cart':

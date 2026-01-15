@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, MessageCircle, Share2, Zap, Gauge, Navigation, MapPin, MoreVertical, Trash2, Edit2, Flag, ShieldAlert, Bookmark, Save } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Zap, MapPin, MoreVertical, Trash2, Edit2, Flag, Bookmark } from 'lucide-react';
 import { SocialPost } from '../../types';
 import { useAuthStore } from '../../store/authStore';
 import { socialService } from '../../services/socialService';
@@ -11,11 +11,10 @@ interface PostCardProps {
     post: SocialPost;
     onLike?: (id: string) => void;
     onComment?: (id: string) => void;
+    onNavigate?: (view: string, data?: any) => void;
 }
 
-
-
-export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) => {
+export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment, onNavigate }) => {
     const { user: currentUser } = useAuthStore();
     const [isLiked, setIsLiked] = useState(post.isLiked);
     const [likesCount, setLikesCount] = useState(post.likes);
@@ -41,15 +40,26 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
 
         // Call API
         if (onLike) onLike(post._id);
-        else await socialService.likePost(post._id, currentUser._id);
+        else {
+            try {
+                await socialService.likePost(post._id, currentUser._id);
+            } catch (error) {
+                // Revert if failed
+                setIsLiked(!newStatus);
+                setLikesCount(prev => !newStatus ? prev + 1 : prev - 1);
+            }
+        }
     };
 
     const handleDelete = async () => {
         if (confirm('Bu gönderiyi silmek istediğine emin misin?')) {
-            await socialService.deletePost(post._id);
-            setShowOptions(false);
-            // Ideally trigger refresh, but for now we rely on parent or reload
-            window.location.reload();
+            try {
+                await socialService.deletePost(post._id);
+                setShowOptions(false);
+                window.location.reload();
+            } catch (error) {
+                alert('Silme işlemi başarısız.');
+            }
         }
     };
 
@@ -73,14 +83,14 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
         alert('Gönderi raporlandı.');
     };
 
-    const handleShareToAdmin = async () => {
-        await socialService.shareToAdmin(post._id);
-        setShowOptions(false);
-        alert('Gönderi admine iletildi.');
+    const handleProfileClick = (e: React.MouseEvent) => {
+        e.stopPropagation();
+        if (onNavigate && post.userId) {
+            onNavigate('public-profile', { userId: post.userId, username: post.userName });
+        }
     };
 
     return (
-
         <motion.div
             initial={{ opacity: 0, y: 40 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -94,9 +104,12 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
                 {/* 1. Cinematic Header (Floating) */}
                 <div className="absolute top-0 left-0 right-0 p-6 z-30 bg-gradient-to-b from-white/90 dark:from-black/80 via-white/50 dark:via-black/40 to-transparent pointer-events-none">
                     <div className="flex items-center justify-between pointer-events-auto">
-                        <div className="flex items-center gap-4">
+                        <div
+                            className="flex items-center gap-4 cursor-pointer"
+                            onClick={handleProfileClick}
+                        >
                             {/* Avatar with Glow Ring */}
-                            <div className="relative group/avatar cursor-pointer">
+                            <div className="relative group/avatar">
                                 <div className="absolute -inset-2 bg-moto-accent/20 rounded-full blur-md opacity-0 group-hover/avatar:opacity-100 transition-opacity duration-500" />
                                 <div className="relative p-[2px] rounded-full bg-gradient-to-br from-moto-accent to-gray-200 dark:to-white/10">
                                     <div className="p-[2px] bg-white dark:bg-black rounded-full">
@@ -116,7 +129,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
 
                             {/* User Info */}
                             <div>
-                                <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-wide font-display drop-shadow-md">
+                                <h3 className="text-sm font-bold text-gray-900 dark:text-white tracking-wide font-display drop-shadow-md hover:underline decoration-moto-accent underline-offset-2">
                                     {post.userName}
                                 </h3>
                                 <div className="flex items-center gap-2 text-[10px] text-gray-600 dark:text-gray-300 font-medium tracking-wide opacity-90">
@@ -175,7 +188,7 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
 
                 {/* 2. Immersive Media Content */}
                 <div
-                    className="relative w-full aspect-[4/5] bg-gray-50 dark:bg-neutral-900 cursor-pointer overflow-hidden"
+                    className="relative w-full bg-gray-50 dark:bg-neutral-900 cursor-pointer overflow-hidden"
                     onDoubleClick={handleLike}
                 >
                     {post.images && post.images.length > 0 ? (
@@ -184,10 +197,10 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
                             transition={{ duration: 0.7, ease: "easeOut" }}
                             src={post.images[0]}
                             alt="Post"
-                            className="w-full h-full object-cover"
+                            className="w-full h-auto object-cover max-h-[600px]"
                         />
                     ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center gap-4 bg-gray-100 dark:bg-zinc-900/50">
+                        <div className="w-full aspect-square flex flex-col items-center justify-center gap-4 bg-gray-100 dark:bg-zinc-900/50">
                             <div className="w-20 h-20 rounded-full bg-white dark:bg-white/5 border border-gray-200 dark:border-white/5 flex items-center justify-center">
                                 <Zap className="w-8 h-8 text-gray-400 dark:text-gray-600" />
                             </div>
@@ -300,5 +313,4 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment }) =
             </div>
         </motion.div>
     );
-
 };

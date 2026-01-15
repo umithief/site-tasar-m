@@ -3,42 +3,50 @@ import { User, Settings, LogOut } from 'lucide-react';
 import { UserAvatar } from '../ui/UserAvatar';
 import { useAuthStore } from '../../store/authStore';
 
-export const RiderProfile = ({ user, isMobile = false, onClose }: { user: any; isMobile?: boolean; onClose?: () => void }) => {
-    const { logout } = useAuthStore();
+export const RiderProfile = ({ user: propUser, isMobile = false, onClose }: { user?: any; isMobile?: boolean; onClose?: () => void }) => {
+    const { user: authUser, logout } = useAuthStore();
+
+    // Prioritize propUser if provided (e.g. for previewing other users), otherwise use authUser
+    const user = propUser || authUser;
 
     if (!user) return null;
 
+    // Ensure stats exist with defaults
+    const stats = user.stats || { rides: 0, followers: 0, following: 0 };
+
     return (
-        <div className="bg-[#111] rounded-3xl p-6 border border-white/5 shadow-xl relative overflow-hidden group">
-            <div className="absolute inset-0 bg-gradient-to-br from-moto-accent/5 to-transparent opacity-50" />
+        <div className="bg-white rounded-3xl p-6 border border-gray-100 shadow-sm relative overflow-hidden group hover:shadow-md transition-all duration-300">
+            {/* Light Gradient Background */}
+            <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-white -z-10" />
+            <div className="absolute top-0 right-0 w-32 h-32 bg-blue-500/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 
             <div className="relative z-10 flex flex-col items-center text-center">
-                <div className="ring-2 ring-white/10 rounded-full p-1 bg-black mb-4 relative">
+                <div className="ring-4 ring-white shadow-lg rounded-full p-1 bg-gradient-to-br from-white to-gray-50 mb-4 relative">
                     <UserAvatar src={user.profileImage || user.avatar} name={user.name} size={80} />
-                    <div className="absolute bottom-0 right-0 w-6 h-6 bg-green-500 rounded-full border-4 border-black" title="Online" />
+                    <div className="absolute bottom-1 right-1 w-5 h-5 bg-green-500 rounded-full border-2 border-white shadow-sm" title="Online" />
                 </div>
 
-                <h3 className="text-xl font-bold text-white mb-1">{user.name}</h3>
-                <p className="text-zinc-500 text-sm font-mono mb-4">@{user.username}</p>
+                <h3 className="text-xl font-black text-gray-900 mb-0.5 tracking-tight">{user.name}</h3>
+                <p className="text-gray-400 text-xs font-medium mb-4">@{user.username}</p>
 
                 {user.rank && (
-                    <span className="px-3 py-1 rounded bg-zinc-800 text-zinc-300 text-[10px] font-black uppercase tracking-wider border border-white/5 mb-6">
+                    <span className="px-4 py-1.5 rounded-full bg-gray-50 text-gray-600 text-[10px] font-black uppercase tracking-wider border border-gray-100 mb-6 shadow-sm">
                         {user.rank}
                     </span>
                 )}
 
-                <div className="grid grid-cols-3 gap-4 w-full border-t border-white/5 pt-4">
-                    <div>
-                        <div className="text-lg font-bold text-white">{user.stats?.rides || 0}</div>
-                        <div className="text-[10px] text-zinc-500 uppercase font-bold">Sürüş</div>
+                <div className="grid grid-cols-3 gap-2 w-full border-t border-gray-100 pt-5">
+                    <div className="p-2 rounded-xl hover:bg-gray-50 transition-colors">
+                        <div className="text-lg font-black text-gray-900 leading-none mb-1">{stats.rides || 0}</div>
+                        <div className="text-[9px] text-gray-400 uppercase font-bold tracking-wider">Sürüş</div>
                     </div>
-                    <div>
-                        <div className="text-lg font-bold text-white">{user.stats?.followers || 0}</div>
-                        <div className="text-[10px] text-zinc-500 uppercase font-bold">Takipçi</div>
+                    <div className="p-2 rounded-xl hover:bg-gray-50 transition-colors">
+                        <div className="text-lg font-black text-gray-900 leading-none mb-1">{stats.followers || 0}</div>
+                        <div className="text-[9px] text-gray-400 uppercase font-bold tracking-wider">Takipçi</div>
                     </div>
-                    <div>
-                        <div className="text-lg font-bold text-white">{user.stats?.following || 0}</div>
-                        <div className="text-[10px] text-zinc-500 uppercase font-bold">Takip</div>
+                    <div className="p-2 rounded-xl hover:bg-gray-50 transition-colors">
+                        <div className="text-lg font-black text-gray-900 leading-none mb-1">{stats.following || 0}</div>
+                        <div className="text-[9px] text-gray-400 uppercase font-bold tracking-wider">Takip</div>
                     </div>
                 </div>
 
@@ -46,7 +54,7 @@ export const RiderProfile = ({ user, isMobile = false, onClose }: { user: any; i
                 {isMobile && (
                     <button
                         onClick={() => { if (logout) logout(); if (onClose) onClose(); }}
-                        className="w-full mt-6 py-3 rounded-xl bg-red-500/10 text-[#FF3E3E] text-xs font-bold uppercase tracking-wider hover:bg-red-500/20 transition-colors flex items-center justify-center gap-2"
+                        className="w-full mt-6 py-3.5 rounded-xl bg-red-50 text-red-600 text-xs font-bold uppercase tracking-wider hover:bg-red-100 transition-colors flex items-center justify-center gap-2"
                     >
                         <LogOut className="w-4 h-4" />
                         GÜVENLİ ÇIKIŞ

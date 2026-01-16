@@ -58,14 +58,15 @@ export const SpatialFeed: React.FC<SpatialFeedProps> = ({
                             <FeedItem index={index}>
                                 <div className="relative group perspective-item">
                                     {/* Glassmorphic Background Card */}
-                                    <div className="absolute inset-0 bg-white/5 backdrop-blur-xl rounded-[2.5rem] -z-10 border border-white/10 shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] transition-all duration-300 group-hover:bg-white/10 group-hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.37)] group-hover:border-white/20" />
+                                    <div className="absolute inset-0 bg-white/80 dark:bg-black/40 backdrop-blur-xl rounded-[2.5rem] -z-10 border border-white/40 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] transition-all duration-300 group-hover:bg-white/90 group-hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.2)] group-hover:border-white/50" />
 
                                     <ResponsivePostCard
                                         post={post}
                                         currentUserId={currentUser?._id}
                                         onNavigate={onNavigate}
                                         onCommentClick={() => onCommentClick(post._id)}
-                                        className="!bg-transparent !shadow-none !border-none" // Override default styles
+                                        variant="glass"
+                                        className="!bg-transparent !shadow-none !border-none"
                                     />
                                 </div>
                             </FeedItem>

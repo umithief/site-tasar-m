@@ -9,6 +9,7 @@ interface ResponsivePostCardProps {
     onNavigate?: (view: any, data?: any) => void;
     onCommentClick?: () => void;
     className?: string;
+    variant?: 'default' | 'glass';
 }
 
 export const ResponsivePostCard: React.FC<ResponsivePostCardProps> = memo((props) => {
@@ -18,6 +19,7 @@ export const ResponsivePostCard: React.FC<ResponsivePostCardProps> = memo((props
                 post={props.post}
                 onComment={() => props.onCommentClick?.()}
                 onNavigate={props.onNavigate}
+                variant={props.variant}
             />
         </div>
     );

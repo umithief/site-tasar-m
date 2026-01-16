@@ -57,29 +57,21 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
     return (
         <motion.aside
             layout
-            className={`hidden md:flex flex-col h-screen fixed left-0 top-0 z-[1000] bg-white/95 dark:bg-black/95 backdrop-blur-2xl border-r border-gray-200 dark:border-white/5 ${className}`}
+            className={`hidden md:flex flex-col h-screen fixed left-0 top-0 z-[1000] bg-white/90 dark:bg-black/90 backdrop-blur-2xl border-r border-gray-200/50 dark:border-white/5 shadow-2xl shadow-black/5 ${className}`}
             initial={false}
-            animate={{ width: isExpanded ? 260 : 80 }}
+            animate={{ width: isExpanded ? 240 : 88 }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
         >
             {/* 1. Header (Logo / Menu Toggle) */}
-            <div className={`h-20 flex items-center ${isExpanded ? 'px-6 justify-start' : 'justify-center'} relative transition-all duration-300`}>
-                <button
-                    onClick={onToggleExpand}
-                    className={`absolute ${isExpanded ? 'right-4' : 'center'} p-2 rounded-full hover:bg-gray-100 dark:hover:bg-white/5 transition-all text-gray-500 dark:text-white/80 hover:text-gray-900 dark:hover:text-white z-50`}
-                >
-                    <Menu strokeWidth={1} className="w-6 h-6" />
-                </button>
-
+            <div className={`h-24 flex items-center ${isExpanded ? 'px-8 justify-between' : 'justify-center'} relative transition-all duration-300`}>
                 <AnimatePresence mode="wait">
                     {isExpanded && (
                         <motion.div
                             initial={{ opacity: 0, x: -10 }}
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: -10 }}
-                            className="mr-8"
                         >
-                            <Logo variant="full" className="h-8 w-auto text-gray-900 dark:text-white" />
+                            <Logo variant="full" className="h-6 w-auto text-gray-900 dark:text-white" />
                         </motion.div>
                     )}
                     {!isExpanded && (
@@ -92,23 +84,30 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
                         </motion.div>
                     )}
                 </AnimatePresence>
+
+                <button
+                    onClick={onToggleExpand}
+                    className={`p-2 rounded-xl hover:bg-gray-100 dark:hover:bg-white/10 transition-colors text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white`}
+                >
+                    <Menu strokeWidth={1.5} className="w-5 h-5" />
+                </button>
             </div>
 
             {/* 2. Navigation Items */}
-            <div className="flex-1 overflow-y-auto overflow-x-hidden py-4 px-3 space-y-8 custom-scrollbar">
+            <div className="flex-1 overflow-y-auto overflow-x-hidden py-6 px-4 space-y-8 custom-scrollbar">
                 {menuGroups.map((group, groupIdx) => (
                     <div key={groupIdx}>
                         {isExpanded && (
                             <motion.h3
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
+                                initial={{ opacity: 0, y: 5 }}
+                                animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0 }}
-                                className="px-4 mb-2 text-[10px] font-bold text-white/30 tracking-[0.2em] uppercase"
+                                className="px-3 mb-3 text-[10px] font-black text-gray-400 dark:text-gray-600 tracking-widest uppercase font-display"
                             >
                                 {group.title}
                             </motion.h3>
                         )}
-                        <div className="space-y-1">
+                        <div className="space-y-2">
                             {group.items.map((item) => {
                                 const isActive = activeView === item.id;
                                 return (
@@ -117,40 +116,33 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
                                         onClick={() => onNavigate(item.id as ViewState)}
                                         onMouseEnter={() => setHoveredId(item.id)}
                                         onMouseLeave={() => setHoveredId(null)}
-                                        className="relative w-full h-12 flex items-center group cursor-pointer"
+                                        className={`relative w-full h-11 flex items-center group cursor-pointer transition-all duration-300 rounded-xl overflow-hidden
+                                            ${isActive ? '' : 'hover:bg-gray-50 dark:hover:bg-white/5'}
+                                        `}
                                     >
-                                        {/* Active State Indicator */}
+                                        {/* Active State Background & Glow */}
                                         {isActive && (
-                                            <>
-                                                <motion.div
-                                                    layoutId="activeGlow"
-                                                    className="absolute inset-0 bg-gradient-to-r from-orange-500/10 to-transparent rounded-xl"
-                                                    initial={{ opacity: 0 }}
-                                                    animate={{ opacity: 1 }}
-                                                    transition={{ duration: 0.2 }}
-                                                />
-                                                <motion.div
-                                                    layoutId="activeBorder"
-                                                    className="absolute left-0 w-[3px] h-6 bg-orange-500 rounded-r-full shadow-[0_0_12px_rgba(255,69,0,0.8)]"
-                                                />
-                                            </>
+                                            <motion.div
+                                                layoutId="activeCtn"
+                                                className="absolute inset-0 bg-gray-900 dark:bg-white text-white dark:text-black shadow-lg shadow-gray-200/50 dark:shadow-none"
+                                                initial={false}
+                                                transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                                            />
                                         )}
 
                                         {/* Hover Magnetic Effect Container */}
-                                        <div className="relative flex items-center w-full px-3">
+                                        <div className="relative flex items-center w-full px-3 z-10">
                                             {/* Icon */}
-                                            <motion.div
-                                                animate={{
-                                                    x: hoveredId === item.id ? 4 : 0,
-                                                    scale: hoveredId === item.id ? 1.1 : 1
-                                                }}
-                                                className={`p-2 rounded-lg transition-colors z-10 ${isActive ? 'text-orange-500' : 'text-white/60 group-hover:text-white'}`}
+                                            <div
+                                                className={`p-1.5 rounded-lg transition-colors ${isActive
+                                                    ? 'text-moto-accent'
+                                                    : 'text-gray-500 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'}`}
                                             >
                                                 <item.icon
-                                                    strokeWidth={1}
-                                                    className={`w-6 h-6 transition-all duration-300 ${isActive ? 'drop-shadow-[0_0_8px_rgba(255,69,0,0.5)]' : ''}`}
+                                                    strokeWidth={isActive ? 2 : 1.5}
+                                                    className="w-5 h-5"
                                                 />
-                                            </motion.div>
+                                            </div>
 
                                             {/* Label */}
                                             <AnimatePresence mode="wait">
@@ -159,8 +151,10 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
                                                         initial={{ opacity: 0, x: -10 }}
                                                         animate={{ opacity: 1, x: 0 }}
                                                         exit={{ opacity: 0, x: -10 }}
-                                                        transition={{ duration: 0.2, delay: 0.05 }}
-                                                        className={`ml-3 text-sm font-medium tracking-wide whitespace-nowrap ${isActive ? 'text-white font-bold' : 'text-zinc-400 group-hover:text-zinc-200'
+                                                        transition={{ duration: 0.2 }}
+                                                        className={`ml-3 text-sm font-medium tracking-wide whitespace-nowrap ${isActive
+                                                                ? 'text-white dark:text-black font-bold'
+                                                                : 'text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white'
                                                             }`}
                                                     >
                                                         {item.label}
@@ -175,6 +169,17 @@ export const MotovibeSidebar: React.FC<MotovibeSidebarProps> = ({
                     </div>
                 ))}
             </div>
+
+            {/* User Profile / Footer Section if needed */}
+            {isExpanded && (
+                <div className="p-6 border-t border-gray-100 dark:border-white/5">
+                    <div className="flex items-center gap-3">
+                        <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                        <span className="text-xs font-medium text-gray-400">Sistem Çevrimiçi</span>
+                    </div>
+                </div>
+            )}
+
         </motion.aside>
     );
 };

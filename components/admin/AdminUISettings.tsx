@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import { useUIStore } from '../../store/useUIStore';
+import { useBranding } from '../../context/BrandingContext';
 import { VibeButton } from '../ui/VibeButton';
-import { motion } from 'framer-motion';
-import { Save, RefreshCcw, Palette, Layout, MousePointer2 } from 'lucide-react';
-import { LogoBuilder } from './LogoBuilder';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Save, RefreshCcw, Palette, Layout, MousePointer2, Type, Check, RefreshCw, Smartphone, Monitor } from 'lucide-react';
+import { FONT_STYLES, LOGO_ASSETS } from '../ui/LogoAssets';
 
 export const AdminUISettings = () => {
-    const { getComponentConfig, updateSetting, fetchSettings } = useUIStore();
-    const settings = useUIStore((state) => state.settings);
+    // Stores
+    const { getComponentConfig, updateSetting, fetchSettings, settings: uiSettings } = useUIStore();
+    const { settings: brandingSettings, updateSettings: updateBrandingSettings, isLoading: isBrandingLoading } = useBranding();
 
-    // Module State
-    const [activeModule, setActiveModule] = useState<'branding' | 'buttons'>('branding');
+    // Local States
+    const [activeTab, setActiveTab] = useState<'branding' | 'components' | 'colors' | 'typography'>('branding');
+    const [isSaving, setIsSaving] = useState(false);
 
     // Button Config State
-    const [localConfig, setLocalConfig] = useState({
+    const [buttonConfig, setButtonConfig] = useState({
         primaryColor: '#E2FF3B',
         borderRadius: '9999px',
         animationSpeed: 1.5,
@@ -22,24 +25,37 @@ export const AdminUISettings = () => {
         buttonSkin: 'default'
     });
 
-    const [activeTab, setActiveTab] = useState<'style' | 'skin' | 'physics' | 'color'>('style');
-    const [isSaving, setIsSaving] = useState(false);
+    // Branding Config State
+    const [localBranding, setLocalBranding] = useState(brandingSettings);
 
+    // Initial Load
     useEffect(() => {
         fetchSettings();
-    }, []);
+        if (brandingSettings) setLocalBranding(brandingSettings);
+    }, [brandingSettings]);
 
+    // Sync Button Config from Store
     useEffect(() => {
         const stored = getComponentConfig('VibeButton');
         if (stored && Object.keys(stored).length > 0) {
-            setLocalConfig(prev => ({ ...prev, ...stored }));
+            setButtonConfig(prev => ({ ...prev, ...stored }));
         }
-    }, [settings]);
+    }, [uiSettings]);
 
     const handleSave = async () => {
         setIsSaving(true);
         try {
-            await updateSetting('VibeButton', localConfig);
+            // Save Button Config
+            if (activeTab === 'components') {
+                await updateSetting('VibeButton', buttonConfig);
+            }
+            // Save Branding Config
+            if (activeTab === 'branding' || activeTab === 'colors' || activeTab === 'typography') {
+                await updateBrandingSettings(localBranding);
+            }
+
+            // Artificial delay for better UX
+            await new Promise(resolve => setTimeout(resolve, 800));
             setIsSaving(false);
         } catch (error) {
             console.error("Save failed", error);
@@ -47,228 +63,407 @@ export const AdminUISettings = () => {
         }
     };
 
+    const TABS = [
+        { id: 'branding', label: 'Marka & Logo', icon: Layout },
+        { id: 'components', label: 'Bileşen Stüdyo', icon: MousePointer2 },
+        { id: 'colors', label: 'Renk Paleti', icon: Palette },
+        { id: 'typography', label: 'Tipografi', icon: Type },
+    ];
+
     return (
-        <div className="p-8 text-gray-900 min-h-screen bg-gray-50/50">
-            {/* HEADER & MODULE SWITCHER */}
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
-                <div>
-                    <h1 className="text-3xl font-black italic uppercase tracking-tighter text-gray-900">UI Kontrol Merkezi</h1>
-                    <p className="text-gray-500 font-medium mt-1">Arayüz ve Marka Yönetim Sistemi</p>
+        <div className="flex h-[calc(100vh-80px)] overflow-hidden bg-[#09090b] text-white font-sans">
+
+            {/* SIDEBAR NAVIGATION */}
+            <div className="w-64 flex-shrink-0 border-r border-white/10 bg-[#09090b] flex flex-col">
+                <div className="p-6">
+                    <h2 className="text-xl font-black italic uppercase tracking-tighter text-white">UI KONTROL</h2>
+                    <p className="text-xs text-gray-500 font-medium mt-1">Sistem Görünüm Ayarları</p>
                 </div>
 
-                <div className="flex bg-white p-1.5 rounded-2xl shadow-sm border border-gray-200">
-                    <button
-                        onClick={() => setActiveModule('branding')}
-                        className={`px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all ${activeModule === 'branding' ? 'bg-moto-accent text-black shadow-md' : 'text-gray-500 hover:bg-gray-50'
-                            }`}
+                <div className="flex-1 px-3 space-y-1">
+                    {TABS.map((tab) => (
+                        <button
+                            key={tab.id}
+                            onClick={() => setActiveTab(tab.id as any)}
+                            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 group ${activeTab === tab.id
+                                    ? 'bg-moto-accent text-black shadow-[0_0_20px_rgba(226,255,59,0.2)]'
+                                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                                }`}
+                        >
+                            <tab.icon className={`w-4 h-4 ${activeTab === tab.id ? 'text-black' : 'group-hover:text-white'}`} />
+                            {tab.label}
+                        </button>
+                    ))}
+                </div>
+
+                <div className="p-4 border-t border-white/10 bg-white/5">
+                    <VibeButton
+                        variant="primary"
+                        size="md"
+                        fullWidth
+                        onClick={handleSave}
+                        isLoading={isSaving}
+                        icon={Save}
+                        className="font-black"
                     >
-                        <Layout className="w-4 h-4" />
-                        Marka & Logo
-                    </button>
-                    <button
-                        onClick={() => setActiveModule('buttons')}
-                        className={`px-6 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2 transition-all ${activeModule === 'buttons' ? 'bg-moto-accent text-black shadow-md' : 'text-gray-500 hover:bg-gray-50'
-                            }`}
-                    >
-                        <MousePointer2 className="w-4 h-4" />
-                        Component Studio
-                    </button>
+                        {isSaving ? 'KAYDEDİLİYOR...' : 'DEĞİŞİKLİKLERİ KAYDET'}
+                    </VibeButton>
                 </div>
             </div>
 
-            {/* MODULE CONTENT */}
-            {activeModule === 'branding' ? (
-                <LogoBuilder />
-            ) : (
-                <div className="flex flex-col lg:flex-row gap-8 items-start">
-                    {/* BUTTON DESIGNER CONTENT */}
-                    <div className="flex-1 w-full bg-white border border-gray-200 rounded-[2rem] shadow-xl shadow-gray-100/50 overflow-hidden flex flex-col min-h-[600px]">
-                        {/* TABS */}
-                        <div className="flex border-b border-gray-100 bg-gray-50/50">
-                            {[
-                                { id: 'style', label: '1. Yapı', icon: '🏗️' },
-                                { id: 'skin', label: '2. Yüzey', icon: '🎨' },
-                                { id: 'color', label: '3. Renk', icon: '🌈' },
-                                { id: 'physics', label: '4. Fizik', icon: '⚛️' }
-                            ].map(tab => (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => setActiveTab(tab.id as any)}
-                                    className={`flex-1 py-6 flex flex-col items-center gap-2 border-r border-gray-100 last:border-0 hover:bg-white transition-colors relative group ${activeTab === tab.id ? 'bg-white text-gray-900' : 'text-gray-400'}`}
-                                >
-                                    <span className="text-2xl filter grayscale group-hover:grayscale-0 transition-all">{tab.icon}</span>
-                                    <span className="text-xs font-black uppercase tracking-widest">{tab.label}</span>
-                                    {activeTab === tab.id && <div className="absolute top-0 left-0 right-0 h-1 bg-moto-accent" />}
-                                </button>
-                            ))}
-                        </div>
+            {/* MAIN CONTENT AREA */}
+            <div className="flex-1 flex overflow-hidden">
 
-                        <div className="p-8 flex-1 bg-white">
-                            {/* STYLE TAB */}
-                            {activeTab === 'style' && (
-                                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-2 gap-4">
-                                    {[
-                                        { id: 'default', name: 'Premium Classic', desc: 'Standart UI' },
-                                        { id: 'cyber', name: 'Cyberpunk', desc: 'Keskin, Teknik' },
-                                        { id: 'brutal', name: 'Neo-Brutal', desc: 'Sert hatlar, Gölgeli' },
-                                        { id: 'racing', name: 'F1 Racing', desc: 'Hızlı, Eğimli' },
-                                        { id: 'pixel', name: '8-Bit Retro', desc: 'Bloklu, Arcade' },
-                                        { id: 'flow', name: 'Liquid Flow', desc: 'Organik, Akışkan' }
-                                    ].map(theme => (
-                                        <button
-                                            key={theme.id}
-                                            onClick={() => setLocalConfig(prev => ({ ...prev, buttonStyle: theme.id }))}
-                                            className={`p-6 rounded-2xl border text-left flex flex-col gap-2 transition-all ${localConfig.buttonStyle === theme.id ? 'bg-moto-accent text-black border-moto-accent shadow-[0_10px_30px_-10px_rgba(226,255,59,0.5)] scale-[1.02]' : 'bg-gray-50 border-gray-100 text-gray-500 hover:bg-gray-100 hover:border-gray-200'}`}
-                                        >
-                                            <div className="font-bold text-lg">{theme.name}</div>
-                                            <div className={`text-xs font-mono ${localConfig.buttonStyle === theme.id ? 'text-black/60' : 'text-gray-400'}`}>{theme.desc}</div>
-                                        </button>
-                                    ))}
+                {/* SETTINGS PANEL (Scrollable) */}
+                <div className="flex-1 overflow-y-auto custom-scrollbar p-8 min-w-[400px]">
+                    <AnimatePresence mode="wait">
+                        <motion.div
+                            key={activeTab}
+                            initial={{ opacity: 0, x: -20 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            exit={{ opacity: 0, x: 20 }}
+                            transition={{ duration: 0.2 }}
+                            className="space-y-8 max-w-2xl mx-auto"
+                        >
+                            {/* --- BRANDING TAB --- */}
+                            {activeTab === 'branding' && (
+                                <div className="space-y-8">
+                                    <SectionHeader title="Logo Tasarımı" description="Markanızın ana sembolünü ve görünümünü belirleyin." />
 
-                                    <div className={`col-span-2 mt-4 p-6 rounded-2xl border border-dashed border-gray-200 bg-gray-50/50 ${localConfig.buttonStyle !== 'default' && 'opacity-50 pointer-events-none grayscale'}`}>
-                                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Köşe Yuvarlaklığı (Sadece Klasik Mod)</label>
+                                    <div className="grid grid-cols-3 gap-4">
+                                        {Object.keys(LOGO_ASSETS).map((type) => (
+                                            <button
+                                                key={type}
+                                                onClick={() => setLocalBranding({ ...localBranding, iconType: type as any })}
+                                                className={`relative p-6 rounded-2xl border transition-all duration-200 group flex flex-col items-center gap-4 ${localBranding.iconType === type
+                                                        ? 'bg-moto-accent/10 border-moto-accent ring-1 ring-moto-accent/50'
+                                                        : 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10'
+                                                    }`}
+                                            >
+                                                <div className={`w-12 h-12 ${localBranding.iconType === type ? 'text-moto-accent' : 'text-gray-400'}`}>
+                                                    <svg viewBox="0 0 48 48" className="w-full h-full fill-current">
+                                                        {LOGO_ASSETS[type as keyof typeof LOGO_ASSETS].path}
+                                                    </svg>
+                                                </div>
+                                                <span className={`text-xs font-bold uppercase tracking-wider ${localBranding.iconType === type ? 'text-white' : 'text-gray-500'}`}>
+                                                    {type}
+                                                </span>
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <div className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <label className="text-sm font-bold text-gray-300">Harf Aralığı</label>
+                                            <span className="text-xs bg-black/50 px-2 py-1 rounded text-moto-accent font-mono">{localBranding.letterSpacing}px</span>
+                                        </div>
                                         <input
                                             type="range"
-                                            min="0" max="30"
-                                            onChange={(e) => setLocalConfig(prev => ({ ...prev, borderRadius: `${e.target.value}px` }))}
-                                            className="w-full accent-moto-accent h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                                            min="-2" max="10" step="0.5"
+                                            value={localBranding.letterSpacing}
+                                            onChange={(e) => setLocalBranding({ ...localBranding, letterSpacing: parseFloat(e.target.value) })}
+                                            className="w-full accent-moto-accent h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer"
                                         />
                                     </div>
-                                </motion.div>
+                                </div>
                             )}
 
-                            {/* SKIN TAB */}
-                            {activeTab === 'skin' && (
-                                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-2 gap-4">
-                                    {[
-                                        { id: 'default', name: 'Solid Matte', desc: 'Düz Renk' },
-                                        { id: 'cosmic', name: 'Cosmic Void', desc: 'Derin Uzay' },
-                                        { id: 'liquid', name: 'Liquid Metal', desc: 'Krom Efekt' },
-                                        { id: 'carbon', name: 'Carbon Fiber', desc: 'Karbon Doku' },
-                                        { id: 'glass', name: 'Frost Glass', desc: 'Buzlu Cam' },
-                                        { id: 'holographic', name: 'Holographic', desc: 'Yanardöner' },
-                                        { id: 'magma', name: 'Magma Core', desc: 'Hareketli Isı' },
-                                        { id: 'glitch', name: 'Sys.Glitch', desc: 'Sinyal Bozukluğu' }
-                                    ].map(skin => (
-                                        <button
-                                            key={skin.id}
-                                            onClick={() => setLocalConfig(prev => ({ ...prev, buttonSkin: skin.id }))}
-                                            className={`p-6 rounded-2xl border text-left flex flex-col gap-2 transition-all overflow-hidden relative group ${localConfig.buttonSkin === skin.id ? 'border-moto-accent ring-2 ring-moto-accent/20 bg-gray-900 text-white' : 'border-gray-100 bg-gray-50 text-gray-500 hover:border-gray-300'}`}
-                                        >
-                                            <div className="font-bold text-lg relative z-10">{skin.name}</div>
-                                            <div className="text-xs font-mono relative z-10 opacity-70">{skin.desc}</div>
-                                        </button>
-                                    ))}
-                                </motion.div>
-                            )}
+                            {/* --- COMPONENTS TAB --- */}
+                            {activeTab === 'components' && (
+                                <div className="space-y-10">
+                                    <SectionHeader title="Buton & Etkileşim" description="Sistem genelindeki butonların yapısını ve fizigini özelleştirin." />
 
-                            {/* COLOR TAB */}
-                            {activeTab === 'color' && (
-                                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8">
-                                    <div className="bg-gray-50 p-6 rounded-3xl border border-gray-100">
-                                        <label className="block text-xs font-bold text-gray-400 uppercase tracking-widest mb-6">Ana Vurgu Rengi</label>
-                                        <div className="flex flex-col md:flex-row gap-6 items-start">
-                                            <div className="flex flex-col items-center gap-2">
-                                                <input
-                                                    type="color"
-                                                    value={localConfig.primaryColor}
-                                                    onChange={(e) => setLocalConfig(prev => ({ ...prev, primaryColor: e.target.value }))}
-                                                    className="w-24 h-24 rounded-3xl cursor-pointer bg-white border-4 border-white shadow-xl"
-                                                />
-                                                <span className="font-mono text-xs text-gray-400 uppercase">{localConfig.primaryColor}</span>
-                                            </div>
-
-                                            <div className="flex-1 grid grid-cols-5 gap-3">
-                                                {['#E2FF3B', '#00D4FF', '#FF0099', '#FF5E00', '#39FF14', '#9D00FF', '#111111', '#FF3E3E', '#F2A619', '#3B82F6'].map(color => (
-                                                    <button
-                                                        key={color}
-                                                        onClick={() => setLocalConfig(prev => ({ ...prev, primaryColor: color }))}
-                                                        className="aspect-square rounded-2xl border-4 border-white shadow-sm hover:scale-110 hover:shadow-lg transition-all"
-                                                        style={{ backgroundColor: color }}
-                                                    />
-                                                ))}
-                                            </div>
+                                    {/* Style Selection */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">Yapısal Tema</h3>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            {[
+                                                { id: 'default', name: 'Premium Classic', desc: 'Modern, Yuvarlak' },
+                                                { id: 'cyber', name: 'Cyberpunk', desc: 'Keskin, Köşeli, Tech' },
+                                                { id: 'brutal', name: 'Neo-Brutal', desc: 'Sert, Kontrast' },
+                                                { id: 'racing', name: 'F1 Racing', desc: 'İtalik, Hızlı' },
+                                                { id: 'pixel', name: '8-Bit Retro', desc: 'Pixelated, Nostaljik' },
+                                                { id: 'flow', name: 'Liquid Flow', desc: 'Organik, Akışkan' }
+                                            ].map(theme => (
+                                                <button
+                                                    key={theme.id}
+                                                    onClick={() => setButtonConfig(prev => ({ ...prev, buttonStyle: theme.id }))}
+                                                    className={`p-4 rounded-xl border text-left transition-all ${buttonConfig.buttonStyle === theme.id
+                                                            ? 'bg-moto-accent text-black border-moto-accent shadow-lg shadow-moto-accent/20'
+                                                            : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
+                                                        }`}
+                                                >
+                                                    <div className="font-bold text-sm">{theme.name}</div>
+                                                    <div className={`text-[10px] mt-0.5 ${buttonConfig.buttonStyle === theme.id ? 'text-black/70' : 'text-gray-500'}`}>{theme.desc}</div>
+                                                </button>
+                                            ))}
                                         </div>
                                     </div>
-                                </motion.div>
-                            )}
 
-                            {/* PHYSICS TAB */}
-                            {activeTab === 'physics' && (
-                                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="space-y-8 p-4">
-                                    <div className="bg-gray-50 p-6 rounded-3xl border border-gray-100">
-                                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex justify-between">
-                                            <span>Işıltı Hızı</span>
-                                            <span className="bg-white px-2 py-1 rounded text-gray-900 border border-gray-200">{localConfig.animationSpeed}s</span>
-                                        </label>
-                                        <input
-                                            type="range" min="0.5" max="5" step="0.1"
-                                            value={localConfig.animationSpeed}
-                                            onChange={(e) => setLocalConfig(prev => ({ ...prev, animationSpeed: parseFloat(e.target.value) }))}
-                                            className="w-full accent-moto-accent h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                                        />
+                                    {/* Skin Selection */}
+                                    <div className="space-y-4">
+                                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-widest pl-1">Yüzey Materyali</h3>
+                                        <div className="grid grid-cols-2 gap-3">
+                                            {[
+                                                { id: 'default', name: 'Matte', desc: 'Düz Renk' },
+                                                { id: 'cosmic', name: 'Cosmic', desc: 'Noise & Gradient' },
+                                                { id: 'liquid', name: 'Liquid', desc: 'Krom Efekt' },
+                                                { id: 'carbon', name: 'Carbon', desc: 'Fiber Doku' },
+                                                { id: 'glass', name: 'Glass', desc: 'Buzlu Cam' },
+                                                { id: 'holographic', name: 'Holo', desc: 'Yanardöner' },
+                                                { id: 'magma', name: 'Magma', desc: 'Animasyonlu' },
+                                                { id: 'glitch', name: 'Glitch', desc: 'Arızalı' }
+                                            ].map(skin => (
+                                                <button
+                                                    key={skin.id}
+                                                    onClick={() => setButtonConfig(prev => ({ ...prev, buttonSkin: skin.id }))}
+                                                    className={`p-4 rounded-xl border text-left transition-all ${buttonConfig.buttonSkin === skin.id
+                                                            ? 'bg-white text-black border-white'
+                                                            : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
+                                                        }`}
+                                                >
+                                                    <div className="font-bold text-sm">{skin.name}</div>
+                                                    <div className={`text-[10px] mt-0.5 ${buttonConfig.buttonSkin === skin.id ? 'text-black/70' : 'text-gray-500'}`}>{skin.desc}</div>
+                                                </button>
+                                            ))}
+                                        </div>
                                     </div>
-                                    <div className="bg-gray-50 p-6 rounded-3xl border border-gray-100">
-                                        <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-4 flex justify-between">
-                                            <span>Manyetik Güç</span>
-                                            <span className="bg-white px-2 py-1 rounded text-gray-900 border border-gray-200">{localConfig.magneticStrength}</span>
-                                        </label>
-                                        <input
-                                            type="range" min="0" max="1" step="0.1"
-                                            value={localConfig.magneticStrength}
-                                            onChange={(e) => setLocalConfig(prev => ({ ...prev, magneticStrength: parseFloat(e.target.value) }))}
-                                            className="w-full accent-moto-accent h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
-                                        />
-                                        <p className="text-xs text-gray-400 mt-3 font-medium flex items-center gap-2">
-                                            <span className="w-1.5 h-1.5 rounded-full bg-orange-400" />
-                                            Sadece masaüstü cihazlar için geçerlidir
-                                        </p>
+
+                                    {/* Physics Sliders */}
+                                    <div className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-6">
+                                        <div>
+                                            <div className="flex items-center justify-between mb-2">
+                                                <label className="text-xs font-bold text-gray-300 uppercase">Manyetik Güç</label>
+                                                <span className="text-xs font-mono text-moto-accent">{buttonConfig.magneticStrength}</span>
+                                            </div>
+                                            <input
+                                                type="range" min="0" max="1" step="0.1"
+                                                value={buttonConfig.magneticStrength}
+                                                onChange={(e) => setButtonConfig(prev => ({ ...prev, magneticStrength: parseFloat(e.target.value) }))}
+                                                className="w-full accent-moto-accent h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                                            />
+                                        </div>
+                                        <div>
+                                            <div className="flex items-center justify-between mb-2">
+                                                <label className="text-xs font-bold text-gray-300 uppercase">Animasyon Hızı</label>
+                                                <span className="text-xs font-mono text-moto-accent">{buttonConfig.animationSpeed}s</span>
+                                            </div>
+                                            <input
+                                                type="range" min="0.5" max="5" step="0.1"
+                                                value={buttonConfig.animationSpeed}
+                                                onChange={(e) => setButtonConfig(prev => ({ ...prev, animationSpeed: parseFloat(e.target.value) }))}
+                                                className="w-full accent-moto-accent h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                                            />
+                                        </div>
                                     </div>
-                                </motion.div>
-                            )}
-
-                        </div>
-                    </div>
-
-                    {/* LIVE PREVIEW SIDEBAR */}
-                    <div className="w-full lg:w-[400px] sticky top-8">
-                        <div className="bg-white border border-gray-200 rounded-[2.5rem] p-8 flex flex-col items-center gap-12 min-h-[600px] justify-center relative overflow-hidden shadow-2xl shadow-gray-200/50">
-                            {/* Canvas Background */}
-                            <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03]" />
-                            <div className="absolute inset-0 bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px] opacity-40" />
-
-                            <div className="relative z-10 flex flex-col items-center gap-8 w-full">
-                                <span className="px-3 py-1 rounded-full bg-gray-100 border border-gray-200 text-[10px] font-black uppercase tracking-widest text-gray-400">Canlı Önizleme</span>
-
-                                <div className="p-8 border border-dashed border-gray-300 rounded-3xl w-full flex flex-col items-center gap-6 bg-gray-50/50">
-                                    <VibeButton variant="primary" size="lg" configOverride={localConfig} fullWidth>Ana Aksiyon</VibeButton>
-                                    <div className="flex gap-4 w-full">
-                                        <VibeButton variant="secondary" size="md" configOverride={localConfig} className="flex-1">İkincil</VibeButton>
-                                        <VibeButton variant="ghost" size="md" configOverride={localConfig} className="flex-1">Hayalet</VibeButton>
-                                    </div>
-                                    <VibeButton variant="outline" size="sm" configOverride={localConfig}>Minimal Çizgi</VibeButton>
-                                    <VibeButton variant="danger" size="sm" configOverride={localConfig} fullWidth>Kritik İşlem</VibeButton>
                                 </div>
-                            </div>
+                            )}
 
-                            {/* Save Action */}
-                            <div className="w-full pt-8 border-t border-gray-100 mt-auto bg-white/50 backdrop-blur-sm z-20">
-                                <VibeButton
-                                    variant="primary"
-                                    size="md"
-                                    onClick={handleSave}
-                                    isLoading={isSaving}
-                                    icon={Save}
-                                    fullWidth
-                                    className="shadow-xl shadow-moto-accent/20"
-                                >
-                                    YAPILANDIRMAYI KAYDET
-                                </VibeButton>
+                            {/* --- COLORS & TYPOGRAPHY TABS (Merged for simplicity or future expansion) --- */}
+                            {(activeTab === 'colors' || activeTab === 'typography') && (
+                                <div className="space-y-8">
+                                    <SectionHeader
+                                        title={activeTab === 'colors' ? "Renk Paleti" : "Tipografi"}
+                                        description="Markanızın renk ve yazı karakterlerini özelleştirin."
+                                    />
+
+                                    {activeTab === 'colors' && (
+                                        <div className="grid grid-cols-2 gap-6">
+                                            <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+                                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Ana Renk (Primary)</label>
+                                                <div className="flex gap-4 items-center">
+                                                    <input
+                                                        type="color"
+                                                        value={localBranding.primaryColor}
+                                                        onChange={(e) => setLocalBranding(prev => ({ ...prev, primaryColor: e.target.value }))}
+                                                        className="w-12 h-12 rounded-xl cursor-pointer bg-transparent border-none p-0"
+                                                    />
+                                                    <span className="text-sm font-mono text-white bg-black/50 px-3 py-1.5 rounded-lg border border-white/10">
+                                                        {localBranding.primaryColor}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+                                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Vurgu Rengi (Accent)</label>
+                                                <div className="flex gap-4 items-center">
+                                                    <input
+                                                        type="color"
+                                                        value={localBranding.accentColor}
+                                                        onChange={(e) => setLocalBranding(prev => ({ ...prev, accentColor: e.target.value }))}
+                                                        className="w-12 h-12 rounded-xl cursor-pointer bg-transparent border-none p-0"
+                                                    />
+                                                    <span className="text-sm font-mono text-white bg-black/50 px-3 py-1.5 rounded-lg border border-white/10">
+                                                        {localBranding.accentColor}
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {activeTab === 'typography' && (
+                                        <div className="grid grid-cols-2 gap-3">
+                                            {Object.keys(FONT_STYLES).map(style => (
+                                                <button
+                                                    key={style}
+                                                    onClick={() => setLocalBranding(prev => ({ ...prev, fontStyle: style as any }))}
+                                                    className={`p-4 rounded-xl border text-center transition-all ${localBranding.fontStyle === style
+                                                            ? 'bg-moto-accent text-black border-moto-accent'
+                                                            : 'bg-white/5 text-gray-400 border-white/10 hover:text-white'
+                                                        }`}
+                                                >
+                                                    <span className="text-sm font-bold">{style}</span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                        </motion.div>
+                    </AnimatePresence>
+                </div>
+
+                {/* LIVE PREVIEW PANEL */}
+                <div className="w-[480px] bg-[#050505] border-l border-white/10 flex flex-col relative overflow-hidden">
+                    {/* Background Pattern */}
+                    <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03]" />
+                    <div className="absolute inset-0 bg-[radial-gradient(#ffffff_1px,transparent_1px)] [background-size:20px_20px] opacity-[0.03]" />
+
+                    <div className="relative z-10 flex-1 flex flex-col">
+                        <div className="p-6 border-b border-white/10 flex justify-between items-center bg-[#050505]/80 backdrop-blur-sm z-20">
+                            <span className="text-[10px] font-black uppercase tracking-[0.2em] text-gray-500 flex items-center gap-2">
+                                <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
+                                Canlı Önizleme
+                            </span>
+                            <div className="flex gap-2">
+                                <button className="p-2 hover:bg-white/10 rounded-lg transition-colors text-gray-400 hover:text-white"><Smartphone className="w-4 h-4" /></button>
+                                <button className="p-2 hover:bg-white/10 rounded-lg transition-colors text-gray-400 hover:text-white"><Monitor className="w-4 h-4" /></button>
                             </div>
+                        </div>
+
+                        <div className="flex-1 overflow-y-auto p-8 flex flex-col items-center justify-center gap-12">
+
+                            {/* Branding Preview */}
+                            {(activeTab === 'branding' || activeTab === 'colors' || activeTab === 'typography') && (
+                                <div className="space-y-12 w-full">
+                                    <div className="space-y-2">
+                                        <div className="text-[10px] font-mono text-gray-600 uppercase text-center mb-4">Dark Mode Header</div>
+                                        <div className="p-8 border border-white/10 rounded-3xl bg-black w-full flex items-center justify-center relative overflow-hidden group">
+                                            <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                                            <PreviewLogo settings={localBranding} variant="full" className="h-12 w-auto" />
+                                        </div>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <div className="text-[10px] font-mono text-gray-600 uppercase text-center mb-4">Light Mode Header</div>
+                                        <div className="p-8 border border-white/10 rounded-3xl bg-white w-full flex items-center justify-center">
+                                            <PreviewLogo settings={localBranding} variant="full" className="h-12 w-auto" lightMode />
+                                        </div>
+                                    </div>
+
+                                    <div className="flex justify-center gap-6">
+                                        <div className="w-20 h-20 bg-black rounded-2xl border border-white/10 flex items-center justify-center">
+                                            <PreviewLogo settings={localBranding} variant="icon" className="h-10 w-auto" />
+                                        </div>
+                                        <div className="w-20 h-20 bg-black rounded-full border border-white/10 flex items-center justify-center">
+                                            <PreviewLogo settings={localBranding} variant="icon" className="h-10 w-auto" />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Components Preview */}
+                            {activeTab === 'components' && (
+                                <div className="w-full space-y-8">
+                                    <div className="text-[10px] font-mono text-gray-600 uppercase text-center mb-4">Component Playground</div>
+
+                                    <div className="p-10 border border-dashed border-white/10 rounded-[2rem] bg-white/5 flex flex-col items-center gap-6 w-full">
+                                        <VibeButton variant="primary" size="lg" configOverride={buttonConfig} fullWidth>
+                                            Satın Al
+                                        </VibeButton>
+
+                                        <div className="flex gap-4 w-full">
+                                            <VibeButton variant="secondary" size="md" configOverride={buttonConfig} className="flex-1">
+                                                Detaylar
+                                            </VibeButton>
+                                            <VibeButton variant="ghost" size="md" configOverride={buttonConfig} className="flex-1">
+                                                İptal
+                                            </VibeButton>
+                                        </div>
+
+                                        <div className="w-full h-px bg-white/10 my-2" />
+
+                                        <VibeButton variant="outline" size="sm" configOverride={buttonConfig}>
+                                            Daha Fazla Göster
+                                        </VibeButton>
+
+                                        <VibeButton variant="danger" size="sm" configOverride={buttonConfig} fullWidth>
+                                            Hesabı Sil
+                                        </VibeButton>
+                                    </div>
+
+                                    {/* Theme Info Badge */}
+                                    <div className="flex justify-center gap-4 text-[10px] font-mono uppercase text-gray-500">
+                                        <span className="px-2 py-1 bg-white/5 rounded">Theme: {buttonConfig.buttonStyle}</span>
+                                        <span className="px-2 py-1 bg-white/5 rounded">Skin: {buttonConfig.buttonSkin}</span>
+                                    </div>
+                                </div>
+                            )}
+
                         </div>
                     </div>
                 </div>
-            )}
+            </div>
         </div>
     );
 };
+
+// --- Internal Utilities ---
+
+const SectionHeader = ({ title, description }: { title: string, description: string }) => (
+    <div className="pb-6 border-b border-white/10">
+        <h3 className="text-2xl font-bold text-white mb-2">{title}</h3>
+        <p className="text-gray-400">{description}</p>
+    </div>
+);
+
+const PreviewLogo = ({ settings, variant, className, lightMode }: any) => {
+    const { iconType, primaryColor, accentColor, fontStyle, letterSpacing } = settings;
+    const activeAsset = LOGO_ASSETS[iconType] || LOGO_ASSETS.VELOCITY;
+    const resolvedFont = FONT_STYLES[fontStyle] || FONT_STYLES.TECH;
+
+    let viewBox = "0 0 210 48";
+    if (variant === 'icon') viewBox = "0 0 48 48";
+
+    const renderText = (offsetX = 0) => (
+        <text
+            x={offsetX}
+            y="32"
+            fill="currentColor"
+            style={{
+                ...resolvedFont,
+                letterSpacing: `${letterSpacing}px`,
+                fontSize: '24px',
+                textTransform: 'uppercase'
+            }}
+        >
+            MOTO<tspan fill={primaryColor}>VIBE</tspan>
+        </text>
+    );
+
+    return (
+        <svg
+            viewBox={viewBox}
+            className={`${className} ${lightMode ? 'text-black' : 'text-white'}`}
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+        >
+            {(variant === 'full' || variant === 'icon') && iconType !== 'TEXT_ONLY' && (
+                <g style={{ color: primaryColor }}>
+                    {activeAsset.path}
+                </g>
+            )}
+            {(variant === 'full') && renderText(iconType === 'TEXT_ONLY' ? 0 : 56)}
+        </svg>
+    )
+}

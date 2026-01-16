@@ -29,8 +29,8 @@ export const MobileSideMenu: React.FC<MobileSideMenuProps> = ({ isOpen, onClose,
             icon: Settings,
             description: 'Uygulama ve hesap ayarları',
             view: 'settings' as ViewState,
-            color: 'text-zinc-400',
-            bg: 'bg-zinc-500/10'
+            color: 'text-gray-400 dark:text-zinc-400',
+            bg: 'bg-gray-100 dark:bg-zinc-500/10'
         },
         // Admin Panel - Only show if user has permission (mock logic for now, or just show it)
         {
@@ -54,7 +54,7 @@ export const MobileSideMenu: React.FC<MobileSideMenuProps> = ({ isOpen, onClose,
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[150]"
+                        className="fixed inset-0 bg-black/50 dark:bg-black/80 backdrop-blur-sm z-[150]"
                     />
 
                     {/* Menu Content - Slides in from Right (moving Left) */}
@@ -63,14 +63,14 @@ export const MobileSideMenu: React.FC<MobileSideMenuProps> = ({ isOpen, onClose,
                         animate={{ x: 0 }}
                         exit={{ x: '100%' }}
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                        className="fixed inset-y-0 right-0 w-full sm:w-[85%] max-w-md bg-[#09090b] border-l border-white/10 z-[160] overflow-hidden flex flex-col"
+                        className="fixed inset-y-0 right-0 w-full sm:w-[85%] max-w-md bg-white dark:bg-[#09090b] border-l border-gray-100 dark:border-white/10 z-[160] overflow-hidden flex flex-col transition-colors duration-300"
                     >
                         {/* Header */}
-                        <div className="p-6 border-b border-white/5 flex items-center justify-between bg-black/20">
-                            <h2 className="text-xl font-display font-bold text-white tracking-tight">Menü</h2>
+                        <div className="p-6 border-b border-gray-100 dark:border-white/5 flex items-center justify-between bg-gray-50 dark:bg-black/20 transition-colors">
+                            <h2 className="text-xl font-display font-bold text-gray-900 dark:text-white tracking-tight">Menü</h2>
                             <button
                                 onClick={onClose}
-                                className="p-2 rounded-full bg-white/5 hover:bg-white/10 text-white transition-colors"
+                                className="p-2 rounded-full bg-gray-200 dark:bg-white/5 hover:bg-gray-300 dark:hover:bg-white/10 text-gray-900 dark:text-white transition-colors"
                             >
                                 <X className="w-6 h-6" />
                             </button>
@@ -78,20 +78,20 @@ export const MobileSideMenu: React.FC<MobileSideMenuProps> = ({ isOpen, onClose,
 
                         {/* User Micro Profile */}
                         {user ? (
-                            <div className="p-6 border-b border-white/5 bg-gradient-to-b from-white/5 to-transparent">
+                            <div className="p-6 border-b border-gray-100 dark:border-white/5 bg-gradient-to-b from-gray-50 dark:from-white/5 to-transparent transition-colors">
                                 <div className="flex items-center gap-4">
-                                    <div className="w-16 h-16 rounded-full bg-zinc-800 border-2 border-white/10 overflow-hidden relative">
+                                    <div className="w-16 h-16 rounded-full bg-gray-200 dark:bg-zinc-800 border-2 border-white dark:border-white/10 overflow-hidden relative shadow-lg">
                                         {user.avatar ? (
                                             <img src={user.avatar} alt={user.name} className="w-full h-full object-cover" />
                                         ) : (
-                                            <div className="w-full h-full flex items-center justify-center bg-zinc-900 text-zinc-500">
+                                            <div className="w-full h-full flex items-center justify-center bg-gray-300 dark:bg-zinc-900 text-gray-500 dark:text-zinc-500">
                                                 <User className="w-8 h-8" />
                                             </div>
                                         )}
                                     </div>
                                     <div>
-                                        <h3 className="text-lg font-bold text-white">{user.name}</h3>
-                                        <p className="text-sm text-zinc-500">@{user.username}</p>
+                                        <h3 className="text-lg font-bold text-gray-900 dark:text-white">{user.name}</h3>
+                                        <p className="text-sm text-gray-500 dark:text-zinc-500">@{user.username}</p>
                                         <span className="inline-block mt-2 px-2 py-0.5 rounded text-[10px] uppercase font-black tracking-wider bg-moto-accent text-black">
                                             {user.rank || 'ÜYE'}
                                         </span>
@@ -99,8 +99,8 @@ export const MobileSideMenu: React.FC<MobileSideMenuProps> = ({ isOpen, onClose,
                                 </div>
                             </div>
                         ) : (
-                            <div className="p-6 border-b border-white/5 text-center">
-                                <p className="text-zinc-400 mb-4">Özelliklere erişmek için giriş yapmalısın.</p>
+                            <div className="p-6 border-b border-gray-100 dark:border-white/5 text-center transition-colors">
+                                <p className="text-gray-500 dark:text-zinc-400 mb-4">Özelliklere erişmek için giriş yapmalısın.</p>
                                 <button
                                     onClick={() => { onNavigate('auth' as ViewState); onClose(); }}
                                     className="w-full py-3 rounded-xl bg-moto-accent text-black font-bold"
@@ -119,37 +119,37 @@ export const MobileSideMenu: React.FC<MobileSideMenuProps> = ({ isOpen, onClose,
                                         onNavigate(item.view);
                                         onClose();
                                     }}
-                                    className="w-full flex items-center gap-4 p-4 rounded-2xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-all group active:scale-95"
+                                    className="w-full flex items-center gap-4 p-4 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 hover:bg-gray-100 dark:hover:bg-white/10 hover:border-gray-200 dark:hover:border-white/10 transition-all group active:scale-95"
                                 >
                                     <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${item.bg} ${item.color}`}>
                                         <item.icon className="w-6 h-6" />
                                     </div>
                                     <div className="flex-1 text-left">
-                                        <h3 className="text-base font-bold text-white group-hover:text-moto-accent transition-colors">
+                                        <h3 className="text-base font-bold text-gray-900 dark:text-white group-hover:text-moto-accent transition-colors">
                                             {item.label}
                                         </h3>
-                                        <p className="text-xs text-zinc-500">{item.description}</p>
+                                        <p className="text-xs text-gray-500 dark:text-zinc-500">{item.description}</p>
                                     </div>
-                                    <ChevronRight className="w-5 h-5 text-zinc-600 group-hover:text-white transition-colors" />
+                                    <ChevronRight className="w-5 h-5 text-gray-400 dark:text-zinc-600 group-hover:text-gray-900 dark:group-hover:text-white transition-colors" />
                                 </button>
                             ))}
                         </div>
 
                         {/* Footer / Logout */}
                         {user && (
-                            <div className="p-6 border-t border-white/5 bg-black/20">
+                            <div className="p-6 border-t border-gray-100 dark:border-white/5 bg-gray-50 dark:bg-black/20 transition-colors">
                                 <button
                                     onClick={() => {
                                         if (logout) logout();
                                         onClose();
                                         // Optional: navigate to auth or home
                                     }}
-                                    className="w-full flex items-center justify-center gap-2 p-4 rounded-xl text-red-500 hover:bg-red-500/10 transition-colors font-bold"
+                                    className="w-full flex items-center justify-center gap-2 p-4 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors font-bold"
                                 >
                                     <LogOut className="w-5 h-5" />
                                     Oturumu Kapat
                                 </button>
-                                <p className="text-center text-[10px] text-zinc-700 mt-4 uppercase tracking-widest font-black">
+                                <p className="text-center text-[10px] text-gray-400 dark:text-zinc-700 mt-4 uppercase tracking-widest font-black">
                                     MotoVibe v2.0
                                 </p>
                             </div>

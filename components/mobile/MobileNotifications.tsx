@@ -47,10 +47,10 @@ export const MobileNotifications: React.FC = () => {
     };
 
     return (
-        <div className="min-h-screen bg-[#050505] pb-20">
+        <div className="min-h-screen bg-gray-50 dark:bg-[#050505] pb-20 transition-colors duration-300">
             {/* Header */}
-            <div className="bg-[#050505]/90 backdrop-blur-md sticky top-0 z-20 border-b border-white/5 px-4 h-16 flex items-center justify-between">
-                <h1 className="text-xl font-display font-black text-white">Bildirimler</h1>
+            <div className="bg-white/90 dark:bg-[#050505]/90 backdrop-blur-md sticky top-0 z-20 border-b border-gray-100 dark:border-white/5 px-4 h-16 flex items-center justify-between transition-colors">
+                <h1 className="text-xl font-display font-black text-gray-900 dark:text-white">Bildirimler</h1>
                 {notifications.some(n => !n.isRead) && (
                     <button
                         onClick={markAllAsRead}
@@ -65,7 +65,7 @@ export const MobileNotifications: React.FC = () => {
             <div className="p-4 space-y-3">
                 {isLoading ? (
                     <div className="flex justify-center p-8">
-                        <div className="w-8 h-8 border-4 border-white/10 border-t-moto-accent rounded-full animate-spin"></div>
+                        <div className="w-8 h-8 border-4 border-gray-200 dark:border-white/10 border-t-moto-accent rounded-full animate-spin"></div>
                     </div>
                 ) : notifications.length > 0 ? (
                     <AnimatePresence>
@@ -76,12 +76,12 @@ export const MobileNotifications: React.FC = () => {
                                 initial={{ opacity: 0, y: 10 }}
                                 animate={{ opacity: 1, y: 0 }}
                                 exit={{ opacity: 0, scale: 0.95 }}
-                                className={`relative p-4 rounded-2xl border ${notification.isRead ? 'bg-[#111] border-white/5' : 'bg-white/5 border-moto-accent/20'} flex gap-4 items-start shadow-sm`}
+                                className={`relative p-4 rounded-2xl border transition-colors ${notification.isRead ? 'bg-white dark:bg-[#111] border-gray-100 dark:border-white/5' : 'bg-moto-accent/5 border-moto-accent/20'} flex gap-4 items-start shadow-sm`}
                                 onClick={() => markAsRead(notification._id)}
                             >
                                 {/* Interact User Avatar */}
                                 <div className="relative shrink-0">
-                                    <div className="w-12 h-12 rounded-full bg-gray-800 overflow-hidden">
+                                    <div className="w-12 h-12 rounded-full bg-gray-200 dark:bg-gray-800 overflow-hidden">
                                         {/* Safe avatar loading */}
                                         <img
                                             src={notification.sender?.avatar || `https://ui-avatars.com/api/?name=${notification.sender?.name || 'User'}&background=random`}
@@ -89,16 +89,16 @@ export const MobileNotifications: React.FC = () => {
                                             className="w-full h-full object-cover"
                                         />
                                     </div>
-                                    <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-2 border-[#111] flex items-center justify-center ${getColor(notification.type)}`}>
+                                    <div className={`absolute -bottom-1 -right-1 w-6 h-6 rounded-full border-2 border-white dark:border-[#111] flex items-center justify-center ${getColor(notification.type)}`}>
                                         {getIcon(notification.type)}
                                     </div>
                                 </div>
 
                                 <div className="flex-1 min-w-0">
-                                    <p className="text-sm text-gray-200 leading-snug">
+                                    <p className="text-sm text-gray-700 dark:text-gray-200 leading-snug">
                                         {getMessage(notification)}
                                     </p>
-                                    <p className="text-xs text-gray-500 font-medium mt-1">
+                                    <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mt-1">
                                         {(() => {
                                             try {
                                                 if (!notification.createdAt) return '';
@@ -118,10 +118,10 @@ export const MobileNotifications: React.FC = () => {
                     </AnimatePresence>
                 ) : (
                     <div className="text-center py-20">
-                        <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-600">
+                        <div className="w-16 h-16 bg-gray-100 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400 dark:text-gray-600 transition-colors">
                             <Bell className="w-8 h-8" />
                         </div>
-                        <h3 className="text-white font-bold mb-1">Hiç bildirim yok</h3>
+                        <h3 className="text-gray-900 dark:text-white font-bold mb-1">Hiç bildirim yok</h3>
                         <p className="text-gray-500 text-xs text-center max-w-[200px] mx-auto">
                             Şu an için her şey sakin görünüyor.
                         </p>

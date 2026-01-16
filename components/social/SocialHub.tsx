@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Compass, Home, MessageSquare, Calendar, User, Search, Map as MapIcon, Navigation, Plus, Image, Grid, Users, Bell, ShoppingBag, Settings, LogOut, PlusCircle, Archive, Heart, MessageCircle, Sun, Moon, Gauge } from 'lucide-react';
 import { ResponsivePostCard } from './ResponsivePostCard';
+import { SpatialFeed } from './SpatialFeed';
 import { PostComposer } from './PostComposer';
 import { FollowButton } from './FollowButton';
 import { SocialPost, ViewState } from '../../types';
@@ -609,75 +610,18 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                             {/* Feed Stream */}
                             <PullToRefresh onRefresh={async () => { await fetchNextPage(); }} isMobile={true}>
                                 <div className="space-y-6 pt-0 pb-32">
-                                    {/* Empty State */}
-                                    {!isFetchingNextPage && data?.pages?.[0]?.length === 0 && (
-                                        <div className="flex flex-col items-center justify-center py-20 px-4 text-center">
-                                            <div className="w-20 h-20 bg-zinc-900 rounded-full flex items-center justify-center mb-6 border border-zinc-800">
-                                                <Users className="w-10 h-10 text-moto-accent" />
-                                            </div>
-                                            <h3 className="text-2xl font-bold text-white mb-2">Akışın Sessiz Duruyor</h3>
-                                            <p className="text-gray-400 mb-8 max-w-xs mx-auto">Daha fazla sürücü takip ederek akışını hareketlendir.</p>
-                                            <Button
-                                                variant="primary"
-                                                className="shadow-[0_0_20px_rgba(255,87,34,0.3)] animate-pulse"
-                                                onClick={() => {
-                                                    // Functionality to open "Suggested Riders" or navigate to search
-                                                    const searchInput = document.querySelector('input[type="text"]') as HTMLInputElement;
-                                                    if (searchInput) {
-                                                        searchInput.focus();
-                                                        setSearchQuery(' '); // Trigger search suggestions logic if needed
-                                                    }
-                                                }}
-                                            >
-                                                Sürücüleri Keşfet
-                                            </Button>
-                                        </div>
-                                    )}
-
-
-
-                                    {data?.pages.map((page, i) => (
-                                        <React.Fragment key={i}>
-                                            {page?.map((post: SocialPost, index: number) => (
-                                                <React.Fragment key={post._id}>
-                                                    <motion.div
-                                                        initial={{ opacity: 0, y: 50 }}
-                                                        whileInView={{ opacity: 1, y: 0 }}
-                                                        viewport={{ once: true, margin: "-10%" }}
-                                                        className="group"
-                                                    >
-                                                        <div className="relative">
-                                                            {/* <div className="absolute -left-4 top-0 bottom-0 w-[1px] bg-white/5 group-hover:bg-white/10 transition-colors hidden xl:block" /> */}
-                                                            <ResponsivePostCard
-                                                                post={post}
-                                                                // isMobile={true} -- Removing this as it causes a type error and seems unused
-                                                                currentUserId={currentUser?._id}
-                                                                onNavigate={onNavigate}
-                                                                onCommentClick={() => {
-                                                                    setActivePostId(post._id);
-                                                                    setIsCommentSheetOpen(true);
-                                                                }}
-                                                            />
-                                                        </div>
-                                                    </motion.div>
-
-                                                    {/* Inject Route Suggestions after the 3rd post of the first page */}
-                                                    {i === 0 && index === 2 && (
-                                                        <div className="py-2">
-                                                            <RouteSuggestions />
-                                                        </div>
-                                                    )}
-                                                </React.Fragment>
-                                            ))}
-                                        </React.Fragment>
-                                    ))}
-
-                                    {isFetchingNextPage && <div className="flex justify-center py-8"><div className="w-8 h-8 border-2 border-moto-accent border-t-transparent rounded-full animate-spin" /></div>}
-                                    {hasNextPage && (
-                                        <div className="flex justify-center pt-8">
-                                            <button onClick={() => fetchNextPage()} className="text-xs font-bold text-gray-500 uppercase tracking-widest hover:text-white transition-colors">Daha Fazla Yükle</button>
-                                        </div>
-                                    )}
+                                    <SpatialFeed
+                                        data={data}
+                                        currentUser={currentUser}
+                                        onNavigate={onNavigate}
+                                        isFetchingNextPage={isFetchingNextPage}
+                                        hasNextPage={hasNextPage}
+                                        fetchNextPage={fetchNextPage}
+                                        onCommentClick={(postId) => {
+                                            setActivePostId(postId);
+                                            setIsCommentSheetOpen(true);
+                                        }}
+                                    />
                                 </div>
                             </PullToRefresh>
                         </>
@@ -712,7 +656,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                 </div >
 
                 {/* --- RIGHT SIDEBAR (Context) --- */}
-            </ResponsiveDashboardLayout>
+            </ResponsiveDashboardLayout >
 
             {/* Direct Messages Overlay */}
 

@@ -8,11 +8,12 @@ interface ResponsivePostCardProps {
     currentUserId?: string;
     onNavigate?: (view: any, data?: any) => void;
     onCommentClick?: () => void;
+    className?: string;
 }
 
 export const ResponsivePostCard: React.FC<ResponsivePostCardProps> = memo((props) => {
     return (
-        <div className="w-full">
+        <div className={`w-full ${props.className || ''}`}>
             <PostCard
                 post={props.post}
                 onComment={() => props.onCommentClick?.()}

@@ -101,141 +101,110 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment, onN
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
+            viewport={{ once: true, margin: "-50px" }}
             transition={{ type: "spring", stiffness: 40, damping: 20 }}
-            className={`w-full max-w-[550px] mx-auto mb-12 group relative perspective-1000 ${isGlass ? '' : ''}`}
+            className={`w-full max-w-[600px] mx-auto mb-16 group relative`}
         >
             {/* Main Card Container */}
-            <div className={`relative rounded-[2.5rem] overflow-hidden transition-all duration-500 
+            <div className={`relative rounded-[2rem] overflow-hidden transition-all duration-500 
                 ${isGlass
                     ? 'bg-transparent shadow-none border-none'
-                    : 'bg-white dark:bg-[#0A0A0A] shadow-2xl hover:shadow-[0_20px_60px_-15px_rgba(0,0,0,0.8)] border border-gray-100 dark:border-white/5'
+                    : 'bg-white/80 dark:bg-black/40 backdrop-blur-xl border border-white/20 dark:border-white/5 shadow-2xl hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)]'
                 }`}
             >
 
-                {/* 1. Cinematic Header (Floating) */}
-                <div className={`absolute top-0 left-0 right-0 p-6 z-30 pointer-events-none 
-                    ${isGlass
-                        ? 'bg-gradient-to-b from-white/90 via-white/50 to-transparent'
-                        : 'bg-gradient-to-b from-white/90 dark:from-black/80 via-white/50 dark:via-black/40 to-transparent'
-                    }`}>
-                    <div className="flex items-center justify-between pointer-events-auto">
-                        <div
-                            className="flex items-center gap-4 cursor-pointer"
-                            onClick={handleProfileClick}
-                        >
-                            {/* Avatar with Glow Ring */}
-                            <div className="relative group/avatar">
-                                <div className="absolute -inset-2 bg-moto-accent/20 rounded-full blur-md opacity-0 group-hover/avatar:opacity-100 transition-opacity duration-500" />
-                                <div className="relative p-[2px] rounded-full bg-gradient-to-br from-moto-accent to-gray-200 dark:to-white/10">
-                                    <div className={`p-[2px] rounded-full ${isGlass ? 'bg-white' : 'bg-white dark:bg-black'}`}>
-                                        <img
-                                            src={post.userAvatar || 'https://via.placeholder.com/40'}
-                                            alt={post.userName}
-                                            className="w-10 h-10 rounded-full object-cover"
-                                        />
-                                    </div>
-                                </div>
-                                {post.userRank && (
-                                    <div className="absolute -bottom-1 -right-1 bg-black text-moto-accent text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded border border-moto-accent">
-                                        PRO
-                                    </div>
-                                )}
+                {/* Header */}
+                <div className="flex items-center justify-between p-6 pb-4">
+                    <div
+                        className="flex items-center gap-4 cursor-pointer"
+                        onClick={handleProfileClick}
+                    >
+                        <div className="relative p-0.5 rounded-full bg-gradient-to-tr from-moto-accent/50 to-transparent">
+                            <div className="p-0.5 rounded-full bg-white dark:bg-black">
+                                <img
+                                    src={post.userAvatar || 'https://via.placeholder.com/40'}
+                                    alt={post.userName}
+                                    className="w-11 h-11 rounded-full object-cover"
+                                />
                             </div>
+                        </div>
 
-                            {/* User Info */}
-                            <div>
-                                <h3 className={`text-sm font-bold tracking-wide font-display drop-shadow-md hover:underline decoration-moto-accent underline-offset-2 ${isGlass ? 'text-gray-900' : 'text-gray-900 dark:text-white'}`}>
-                                    {post.userName}
-                                </h3>
-                                <div className={`flex items-center gap-2 text-[10px] font-medium tracking-wide opacity-90 ${isGlass ? 'text-gray-600' : 'text-gray-600 dark:text-gray-300'}`}>
-                                    {post.location && (
-                                        <span className="flex items-center gap-1">
-                                            <MapPin className="w-2.5 h-2.5 text-moto-accent" />
-                                            {post.location}
-                                        </span>
-                                    )}
-                                    <span className="w-0.5 h-0.5 rounded-full bg-gray-400" />
-                                    <span>
-                                        {formatDistanceToNow(new Date(post.timestamp || Date.now()), { addSuffix: true, locale: tr })}
+                        <div>
+                            <h3 className="text-sm font-bold text-gray-900 dark:text-white hover:text-moto-accent transition-colors">
+                                {post.userName}
+                            </h3>
+                            <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                                {post.location && (
+                                    <span className="flex items-center gap-1">
+                                        <MapPin className="w-3 h-3" />
+                                        {post.location}
                                     </span>
-                                </div>
+                                )}
+                                <span className="w-0.5 h-0.5 rounded-full bg-gray-300 dark:bg-gray-600" />
+                                <span>
+                                    {formatDistanceToNow(new Date(post.timestamp || Date.now()), { addSuffix: true, locale: tr })}
+                                </span>
                             </div>
                         </div>
+                    </div>
 
-                        {/* Options Menu */}
-                        <div className="relative">
-                            <button
-                                onClick={() => setShowOptions(!showOptions)}
-                                className={`w-10 h-10 rounded-full backdrop-blur-md flex items-center justify-center transition-colors 
-                                    ${isGlass
-                                        ? 'bg-black/5 text-gray-900 hover:bg-black/10 border border-gray-200'
-                                        : 'bg-black/5 dark:bg-white/5 text-gray-900 dark:text-white hover:bg-black/10 dark:hover:bg-white/10 border border-gray-200 dark:border-white/10'
-                                    }`}
-                            >
-                                <MoreVertical className="w-4 h-4" />
-                            </button>
-                            {/* ... Options Dropdown (Keep existing logic, maybe force light theme if glass) */}
-                            <AnimatePresence>
-                                {showOptions && (
-                                    <motion.div
-                                        initial={{ opacity: 0, scale: 0.9, y: 10 }}
-                                        animate={{ opacity: 1, scale: 1, y: 0 }}
-                                        exit={{ opacity: 0, scale: 0.9, y: 10 }}
-                                        className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#111] border border-gray-100 dark:border-white/10 rounded-2xl shadow-xl overflow-hidden z-40"
-                                    >
-                                        <div className="p-1">
-                                            {currentUser?._id === post.userId ? (
-                                                <>
-                                                    <button onClick={() => { setIsEditing(true); setShowOptions(false); }} className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 rounded-xl transition-colors">
-                                                        <Edit2 className="w-3.5 h-3.5" /> Düzenle
-                                                    </button>
-                                                    <button onClick={handleDelete} className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-red-500 hover:bg-red-500/10 rounded-xl transition-colors">
-                                                        <Trash2 className="w-3.5 h-3.5" /> Sil
-                                                    </button>
-                                                </>
-                                            ) : (
-                                                <button onClick={handleReport} className="w-full flex items-center gap-3 px-4 py-3 text-xs font-bold text-red-400 hover:bg-red-500/10 rounded-xl transition-colors">
-                                                    <Flag className="w-3.5 h-3.5" /> Bildir
-                                                </button>
-                                            )}
-                                        </div>
-                                    </motion.div>
-                                )}
-                            </AnimatePresence>
-                        </div>
+                    {/* Options */}
+                    <div className="relative">
+                        <button
+                            onClick={() => setShowOptions(!showOptions)}
+                            className="p-2 rounded-full hover:bg-black/5 dark:hover:bg-white/10 text-gray-500 transition-colors"
+                        >
+                            <MoreVertical className="w-5 h-5" />
+                        </button>
+
+                        <AnimatePresence>
+                            {showOptions && (
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.95 }}
+                                    className="absolute right-0 mt-2 w-48 bg-white dark:bg-zinc-900 border border-gray-100 dark:border-white/10 rounded-xl shadow-xl overflow-hidden z-40 py-1"
+                                >
+                                    {currentUser?._id === post.userId ? (
+                                        <>
+                                            <button onClick={() => { setIsEditing(true); setShowOptions(false); }} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-white/5 transition-colors">
+                                                <Edit2 className="w-4 h-4" /> Düzenle
+                                            </button>
+                                            <button onClick={handleDelete} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
+                                                <Trash2 className="w-4 h-4" /> Sil
+                                            </button>
+                                        </>
+                                    ) : (
+                                        <button onClick={handleReport} className="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
+                                            <Flag className="w-4 h-4" /> Bildir
+                                        </button>
+                                    )}
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
                 </div>
 
-                {/* 2. Immersive Media Content */}
+                {/* Media Content */}
                 <div
-                    className={`relative w-full cursor-pointer overflow-hidden ${isGlass ? 'bg-transparent' : 'bg-gray-50 dark:bg-neutral-900'}`}
+                    className="relative w-full aspect-[16/9] md:aspect-[4/3] bg-gray-100 dark:bg-black/20 overflow-hidden cursor-pointer"
                     onDoubleClick={handleLike}
                 >
-                    {/* ... (Media content mostly same, maybe remove dark/light checks if specific overrides needed) */}
                     {post.images && post.images.length > 0 ? (
                         <motion.img
-                            whileHover={{ scale: 1.03 }}
-                            transition={{ duration: 0.7, ease: "easeOut" }}
+                            whileHover={{ scale: 1.05 }}
+                            transition={{ duration: 0.6 }}
                             src={post.images[0]}
                             alt="Post"
-                            className="w-full h-auto object-cover max-h-[600px]"
+                            className="w-full h-full object-cover"
                         />
                     ) : (
-                        <div className={`w-full aspect-square flex flex-col items-center justify-center gap-4 ${isGlass ? 'bg-gray-100/50' : 'bg-gray-100 dark:bg-zinc-900/50'}`}>
-                            <div className={`w-20 h-20 rounded-full flex items-center justify-center border ${isGlass ? 'bg-white border-gray-200' : 'bg-white dark:bg-white/5 border-gray-200 dark:border-white/5'}`}>
-                                <Zap className={`w-8 h-8 ${isGlass ? 'text-gray-400' : 'text-gray-400 dark:text-gray-600'}`} />
-                            </div>
+                        <div className="w-full h-full flex items-center justify-center">
+                            <Zap className="w-12 h-12 text-gray-300 dark:text-gray-700" />
                         </div>
                     )}
-
-                    {/* Bottom Gradient for Text Legibility */}
-                    <div className={`absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t pointer-events-none opacity-0 
-                        ${isGlass
-                            ? 'from-white via-white/80 to-transparent'
-                            : 'from-white dark:from-black via-white/80 dark:via-black/80 to-transparent dark:opacity-100'}`} />
 
                     {/* Heart Animation */}
                     <AnimatePresence>
@@ -246,112 +215,84 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment, onN
                                 exit={{ scale: 0.8, opacity: 0 }}
                                 className="absolute inset-0 flex items-center justify-center pointer-events-none z-40"
                             >
-                                <Heart className="w-32 h-32 text-moto-accent fill-moto-accent drop-shadow-[0_0_50px_rgba(242,166,25,0.8)]" />
+                                <Heart className="w-32 h-32 text-white fill-white drop-shadow-[0_10px_20px_rgba(0,0,0,0.3)]" />
                             </motion.div>
                         )}
                     </AnimatePresence>
 
-                    {/* Media Stats Overlay */}
-                    <div className="absolute bottom-6 right-6 flex items-center gap-3 z-30">
-                        {/* ... (Stats styling is usually fine in white text on media, but maybe need adjustment for plain text posts?) */}
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-black/40 backdrop-blur-md rounded-full border border-white/10 text-xs font-bold text-white">
-                            <Heart className={`w-3.5 h-3.5 ${isLiked ? 'text-moto-accent fill-moto-accent' : 'text-white'}`} />
-                            {likesCount}
-                        </div>
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-black/40 backdrop-blur-md rounded-full border border-white/10 text-xs font-bold text-white">
-                            <MessageCircle className="w-3.5 h-3.5 text-white" />
-                            {post.comments}
+                    {/* Hover Stats */}
+                    <div className="absolute bottom-4 right-4 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <div className="px-3 py-1 bg-black/50 backdrop-blur-md rounded-full text-white text-xs font-bold flex items-center gap-2">
+                            <Heart className="w-3.5 h-3.5 fill-white" /> {likesCount}
                         </div>
                     </div>
                 </div>
 
-                {/* 3. Action & Info Area */}
-                <div className={`relative p-6 z-20 transition-colors duration-300 ${isGlass ? 'bg-transparent' : 'bg-white dark:bg-black'}`}>
-                    {/* Action Bar */}
+                {/* Action Bar */}
+                <div className="p-6">
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-2">
                             <motion.button
-                                whileTap={{ scale: 0.9 }}
+                                whileTap={{ scale: 0.95 }}
                                 onClick={handleLike}
-                                className={`h-12 px-6 rounded-2xl flex items-center gap-2 text-sm font-bold transition-all border 
+                                className={`h-11 px-6 rounded-xl flex items-center gap-2.5 text-sm font-bold transition-all border
                                     ${isLiked
-                                        ? 'bg-moto-accent/10 border-moto-accent/50 text-moto-accent shadow-[0_0_20px_rgba(226,255,59,0.2)]'
-                                        : isGlass
-                                            ? 'bg-white/50 border-gray-200 text-gray-900 hover:bg-white'
-                                            : 'bg-gray-100 dark:bg-white/5 border-gray-200 dark:border-white/5 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-white/10'
+                                        ? 'bg-red-500/10 border-red-500/20 text-red-500 hover:bg-red-500/20'
+                                        : 'bg-transparent border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/5'
                                     }`}
                             >
-                                <Heart className={`w-4 h-4 ${isLiked ? 'fill-current drop-shadow-md' : ''}`} />
-                                <span className="hidden sm:inline">{isLiked ? 'Beğenildi' : 'Beğen'}</span>
+                                <Heart className={`w-5 h-5 ${isLiked ? 'fill-current' : ''}`} strokeWidth={isLiked ? 0 : 2} />
+                                <span>{likesCount}</span>
                             </motion.button>
 
                             <motion.button
-                                whileTap={{ scale: 0.9 }}
+                                whileTap={{ scale: 0.95 }}
                                 onClick={() => onComment && onComment(post._id)}
-                                className={`h-12 w-12 sm:w-auto sm:px-6 rounded-2xl border flex items-center justify-center gap-2 transition-all 
-                                    ${isGlass
-                                        ? 'bg-white/50 border-gray-200 text-gray-900 hover:bg-white'
-                                        : 'bg-gray-100 dark:bg-white/5 border-gray-200 dark:border-white/5 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-white/10'
-                                    }`}
+                                className="h-11 w-11 rounded-xl flex items-center justify-center border border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/5 transition-all"
                             >
-                                <MessageCircle className="w-4 h-4" />
-                                <span className="hidden sm:inline">Yorum Yap</span>
+                                <MessageCircle className="w-5 h-5" />
                             </motion.button>
 
                             <motion.button
-                                whileTap={{ scale: 0.9 }}
-                                className={`h-12 w-12 rounded-2xl border flex items-center justify-center transition-all 
-                                    ${isGlass
-                                        ? 'bg-white/50 border-gray-200 text-gray-900 hover:bg-white'
-                                        : 'bg-gray-100 dark:bg-white/5 border-gray-200 dark:border-white/5 text-gray-900 dark:text-white hover:bg-gray-200 dark:hover:bg-white/10'
-                                    }`}
+                                whileTap={{ scale: 0.95 }}
+                                className="h-11 w-11 rounded-xl flex items-center justify-center border border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/5 transition-all"
                             >
-                                <Share2 className="w-4 h-4" />
+                                <Share2 className="w-5 h-5" />
                             </motion.button>
                         </div>
 
                         <motion.button
-                            whileTap={{ scale: 0.9 }}
-                            className={`h-12 w-12 rounded-2xl bg-transparent border flex items-center justify-center transition-all 
-                                ${isGlass
-                                    ? 'border-gray-200 text-gray-400 hover:text-gray-900 hover:border-gray-400'
-                                    : 'border-gray-200 dark:border-white/10 text-gray-400 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:border-gray-400 dark:hover:border-white/30'
-                                }`}
+                            whileTap={{ scale: 0.95 }}
+                            className="h-11 w-11 rounded-xl flex items-center justify-center text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
                         >
-                            <Bookmark className="w-4 h-4" />
+                            <Bookmark className="w-5 h-5" />
                         </motion.button>
                     </div>
 
-                    {/* Content Text */}
-                    <div className="space-y-3">
+                    {/* Content */}
+                    <div className="space-y-4">
                         {isEditing ? (
-                            // ... (Editing mode usually fine, but ensure text contrast)
-                            <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-2xl border border-gray-200 dark:border-white/10">
+                            <div className="bg-gray-50 dark:bg-white/5 p-4 rounded-xl">
                                 <textarea
                                     value={postContent}
                                     onChange={(e) => setPostContent(e.target.value)}
-                                    className="w-full bg-white dark:bg-black/50 border border-gray-200 dark:border-white/10 rounded-xl p-3 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-moto-accent resize-none placeholder-gray-400 active:bg-white dark:active:bg-black mb-3"
+                                    className="w-full bg-transparent border-none focus:ring-0 p-0 text-gray-900 dark:text-white text-sm resize-none"
                                     rows={3}
                                 />
-                                <div className="flex justify-end gap-2">
-                                    <button onClick={() => { setIsEditing(false); setPostContent(post.content); }} className="text-xs font-bold text-gray-500 hover:text-gray-900 dark:hover:text-white px-4 py-2">
-                                        İptal
-                                    </button>
-                                    <button onClick={handleUpdate} className="text-xs bg-moto-accent text-black font-black uppercase tracking-wider px-6 py-2 rounded-xl">
-                                        Kaydet
-                                    </button>
+                                <div className="flex justify-end gap-2 mt-2">
+                                    <button onClick={() => { setIsEditing(false); setPostContent(post.content); }} className="px-3 py-1.5 text-xs font-bold text-gray-500 hover:text-gray-900">İptal</button>
+                                    <button onClick={handleUpdate} className="px-4 py-1.5 bg-black dark:bg-white text-white dark:text-black rounded-lg text-xs font-bold">Kaydet</button>
                                 </div>
                             </div>
                         ) : (
-                            <div className={`text-sm leading-relaxed ${isGlass ? 'text-gray-700' : 'text-gray-600 dark:text-gray-300'}`}>
-                                <span className={`font-bold font-display mr-2 text-base ${isGlass ? 'text-gray-900' : 'text-gray-900 dark:text-white'}`}>{post.userName}</span>
+                            <div className="text-sm leading-7 text-gray-600 dark:text-gray-300">
+                                <span className="font-bold text-gray-900 dark:text-white mr-2 text-base">{post.userName}</span>
                                 {postContent}
                             </div>
                         )}
 
-                        {/* View all comments */}
                         {post.comments > 0 && (
-                            <button className={`text-xs font-bold transition-colors ${isGlass ? 'text-gray-500 hover:text-gray-900' : 'text-gray-500 hover:text-gray-900 dark:hover:text-white'}`}>
+                            <button className="text-xs font-bold text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors">
                                 {post.comments} yorumun tümünü gör
                             </button>
                         )}

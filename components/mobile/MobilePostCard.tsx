@@ -117,236 +117,144 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
     };
 
     return (
-        <div className="mx-2 mb-6 bg-white dark:bg-[#121212] rounded-[40px] overflow-hidden border border-gray-100 dark:border-white/5 shadow-xl dark:shadow-2xl snap-center relative transition-colors duration-300">
-            {/* Header */}
-            <div className="px-5 py-4 flex items-center justify-between bg-gradient-to-b from-white/90 dark:from-black/50 to-transparent absolute top-0 left-0 right-0 z-10 pointer-events-none">
+        <div className="w-full mb-8 bg-transparent">
+            {/* Header - Minimal & Floating-like */}
+            <div className="px-4 py-3 flex items-center justify-between">
                 <div
-                    className="flex items-center gap-3 pointer-events-auto"
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        // Direct navigation to profile
-                        if (onNavigate && post.userId) {
-                            const target = (post as any).username || post.userId;
-                            onNavigate('public-profile', { userId: post.userId, username: target });
-                        }
-                    }}
+                    className="flex items-center gap-3 cursor-pointer"
+                    onClick={() => onNavigate && post.userId && onNavigate('public-profile', { userId: post.userId, username: post.userName })}
                 >
-                    <div className="p-0.5 bg-black/5 dark:bg-white/20 backdrop-blur-md rounded-full">
-                        <UserAvatar name={post.userName} src={post.userAvatar} size={36} />
-                    </div>
-                    <div className="flex flex-col drop-shadow-md">
-                        <span className="text-gray-900 dark:text-white font-bold text-sm leading-none tracking-wide">{post.userName}</span>
-                        {post.bikeModel && (
-                            <span className="text-gray-600 dark:text-white/80 text-[10px] font-medium">{post.bikeModel}</span>
-                        )}
+                    <UserAvatar name={post.userName} src={post.userAvatar} size={32} className="ring-2 ring-white dark:ring-black" />
+                    <div className="flex flex-col">
+                        <span className="text-sm font-bold text-gray-900 dark:text-white leading-none">{post.userName}</span>
+                        {post.location && <span className="text-[10px] text-gray-500 font-medium mt-0.5">{post.location}</span>}
                     </div>
                 </div>
-                <button
-                    className="w-8 h-8 rounded-full bg-black/5 dark:bg-black/20 backdrop-blur-md flex items-center justify-center text-gray-900 dark:text-white border border-gray-200 dark:border-white/10 pointer-events-auto active:scale-90 transition-transform"
-                    onClick={() => setShowOptions(true)}
-                >
+                <button onClick={() => setShowOptions(true)} className="p-2 -mr-2 text-gray-500">
                     <MoreHorizontal className="w-5 h-5" />
                 </button>
             </div>
 
-            <MobileBottomSheet
-                isOpen={showOptions}
-                onClose={() => setShowOptions(false)}
-                title="Gönderi Seçenekleri"
-            >
-                <div className="space-y-2 p-4">
-                    {currentUserId === post.userId || (currentUser?.isAdmin) ? (
-                        <>
-                            {currentUserId === post.userId && (
-                                <button
-                                    onClick={() => { setIsEditing(true); setShowOptions(false); }}
-                                    className="w-full flex items-center gap-3 p-4 bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white rounded-2xl font-bold hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
-                                >
-                                    <div className="w-8 h-8 rounded-full bg-blue-500/10 dark:bg-blue-500/20 flex items-center justify-center"><Edit2 className="w-4 h-4 text-blue-500" /></div>
-                                    Düzenle
-                                </button>
-                            )}
-                            <button
-                                onClick={handleDelete}
-                                className="w-full flex items-center gap-3 p-4 bg-red-500/10 text-red-500 rounded-2xl font-bold hover:bg-red-500/20 transition-colors"
-                            >
-                                <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center"><Trash2 className="w-4 h-4" /></div>
-                                Gönderiyi Sil
-                            </button>
-                        </>
-                    ) : (
-                        <>
-                            <button className="w-full flex items-center gap-3 p-4 bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white rounded-2xl font-bold hover:bg-gray-200 dark:hover:bg-white/10 transition-colors">
-                                <Bookmark className="w-5 h-5" /> Kaydet
-                            </button>
-
-                            <button
-                                onClick={handleShareToAdmin}
-                                className="w-full flex items-center gap-3 p-4 bg-gray-100 dark:bg-white/5 text-gray-900 dark:text-white rounded-2xl font-bold hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
-                            >
-                                <div className="w-8 h-8 rounded-full bg-moto-accent/10 dark:bg-moto-accent/20 flex items-center justify-center"><ShieldAlert className="w-4 h-4 text-moto-accent" /></div>
-                                Admine İlet
-                            </button>
-
-                            <button
-                                onClick={handleReport}
-                                className="w-full flex items-center gap-3 p-4 bg-red-500/10 text-red-500 rounded-2xl font-bold hover:bg-red-500/20 transition-colors"
-                            >
-                                <div className="w-8 h-8 rounded-full bg-red-500/20 flex items-center justify-center"><Flag className="w-4 h-4" /></div>
-                                Şikayet Et
-                            </button>
-                        </>
-                    )}
-                </div>
-            </MobileBottomSheet>
-
-            {/* Media */}
+            {/* Media - Immersive Full Width */}
             <div
-                className="relative w-full aspect-[4/5] bg-gray-100 dark:bg-gray-900 overflow-hidden"
+                className="relative w-full aspect-[4/5] bg-gray-100 dark:bg-zinc-900 overflow-hidden rounded-[2rem]"
                 onClick={handleDoubleTap}
             >
                 <img
                     src={post.images?.[0] || (post as any).image}
-                    alt={post.userName}
-                    loading="lazy"
+                    alt="Post"
                     className="w-full h-full object-cover"
+                    loading="lazy"
                 />
 
-                {/* HUD Overlay (Mock or Real) */}
-                <div className="absolute bottom-4 left-4 flex items-center gap-2">
-                    <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-full px-3 py-1.5 flex items-center gap-2">
-                        <div className="w-1.5 h-1.5 bg-[#E2FF3B] rounded-full animate-pulse" />
-                        <span className="text-gray-900 dark:text-white text-[10px] font-bold tracking-wider font-mono">124 KM/S</span>
-                    </div>
-                    <div className="bg-white/60 dark:bg-black/60 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-full px-3 py-1.5 flex items-center gap-2">
-                        <span className="text-gray-900 dark:text-white text-[10px] font-bold tracking-wider font-mono">42° EĞİM</span>
-                    </div>
-                </div>
-
-                {/* Heart Overlay Animation */}
+                {/* Heart Animation Overlay */}
                 <AnimatePresence>
                     {showHeartOverlay && (
-                        <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+                        <div className="absolute inset-0 flex items-center justify-center z-20 pointer-events-none">
                             <motion.div
-                                initial={{ scale: 0, opacity: 0, rotate: -45 }}
-                                animate={{ scale: 1.5, opacity: 1, rotate: 0 }}
-                                exit={{ scale: 0, opacity: 0, rotate: 45 }}
+                                initial={{ scale: 0, opacity: 0 }}
+                                animate={{ scale: 1.2, opacity: 1 }}
+                                exit={{ scale: 0, opacity: 0 }}
                                 transition={{ type: "spring", stiffness: 300, damping: 20 }}
                             >
-                                <Heart className="w-32 h-32 text-[#E2FF3B] fill-[#E2FF3B] drop-shadow-[0_0_20px_rgba(226,255,59,0.6)]" />
+                                <Heart className="w-24 h-24 text-white fill-white drop-shadow-xl" />
                             </motion.div>
                         </div>
                     )}
                 </AnimatePresence>
             </div>
 
-            {/* Footer Content */}
-            <div className="p-5 pt-4">
-                {/* Tactile Action Buttons */}
-                <div className="flex items-center justify-between mb-4">
-                    <div className="flex items-center gap-4">
+            {/* Actions & Content */}
+            <div className="px-2 pt-3">
+                <div className="flex items-center justify-between mb-3 px-2">
+                    <div className="flex items-center gap-5">
                         <motion.button
-                            whileTap={{ scale: 0.8 }}
+                            whileTap={{ scale: 0.9 }}
                             onClick={handleLike}
-                            className={`w-12 h-12 rounded-full flex items-center justify-center border transition-all duration-300 ${isLiked
-                                ? 'bg-[#E2FF3B] border-[#E2FF3B] shadow-[0_0_15px_rgba(226,255,59,0.4)]'
-                                : 'bg-gray-100 dark:bg-white/5 border-gray-200 dark:border-white/10 hover:bg-gray-200 dark:hover:bg-white/10'
-                                }`}
+                            className="flex items-center gap-1.5"
                         >
-                            <Heart className={`w-6 h-6 ${isLiked ? 'text-black fill-black' : 'text-gray-900 dark:text-white'}`} />
+                            <Heart className={`w-7 h-7 ${isLiked ? 'text-red-500 fill-red-500' : 'text-gray-900 dark:text-white'}`} strokeWidth={1.5} />
                         </motion.button>
 
                         <motion.button
-                            whileTap={{ scale: 0.8 }}
+                            whileTap={{ scale: 0.9 }}
                             onClick={() => onCommentClick && onCommentClick()}
-                            className="w-12 h-12 rounded-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
+                            className="flex items-center gap-1.5"
                         >
-                            <MessageCircle className="w-6 h-6 text-gray-900 dark:text-white" />
+                            <MessageCircle className="w-7 h-7 text-gray-900 dark:text-white" strokeWidth={1.5} />
                         </motion.button>
 
                         <motion.button
-                            whileTap={{ scale: 0.8 }}
-                            className="w-12 h-12 rounded-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-white/10 transition-colors"
+                            whileTap={{ scale: 0.9 }}
+                            className="flex items-center gap-1.5"
                         >
-                            <Share2 className="w-6 h-6 text-gray-900 dark:text-white" />
+                            <Share2 className="w-7 h-7 text-gray-900 dark:text-white" strokeWidth={1.5} />
                         </motion.button>
                     </div>
 
-                    {/* Bookmark (Right) */}
-                    <motion.button
-                        whileTap={{ scale: 0.8 }}
-                        className="w-10 h-10 rounded-full bg-transparent flex items-center justify-center text-gray-400 dark:text-zinc-500 hover:text-gray-900 dark:hover:text-white transition-colors"
-                    >
-                        <Bookmark className="w-6 h-6" />
+                    <motion.button whileTap={{ scale: 0.9 }}>
+                        <Bookmark className="w-7 h-7 text-gray-900 dark:text-white" strokeWidth={1.5} />
                     </motion.button>
                 </div>
 
-                {/* Likes Count */}
-                {likeCount > 0 && (
-                    <div className="mb-2 flex items-center gap-2">
-                        <div className="flex -space-x-2">
-                            {[...Array(3)].map((_, i) => (
-                                <div key={i} className="w-5 h-5 rounded-full bg-gray-200 dark:bg-zinc-800 border border-white dark:border-[#121212]" />
-                            ))}
+                {/* Likes & Caption - Clean Text */}
+                <div className="px-2 space-y-1.5">
+                    {likeCount > 0 && (
+                        <div className="text-sm font-bold text-gray-900 dark:text-white">
+                            {likeCount.toLocaleString()} beğenme
                         </div>
-                        <span className="text-sm font-bold text-gray-900 dark:text-white">
-                            {likeCount} beğenme
-                        </span>
-                    </div>
-                )}
-
-                {/* Caption */}
-                <div className="">
-                    {isEditing ? (
-                        <div className="flex flex-col gap-2 mb-2">
-                            <textarea
-                                value={postContent}
-                                onChange={(e) => setPostContent(e.target.value)}
-                                className="w-full bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl p-3 text-gray-900 dark:text-white text-sm focus:outline-none focus:border-moto-accent resize-none min-h-[80px]"
-                            />
-                            <div className="flex justify-end gap-2">
-                                <button
-                                    onClick={() => { setIsEditing(false); setPostContent(post.content); }}
-                                    className="px-4 py-2 bg-gray-100 dark:bg-white/5 rounded-lg text-xs font-bold text-gray-500 hover:text-gray-900 dark:hover:text-white"
-                                >
-                                    İptal
-                                </button>
-                                <button
-                                    onClick={handleUpdate}
-                                    disabled={editPending}
-                                    className="px-4 py-2 bg-moto-accent rounded-lg text-xs font-bold text-black"
-                                >
-                                    {editPending ? '...' : 'Kaydet'}
-                                </button>
-                            </div>
-                        </div>
-                    ) : (
-                        <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
-                            <span className="font-bold text-gray-900 dark:text-white mr-2 text-[15px]">{post.userName}</span>
-                            {isExpanded ? postContent : (
-                                <>
-                                    <span className="line-clamp-2 inline">{postContent}</span>
-                                    {postContent && postContent.length > 80 && (
-                                        <button
-                                            onClick={() => setIsExpanded(true)}
-                                            className="text-gray-500 text-xs ml-1 font-bold"
-                                        >
-                                            devamını oku
-                                        </button>
-                                    )}
-                                </>
-                            )}
-                        </p>
                     )}
-                </div>
 
-                {/* Time */}
-                <div className="mt-2">
-                    <span className="text-[10px] text-gray-400 dark:text-gray-600 uppercase tracking-widest font-bold">
+                    <div className="text-sm leading-relaxed text-gray-800 dark:text-gray-200">
+                        <span className="font-bold mr-2 text-gray-900 dark:text-white">{post.userName}</span>
+                        {isExpanded || !postContent || postContent.length < 90 ? (
+                            postContent
+                        ) : (
+                            <>
+                                {postContent.slice(0, 90)}...
+                                <button onClick={() => setIsExpanded(true)} className="text-gray-500 ml-1">devamı</button>
+                            </>
+                        )}
+                    </div>
+
+                    {post.comments > 0 && (
+                        <button
+                            onClick={() => onCommentClick && onCommentClick()}
+                            className="text-gray-500 text-sm mt-1"
+                        >
+                            {post.comments} yorumun tümünü gör
+                        </button>
+                    )}
+
+                    <div className="text-[10px] text-gray-400 uppercase tracking-wide pt-1">
                         {new Date((post as any).createdAt || (post as any).timestamp || Date.now()).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}
-                    </span>
+                    </div>
                 </div>
             </div>
+
+            {/* Options Sheet */}
+            <MobileBottomSheet
+                isOpen={showOptions}
+                onClose={() => setShowOptions(false)}
+                title="Seçenekler"
+            >
+                <div className="p-4 space-y-2">
+                    {currentUserId === post.userId ? (
+                        <>
+                            <button onClick={handleDelete} className="w-full p-4 flex items-center gap-3 text-red-500 font-bold bg-red-50 dark:bg-red-500/10 rounded-xl">
+                                <Trash2 className="w-5 h-5" /> Sil
+                            </button>
+                            <button onClick={() => { setIsEditing(true); setShowOptions(false); }} className="w-full p-4 flex items-center gap-3 text-gray-900 dark:text-white font-bold bg-gray-50 dark:bg-white/5 rounded-xl">
+                                <Edit2 className="w-5 h-5" /> Düzenle
+                            </button>
+                        </>
+                    ) : (
+                        <button onClick={handleReport} className="w-full p-4 flex items-center gap-3 text-red-500 font-bold bg-red-50 dark:bg-red-500/10 rounded-xl">
+                            <Flag className="w-5 h-5" /> Şikayet Et
+                        </button>
+                    )}
+                </div>
+            </MobileBottomSheet>
         </div>
     );
 });

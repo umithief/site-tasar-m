@@ -2,6 +2,7 @@ import React, { memo } from 'react';
 import { PostCard } from './PostCard';
 import { MobilePostCard } from '../mobile/MobilePostCard';
 import { SocialPost } from '../../types';
+import { useIsMobile } from '../../hooks/useIsMobile';
 
 interface ResponsivePostCardProps {
     post: SocialPost;
@@ -13,14 +14,25 @@ interface ResponsivePostCardProps {
 }
 
 export const ResponsivePostCard: React.FC<ResponsivePostCardProps> = memo((props) => {
+    const isMobile = useIsMobile();
+
     return (
         <div className={`w-full ${props.className || ''}`}>
-            <PostCard
-                post={props.post}
-                onComment={() => props.onCommentClick?.()}
-                onNavigate={props.onNavigate}
-                variant={props.variant}
-            />
+            {isMobile ? (
+                <MobilePostCard
+                    post={props.post}
+                    currentUserId={props.currentUserId}
+                    onNavigate={props.onNavigate}
+                    onCommentClick={props.onCommentClick}
+                />
+            ) : (
+                <PostCard
+                    post={props.post}
+                    onComment={() => props.onCommentClick?.()}
+                    onNavigate={props.onNavigate}
+                    variant={props.variant}
+                />
+            )}
         </div>
     );
 });

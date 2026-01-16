@@ -12,7 +12,7 @@ export const AdminUISettings = () => {
     const { settings: brandingSettings, updateSettings: updateBrandingSettings, isLoading: isBrandingLoading } = useBranding();
 
     // Local States
-    const [activeTab, setActiveTab] = useState<'branding' | 'components' | 'colors' | 'typography'>('branding');
+    const [activeTab, setActiveTab] = useState<'branding' | 'components' | 'colors' | 'typography' | 'effects'>('branding');
     const [isSaving, setIsSaving] = useState(false);
 
     // Button Config State
@@ -50,7 +50,7 @@ export const AdminUISettings = () => {
                 await updateSetting('VibeButton', buttonConfig);
             }
             // Save Branding Config
-            if (activeTab === 'branding' || activeTab === 'colors' || activeTab === 'typography') {
+            if (activeTab === 'branding' || activeTab === 'colors' || activeTab === 'typography' || activeTab === 'effects') {
                 await updateBrandingSettings(localBranding);
             }
 
@@ -68,6 +68,7 @@ export const AdminUISettings = () => {
         { id: 'components', label: 'Bileşen Stüdyo', icon: MousePointer2 },
         { id: 'colors', label: 'Renk Paleti', icon: Palette },
         { id: 'typography', label: 'Tipografi', icon: Type },
+        { id: 'effects', label: 'Görünüm & Efekt', icon: RefreshCcw },
     ];
 
     return (
@@ -86,8 +87,8 @@ export const AdminUISettings = () => {
                             key={tab.id}
                             onClick={() => setActiveTab(tab.id as any)}
                             className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-bold transition-all duration-200 group ${activeTab === tab.id
-                                    ? 'bg-moto-accent text-black shadow-[0_0_20px_rgba(226,255,59,0.2)]'
-                                    : 'text-gray-400 hover:bg-white/5 hover:text-white'
+                                ? 'bg-moto-accent text-black shadow-[0_0_20px_rgba(226,255,59,0.2)]'
+                                : 'text-gray-400 hover:bg-white/5 hover:text-white'
                                 }`}
                         >
                             <tab.icon className={`w-4 h-4 ${activeTab === tab.id ? 'text-black' : 'group-hover:text-white'}`} />
@@ -136,8 +137,8 @@ export const AdminUISettings = () => {
                                                 key={type}
                                                 onClick={() => setLocalBranding({ ...localBranding, iconType: type as any })}
                                                 className={`relative p-6 rounded-2xl border transition-all duration-200 group flex flex-col items-center gap-4 ${localBranding.iconType === type
-                                                        ? 'bg-moto-accent/10 border-moto-accent ring-1 ring-moto-accent/50'
-                                                        : 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10'
+                                                    ? 'bg-moto-accent/10 border-moto-accent ring-1 ring-moto-accent/50'
+                                                    : 'bg-white/5 border-white/10 hover:border-white/20 hover:bg-white/10'
                                                     }`}
                                             >
                                                 <div className={`w-12 h-12 ${localBranding.iconType === type ? 'text-moto-accent' : 'text-gray-400'}`}>
@@ -168,6 +169,172 @@ export const AdminUISettings = () => {
                                 </div>
                             )}
 
+                            {/* --- COLORS TAB --- */}
+                            {activeTab === 'colors' && (
+                                <div className="space-y-8">
+                                    <SectionHeader title="Renk Paleti" description="Markanızın renklerini özelleştirin." />
+                                    <div className="grid grid-cols-2 gap-6">
+                                        <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+                                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Ana Renk (Primary)</label>
+                                            <div className="flex gap-4 items-center">
+                                                <input
+                                                    type="color"
+                                                    value={localBranding.primaryColor}
+                                                    onChange={(e) => setLocalBranding(prev => ({ ...prev, primaryColor: e.target.value }))}
+                                                    className="w-12 h-12 rounded-xl cursor-pointer bg-transparent border-none p-0"
+                                                />
+                                                <span className="text-sm font-mono text-white bg-black/50 px-3 py-1.5 rounded-lg border border-white/10">
+                                                    {localBranding.primaryColor}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+                                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Vurgu Rengi (Accent)</label>
+                                            <div className="flex gap-4 items-center">
+                                                <input
+                                                    type="color"
+                                                    value={localBranding.accentColor}
+                                                    onChange={(e) => setLocalBranding(prev => ({ ...prev, accentColor: e.target.value }))}
+                                                    className="w-12 h-12 rounded-xl cursor-pointer bg-transparent border-none p-0"
+                                                />
+                                                <span className="text-sm font-mono text-white bg-black/50 px-3 py-1.5 rounded-lg border border-white/10">
+                                                    {localBranding.accentColor}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+                                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Arkaplan (Surface)</label>
+                                            <div className="flex gap-4 items-center">
+                                                <input
+                                                    type="color"
+                                                    value={localBranding.surfaceColor}
+                                                    onChange={(e) => setLocalBranding(prev => ({ ...prev, surfaceColor: e.target.value }))}
+                                                    className="w-12 h-12 rounded-xl cursor-pointer bg-transparent border-none p-0"
+                                                />
+                                                <span className="text-sm font-mono text-white bg-black/50 px-3 py-1.5 rounded-lg border border-white/10">
+                                                    {localBranding.surfaceColor}
+                                                </span>
+                                            </div>
+                                        </div>
+                                        <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
+                                            <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Yazı Rengi (Text)</label>
+                                            <div className="flex gap-4 items-center">
+                                                <input
+                                                    type="color"
+                                                    value={localBranding.textColor}
+                                                    onChange={(e) => setLocalBranding(prev => ({ ...prev, textColor: e.target.value }))}
+                                                    className="w-12 h-12 rounded-xl cursor-pointer bg-transparent border-none p-0"
+                                                />
+                                                <span className="text-sm font-mono text-white bg-black/50 px-3 py-1.5 rounded-lg border border-white/10">
+                                                    {localBranding.textColor}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* --- TYPOGRAPHY TAB --- */}
+                            {activeTab === 'typography' && (
+                                <div className="space-y-8">
+                                    <SectionHeader title="Tipografi" description="Markanızın yazı karakterlerini özelleştirin." />
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {Object.keys(FONT_STYLES).map(style => (
+                                            <button
+                                                key={style}
+                                                onClick={() => setLocalBranding(prev => ({ ...prev, fontStyle: style as any }))}
+                                                className={`p-4 rounded-xl border text-center transition-all ${localBranding.fontStyle === style
+                                                    ? 'bg-moto-accent text-black border-moto-accent'
+                                                    : 'bg-white/5 text-gray-400 border-white/10 hover:text-white'
+                                                    }`}
+                                            >
+                                                <span className="text-sm font-bold">{style}</span>
+                                            </button>
+                                        ))}
+                                    </div>
+
+                                    <div className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-4">
+                                        <div className="flex items-center justify-between">
+                                            <label className="text-sm font-bold text-gray-300">Temel Yazı Boyutu (Base Size)</label>
+                                            <span className="text-xs bg-black/50 px-2 py-1 rounded text-moto-accent font-mono">{localBranding.fontBaseSize}px</span>
+                                        </div>
+                                        <input
+                                            type="range"
+                                            min="12" max="24" step="1"
+                                            value={localBranding.fontBaseSize}
+                                            onChange={(e) => setLocalBranding({ ...localBranding, fontBaseSize: parseInt(e.target.value) })}
+                                            className="w-full accent-moto-accent h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                                        />
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* --- EFFECTS TAB --- */}
+                            {activeTab === 'effects' && (
+                                <div className="space-y-8">
+                                    <SectionHeader title="Görünüm & Efektler" description="Sistem genelindeki görsel efektleri ve yuvarlaklıkları ayarlayın." />
+
+                                    <div className="p-6 rounded-2xl bg-white/5 border border-white/10 space-y-8">
+                                        <div>
+                                            <div className="flex items-center justify-between mb-4">
+                                                <label className="text-sm font-bold text-gray-300 flex items-center gap-2">
+                                                    <div className="w-1.5 h-4 bg-moto-accent rounded-full" />
+                                                    Köşe Yuvarlaklığı (Radius)
+                                                </label>
+                                                <span className="text-xs bg-black/50 px-2 py-1 rounded text-moto-accent font-mono">{localBranding.borderRadius}px</span>
+                                            </div>
+                                            <input
+                                                type="range"
+                                                min="0" max="32" step="2"
+                                                value={localBranding.borderRadius}
+                                                onChange={(e) => setLocalBranding({ ...localBranding, borderRadius: parseInt(e.target.value) })}
+                                                className="w-full accent-moto-accent h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                                            />
+                                        </div>
+
+                                        <div className="w-full h-px bg-white/5" />
+
+                                        <div>
+                                            <div className="flex items-center justify-between mb-4">
+                                                <label className="text-sm font-bold text-gray-300 flex items-center gap-2">
+                                                    <div className="w-1.5 h-4 bg-blue-500 rounded-full" />
+                                                    Cam Bulanıklığı (Glass Blur)
+                                                </label>
+                                                <span className="text-xs bg-black/50 px-2 py-1 rounded text-moto-accent font-mono">{localBranding.glassBlur}px</span>
+                                            </div>
+                                            <input
+                                                type="range"
+                                                min="0" max="40" step="2"
+                                                value={localBranding.glassBlur}
+                                                onChange={(e) => setLocalBranding({ ...localBranding, glassBlur: parseInt(e.target.value) })}
+                                                className="w-full accent-moto-accent h-1.5 bg-gray-700 rounded-lg appearance-none cursor-pointer"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Preview Box for Effects */}
+                                    <div className="grid grid-cols-2 gap-4">
+                                        <div
+                                            className="h-32 bg-white/10 border border-white/20 flex items-center justify-center text-sm font-medium text-white/70"
+                                            style={{ borderRadius: `${localBranding.borderRadius}px` }}
+                                        >
+                                            Radius Önizleme
+                                        </div>
+                                        <div
+                                            className="h-32 bg-white/5 border border-white/20 flex items-center justify-center text-sm font-medium text-white/70 relative overflow-hidden"
+                                            style={{ borderRadius: `${localBranding.borderRadius}px` }}
+                                        >
+                                            <div className="absolute inset-0 flex items-center justify-center -z-10">
+                                                <div className="w-20 h-20 bg-red-500 rounded-full blur-xl opacity-50 translate-x-4" />
+                                                <div className="w-20 h-20 bg-blue-500 rounded-full blur-xl opacity-50 -translate-x-4" />
+                                            </div>
+                                            <div className="absolute inset-0 bg-white/5" style={{ backdropFilter: `blur(${localBranding.glassBlur}px)` }} />
+                                            <span className="relative z-10">Glass Önizleme</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+
                             {/* --- COMPONENTS TAB --- */}
                             {activeTab === 'components' && (
                                 <div className="space-y-10">
@@ -189,8 +356,8 @@ export const AdminUISettings = () => {
                                                     key={theme.id}
                                                     onClick={() => setButtonConfig(prev => ({ ...prev, buttonStyle: theme.id }))}
                                                     className={`p-4 rounded-xl border text-left transition-all ${buttonConfig.buttonStyle === theme.id
-                                                            ? 'bg-moto-accent text-black border-moto-accent shadow-lg shadow-moto-accent/20'
-                                                            : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
+                                                        ? 'bg-moto-accent text-black border-moto-accent shadow-lg shadow-moto-accent/20'
+                                                        : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
                                                         }`}
                                                 >
                                                     <div className="font-bold text-sm">{theme.name}</div>
@@ -218,8 +385,8 @@ export const AdminUISettings = () => {
                                                     key={skin.id}
                                                     onClick={() => setButtonConfig(prev => ({ ...prev, buttonSkin: skin.id }))}
                                                     className={`p-4 rounded-xl border text-left transition-all ${buttonConfig.buttonSkin === skin.id
-                                                            ? 'bg-white text-black border-white'
-                                                            : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
+                                                        ? 'bg-white text-black border-white'
+                                                        : 'bg-white/5 border-white/10 text-gray-400 hover:bg-white/10'
                                                         }`}
                                                 >
                                                     <div className="font-bold text-sm">{skin.name}</div>
@@ -259,66 +426,6 @@ export const AdminUISettings = () => {
                                 </div>
                             )}
 
-                            {/* --- COLORS & TYPOGRAPHY TABS (Merged for simplicity or future expansion) --- */}
-                            {(activeTab === 'colors' || activeTab === 'typography') && (
-                                <div className="space-y-8">
-                                    <SectionHeader
-                                        title={activeTab === 'colors' ? "Renk Paleti" : "Tipografi"}
-                                        description="Markanızın renk ve yazı karakterlerini özelleştirin."
-                                    />
-
-                                    {activeTab === 'colors' && (
-                                        <div className="grid grid-cols-2 gap-6">
-                                            <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-                                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Ana Renk (Primary)</label>
-                                                <div className="flex gap-4 items-center">
-                                                    <input
-                                                        type="color"
-                                                        value={localBranding.primaryColor}
-                                                        onChange={(e) => setLocalBranding(prev => ({ ...prev, primaryColor: e.target.value }))}
-                                                        className="w-12 h-12 rounded-xl cursor-pointer bg-transparent border-none p-0"
-                                                    />
-                                                    <span className="text-sm font-mono text-white bg-black/50 px-3 py-1.5 rounded-lg border border-white/10">
-                                                        {localBranding.primaryColor}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                            <div className="p-6 rounded-2xl bg-white/5 border border-white/10">
-                                                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-4">Vurgu Rengi (Accent)</label>
-                                                <div className="flex gap-4 items-center">
-                                                    <input
-                                                        type="color"
-                                                        value={localBranding.accentColor}
-                                                        onChange={(e) => setLocalBranding(prev => ({ ...prev, accentColor: e.target.value }))}
-                                                        className="w-12 h-12 rounded-xl cursor-pointer bg-transparent border-none p-0"
-                                                    />
-                                                    <span className="text-sm font-mono text-white bg-black/50 px-3 py-1.5 rounded-lg border border-white/10">
-                                                        {localBranding.accentColor}
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-
-                                    {activeTab === 'typography' && (
-                                        <div className="grid grid-cols-2 gap-3">
-                                            {Object.keys(FONT_STYLES).map(style => (
-                                                <button
-                                                    key={style}
-                                                    onClick={() => setLocalBranding(prev => ({ ...prev, fontStyle: style as any }))}
-                                                    className={`p-4 rounded-xl border text-center transition-all ${localBranding.fontStyle === style
-                                                            ? 'bg-moto-accent text-black border-moto-accent'
-                                                            : 'bg-white/5 text-gray-400 border-white/10 hover:text-white'
-                                                        }`}
-                                                >
-                                                    <span className="text-sm font-bold">{style}</span>
-                                                </button>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-
                         </motion.div>
                     </AnimatePresence>
                 </div>
@@ -344,7 +451,7 @@ export const AdminUISettings = () => {
                         <div className="flex-1 overflow-y-auto p-8 flex flex-col items-center justify-center gap-12">
 
                             {/* Branding Preview */}
-                            {(activeTab === 'branding' || activeTab === 'colors' || activeTab === 'typography') && (
+                            {(activeTab === 'branding' || activeTab === 'colors' || activeTab === 'typography' || activeTab === 'effects') && (
                                 <div className="space-y-12 w-full">
                                     <div className="space-y-2">
                                         <div className="text-[10px] font-mono text-gray-600 uppercase text-center mb-4">Dark Mode Header</div>

@@ -1,92 +1,68 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Search, Navigation, MapPin, X, Layers, Wind, Zap, Users, Compass, Crosshair, Radio, ChevronRight, Activity, Cpu } from 'lucide-react';
+import { Search, Navigation, MapPin, X, Layers, Wind, Zap, Users, Compass, ChevronRight, Menu, Filter, Info, Heart } from 'lucide-react';
 
-// --- PHANTOM EDITION UI ---
+// --- LUXE MINIMALIST EDITION (TURKISH) ---
 
 export const DiscoverySidebar = ({ routes, onSelectRoute, isOpen, onClose }: any) => {
-    // Mission Control: Horizontal Deck
+    // "Discovery Dock" - Floating Island Concept
     return (
         <AnimatePresence>
             {isOpen && (
-                <div className="fixed bottom-0 left-0 right-0 z-[900] pointer-events-none flex flex-col justify-end h-[40vh] md:h-[35vh]">
-                    {/* Background Gradient Mesh */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/80 to-transparent pointer-events-none" />
+                <>
+                    {/* Minimal Backdrop */}
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[890] bg-black/20 backdrop-blur-[2px] pointer-events-auto"
+                        onClick={onClose}
+                    />
 
-                    <div className="container mx-auto px-4 pb-8 w-full overflow-x-auto no-scrollbar pointer-events-auto relative z-10">
-                        <div className="flex items-end gap-6 pl-4 md:pl-0">
-                            {/* Title Block */}
-                            <div className="min-w-[200px] mb-8 hidden md:block">
-                                <div className="flex items-center gap-2 text-moto-accent mb-2">
-                                    <Activity className="w-4 h-4 animate-pulse" />
-                                    <span className="text-[10px] font-black uppercase tracking-[0.3em] font-mono">Mission Control</span>
-                                </div>
-                                <h1 className="text-4xl font-black italic text-white leading-[0.85] tracking-tighter uppercase whitespace-nowrap">
-                                    Sector<br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-moto-accent to-white">Scan</span>
-                                </h1>
+                    {/* The Dock */}
+                    <motion.div
+                        initial={{ y: 100, opacity: 0 }}
+                        animate={{ y: 0, opacity: 1 }}
+                        exit={{ y: 100, opacity: 0 }}
+                        transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                        className="fixed bottom-8 left-0 right-0 z-[900] flex justify-center pointer-events-none"
+                    >
+                        <div className="bg-[#0f0f0f]/90 backdrop-blur-2xl border border-white/5 rounded-full p-2 pl-6 pr-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-center gap-6 pointer-events-auto ring-1 ring-white/5">
+
+                            {/* Dock Title */}
+                            <div className="flex flex-col">
+                                <span className="text-[9px] text-amber-200/80 uppercase tracking-[0.2em] font-medium">Keşfet</span>
+                                <span className="text-sm font-semibold text-white tracking-tight">Popüler Rotalar</span>
                             </div>
 
-                            {/* Cards Deck */}
-                            {routes.map((route: any, i: number) => (
-                                <motion.div
-                                    initial={{ y: 100, opacity: 0, scale: 0.9 }}
-                                    animate={{ y: 0, opacity: 1, scale: 1 }}
-                                    exit={{ y: 100, opacity: 0, scale: 0.9 }}
-                                    transition={{ delay: i * 0.05, type: 'spring', stiffness: 200, damping: 20 }}
-                                    key={route.id}
-                                    onClick={() => onSelectRoute(route)}
-                                    className="group relative min-w-[280px] w-[280px] md:w-[320px] h-[220px] bg-[#09090b] border border-white/10 hover:border-moto-accent/100 transition-all duration-300 cursor-pointer overflow-hidden transform hover:-translate-y-4 shadow-2xl skew-x-0 md:-skew-x-6 hover:skew-x-0"
-                                    style={{ clipPath: 'polygon(10% 0, 100% 0, 100% 100%, 0 100%, 0 10%)' }}
-                                >
-                                    {/* Image Bg */}
-                                    <div className="absolute inset-0">
-                                        <div className="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-colors z-10" />
-                                        <img src={route.image || "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?auto=format&fit=crop&q=80"} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" />
-                                    </div>
+                            {/* Divider */}
+                            <div className="w-[1px] h-8 bg-white/10" />
 
-                                    {/* Content */}
-                                    <div className="absolute inset-0 p-5 flex flex-col justify-between z-20 md:skew-x-6 group-hover:skew-x-0 transition-transform">
-                                        <div className="flex justify-between items-start">
-                                            <div className="flex flex-col">
-                                                <span className={`text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 border border-current w-fit mb-2 ${route.difficulty === 'Hard' ? 'text-red-500 border-red-500' : 'text-moto-accent border-moto-accent'}`}>
-                                                    {route.difficulty} CLASS
-                                                </span>
-                                                <h3 className="text-2xl font-black text-white italic leading-none uppercase max-w-[180px]">{route.title}</h3>
-                                            </div>
-                                            <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center group-hover:bg-moto-accent group-hover:border-moto-accent group-hover:text-black transition-all text-white">
-                                                <ChevronRight className="w-4 h-4" />
-                                            </div>
+                            {/* Horizontal Scroll Area */}
+                            <div className="flex items-center gap-3 overflow-x-auto max-w-[60vw] md:max-w-[400px] no-scrollbar py-2">
+                                {routes.map((route: any) => (
+                                    <div
+                                        key={route.id}
+                                        onClick={() => onSelectRoute(route)}
+                                        className="relative group min-w-[60px] cursor-pointer"
+                                    >
+                                        <div className="w-12 h-12 rounded-full overflow-hidden border border-white/10 group-hover:border-amber-200/50 transition-all duration-500 relative">
+                                            <img src={route.image || "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87"} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
                                         </div>
-
-                                        <div className="flex items-center justify-between border-t border-white/20 pt-3">
-                                            <div className="flex gap-4">
-                                                <div>
-                                                    <div className="text-[8px] text-gray-400 uppercase tracking-widest font-mono">DIST</div>
-                                                    <div className="text-sm font-bold text-white font-mono">{route.dist}</div>
-                                                </div>
-                                                <div>
-                                                    <div className="text-[8px] text-gray-400 uppercase tracking-widest font-mono">EST</div>
-                                                    <div className="text-sm font-bold text-white font-mono">{route.time}</div>
-                                                </div>
-                                            </div>
-                                            <Navigation className="w-12 h-12 text-white/5 absolute -bottom-2 -right-2" />
+                                        <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+                                            <span className="text-[9px] text-white bg-black/80 px-2 py-0.5 rounded-full backdrop-blur-md">{route.time}</span>
                                         </div>
                                     </div>
+                                ))}
+                            </div>
 
-                                    {/* Scanline Effect */}
-                                    <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.5)_50%)] bg-[length:100%_4px] pointer-events-none opacity-20" />
-                                </motion.div>
-                            ))}
-
-                            {/* See All / Close */}
-                            <button onClick={onClose} className="min-w-[80px] h-[220px] flex items-center justify-center border-l border-white/10 text-gray-500 hover:text-white hover:bg-white/5 transition-colors">
-                                <div className="rotate-90 text-xs font-black uppercase tracking-[0.3em] flex items-center gap-2">
-                                    Close Deck <X className="w-4 h-4" />
-                                </div>
+                            {/* Close Action */}
+                            <button onClick={onClose} className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white transition-colors">
+                                <X className="w-4 h-4" />
                             </button>
                         </div>
-                    </div>
-                </div>
+                    </motion.div>
+                </>
             )}
         </AnimatePresence>
     );
@@ -94,26 +70,27 @@ export const DiscoverySidebar = ({ routes, onSelectRoute, isOpen, onClose }: any
 
 export const FloatingSearch = ({ onSearch }: any) => {
     return (
-        <div className="absolute top-6 left-6 z-[1000] pointer-events-none">
-            <div className="bg-black/80 border-l-2 border-moto-accent backdrop-blur-md p-0.5 pointer-events-auto shadow-[0_0_30px_rgba(226,255,59,0.1)]">
-                <div className="flex items-center bg-[#09090b]">
-                    <div className="w-10 h-10 flex items-center justify-center text-moto-accent border-r border-white/10">
-                        <Cpu className="w-4 h-4" />
-                    </div>
+        <div className="absolute top-0 left-0 right-0 z-[1000] p-4 pointer-events-none flex justify-center">
+            {/* "Island" Header */}
+            <div className="w-full max-w-[90%] md:max-w-[600px] bg-[#0f0f0f]/80 backdrop-blur-3xl border border-white/5 rounded-full p-2 pl-5 pr-2 shadow-2xl pointer-events-auto flex items-center justify-between ring-1 ring-white/5 transition-all hover:bg-[#0f0f0f]/90">
+
+                <div className="flex items-center gap-4 flex-1">
+                    <Menu className="w-5 h-5 text-zinc-400 hover:text-white transition-colors cursor-pointer" />
                     <input
                         type="text"
-                        placeholder="CMD: SEARCH_SECTOR"
-                        className="bg-transparent border-none outline-none text-white text-xs font-mono px-4 w-[200px] md:w-[300px] placeholder-gray-600 uppercase"
+                        placeholder="Rota, lokasyon veya sürücü ara..."
+                        className="bg-transparent border-none outline-none text-white text-sm font-light tracking-wide w-full placeholder-zinc-500 h-10"
                     />
-                    <div className="px-3 py-1 bg-white/5 text-[8px] text-gray-500 font-mono border-l border-white/10 mr-1">
-                        V.2.0
-                    </div>
                 </div>
-            </div>
-            {/* Decorative Data Lines */}
-            <div className="flex items-start gap-1 mt-1 opacity-50">
-                <div className="w-1 h-3 bg-moto-accent" />
-                <div className="w-32 h-0.5 bg-moto-accent mt-1" />
+
+                <div className="flex items-center gap-1">
+                    <button className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/5 text-zinc-400 hover:text-white transition-colors">
+                        <Filter className="w-4 h-4" />
+                    </button>
+                    <button className="w-10 h-10 rounded-full bg-amber-200/10 text-amber-200 flex items-center justify-center hover:bg-amber-200 hover:text-black transition-all duration-500">
+                        <Search className="w-4 h-4" />
+                    </button>
+                </div>
             </div>
         </div>
     );
@@ -121,61 +98,39 @@ export const FloatingSearch = ({ onSearch }: any) => {
 
 export const MapHUD = ({ coords, userCount, onRecenter }: any) => {
     return (
-        <div className="absolute bottom-6 right-6 z-[1000] flex flex-col items-end gap-2 pointer-events-none">
-
-            {/* Radar Widget */}
-            <div className="mb-4 pointer-events-auto relative group">
-                <div className="w-24 h-24 rounded-full border border-white/10 bg-black/40 backdrop-blur-sm relative flex items-center justify-center overflow-hidden">
-                    <div className="absolute inset-0 border border-moto-accent/30 rounded-full animate-[ping_3s_linear_infinite]" />
-                    <div className="w-full h-[1px] bg-moto-accent/20 absolute top-1/2 left-0 -translate-y-1/2" />
-                    <div className="h-full w-[1px] bg-moto-accent/20 absolute top-0 left-1/2 -translate-x-1/2" />
-                    <div className="w-1 h-1 bg-moto-accent rounded-full shadow-[0_0_10px_#e2ff3b]" />
-                    {/* Blips */}
-                    <div className="absolute top-6 right-6 w-0.5 h-0.5 bg-white rounded-full animate-pulse" />
-                    <div className="absolute bottom-8 left-6 w-0.5 h-0.5 bg-red-500 rounded-full animate-pulse delay-75" />
-                </div>
-                <div className="absolute -bottom-2 -right-2 bg-black border border-white/20 text-[8px] font-mono text-moto-accent px-1">
-                    RADAR ACTIVE
-                </div>
-            </div>
-
-            {/* Coordinates / Telemetry */}
-            <div className="flex flex-col items-end pointer-events-auto">
-                <div className="flex items-center gap-2 mb-1">
-                    <span className="text-[9px] text-gray-500 font-mono tracking-widest uppercase">Target Vector</span>
-                </div>
-                <div className="bg-black/90 border border-white/10 p-2 flex items-center gap-4">
-                    <div className="text-right">
-                        <div className="text-[10px] text-gray-600 font-mono leading-none mb-0.5">LAT</div>
-                        <div className="text-xs font-bold text-white font-mono">{coords.split(',')[0] || '41.0082'}</div>
+        <>
+            {/* Top Right Status Indicators - Now Integrated elegantly */}
+            <div className="absolute top-24 right-6 z-[950] flex flex-col items-end gap-4 pointer-events-none">
+                {/* Live Riders Pill */}
+                <div className="pointer-events-auto flex items-center gap-3 bg-black/40 backdrop-blur-md px-4 py-2 rounded-full border border-white/5 shadow-xl">
+                    <div className="flex items-center gap-2">
+                        <span className="relative flex h-2 w-2">
+                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-500 opacity-75"></span>
+                            <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                        </span>
+                        <span className="text-xs font-medium text-white tracking-wide">Canlı</span>
                     </div>
-                    <div className="w-[1px] h-6 bg-white/20" />
-                    <div className="text-right">
-                        <div className="text-[10px] text-gray-600 font-mono leading-none mb-0.5">LNG</div>
-                        <div className="text-xs font-bold text-white font-mono">{coords.split(',')[1] || '28.9784'}</div>
+                    <div className="w-[1px] h-3 bg-white/20" />
+                    <div className="text-xs text-zinc-300">
+                        <span className="font-bold text-white">{userCount}</span> Sürücü
                     </div>
                 </div>
             </div>
 
-            {/* Tactical Controls */}
-            <div className="flex gap-1 mt-2 pointer-events-auto">
-                <button className="w-10 h-10 bg-black border border-white/20 hover:border-moto-accent text-gray-400 hover:text-moto-accent flex items-center justify-center transition-colors">
-                    <Radio className="w-4 h-4" />
-                </button>
+            {/* Bottom Right Controls - Minimal */}
+            <div className="absolute bottom-6 right-6 z-[950] flex flex-col gap-3 pointer-events-none">
                 <button
                     onClick={onRecenter}
-                    className="w-10 h-10 bg-moto-accent text-black flex items-center justify-center hover:bg-white transition-colors"
+                    className="pointer-events-auto w-12 h-12 bg-[#0f0f0f] text-white border border-white/10 rounded-2xl flex items-center justify-center shadow-2xl hover:bg-amber-200 hover:text-black transition-all duration-500 group"
                 >
-                    <Crosshair className="w-4 h-4 animate-[spin_10s_linear_infinite]" />
+                    <Navigation className="w-5 h-5 fill-current transition-transform group-hover:rotate-45" />
                 </button>
             </div>
-        </div>
+        </>
     );
 };
 
 export const RouteCard = ({ route, onClose, onStartNavigation }: any) => {
-    const [launching, setLaunching] = useState(false);
-
     if (!route) return null;
 
     return (
@@ -184,102 +139,108 @@ export const RouteCard = ({ route, onClose, onStartNavigation }: any) => {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="fixed inset-0 z-[1100] flex items-center justify-center pointer-events-none"
+                className="fixed inset-0 z-[1100] flex justify-end pointer-events-none"
             >
-                {/* Backdrop with Grid */}
-                <div className="absolute inset-0 bg-black/90 backdrop-blur-xl pointer-events-auto" onClick={onClose}>
-                    <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:40px_40px]" />
-                </div>
+                {/* Backdrop */}
+                <div className="absolute inset-0 bg-black/60 backdrop-blur-md pointer-events-auto" onClick={onClose} />
 
-                {/* Main Modal */}
+                {/* The "Golden Ticket" Card */}
                 <motion.div
-                    initial={{ scale: 0.9, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    exit={{ scale: 1.1, opacity: 0 }}
-                    className="relative w-full max-w-4xl h-[80vh] bg-black border border-white/10 pointer-events-auto overflow-hidden flex flex-col md:flex-row shadow-[0_0_100px_rgba(0,0,0,0.8)]"
+                    initial={{ x: "100%" }}
+                    animate={{ x: 0 }}
+                    exit={{ x: "100%" }}
+                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                    className="relative w-full md:w-[480px] h-full bg-[#050505] border-l border-white/5 shadow-2xl pointer-events-auto flex flex-col"
                 >
-                    {/* Left: Visuals */}
-                    <div className="w-full md:w-1/2 h-[40vh] md:h-full relative group">
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent z-10 md:bg-gradient-to-r" />
-                        <img src={route.image} className="w-full h-full object-cover opacity-60 group-hover:opacity-80 transition-opacity duration-1000 grayscale group-hover:grayscale-0" />
+                    {/* Header Image Area */}
+                    <div className="h-[45vh] relative text-[#fdfdfd]">
+                        {/* Close Button */}
+                        <button onClick={onClose} className="absolute top-6 right-6 z-30 w-10 h-10 rounded-full bg-black/20 backdrop-blur-md flex items-center justify-center text-white hover:bg-white hover:text-black transition-all border border-white/10">
+                            <X className="w-5 h-5" />
+                        </button>
 
-                        {/* Overlay Data */}
-                        <div className="absolute bottom-8 left-8 z-20">
-                            <div className="flex items-center gap-2 mb-2">
-                                <div className={`w-2 h-2 rounded-full ${route.difficulty === 'Hard' ? 'bg-red-500 box-shadow-[0_0_10px_red]' : 'bg-moto-accent box-shadow-[0_0_10px_#e2ff3b]'}`} />
-                                <span className="text-xs font-mono text-gray-300 uppercase tracking-widest">Sector Grade: {route.difficulty}</span>
-                            </div>
-                            <h1 className="text-5xl md:text-7xl font-black italic text-white uppercase leading-[0.85] tracking-tighter mix-blend-difference">{route.title}</h1>
+                        <div className="absolute inset-0 z-0">
+                            <img src={route.image} className="w-full h-full object-cover" />
+                            <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-[#050505]" />
+                        </div>
+
+                        <div className="absolute bottom-0 left-0 right-0 p-8 z-10">
+                            <motion.div
+                                initial={{ y: 20, opacity: 0 }}
+                                animate={{ y: 0, opacity: 1 }}
+                                transition={{ delay: 0.2 }}
+                            >
+                                <div className="flex items-center gap-3 mb-3">
+                                    <span className={`px-3 py-1 text-[10px] font-bold uppercase tracking-widest rounded-full border backdrop-blur-md ${route.difficulty === 'Hard' ? 'border-red-500/50 text-red-400 bg-red-500/10' : 'border-amber-200/50 text-amber-200 bg-amber-200/10'
+                                        }`}>
+                                        {route.difficulty === 'Hard' ? 'Zor' : route.difficulty === 'Medium' ? 'Orta' : 'Kolay'}
+                                    </span>
+                                    <span className="text-[10px] text-zinc-400 uppercase tracking-widest">• {route.rating} Yıldız</span>
+                                </div>
+                                <h2 className="text-4xl md:text-5xl font-light text-white leading-[0.95] tracking-tight mb-2">{route.title}</h2>
+                                <p className="text-sm text-zinc-400 font-light flex items-center gap-2">
+                                    <span className="w-4 h-[1px] bg-amber-200/50" />
+                                    Oluşturan: {route.author || 'MotoVibe Editör'}
+                                </p>
+                            </motion.div>
                         </div>
                     </div>
 
-                    {/* Right: Flight Plan */}
-                    <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-between bg-[#050505]">
-                        <div>
-                            <div className="flex justify-between items-start mb-8 border-b border-white/10 pb-4">
+                    {/* Content Area */}
+                    <div className="flex-1 p-8 flex flex-col justify-between relative">
+                        {/* Decorative Line */}
+                        <div className="absolute top-0 left-8 right-8 h-[1px] bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+
+                        <div className="space-y-8">
+                            <div className="flex justify-between items-center text-center">
                                 <div>
-                                    <div className="text-[10px] text-gray-500 font-mono uppercase tracking-widest mb-1">Author</div>
-                                    <div className="text-white font-bold">{route.author || 'MotoVibe Sys'}</div>
+                                    <div className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 mb-2">Mesafe</div>
+                                    <div className="text-2xl font-light text-white">{route.dist}</div>
                                 </div>
-                                <div className="text-right">
-                                    <div className="text-[10px] text-gray-500 font-mono uppercase tracking-widest mb-1">Rating</div>
-                                    <div className="text-moto-accent font-black text-xl">{route.rating}</div>
+                                <div className="w-[1px] h-10 bg-white/5" />
+                                <div>
+                                    <div className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 mb-2">Süre</div>
+                                    <div className="text-2xl font-light text-white">{route.time}</div>
+                                </div>
+                                <div className="w-[1px] h-10 bg-white/5" />
+                                <div>
+                                    <div className="text-[10px] uppercase tracking-[0.2em] text-zinc-500 mb-2">Hava</div>
+                                    <div className="text-2xl font-light text-white">{route.weather}</div>
                                 </div>
                             </div>
 
-                            <div className="space-y-6">
-                                <p className="text-gray-400 text-sm md:text-base leading-relaxed font-light border-l-2 border-white/10 pl-4">{route.desc}</p>
-
-                                <div className="grid grid-cols-2 gap-4">
-                                    <div className="bg-white/5 p-4 border border-white/5 hover:border-moto-accent/50 transition-colors group">
-                                        <div className="text-[10px] text-gray-500 font-mono uppercase tracking-widest mb-1">Total Distance</div>
-                                        <div className="text-2xl font-black text-white italic group-hover:text-moto-accent transition-colors">{route.dist}</div>
-                                    </div>
-                                    <div className="bg-white/5 p-4 border border-white/5 hover:border-moto-accent/50 transition-colors group">
-                                        <div className="text-[10px] text-gray-500 font-mono uppercase tracking-widest mb-1">Conditions</div>
-                                        <div className="text-2xl font-black text-white italic group-hover:text-moto-accent transition-colors truncate">{route.weather}</div>
-                                    </div>
-                                </div>
+                            <div className="space-y-4">
+                                <h3 className="text-xs uppercase tracking-widest text-amber-200 font-medium">Rota Detayı</h3>
+                                <p className="text-zinc-400 text-sm leading-7 font-light">
+                                    {route.desc}
+                                    <br /><br />
+                                    Bu rota, yüksek irtifa virajları ve nefes kesen manzaraları ile bilinir. Lastik basınçlarınızı kontrol edin ve tam depo ile yola çıkın.
+                                </p>
                             </div>
                         </div>
 
-                        <div className="mt-8">
+                        {/* Action Area */}
+                        <div className="space-y-4">
+                            <button className="w-full h-14 bg-white/5 border border-white/5 hover:bg-white/10 rounded-xl flex items-center justify-center gap-2 text-white transition-all group">
+                                <Heart className="w-5 h-5 text-zinc-500 group-hover:text-red-500 transition-colors" />
+                                <span className="text-xs uppercase tracking-widest">Favorilere Ekle</span>
+                            </button>
+
                             <button
                                 onClick={() => {
-                                    setLaunching(true);
-                                    setTimeout(() => {
-                                        if (onStartNavigation) onStartNavigation();
-                                        else {
-                                            window.open(`https://www.google.com/maps/dir/?api=1&destination=${route.coordinates[route.coordinates.length - 1][0]},${route.coordinates[route.coordinates.length - 1][1]}&travelmode=driving`, '_blank');
-                                            onClose();
-                                        }
-                                    }, 2000);
+                                    if (onStartNavigation) onStartNavigation();
+                                    else {
+                                        window.open(`https://www.google.com/maps/dir/?api=1&destination=${route.coordinates[route.coordinates.length - 1][0]},${route.coordinates[route.coordinates.length - 1][1]}&travelmode=driving`, '_blank');
+                                        onClose();
+                                    }
                                 }}
-                                className="w-full h-16 bg-white text-black hover:bg-moto-accent transition-all font-black uppercase tracking-[0.2em] text-lg relative overflow-hidden group"
+                                className="w-full h-16 bg-gradient-to-r from-amber-200 to-yellow-100 text-black hover:scale-[1.02] active:scale-[0.98] rounded-xl flex items-center justify-center gap-3 transition-all shadow-[0_0_40px_rgba(253,230,138,0.2)]"
                             >
-                                <span className="relative z-10 flex items-center justify-center gap-2">
-                                    {launching ? 'INITIALIZING...' : 'INITIATE ROUTE'}
-                                    {!launching && <ChevronRight className="w-5 h-5" />}
-                                </span>
-                                {launching && (
-                                    <motion.div
-                                        initial={{ width: 0 }}
-                                        animate={{ width: '100%' }}
-                                        transition={{ duration: 2, ease: "linear" }}
-                                        className="absolute inset-0 bg-moto-accent z-0"
-                                    />
-                                )}
+                                <span className="text-sm font-bold uppercase tracking-[0.1em]">Rotayı Başlat</span>
+                                <ChevronRight className="w-5 h-5" />
                             </button>
                         </div>
                     </div>
-
-                    {/* Close Btn */}
-                    <button onClick={onClose} className="absolute top-4 right-4 z-50 p-2 bg-black/50 text-white hover:text-moto-accent transition-colors md:hidden">
-                        <X className="w-6 h-6" />
-                    </button>
-                    <button onClick={onClose} className="absolute top-8 right-8 z-50 hidden md:flex items-center gap-2 text-xs font-mono text-gray-500 hover:text-white transition-colors uppercase tracking-widest">
-                        [ ESC ] ABORT
-                    </button>
                 </motion.div>
             </motion.div>
         </AnimatePresence>

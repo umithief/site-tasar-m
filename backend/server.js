@@ -31,6 +31,7 @@ import reelRoutes from './routes/reelRoutes.js';
 import postRoutes from './routes/postRoutes.js';
 import rideRoutes from './routes/rideRoutes.js'; // Enabled
 import uiRoutes from './routes/uiRoutes.js';
+import messageRoutes from './routes/messageRoutes.js';
 
 // ... imports
 
@@ -555,7 +556,9 @@ app.use('/api/models', modelRoutes);
 app.use('/api/stolen-items', stolenRoutes);
 app.use('/api/negotiations', negotiationRoutes);
 app.use('/api/feedback', feedbackRoutes);
+app.use('/api/feedback', feedbackRoutes);
 app.use('/api/ui-settings', uiRoutes);
+app.use('/api/messages', messageRoutes);
 
 // --- GLOBAL ERROR HANDLER ---
 app.use((err, req, res, next) => {

@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { User, SocialProfile, ViewState, SocialPost } from '../../types';
-import { MotovibeSidebar } from '../layout/MotovibeSidebar';
 import { WebGarageCard } from './WebGarageCard';
 import { UserAvatar } from '../ui/UserAvatar';
 import { socialService } from '../../services/socialService';
@@ -38,7 +37,6 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user: initialUser, onNav
 
     const [activeTab, setActiveTab] = useState('feed');
     const [posts, setPosts] = useState<SocialPost[]>([]);
-    const [isSidebarExpanded, setIsSidebarExpanded] = useState(true);
     const [profileStats, setProfileStats] = useState({
         followers: 0,
         following: 0,
@@ -157,15 +155,8 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user: initialUser, onNav
             />
 
             {/* 1. Sidebar Integration (Left Fixed) */}
-            <MotovibeSidebar
-                activeView="profile"
-                onNavigate={onNavigate}
-                isExpanded={isSidebarExpanded}
-                onToggleExpand={() => setIsSidebarExpanded(!isSidebarExpanded)}
-            />
-
             {/* 2. Main Stage (Right Area) */}
-            <main className={`flex-1 relative overflow-x-hidden transition-all duration-300 ${isSidebarExpanded ? 'md:ml-[260px]' : 'md:ml-[80px]'} ml-0`}>
+            <main className="flex-1 relative overflow-x-hidden transition-all duration-300 ml-0">
 
                 {/* Hero Banner (Parallax) */}
                 <div className="relative h-[450px] w-full overflow-hidden">

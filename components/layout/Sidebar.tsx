@@ -30,7 +30,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, onNavigate }) => {
             className="fixed left-6 top-1/2 -translate-y-1/2 h-auto z-50 flex flex-col items-center"
         >
             {/* GLASS RAIL CONTAINER */}
-            <div className="bg-gray-950/40 backdrop-blur-2xl border border-white/10 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.5)] py-8 px-4 flex flex-col gap-8 items-center">
+            <div className="bg-gray-950/80 backdrop-blur-2xl border border-white/20 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.8)] py-8 px-4 flex flex-col gap-8 items-center">
 
                 {navItems.map((item) => {
                     const isActive = activeView === item.id || (item.id === 'home' && !activeView); // Default to home if undefined?

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     User, Settings, Shield, Image as ImageIcon, Bike,
-    Grid, Bell, Key, LogOut, ChevronRight, Save, Plus, Trash2, Smartphone
+    Grid, Bell, Key, LogOut, ChevronRight, Save, Plus, Trash2, Smartphone, Brush, Moon, Sun, MousePointer2, Type, Layout
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { ImageUpload } from '../common/ImageUpload';
@@ -11,12 +11,13 @@ import { notify } from '../../services/notificationService';
 import { api } from '../../services/api';
 import { UserBike } from '../../types';
 import { VibeButton } from '../ui/VibeButton';
+import { useUIStore } from '../../store/useUIStore';
 
 interface WebSettingsProps {
     onNavigate: (view: any) => void;
 }
 
-type TabType = 'profile' | 'garage' | 'content' | 'security';
+type TabType = 'profile' | 'garage' | 'content' | 'security' | 'appearance';
 
 export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
     const { user, setUser, updateProfile } = useAuthStore();
@@ -232,6 +233,7 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                         <TabButton id="garage" icon={Bike} label="Dijital Garaj" active={activeTab} onClick={setActiveTab} />
                         <TabButton id="content" icon={Grid} label="İçerik Yöneticisi" active={activeTab} onClick={setActiveTab} />
                         <TabButton id="security" icon={Shield} label="Gizlilik & Güvenlik" active={activeTab} onClick={setActiveTab} />
+                        <TabButton id="appearance" icon={Brush} label="Görünüm & Temalar" active={activeTab} onClick={setActiveTab} />
                     </nav>
 
                     <div className="p-4 border-t border-gray-100">
@@ -261,6 +263,7 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                             {activeTab === 'garage' && 'Garajım'}
                             {activeTab === 'content' && 'Gönderi Yöneticisi'}
                             {activeTab === 'security' && 'Güvenlik Bölgesi'}
+                            {activeTab === 'appearance' && 'Görünüm & Temalar'}
                         </h3>
                         <div className="flex gap-2">
                             <VibeButton
@@ -524,6 +527,11 @@ export const WebSettings: React.FC<WebSettingsProps> = ({ onNavigate }) => {
                                 </motion.div>
                             )}
 
+                            {/* --- APPEARANCE TAB --- */}
+                            {activeTab === 'appearance' && (
+                                <AppearanceSettings />
+                            )}
+
                         </AnimatePresence>
                     </div>
                 </div>
@@ -618,3 +626,145 @@ const Toggle = ({ label, desc, checked, onChange }: any) => (
         </button>
     </div>
 );
+
+const AppearanceSettings = () => {
+    const { settings, updateSetting } = useUIStore();
+    const buttonConfig = settings['VibeButton'] || {};
+
+    const handleUpdate = (key: string, value: any) => {
+        updateSetting('VibeButton', { ...buttonConfig, [key]: value });
+    };
+
+    return (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+            {/* 1. Theme Selection */}
+            <section className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6">
+                <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
+                    <div className="p-2 bg-blue-50 rounded-lg text-blue-600">
+                        <Brush className="w-5 h-5" />
+                    </div>
+                    <div>
+                        <h4 className="text-lg font-bold text-gray-900">Tema & Stil</h4>
+                        <p className="text-xs text-gray-500">Uygulamanın genel görünümünü özelleştir</p>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {/* Button Style */}
+                    <div className="space-y-4">
+                        <label className="text-xs font-bold uppercase text-gray-400 tracking-wider">Buton Stili</label>
+                        <div className="grid grid-cols-3 gap-3">
+                            {[
+                                { id: 'default', label: 'R', icon: Layout }, // Rounded
+                                { id: 'sharp', label: 'K', icon: Layout },   // Square (Kare)
+                                { id: 'pill', label: 'P', icon: Layout },    // Pill
+                            ].map((style) => (
+                                <button
+                                    key={style.id}
+                                    onClick={() => handleUpdate('borderRadius', style.id === 'default' ? '12px' : style.id === 'sharp' ? '0px' : '999px')}
+                                    className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 transition-all ${(buttonConfig.borderRadius === (style.id === 'default' ? '12px' : style.id === 'sharp' ? '0px' : '999px'))
+                                            ? 'border-blue-500 bg-blue-50 text-blue-600'
+                                            : 'border-gray-100 bg-white text-gray-400 hover:border-gray-200'
+                                        }`}
+                                >
+                                    <div className={`w-8 h-8 bg-current opacity-20 mb-2 ${style.id === 'default' ? 'rounded-md' : style.id === 'sharp' ? 'rounded-none' : 'rounded-full'}`} />
+                                    <span className="text-xs font-bold">{style.id === 'default' ? 'Standart' : style.id === 'sharp' ? 'Keskin' : 'Oval'}</span>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Animation Speed */}
+                    <div className="space-y-4">
+                        <label className="text-xs font-bold uppercase text-gray-400 tracking-wider flex justify-between">
+                            <span>Animasyon Hızı</span>
+                            <span className="text-blue-600">{buttonConfig.animationSpeed || 1.5}s</span>
+                        </label>
+                        <input
+                            type="range"
+                            min="0.5"
+                            max="3"
+                            step="0.1"
+                            value={buttonConfig.animationSpeed || 1.5}
+                            onChange={(e) => handleUpdate('animationSpeed', parseFloat(e.target.value))}
+                            className="w-full accent-blue-600"
+                        />
+                        <div className="flex justify-between text-[10px] text-gray-400 font-bold uppercase">
+                            <span>Hızlı (Spor)</span>
+                            <span>Yavaş (Konfor)</span>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* 2. Color Palette */}
+            <section className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6">
+                <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
+                    <div className="p-2 bg-purple-50 rounded-lg text-purple-600">
+                        <Brush className="w-5 h-5" />
+                    </div>
+                    <div>
+                        <h4 className="text-lg font-bold text-gray-900">Renk Paleti</h4>
+                        <p className="text-xs text-gray-500">Birincil vurgu rengini seç</p>
+                    </div>
+                </div>
+
+                <div className="flex flex-wrap gap-4">
+                    {[
+                        { color: '#E2FF3B', label: 'Neon Sarı' },
+                        { color: '#3B82F6', label: 'Yarış Mavisi' },
+                        { color: '#EF4444', label: 'Kırmızı' },
+                        { color: '#10B981', label: 'Yeşil' },
+                        { color: '#8B5CF6', label: 'Mor' },
+                        { color: '#F97316', label: 'Turuncu' },
+                        { color: '#000000', label: 'Gece Siyahı' },
+                    ].map((c) => (
+                        <button
+                            key={c.color}
+                            onClick={() => handleUpdate('primaryColor', c.color)}
+                            className={`group relative w-16 h-16 rounded-2xl flex items-center justify-center transition-transform hover:scale-105 ${buttonConfig.primaryColor === c.color ? 'ring-4 ring-gray-200 scale-105' : ''}`}
+                            style={{ backgroundColor: c.color }}
+                        >
+                            {buttonConfig.primaryColor === c.color && (
+                                <div className="bg-white rounded-full p-1 shadow-lg">
+                                    <div className="w-2 h-2 rounded-full bg-black" />
+                                </div>
+                            )}
+                            <span className="absolute -bottom-6 left-1/2 -translate-x-1/2 text-[10px] whitespace-nowrap font-bold text-gray-500 opacity-0 group-hover:opacity-100 transition-opacity">
+                                {c.label}
+                            </span>
+                        </button>
+                    ))}
+                </div>
+            </section>
+
+            {/* 3. Button Themes */}
+            <section className="bg-white p-8 rounded-3xl border border-gray-100 shadow-sm space-y-6">
+                <div className="flex items-center gap-3 border-b border-gray-100 pb-4">
+                    <div className="p-2 bg-orange-50 rounded-lg text-orange-600">
+                        <Layout className="w-5 h-5" />
+                    </div>
+                    <div>
+                        <h4 className="text-lg font-bold text-gray-900">Buton Teması</h4>
+                        <p className="text-xs text-gray-500">Özel tasarlanmış buton setleri</p>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+                    {['default', 'cyber', 'brutal', 'racing', 'pixel', 'flow'].map((themeName) => (
+                        <div
+                            key={themeName}
+                            onClick={() => handleUpdate('buttonStyle', themeName)}
+                            className={`cursor-pointer p-4 rounded-xl border-2 transition-all flex flex-col items-center gap-3 ${buttonConfig.buttonStyle === themeName ? 'border-blue-500 bg-blue-50 lg:scale-105' : 'border-gray-100 bg-white hover:border-gray-200'}`}
+                        >
+                            <div className="pointer-events-none transform scale-75 origin-center">
+                                <VibeButton theme={themeName as any} onClick={() => { }}>Örnek</VibeButton>
+                            </div>
+                            <span className="text-xs font-bold uppercase text-gray-500">{themeName}</span>
+                        </div>
+                    ))}
+                </div>
+            </section>
+        </motion.div>
+    );
+};

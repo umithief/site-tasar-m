@@ -16,16 +16,19 @@ export const ExploreFeed: React.FC<ExploreFeedProps> = ({ onNavigate, isEmbedded
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState('trending');
     const [searchQuery, setSearchQuery] = useState('');
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const timer = setTimeout(() => {
             const load = async () => {
                 setLoading(true);
+                setError(null);
                 try {
                     const data = await socialService.getExploreFeed(1, filter, searchQuery);
                     setPosts(data);
                 } catch (e) {
                     console.error(e);
+                    setError('Sunucu bağlantı hatası. Lütfen backend servisini kontrol edin.');
                 } finally {
                     setLoading(false);
                 }
@@ -122,6 +125,11 @@ export const ExploreFeed: React.FC<ExploreFeedProps> = ({ onNavigate, isEmbedded
                         <div className="flex flex-col items-center justify-center h-[50vh] space-y-4">
                             <div className="w-12 h-12 rounded-full border-2 border-moto-accent border-t-transparent animate-spin" />
                             <p className="text-xs font-bold text-gray-600 animate-pulse uppercase tracking-widest">Akış Yükleniyor...</p>
+                        </div>
+                    ) : error ? (
+                        <div className="flex flex-col items-center justify-center h-[50vh] space-y-4 text-red-500">
+                            <p className="font-bold">{error}</p>
+                            <button onClick={() => window.location.reload()} className="text-xs underline text-white">Yeniden Dene</button>
                         </div>
                     ) : filteredPosts.length > 0 ? (
                         <div className="columns-1 md:columns-2 xl:columns-3 gap-6 space-y-6">

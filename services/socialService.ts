@@ -29,11 +29,11 @@ export const socialService = {
                 comments: post.commentCount || 0,
                 likes: post.likeCount || 0,
                 rideStats: post.rideStats || {
-                    maxSpeed: Math.floor(Math.random() * (299 - 120) + 120),
-                    avgSpeed: Math.floor(Math.random() * (100 - 60) + 60),
-                    leanAngle: Math.floor(Math.random() * (45 - 20) + 20),
-                    distance: parseFloat((Math.random() * 150).toFixed(1)),
-                    duration: `${Math.floor(Math.random() * 4)}h ${Math.floor(Math.random() * 60)}m`
+                    maxSpeed: 0,
+                    avgSpeed: 0,
+                    leanAngle: 0,
+                    distance: 0,
+                    duration: '0'
                 }
             }));
         } catch (error) {
@@ -168,11 +168,11 @@ export const socialService = {
                 // Ensure isLiked is correctly set if backend returns it
                 isLiked: post.isLiked || false,
                 rideStats: post.rideStats || {
-                    maxSpeed: Math.floor(Math.random() * (299 - 120) + 120),
-                    avgSpeed: Math.floor(Math.random() * (100 - 60) + 60),
-                    leanAngle: Math.floor(Math.random() * (45 - 20) + 20),
-                    distance: parseFloat((Math.random() * 150).toFixed(1)),
-                    duration: `${Math.floor(Math.random() * 4)}h ${Math.floor(Math.random() * 60)}m`
+                    maxSpeed: 0,
+                    avgSpeed: 0,
+                    leanAngle: 0,
+                    distance: 0,
+                    duration: '0'
                 }
             }));
         } catch (error) {
@@ -289,16 +289,16 @@ export const socialService = {
                 likes: post.likeCount || 0,
                 isLiked: post.isLiked || false,
                 rideStats: post.rideStats || {
-                    maxSpeed: Math.floor(Math.random() * (299 - 120) + 120),
-                    avgSpeed: Math.floor(Math.random() * (100 - 60) + 60),
-                    leanAngle: Math.floor(Math.random() * (45 - 20) + 20),
-                    distance: parseFloat((Math.random() * 150).toFixed(1)),
-                    duration: `${Math.floor(Math.random() * 4)}h ${Math.floor(Math.random() * 60)}m`
+                    maxSpeed: 0,
+                    avgSpeed: 0,
+                    leanAngle: 0,
+                    distance: 0,
+                    duration: '0'
                 }
             }));
         } catch (error) {
             console.error('Explore Feed Error:', error);
-            return this.getFeed(); // Fallback
+            throw error; // Don't fallback to getFeed, let UI handle error
         }
     },
 

@@ -2,9 +2,10 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Settings, Grid, Bookmark, LogOut,
-    Shield, Bike, play, Film, Award, MapPin
+    Shield, Bike, Play, Film, Award, MapPin, ArrowLeft
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
+import { User, ViewState } from '../../types';
 import { UserAvatar } from '../ui/UserAvatar';
 import { UserListModal } from '../UserListModal';
 import { MobileEditProfile } from './MobileEditProfile';
@@ -17,8 +18,21 @@ const MOCK_REELS = [
     { id: 'r3', thumbnail: 'https://images.unsplash.com/photo-1449426468159-d96dbf08f19f?q=80&w=800', views: '22K', likes: '2.5K' },
 ];
 
-export const MobileProfile: React.FC = () => {
-    const { user, logout } = useAuthStore();
+interface MobileProfileProps {
+    user?: User;
+    userId?: string;
+    onNavigate?: (view: ViewState, data?: any) => void;
+    onBack?: () => void;
+}
+
+export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, userId, onNavigate, onBack }) => {
+    const { user: authUser, logout } = useAuthStore();
+
+    // Determine which user to show
+    const user = propUser || authUser;
+
+    // Check if it's the own profile
+    const isOwnProfile = authUser && user && authUser._id === user._id;
     const [activeTab, setActiveTab] = useState<'posts' | 'reels' | 'garage' | 'saved'>('posts');
     const [isEditing, setIsEditing] = useState(false);
 
@@ -46,19 +60,36 @@ export const MobileProfile: React.FC = () => {
                     <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-50/90 dark:to-black/90" />
                 </div>
 
-                <div className="absolute top-4 right-4 z-10 flex gap-2">
-                    <button
-                        onClick={() => setIsEditing(true)}
-                        className="p-2 bg-white/80 dark:bg-black/50 backdrop-blur-md rounded-full text-gray-700 dark:text-white shadow-sm border border-gray-200 dark:border-white/10"
-                    >
-                        <Settings className="w-5 h-5" />
-                    </button>
-                    <button
-                        onClick={logout}
-                        className="p-2 bg-red-50 dark:bg-red-500/10 backdrop-blur-md rounded-full text-red-600 shadow-sm border border-red-100 dark:border-transparent"
-                    >
-                        <LogOut className="w-5 h-5" />
-                    </button>
+                <div className="absolute top-4 w-full px-4 z-10 flex justify-between">
+                    {/* Left: Back Button (only if onBack provided) */}
+                    <div>
+                        {onBack && (
+                            <button
+                                onClick={onBack}
+                                className="p-2 bg-white/80 dark:bg-black/50 backdrop-blur-md rounded-full text-gray-700 dark:text-white shadow-sm border border-gray-200 dark:border-white/10"
+                            >
+                                <ArrowLeft className="w-5 h-5" />
+                            </button>
+                        )}
+                    </div>
+
+                    {/* Right: Actions (only if own profile) */}
+                    {isOwnProfile && (
+                        <div className="flex gap-2">
+                            <button
+                                onClick={() => setIsEditing(true)}
+                                className="p-2 bg-white/80 dark:bg-black/50 backdrop-blur-md rounded-full text-gray-700 dark:text-white shadow-sm border border-gray-200 dark:border-white/10"
+                            >
+                                <Settings className="w-5 h-5" />
+                            </button>
+                            <button
+                                onClick={logout}
+                                className="p-2 bg-red-50 dark:bg-red-500/10 backdrop-blur-md rounded-full text-red-600 shadow-sm border border-red-100 dark:border-transparent"
+                            >
+                                <LogOut className="w-5 h-5" />
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
 

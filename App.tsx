@@ -423,15 +423,15 @@ export const App: React.FC = () => {
             case 'vlog-map': return <MotoVlogMap onNavigate={navigateTo} onAddToCart={addToCart} onProductClick={(p) => navigateTo('product-detail', p)} user={user} />;
             case 'lifesaver': return <LifeSaver onClose={() => navigateTo('home')} />;
             case 'profile': return isMobile && user
-                ? <MobileProfile userId={user._id} onNavigate={navigateTo} onBack={() => navigateTo('home')} />
+                ? <MobileProfile user={user} onNavigate={navigateTo} onBack={() => navigateTo('home')} />
                 : (user ? <WebProfile user={user} onNavigate={navigateTo} onLogout={handleLogout} isOwnProfile={true} /> : <div className="pt-32 text-center text-gray-500">Lütfen giriş yapın.</div>);
 
             case 'my-profile': return isMobile && user
-                ? <MobileProfile userId={user._id} onNavigate={navigateTo} onBack={() => navigateTo('home')} />
+                ? <MobileProfile user={user} onNavigate={navigateTo} onBack={() => navigateTo('home')} />
                 : (user ? <WebProfile user={user} onNavigate={navigateTo} onLogout={handleLogout} isOwnProfile={true} /> : <div className="pt-32 text-center text-gray-500">Lütfen giriş yapın.</div>);
 
             case 'public-profile': return isMobile && viewingUser
-                ? <MobileProfile userId={viewingUser._id} onNavigate={navigateTo} onBack={() => navigateTo('riders')} />
+                ? <MobileProfile user={viewingUser} onNavigate={navigateTo} onBack={() => navigateTo('riders')} />
                 : (viewingUser ? <WebProfile user={viewingUser} onNavigate={navigateTo} isOwnProfile={false} /> : <div className="pt-32 text-center text-gray-500">Kullanıcı yüklenemedi.</div>);
 
             case 'admin': return user?.isAdmin ? <AdminPanel onLogout={handleLogout} onShowToast={addToast} onNavigate={navigateTo} /> : <div className="pt-32 text-center text-gray-500">Yetkisiz erişim.</div>;

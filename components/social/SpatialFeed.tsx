@@ -2,9 +2,8 @@
 import React, { useRef } from 'react';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { SocialPost, ViewState } from '../../types';
+import { ResponsivePostCard } from './ResponsivePostCard';
 import { RouteSuggestions } from './RouteSuggestions';
-import { GlassFeedCard } from './GlassFeedCard';
-import { socialService } from '../../services/socialService';
 
 interface SpatialFeedProps {
     data: any;
@@ -57,16 +56,17 @@ export const SpatialFeed: React.FC<SpatialFeedProps> = ({
                     {page?.map((post: SocialPost, index: number) => (
                         <React.Fragment key={post._id}>
                             <FeedItem index={index}>
-                                <div className="perspective-item space-y-6">
-                                    <GlassFeedCard
+                                <div className="relative group perspective-item">
+                                    {/* Glassmorphic Background Card */}
+                                    <div className="absolute inset-0 bg-white/80 dark:bg-black/40 backdrop-blur-xl rounded-[2.5rem] -z-10 border border-white/40 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] transition-all duration-300 group-hover:bg-white/90 group-hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.2)] group-hover:border-white/50" />
+
+                                    <ResponsivePostCard
                                         post={post}
-                                        onUserProfileClick={(userId) => onNavigate?.('public-profile', { userId })}
-                                        onLike={async (id) => {
-                                            if (currentUser) {
-                                                try { await socialService.likePost(id, currentUser._id); } catch (e) { console.error(e); }
-                                            }
-                                        }}
-                                        onComment={(id) => onCommentClick(id)}
+                                        currentUserId={currentUser?._id}
+                                        onNavigate={onNavigate}
+                                        onCommentClick={() => onCommentClick(post._id)}
+                                        variant="glass"
+                                        className="!bg-transparent !shadow-none !border-none"
                                     />
                                 </div>
                             </FeedItem>

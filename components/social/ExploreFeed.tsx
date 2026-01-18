@@ -18,23 +18,25 @@ export const ExploreFeed: React.FC<ExploreFeedProps> = ({ onNavigate, isEmbedded
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
-        const load = async () => {
-            setLoading(true);
-            try {
-                // Fetch posts, ideally an explore endpoint, but using getPosts for now
-                const data = await socialService.getExploreFeed(1);
-                const shuffled = data.sort(() => 0.5 - Math.random());
-                setPosts(shuffled);
-            } catch (e) {
-                console.error(e);
-            } finally {
-                setLoading(false);
-            }
-        };
-        load();
-    }, [filter]);
+        const timer = setTimeout(() => {
+            const load = async () => {
+                setLoading(true);
+                try {
+                    const data = await socialService.getExploreFeed(1, filter, searchQuery);
+                    setPosts(data);
+                } catch (e) {
+                    console.error(e);
+                } finally {
+                    setLoading(false);
+                }
+            };
+            load();
+        }, 500); // Debounce search
 
-    const filteredPosts = posts.filter(p => !searchQuery || p.content.toLowerCase().includes(searchQuery.toLowerCase()) || p.userName.toLowerCase().includes(searchQuery.toLowerCase()));
+        return () => clearTimeout(timer);
+    }, [filter, searchQuery]);
+
+    const filteredPosts = posts; // Server-side filtering now
 
     const categories = [
         { id: 'trending', label: 'Trendler', icon: TrendingUp, color: 'text-moto-accent' },
@@ -77,12 +79,15 @@ export const ExploreFeed: React.FC<ExploreFeedProps> = ({ onNavigate, isEmbedded
                                     key={item.id}
                                     onClick={() => setFilter(item.id)}
                                     className={`w-full p-3 flex items-center gap-3 rounded-xl transition-all border group relative overflow-hidden ${filter === item.id
-                                            ? 'bg-white/5 border-moto-accent/30 text-white'
-                                            : 'bg-transparent border-transparent hover:bg-white/5 text-gray-400 hover:text-white'
+                                        ? 'bg-white/5 border-moto-accent/30 text-white'
+                                        : 'bg-transparent border-transparent hover:bg-white/5 text-gray-400 hover:text-white'
                                         }`}
                                 >
                                     {filter === item.id && (
-                                        <motion.div layoutId="activeFilter" className="absolute inset-0 bg-gradient-to-r from-moto-accent/10 to-transparent opacity-50" />
+                                        <motion.div
+                                            layoutId="activeFilterTab" // Unique ID to fix layout issues
+                                            className="absolute inset-0 bg-gradient-to-r from-moto-accent/10 to-transparent opacity-50"
+                                        />
                                     )}
                                     <div className={`relative z-10 p-2 rounded-lg ${filter === item.id ? 'bg-black/40' : 'bg-white/5 group-hover:bg-white/10'} transition-colors`}>
                                         <item.icon className={`w-4 h-4 ${item.color}`} />

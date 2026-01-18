@@ -282,3 +282,71 @@ export const updatePost = catchAsync(async (req, res, next) => {
         data: { post }
     });
 });
+
+export const getExplorePosts = catchAsync(async (req, res, next) => {
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 20;
+    const skip = (page - 1) * limit;
+    const { category, q } = req.query;
+
+    let query = {};
+
+    // Filter by Category
+    if (category && category !== 'trending') {
+        // Assuming 'tags' or a 'category' field. 
+        // If your posts don't have categories, you might grep content or tags.
+        // For now, let's assume we search tags or content if category is like a tag
+        query = {
+            $or: [
+                { tags: category },
+                { content: { $regex: category, $options: 'i' } }
+            ]
+        };
+    }
+
+    // Search Query (Text Search)
+    if (q) {
+        query = {
+            ...query,
+            $or: [
+                { content: { $regex: q, $options: 'i' } },
+                { userName: { $regex: q, $options: 'i' } }
+            ]
+        };
+    }
+
+    // "Trending" logic: Sort by likes/comments instead of date? 
+    // For now, let's just stick to date or random for "explore" feel, 
+    // but if category is 'trending', maybe sort by likes.
+    let sortOptions = { createdAt: -1 };
+    if (category === 'trending') {
+        sortOptions = { likeCount: -1, createdAt: -1 };
+    }
+
+    const posts = await Post.find(query)
+        .sort(sortOptions)
+        .skip(skip)
+        .limit(limit)
+        .populate('user', 'name avatar rank') // Ensure user details are populated
+        .lean();
+
+    const total = await Post.countDocuments(query);
+
+    // Add isLiked status if user is logged in
+    let postsWithMetadata = posts;
+    if (req.user) {
+        postsWithMetadata = posts.map(post => ({
+            ...post,
+            isLiked: post.likes ? post.likes.some(id => id.toString() === req.user.id.toString()) : false
+        }));
+    }
+
+    res.status(200).json({
+        status: 'success',
+        results: postsWithMetadata.length,
+        total,
+        page,
+        pages: Math.ceil(total / limit),
+        data: { posts: postsWithMetadata }
+    });
+});

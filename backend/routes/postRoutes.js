@@ -11,6 +11,8 @@ router.get('/search', postController.search); // Public Search
 // Protected Routes
 router.use(protect);
 
+// Public/Explore Routes
+router.get('/explore', postController.getExplorePosts);
 router.get('/feed', postController.getFeedPosts);
 // router.get('/search', postController.search); // Moved to public
 router.post('/', postController.createPost);

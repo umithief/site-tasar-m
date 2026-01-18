@@ -252,7 +252,7 @@ export const socialService = {
         }
     },
 
-    async getExploreFeed(cursor: number = 0, category?: string): Promise<SocialPost[]> {
+    async getExploreFeed(cursor: number = 0, category?: string, query?: string): Promise<SocialPost[]> {
         const token = localStorage.getItem('token');
         const headers: HeadersInit = {};
         if (token) headers['Authorization'] = `Bearer ${token}`;
@@ -261,6 +261,9 @@ export const socialService = {
             let url = `${CONFIG.API_URL}/social/explore?cursor=${cursor}`;
             if (category && category !== 'ALL') {
                 url += `&category=${encodeURIComponent(category)}`;
+            }
+            if (query) {
+                url += `&q=${encodeURIComponent(query)}`;
             }
 
             const response = await fetch(url, {

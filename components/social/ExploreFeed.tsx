@@ -3,8 +3,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Filter, Hash, TrendingUp, Grid, Image, User, Heart, MessageSquare, Play, ShoppingBag, Bike } from 'lucide-react';
 import { socialService } from '../../services/socialService';
 import { SocialPost, ViewState } from '../../types';
+import { useAuthStore } from '../../store/authStore';
 import { UserAvatar } from '../ui/UserAvatar';
 import { VibeButton } from '../ui/VibeButton';
+import { GlassFeedCard } from './GlassFeedCard';
 
 interface ExploreFeedProps {
     onNavigate?: (view: ViewState, data?: any) => void;
@@ -17,6 +19,7 @@ export const ExploreFeed: React.FC<ExploreFeedProps> = ({ onNavigate, isEmbedded
     const [filter, setFilter] = useState('trending');
     const [searchQuery, setSearchQuery] = useState('');
     const [error, setError] = useState<string | null>(null);
+    const { user: currentUser } = useAuthStore();
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -135,61 +138,20 @@ export const ExploreFeed: React.FC<ExploreFeedProps> = ({ onNavigate, isEmbedded
                         <div className="columns-1 md:columns-2 xl:columns-3 gap-6 space-y-6">
                             <AnimatePresence>
                                 {filteredPosts.map((post, i) => (
-                                    <motion.div
-                                        key={post._id}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, scale: 0.95 }}
-                                        transition={{ delay: i * 0.05, type: 'spring', stiffness: 100 }}
-                                        className="break-inside-avoid group bg-[#1a1a1a] rounded-2xl overflow-hidden border border-white/5 hover:border-moto-accent/30 transition-all cursor-pointer relative shadow-lg hover:shadow-2xl hover:-translate-y-1 hover:shadow-moto-accent/10"
-                                    >
-                                        {post.images && post.images.length > 0 ? (
-                                            <div className="relative aspect-[4/5] overflow-hidden">
-                                                <img src={post.images[0]} className="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700" loading="lazy" />
-                                                <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-80" />
-
-                                                <div className="absolute top-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity translate-x-2 group-hover:translate-x-0 duration-300">
-                                                    <div className="bg-black/60 backdrop-blur-md p-2 rounded-full border border-white/10 hover:bg-moto-accent hover:text-black transition-colors">
-                                                        <Heart className="w-4 h-4" />
-                                                    </div>
-                                                </div>
-
-                                                <div className="absolute bottom-0 left-0 right-0 p-5">
-                                                    <div className="flex items-center gap-3 mb-3">
-                                                        <div className="p-0.5 bg-gradient-to-tr from-moto-accent to-transparent rounded-full">
-                                                            <UserAvatar src={post.userAvatar} name={post.userName} size={32} className="border-2 border-black" />
-                                                        </div>
-                                                        <div>
-                                                            <h4 className="font-bold text-sm text-white leading-tight shadow-black drop-shadow-md">{post.userName}</h4>
-                                                            <p className="text-[10px] text-gray-300 font-mono opacity-80">2s önce</p>
-                                                        </div>
-                                                    </div>
-                                                    <p className="text-xs text-gray-200 line-clamp-2 font-medium leading-relaxed drop-shadow-md">{post.content}</p>
-
-                                                    <div className="flex items-center gap-4 mt-3 pt-3 border-t border-white/10">
-                                                        <span className="flex items-center gap-1.5 text-xs font-bold text-white"><Heart className="w-3.5 h-3.5 text-moto-accent fill-moto-accent" /> {post.likes}</span>
-                                                        <span className="flex items-center gap-1.5 text-xs font-bold text-gray-300"><MessageSquare className="w-3.5 h-3.5" /> {post.comments}</span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <div className="p-6 relative overflow-hidden">
-                                                <div className="absolute top-0 right-0 w-24 h-24 bg-moto-accent/5 rounded-bl-full -mr-4 -mt-4" />
-                                                <div className="flex items-center gap-3 mb-4">
-                                                    <UserAvatar src={post.userAvatar} name={post.userName} size={40} className="ring-2 ring-white/5" />
-                                                    <div>
-                                                        <h4 className="font-bold text-sm text-white">{post.userName}</h4>
-                                                        <p className="text-[10px] text-gray-500 font-mono">Just Now</p>
-                                                    </div>
-                                                </div>
-                                                <p className="text-sm text-gray-300 font-medium leading-relaxed mb-4">{post.content}</p>
-                                                <div className="flex items-center gap-4 text-gray-500">
-                                                    <span className="flex items-center gap-1.5 text-xs font-bold hover:text-moto-accent transition-colors"><Heart className="w-4 h-4" /> {post.likes}</span>
-                                                    <span className="flex items-center gap-1.5 text-xs font-bold hover:text-white transition-colors"><MessageSquare className="w-4 h-4" /> {post.comments}</span>
-                                                </div>
-                                            </div>
-                                        )}
-                                    </motion.div>
+                                    <div className="break-inside-avoid mb-6" key={post._id}>
+                                        <GlassFeedCard
+                                            post={post}
+                                            onUserProfileClick={(userId) => onNavigate?.('public-profile', { userId })}
+                                            onLike={async (id) => {
+                                                if (currentUser) {
+                                                    try { await socialService.likePost(id, currentUser._id); } catch (e) { console.error(e); }
+                                                }
+                                            }}
+                                            onComment={() => {
+                                                // Handle comment action
+                                            }}
+                                        />
+                                    </div>
                                 ))}
                             </AnimatePresence>
                         </div>

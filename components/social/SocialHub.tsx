@@ -204,8 +204,6 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
             </AnimatePresence>
             {/* Background Ambient */}
 
-            {/* <div className="fixed top-0 left-0 w-full h-[50vh] bg-gradient-to-b from-purple-900/10 to-transparent pointer-events-none dark:block hidden" /> */}
-
             <ResponsiveDashboardLayout
                 user={currentUser}
                 isMobileDrawerOpen={isMobileDrawerOpen}
@@ -439,8 +437,6 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                     {/* View Switcher Content */}
                     {view === 'feed' ? (
                         <>
-                            {/* Stories Bar removed from here, moved to sticky group above */}
-
                             {/* Community CTA within Feed Stream (if not logged in) */}
                             {!currentUser && (
                                 <div className="flex flex-col items-center justify-center py-10 px-4 text-center bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl mb-8 mt-4 mx-4">

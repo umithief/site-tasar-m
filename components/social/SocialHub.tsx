@@ -177,7 +177,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
     );
 
     return (
-        <div className="bg-transparent min-h-screen text-gray-900 dark:text-white pt-0 pb-0 font-sans selection:bg-moto-accent/30 relative transition-colors duration-300">
+        <div className="bg-transparent min-h-screen text-gray-900 pt-0 pb-0 font-sans selection:bg-moto-accent/30 relative transition-colors duration-300">
             {/* Hidden File Input for Stories */}
             <input
                 type="file"
@@ -336,20 +336,20 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                                 animate={{ opacity: 1, y: 0, scale: 1 }}
                                                 exit={{ opacity: 0, y: 10, scale: 0.95 }}
                                                 transition={{ duration: 0.15, ease: "easeOut" }}
-                                                className="absolute top-full right-0 mt-4 w-72 bg-white dark:bg-[#121214] border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl overflow-hidden z-[100] ring-1 ring-black/5 dark:ring-white/5"
+                                                className="absolute top-full right-0 mt-4 w-72 bg-white border border-gray-200 rounded-2xl shadow-2xl overflow-hidden z-[100] ring-1 ring-black/5"
                                             >
                                                 {/* Header */}
-                                                <div className="relative p-6 pt-8 pb-6 border-b border-gray-100 dark:border-white/5 overflow-hidden group">
+                                                <div className="relative p-6 pt-8 pb-6 border-b border-gray-100 overflow-hidden group">
                                                     <div className="absolute inset-0 bg-gradient-to-br from-moto-accent/10 to-transparent opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
                                                     <div className="relative z-10 flex items-center gap-4">
-                                                        <div className="ring-2 ring-gray-100 dark:ring-white/10 rounded-full p-0.5 bg-white dark:bg-black">
+                                                        <div className="ring-2 ring-gray-100 rounded-full p-0.5 bg-white">
                                                             <UserAvatar src={currentUser?.profileImage || currentUser?.avatar} name={currentUser?.name} size={48} />
                                                         </div>
                                                         <div className="flex-1 min-w-0">
-                                                            <h4 className="text-gray-900 dark:text-white font-bold text-base truncate">{currentUser?.name || "Misafir"}</h4>
-                                                            <p className="text-gray-500 dark:text-zinc-500 text-xs font-mono truncate">@{currentUser?.username || "guest"}</p>
+                                                            <h4 className="text-gray-900 font-bold text-base truncate">{currentUser?.name || "Misafir"}</h4>
+                                                            <p className="text-gray-500 text-xs font-mono truncate">@{currentUser?.username || "guest"}</p>
                                                             {currentUser?.rank && (
-                                                                <span className="inline-flex items-center mt-1.5 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-gray-100 dark:bg-zinc-800 text-gray-600 dark:text-zinc-300 border border-gray-200 dark:border-white/5">
+                                                                <span className="inline-flex items-center mt-1.5 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-gray-100 text-gray-600 border border-gray-200">
                                                                     {currentUser.rank}
                                                                 </span>
                                                             )}
@@ -361,9 +361,9 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                                 <div className="p-2 space-y-0.5">
                                                     <button
                                                         onClick={() => { onNavigate && onNavigate('my-profile'); setIsProfileMenuOpen(false); }}
-                                                        className="w-full text-left px-4 py-3 text-sm font-medium text-gray-700 dark:text-zinc-300 hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white flex items-center gap-3 rounded-xl transition-all group"
+                                                        className="w-full text-left px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 flex items-center gap-3 rounded-xl transition-all group"
                                                     >
-                                                        <div className="p-1.5 rounded-lg bg-gray-100 dark:bg-zinc-800/50 text-gray-500 dark:text-zinc-400 group-hover:bg-moto-accent group-hover:text-black transition-colors">
+                                                        <div className="p-1.5 rounded-lg bg-gray-100 text-gray-500 group-hover:bg-moto-accent group-hover:text-black transition-colors">
                                                             <User className="w-4 h-4" />
                                                         </div>
                                                         Profil Görüntüle
@@ -371,9 +371,9 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
 
                                                     <button
                                                         onClick={() => { onNavigate && onNavigate('garage' as any); setIsProfileMenuOpen(false); }}
-                                                        className="w-full text-left px-4 py-3 text-sm font-medium text-gray-700 dark:text-zinc-300 hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white flex items-center gap-3 rounded-xl transition-all group"
+                                                        className="w-full text-left px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 flex items-center gap-3 rounded-xl transition-all group"
                                                     >
-                                                        <div className="p-1.5 rounded-lg bg-gray-100 dark:bg-zinc-800/50 text-gray-500 dark:text-zinc-400 group-hover:bg-moto-accent group-hover:text-black transition-colors">
+                                                        <div className="p-1.5 rounded-lg bg-gray-100 text-gray-500 group-hover:bg-moto-accent group-hover:text-black transition-colors">
                                                             <Archive className="w-4 h-4" />
                                                         </div>
                                                         Garajım
@@ -381,9 +381,9 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
 
                                                     <button
                                                         onClick={() => { onNavigate && onNavigate('settings' as any); setIsProfileMenuOpen(false); }}
-                                                        className="w-full text-left px-4 py-3 text-sm font-medium text-gray-700 dark:text-zinc-300 hover:bg-gray-50 dark:hover:bg-zinc-800/50 hover:text-gray-900 dark:hover:text-white flex items-center gap-3 rounded-xl transition-all group"
+                                                        className="w-full text-left px-4 py-3 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 flex items-center gap-3 rounded-xl transition-all group"
                                                     >
-                                                        <div className="p-1.5 rounded-lg bg-gray-100 dark:bg-zinc-800/50 text-gray-500 dark:text-zinc-400 group-hover:bg-moto-accent group-hover:text-black transition-colors">
+                                                        <div className="p-1.5 rounded-lg bg-gray-100 text-gray-500 group-hover:bg-moto-accent group-hover:text-black transition-colors">
                                                             <Settings className="w-4 h-4" />
                                                         </div>
                                                         Ayarlar
@@ -481,7 +481,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                         </>
                     ) : (
                         /* WIDE VIEW AREA (Map/Routes/Events) */
-                        <div className="h-[calc(100vh-140px)] sticky top-28 bg-white dark:bg-[#111] rounded-[2.5rem] border border-gray-200 dark:border-white/5 overflow-hidden shadow-2xl">
+                        <div className="h-[calc(100vh-140px)] sticky top-28 bg-white rounded-[2.5rem] border border-gray-200 overflow-hidden shadow-2xl">
                             {view === 'vlog' && <MotoVlogMap user={currentUser} isEmbedded onNavigate={() => { }} onAddToCart={() => { }} onProductClick={() => { }} />}
                             {view === 'routes' && <RouteExplorer user={currentUser} isEmbedded />}
                             {view === 'events' && <MotoMeetup user={currentUser} isEmbedded />}

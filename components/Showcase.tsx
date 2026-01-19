@@ -100,7 +100,7 @@ export const Showcase: React.FC<ShowcaseProps> = ({
             </motion.div>
 
             {/* --- MAIN CONTENT (Scrolls over the slider) --- */}
-            <div className="relative z-10 bg-gray-50 dark:bg-[#020202] shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">
+            <div className="relative z-10 bg-gray-50 shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">
 
 
 
@@ -112,8 +112,8 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                                 {user ? (
                                     <UserAvatar name={user.name || 'User'} size={48} className="border-2 border-white dark:border-zinc-800 shadow-md" />
                                 ) : (
-                                    <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-zinc-800 flex items-center justify-center border-2 border-white dark:border-zinc-700 shadow-sm">
-                                        <span className="text-sm font-bold text-gray-500 dark:text-gray-400">?</span>
+                                    <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center border-2 border-white shadow-sm">
+                                        <span className="text-sm font-bold text-gray-500">?</span>
                                     </div>
                                 )}
                                 <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"></div>
@@ -123,7 +123,7 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                                     <Sun className="w-3 h-3 text-yellow-500" />
                                     {greeting}
                                 </p>
-                                <h2 className="text-lg font-black text-gray-900 dark:text-white leading-none tracking-tight">{user && user.name ? user.name.split(' ')[0] : t('home.guest')}</h2>
+                                <h2 className="text-lg font-black text-gray-900 leading-none tracking-tight">{user && user.name ? user.name.split(' ')[0] : t('home.guest')}</h2>
                             </div>
                         </div>
 

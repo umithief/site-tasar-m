@@ -134,13 +134,9 @@ export const App: React.FC = () => {
     const [socialHubData, setSocialHubData] = useState<any>(null); // Placeholder for initial data
 
     // Theme Management - Enforced Light Mode
+    // Theme Management - Enforced Light Mode is now handled by store default
     const { theme } = useThemeStore();
 
-    useEffect(() => {
-        const root = window.document.documentElement;
-        root.classList.remove('dark');
-        root.classList.add('light'); // Enforce light mode
-    }, []);
 
     useEffect(() => {
         // Fetch global UI settings
@@ -512,7 +508,7 @@ export const App: React.FC = () => {
     return (
         <SocketProvider>
             <BrandingProvider>
-                <div key={animKey} className={`flex flex-col min-h-[100dvh] transition-colors duration-1000 ${theme === 'dark' ? 'bg-black text-white' : 'bg-gray-50 text-gray-900'} ${isFullScreenMode ? 'overflow-hidden h-screen bg-black text-white' : ''}`}>
+                <div key={animKey} className={`flex flex-col min-h-[100dvh] transition-colors duration-1000 bg-gray-50 text-gray-900 ${isFullScreenMode ? 'overflow-hidden h-screen bg-black text-white' : ''}`}>
 
                     {!isFullScreenMode && <ScrollProgress />}
 

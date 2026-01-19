@@ -60,16 +60,7 @@ body {
     --moto-accent-rgb: 242 166 25;
 }
 
-.dark {
-    color-scheme: dark;
 
-    /* Dark Mode Overrides */
-    --bg-primary: #09090b;
-    --text-primary: #ffffff;
-    --scrollbar-track: #09090b;
-    --scrollbar-thumb: #27272a;
-    --scrollbar-thumb-hover: #3f3f46;
-}
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
@@ -87,17 +78,7 @@ body {
 }
 
 /* Leaflet Dark Popup Overrides */
-.leaflet-popup-dark .leaflet-popup-content-wrapper,
-.leaflet-popup-dark .leaflet-popup-tip {
-    background: rgba(0, 0, 0, 0.9);
-    color: white;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-}
 
-.leaflet-popup-dark .leaflet-popup-content {
-    margin: 5px;
-}
 
 /* Animation Keyframes */
 @keyframes shine {

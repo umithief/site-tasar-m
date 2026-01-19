@@ -2,9 +2,9 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface ThemeState {
-    theme: 'dark' | 'light';
+    theme: 'light';
     toggleTheme: () => void;
-    setTheme: (theme: 'dark' | 'light') => void;
+    setTheme: (theme: 'light') => void;
 }
 
 export const useThemeStore = create<ThemeState>()(

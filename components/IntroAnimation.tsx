@@ -46,24 +46,26 @@ export const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete }) =>
                                 transition={{ delay: 0.2, duration: 0.8 }}
                                 className="mb-6 relative"
                             >
-                                <div className="absolute inset-0 bg-moto-accent blur-[40px] opacity-40 animate-pulse" />
-                                <Zap className="w-16 h-16 text-moto-accent fill-moto-accent/20" />
+                                <div className="absolute inset-0 bg-orange-500 blur-[40px] opacity-40 animate-pulse" />
+                                <div className="w-24 h-24 rounded-3xl bg-white/5 border border-white/10 flex items-center justify-center relative z-10">
+                                    <Zap className="w-14 h-14 text-orange-500 fill-current" />
+                                </div>
                             </motion.div>
 
                             {/* Main Typography */}
                             <div className="flex flex-col items-center">
                                 <motion.h1
-                                    className="text-6xl md:text-8xl font-black text-white tracking-tighter italic leading-none"
+                                    className="text-6xl md:text-8xl font-display font-bold text-white tracking-tight leading-none mt-4"
                                     initial={{ clipPath: "polygon(0 100%, 100% 100%, 100% 100%, 0% 100%)" }}
                                     animate={{ clipPath: "polygon(0 100%, 100% 100%, 100% 0%, 0% 0%)" }}
                                     transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
                                 >
                                     MOTO
                                     <motion.span
-                                        initial={{ color: "#ffffff", textShadow: "0 0 0px rgba(234, 180, 40, 0)" }}
-                                        animate={{ color: "rgba(255,255,255,0)", textShadow: "0 0 20px rgba(234, 180, 40, 0.5)" }}
+                                        initial={{ color: "#ffffff", textShadow: "0 0 0px rgba(255, 107, 53, 0)" }}
+                                        animate={{ color: "rgba(255,255,255,0)", textShadow: "0 0 20px rgba(255, 107, 53, 0.5)" }}
                                         transition={{ delay: 1.2, duration: 1 }}
-                                        className="bg-clip-text bg-gradient-to-r from-moto-accent to-yellow-200"
+                                        className="bg-clip-text bg-gradient-to-r from-orange-500 to-yellow-500"
                                     >
                                         VIBE
                                     </motion.span>
@@ -77,7 +79,7 @@ export const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete }) =>
                                     className="h-px bg-white/20 mt-6 w-full relative overflow-hidden"
                                 >
                                     <motion.div
-                                        className="absolute top-0 left-0 h-full w-1/2 bg-moto-accent/50 blur-[2px]"
+                                        className="absolute top-0 left-0 h-full w-1/2 bg-orange-500/50 blur-[2px]"
                                         initial={{ x: "-100%" }}
                                         animate={{ x: "200%" }}
                                         transition={{ delay: 1.2, duration: 1.5, repeat: Infinity, repeatDelay: 2 }}

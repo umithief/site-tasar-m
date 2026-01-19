@@ -596,7 +596,7 @@ export const App: React.FC = () => {
 
 
                     {isFullScreenMode ? (
-                        <main className="w-full h-full relative z-10 bg-black">
+                        <main className={`w-full h-full relative z-10 bg-black ${view === 'product-detail' ? 'overflow-y-auto' : ''}`}>
                             <AnimatePresence mode="wait">
                                 <motion.div
                                     key={view}

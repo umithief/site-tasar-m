@@ -186,15 +186,15 @@ export const MobileProductDetail: React.FC<MobileProductDetailProps> = ({
                             whileTap={{ scale: 0.95 }}
                             className="flex-1 text-left"
                         >
-                            <span className="text-white text-2xl font-bold tracking-wide">Buy</span>
+                            <span className="text-white text-2xl font-bold tracking-wide">Satın Al</span>
                         </motion.button>
 
                         {/* White Price Badge (Overlapping) */}
                         <div className="relative w-24 h-24 -mt-2 -mr-2 bg-white rounded-full flex items-center justify-center border-[6px] border-[#Fdfdfd] shadow-xl">
                             <div className="flex flex-col items-center leading-none">
-                                <span className="text-[10px] text-zinc-400 font-bold uppercase mb-0.5">USD</span>
+                                <span className="text-[10px] text-zinc-400 font-bold uppercase mb-0.5">TL</span>
                                 <span className="text-xl font-black text-black tracking-tighter">
-                                    {currentPrice.toLocaleString()}
+                                    {currentPrice.toLocaleString('tr-TR')}
                                 </span>
                             </div>
                         </div>

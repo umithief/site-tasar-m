@@ -11,6 +11,7 @@ import { useNotificationStore } from '../../store/useNotificationStore';
 import { useLanguage } from '../../contexts/LanguageProvider';
 import { SearchOverlay } from './SearchOverlay';
 import { UserAvatar } from '../ui/UserAvatar';
+import { Logo } from '../ui/Logo';
 
 interface NavbarProps {
     cartCount: number;
@@ -67,12 +68,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                     className="flex items-center gap-1 cursor-pointer"
                     onClick={() => onNavigate('home')}
                 >
-                    <div className="w-8 h-8 rounded-lg flex items-center justify-center text-orange-500">
-                        <Zap className="w-6 h-6 fill-current" />
-                    </div>
-                    <span className="font-display font-bold text-xl text-white tracking-tight relative -top-0.5">
-                        MOTOVIBE
-                    </span>
+                    <Logo size="md" />
                 </div>
             </div>
 

@@ -1,103 +1,59 @@
 import React from 'react';
-import { useBranding } from '../../context/BrandingContext';
-import { LOGO_ASSETS, FONT_STYLES } from './LogoAssets';
+import { Zap } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface LogoProps {
-    variant?: 'full' | 'icon' | 'text';
     className?: string;
+    size?: 'sm' | 'md' | 'lg';
+    showText?: boolean;
 }
 
-export const Logo: React.FC<LogoProps> = ({ variant = 'full', className = "h-8 w-auto" }) => {
-    const { settings, isLoading } = useBranding();
+export const Logo: React.FC<LogoProps> = ({
+    className = "",
+    size = 'md',
+    showText = true
+}) => {
 
-    // Default to Velocity if loading or error
-    const activeIcon = LOGO_ASSETS[settings?.iconType || 'VELOCITY']; // Will be undefined if TEXT_ONLY
-    const activeFont = FONT_STYLES[settings?.fontStyle || 'TECH'];
-
-    // Render Icon based on settings
-    const renderIcon = () => {
-        if (!activeIcon) return null;
-        return (
-            <g style={{ color: settings?.primaryColor || 'currentColor' }}>
-                {activeIcon.path}
-            </g>
-        );
+    // Size Configurations
+    const sizeConfig = {
+        sm: {
+            container: "w-6 h-6 rounded-md",
+            icon: "w-4 h-4",
+            text: "text-lg",
+            gap: "gap-1.5"
+        },
+        md: {
+            container: "w-8 h-8 rounded-lg",
+            icon: "w-6 h-6",
+            text: "text-xl",
+            gap: "gap-2"
+        },
+        lg: {
+            container: "w-12 h-12 rounded-xl",
+            icon: "w-8 h-8",
+            text: "text-3xl",
+            gap: "gap-3"
+        }
     };
 
-    // Render Text with dynamic font and spacing
-    const renderText = (offsetX = 0) => (
-        <g transform={`translate(${offsetX}, 0)`}>
-            <text
-                x="0"
-                y="34"
-                fill="currentColor"
-                style={{
-                    ...activeFont,
-                    fontSize: '28px',
-                    letterSpacing: `${settings?.letterSpacing || 0}px`,
-                    fontWeight: 'bold' // Ensure it's bold enough
-                }}
-            >
-                MOTOVIBE
-            </text>
-        </g>
-    );
-
-    // ViewBox logic
-    let viewBox = activeIcon?.viewBox || "0 0 48 48"; // Default icon viewbox
-
-    if (variant === 'full') {
-        // Approximate width calculation based on text
-        // Icon (48) + Gap (12) + Text (approx 140)
-        viewBox = "0 0 200 48";
-    } else if (variant === 'text') {
-        viewBox = "0 0 150 48";
-    }
-
-    if (isLoading) return <div className="h-8 w-8 bg-gray-800 animate-pulse rounded-full" />;
+    const config = sizeConfig[size];
 
     return (
-        <svg
-            viewBox={viewBox}
-            className={className}
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-        >
-            {(variant === 'full' || variant === 'icon') && renderIcon()}
+        <div className={`flex items-center ${config.gap} cursor-pointer select-none ${className}`}>
+            {/* Icon Container */}
+            <div className={`${config.container} flex items-center justify-center bg-white/5 border border-white/10 text-orange-500 shadow-lg shadow-orange-500/10`}>
+                <Zap className={`${config.icon} fill-current`} />
+            </div>
 
-            {(variant === 'full') && (
-                <g transform="translate(60, 0)">
-                    <text
-                        x="0"
-                        y="34"
-                        fill="currentColor"
-                        style={{
-                            ...activeFont,
-                            fontSize: '28px',
-                            letterSpacing: `${settings?.letterSpacing || 0}px`,
-                            fontWeight: 'bold'
-                        }}
-                    >
-                        MOTOVIBE
-                    </text>
-                </g>
+            {/* Text */}
+            {showText && (
+                <span className={`font-display font-bold ${config.text} text-white tracking-tight relative leading-none mt-0.5`}>
+                    MOTO
+                    <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-yellow-500">
+                        VIBE
+                    </span>
+                </span>
             )}
-
-            {(variant === 'text') && (
-                <text
-                    x="0"
-                    y="34"
-                    fill="currentColor"
-                    style={{
-                        ...activeFont,
-                        fontSize: '28px',
-                        letterSpacing: `${settings?.letterSpacing || 0}px`,
-                        fontWeight: 'bold'
-                    }}
-                >
-                    MOTOVIBE
-                </text>
-            )}
-        </svg>
+        </div>
     );
 };

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, Map, Compass, Bike, ShoppingBag, User } from 'lucide-react';
+import { Home, Map, Compass, Bike, ShoppingBag, User, Shield, LayoutGrid } from 'lucide-react';
+import { useAuthStore } from '../../store/authStore';
 import { ViewState } from '../../types';
 
 interface SidebarProps {
@@ -13,14 +14,21 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeView, onNavigate }) => {
+    const { user } = useAuthStore();
+
     const navItems = [
         { id: 'home', icon: Home, label: 'Akış' },
         { id: 'map', icon: Map, label: 'Canlı Harita' },
         { id: 'routes', icon: Compass, label: 'Rotalar' },
+        { id: 'showcase', icon: LayoutGrid, label: 'Vitrin' }, // Added Vitrin
         { id: 'garage', icon: Bike, label: 'Garaj' },
         { id: 'shop', icon: ShoppingBag, label: 'Mağaza' },
         { id: 'profile', icon: User, label: 'Profil' },
     ];
+
+    if (user?.isAdmin) {
+        navItems.push({ id: 'admin', icon: Shield, label: 'Admin Panel' });
+    }
 
     return (
         <motion.div

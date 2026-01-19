@@ -5,7 +5,7 @@ import {
     Shield, Bike, Play, Film, Award, MapPin, ArrowLeft
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
-import { User, ViewState } from '../../types';
+import { SocialPost, User, ViewState } from '../../types';
 import { UserAvatar } from '../ui/UserAvatar';
 import { UserListModal } from '../UserListModal';
 import { MobileEditProfile } from './MobileEditProfile';
@@ -28,6 +28,7 @@ interface MobileProfileProps {
 export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, userId, onNavigate, onBack }) => {
     const { user: authUser, logout } = useAuthStore();
 
+    const [posts, setPosts] = useState<SocialPost[]>([]);
     // Determine which user to show
     const user = propUser || authUser;
 
@@ -171,7 +172,9 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
                     >
                         {activeTab === 'posts' && (
                             <div className="space-y-4 pb-4">
-                                {/* Placeholder for user's posts - Ideally fetch real posts here */}
+                                {posts.map((post) => (
+                                                                    <PostCard key={post._id} post={post} />
+                                                                ))}
                                 <div className="text-center py-16 text-gray-400 dark:text-gray-600">
                                     <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-4">
                                         <Grid className="w-8 h-8 opacity-50" />

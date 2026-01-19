@@ -22,14 +22,17 @@ export const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete }) =>
         <AnimatePresence>
             {isVisible && (
                 <motion.div
-                    className="fixed inset-0 z-[9999] flex items-center justify-center bg-black overflow-hidden"
+                    className="fixed inset-0 z-[9999] flex items-center justify-center overflow-hidden" // Removed bg-black
                     exit={{ opacity: 0 }}
                     transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
                 >
-                    {/* Minimal Grid Background (Very subtle) */}
-                    <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:100px_100px] opacity-20 pointer-events-none" />
+                    {/* Minimal Grid Background directly on shutters or content? No, needs to be behind content but on top of shutters? 
+                        Actually, if shutters ARE the background, the grid should be on them or separate z-index.
+                        Let's put grid on z-10, Shutters z-0 (acting as bg), Content z-20.
+                     */}
 
-                    <div className="relative z-10 flex flex-col items-center justify-center">
+
+                    <div className="relative z-30 flex flex-col items-center justify-center"> {/* Raised z-index to 30 */}
                         <motion.div
                             initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
@@ -85,17 +88,26 @@ export const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete }) =>
                         </motion.div>
                     </div>
 
-                    {/* Exit Shutters for Cinematic Reveal */}
+                    {/* Exit Shutters (Now serving as background too) */}
                     <motion.div
-                        className="absolute top-0 left-0 w-full h-1/2 bg-black z-20"
+                        className="absolute top-0 left-0 w-full h-1/2 bg-black z-0 border-b border-white/5" // z-0, added border
+                        initial={{ y: 0 }}
                         exit={{ y: "-100%" }}
                         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-                    />
+                    >
+                        {/* Grid on Top Shutter */}
+                        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:100px_100px] opacity-20 pointer-events-none" />
+                    </motion.div>
+
                     <motion.div
-                        className="absolute bottom-0 left-0 w-full h-1/2 bg-black z-20"
+                        className="absolute bottom-0 left-0 w-full h-1/2 bg-black z-0 border-t border-white/5" // z-0, added border
+                        initial={{ y: 0 }}
                         exit={{ y: "100%" }}
                         transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.1 }}
-                    />
+                    >
+                        {/* Grid on Bottom Shutter */}
+                        <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:100px_100px] opacity-20 pointer-events-none" />
+                    </motion.div>
                 </motion.div>
             )}
         </AnimatePresence>

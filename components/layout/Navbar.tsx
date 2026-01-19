@@ -58,18 +58,18 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {/* Left: Menu & Logo */}
             <div className="flex items-center gap-4">
-                <button
-                    onClick={onToggleSidebar}
-                    className="p-2 -ml-2 rounded-full hover:bg-white/10 text-white transition-colors hidden lg:block"
-                >
-                    <Menu className="w-6 h-6" />
-                </button>
                 <div
                     className="flex items-center gap-1 cursor-pointer"
                     onClick={() => onNavigate('home')}
                 >
                     <Logo size="md" />
                 </div>
+                <button
+                    onClick={onToggleSidebar}
+                    className="p-2 -ml-2 rounded-full hover:bg-white/10 text-white transition-colors hidden lg:block"
+                >
+                    <Menu className="w-6 h-6" />
+                </button>
             </div>
 
 

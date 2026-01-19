@@ -4,6 +4,8 @@ import { Home, Map, Compass, Bike, ShoppingBag, User, Shield, LayoutGrid } from 
 import { useAuthStore } from '../../store/authStore';
 import { ViewState } from '../../types';
 
+import { Logo } from '../ui/Logo';
+
 interface SidebarProps {
     activeView: ViewState;
     onNavigate: (view: ViewState) => void;
@@ -31,31 +33,44 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, onNavigate }) => {
     }
 
     return (
-        <motion.div
-            initial={{ x: -100, opacity: 0 }}
-            animate={{ x: 0, opacity: 1 }}
-            transition={{ type: "spring", stiffness: 100, damping: 20 }}
-            className="fixed left-6 top-1/2 -translate-y-1/2 h-auto z-50 flex flex-col items-center"
-        >
-            {/* GLASS RAIL CONTAINER */}
-            <div className="bg-white/80 backdrop-blur-2xl border border-gray-200 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] py-8 px-4 flex flex-col gap-8 items-center">
+        <>
+            {/* BRANDING CORNER (Fixed Top-Left) */}
+            <motion.div
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5, duration: 0.5 }}
+                className="fixed top-8 left-8 z-[60] cursor-pointer"
+                onClick={() => onNavigate('home')}
+            >
+                <Logo size="md" />
+            </motion.div>
 
-                {navItems.map((item) => {
-                    const isActive = activeView === item.id || (item.id === 'home' && !activeView); // Default to home if undefined?
-                    const isStrictActive = activeView === item.id;
+            <motion.div
+                initial={{ x: -100, opacity: 0 }}
+                animate={{ x: 0, opacity: 1 }}
+                transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                className="fixed left-6 top-1/2 -translate-y-1/2 h-auto z-50 flex flex-col items-center"
+            >
+                {/* GLASS RAIL CONTAINER */}
+                <div className="bg-white/80 backdrop-blur-2xl border border-gray-200 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] py-8 px-4 flex flex-col gap-8 items-center">
 
-                    return (
-                        <NavItem
-                            key={item.id}
-                            item={item}
-                            isActive={isStrictActive}
-                            onClick={() => onNavigate(item.id as ViewState)}
-                        />
-                    );
-                })}
+                    {navItems.map((item) => {
+                        const isActive = activeView === item.id || (item.id === 'home' && !activeView); // Default to home if undefined?
+                        const isStrictActive = activeView === item.id;
 
-            </div>
-        </motion.div>
+                        return (
+                            <NavItem
+                                key={item.id}
+                                item={item}
+                                isActive={isStrictActive}
+                                onClick={() => onNavigate(item.id as ViewState)}
+                            />
+                        );
+                    })}
+
+                </div>
+            </motion.div>
+        </>
     );
 };
 

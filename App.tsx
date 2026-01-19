@@ -16,7 +16,7 @@ import { AdminPanel } from './components/AdminPanel';
 import { ProductQuickViewModal } from './components/ProductQuickViewModal';
 import { ToastType, ToastContainer, ToastMessage } from './components/Toast';
 import { RideMode } from './components/RideMode';
-import { InRideCockpit } from './components/ride/InRideCockpit'; // New Cockpit
+
 import { MotoTool } from './components/MotoTool';
 import { RouteExplorer } from './components/RouteExplorer';
 import { MobileOnboarding } from './components/mobile/MobileOnboarding';

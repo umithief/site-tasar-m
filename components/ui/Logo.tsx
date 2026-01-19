@@ -41,7 +41,7 @@ export const Logo: React.FC<LogoProps> = ({
     return (
         <div className={`flex items-center ${config.gap} cursor-pointer select-none ${className}`}>
             {/* Icon Container */}
-            <div className={`${config.container} flex items-center justify-center bg-white/5 border border-white/10 text-orange-500 shadow-lg shadow-orange-500/10`}>
+            <div className={`${config.container} flex items-center justify-center bg-neutral-900 border border-white/10 text-orange-500 shadow-lg shadow-orange-500/20`}>
                 <Zap className={`${config.icon} fill-current`} />
             </div>
 

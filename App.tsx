@@ -646,9 +646,9 @@ export const App: React.FC = () => {
 
                             {/* Main Content Area - Adjusted for Sidebar */}
                             <main
-                                className={`min-h-screen pt-20 transition-all duration-300 ${!isMobile
+                                className={`min-h-screen pt-0 transition-all duration-300 ${!isMobile
                                     ? 'md:pl-32' // Fixed padding for floating sidebar
-                                    : 'pt-20 pb-20' /* Mobile Padding */
+                                    : 'pt-0 pb-20' /* Mobile Padding */
                                     }`}
                             >
                                 <AnimatePresence mode="wait">

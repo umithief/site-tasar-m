@@ -38,8 +38,8 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({ children, currentVie
 
     return (
         <div className="min-h-screen bg-gray-50 dark:bg-black pb-20 md:pb-0 transition-colors duration-300">
-            {/* Mobile Header */}
-            <header className="fixed top-0 left-0 right-0 h-16 bg-white/90 dark:bg-black/90 backdrop-blur-md border-b border-gray-100 dark:border-white/10 z-50 flex items-center justify-between px-4 lg:hidden transition-colors">
+            {/* Mobile Header Removed as per user request */}
+            {/* <header className="fixed top-0 left-0 right-0 h-16 bg-white/90 dark:bg-black/90 backdrop-blur-md border-b border-gray-100 dark:border-white/10 z-50 flex items-center justify-between px-4 lg:hidden transition-colors">
                 <div className="flex items-center gap-3">
                     <button
                         onClick={() => setIsDrawerOpen(true)}
@@ -59,9 +59,8 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({ children, currentVie
                             <span className="absolute top-1.5 right-1.5 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-white dark:border-black animate-pulse" />
                         )}
                     </button>
-                    {/* Optional: Add Cart Button Here if needed */}
                 </div>
-            </header>
+            </header> */}
 
             {/* Mobile Drawer */}
             <DashboardDrawer
@@ -71,7 +70,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({ children, currentVie
             />
 
             {/* Main Content */}
-            <main className="pt-16 lg:pt-0 min-h-screen bg-transparent">
+            <main className="pt-0 lg:pt-0 min-h-screen bg-transparent">
                 {children}
             </main>
 

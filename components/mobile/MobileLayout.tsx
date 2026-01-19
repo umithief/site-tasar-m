@@ -70,7 +70,7 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({ children, currentVie
             />
 
             {/* Main Content */}
-            <main className="pt-6 lg:pt-0 min-h-screen bg-transparent">
+            <main className="pt-0 lg:pt-0 min-h-screen bg-transparent">
                 {children}
             </main>
 

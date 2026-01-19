@@ -58,7 +58,15 @@ export const IntroAnimation: React.FC<IntroAnimationProps> = ({ onComplete }) =>
                                     animate={{ clipPath: "polygon(0 100%, 100% 100%, 100% 0%, 0% 0%)" }}
                                     transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
                                 >
-                                    MOTO<span className="text-transparent bg-clip-text bg-gradient-to-r from-moto-accent to-yellow-200">VIBE</span>
+                                    MOTO
+                                    <motion.span
+                                        initial={{ color: "#ffffff", textShadow: "0 0 0px rgba(234, 180, 40, 0)" }}
+                                        animate={{ color: "rgba(255,255,255,0)", textShadow: "0 0 20px rgba(234, 180, 40, 0.5)" }}
+                                        transition={{ delay: 1.2, duration: 1 }}
+                                        className="bg-clip-text bg-gradient-to-r from-moto-accent to-yellow-200"
+                                    >
+                                        VIBE
+                                    </motion.span>
                                 </motion.h1>
 
                                 {/* Tagline */}

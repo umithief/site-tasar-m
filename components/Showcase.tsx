@@ -8,7 +8,7 @@ import { FeaturesSection } from './FeaturesSection';
 import { DealOfTheDay } from './DealOfTheDay';
 import { Product, ProductCategory, ViewState, User } from '../types';
 import { Award, Sparkles, ArrowRight, Search, Bell, Calculator, Film, Sun, Moon, Menu, X, HeartPulse, Siren } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { UserAvatar } from './ui/UserAvatar';
 import { Button } from './ui/Button';
 import { authService } from '../services/auth';
@@ -81,6 +81,10 @@ export const Showcase: React.FC<ShowcaseProps> = ({
         onNavigate('shop', searchText);
     };
 
+    const { scrollY } = useScroll();
+    const blurAmount = useTransform(scrollY, [0, 800], ["blur(0px)", "blur(20px)"]);
+    const opacityAmount = useTransform(scrollY, [0, 800], [1, 0.6]); // Slight dimming for focus on content
+
     return (
         <>
             {/* --- HERO SLIDER (PARALLAX FIXED) --- */}
@@ -88,9 +92,12 @@ export const Showcase: React.FC<ShowcaseProps> = ({
             <div className="relative w-full h-[80vh] min-h-[600px]" />
 
             {/* Actual Slider fixed at top */}
-            <div className="fixed top-0 left-0 w-full h-[80vh] min-h-[600px] z-0">
+            <motion.div
+                style={{ filter: blurAmount, opacity: opacityAmount }}
+                className="fixed top-0 left-0 w-full h-[80vh] min-h-[600px] z-0"
+            >
                 <LiquidSlider />
-            </div>
+            </motion.div>
 
             {/* --- MAIN CONTENT (Scrolls over the slider) --- */}
             <div className="relative z-10 bg-gray-50 dark:bg-[#020202] shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">

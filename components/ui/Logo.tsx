@@ -47,8 +47,10 @@ export const Logo: React.FC<LogoProps> = ({
 
             {/* Text */}
             {showText && (
-                <span className={`font-display font-bold ${config.text} text-white tracking-tight relative leading-none mt-0.5 drop-shadow-md`}>
-                    MOTO
+                <span className={`font-display font-bold ${config.text} tracking-tight relative leading-none mt-0.5`}>
+                    <span className="text-white" style={{ textShadow: '1px 1px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000' }}>
+                        MOTO
+                    </span>
                     <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-500 to-yellow-500">
                         VIBE
                     </span>

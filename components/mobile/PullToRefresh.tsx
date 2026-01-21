@@ -77,10 +77,10 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({ onRefresh, childre
         <div ref={containerRef} className="relative">
             {/* Spinning Gear Indicator */}
             <div
-                className="absolute top-0 left-0 right-0 flex justify-center pointer-events-none z-10"
+                className="absolute top-0 left-0 right-0 flex justify-center pointer-events-none z-10 transition-opacity duration-200"
                 style={{
                     transform: `translateY(${pullY - 40}px)`,
-                    opacity: pullY > 0 ? 1 : 0
+                    opacity: Math.min(1, Math.max(0, (pullY - 15) / 40))
                 }}
             >
                 <motion.div

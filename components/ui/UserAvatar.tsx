@@ -48,7 +48,9 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
     return Math.abs(hash % BG_COLORS.length);
   };
 
-  const bgColor = BG_COLORS[getColorIndex(name || 'User')];
+  // Use neutral gray for default/loading state instead of mapping 'User' to green
+  const isDefaultUser = !name || name === 'User';
+  const bgColor = isDefaultUser ? 'bg-zinc-800' : BG_COLORS[getColorIndex(name)];
 
   return (
     <div

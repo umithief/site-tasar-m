@@ -52,13 +52,24 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
         <div className="min-h-screen bg-gray-50 dark:bg-black pb-24 transition-colors duration-300">
             {/* 1. Header & Cover - Clean & Light */}
             <div className="relative">
-                <div className="h-48 w-full overflow-hidden">
-                    <img
-                        src={user.coverImage || 'https://images.unsplash.com/photo-1625055088214-5d8f6155680d?q=80&w=2069'}
-                        alt="Kapak Fotoğrafı"
-                        className="w-full h-full object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-50/90 dark:to-black/90" />
+                <div className="h-48 w-full overflow-hidden bg-gray-200 dark:bg-[#111] relative">
+                    {user.coverImage ? (
+                        <img
+                            src={user.coverImage}
+                            alt="Kapak Fotoğrafı"
+                            className="w-full h-full object-cover"
+                        />
+                    ) : (
+                        <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br from-gray-800 to-black`}>
+                            {/* Large Logo for Cover Placeholder */}
+                            <div className="flex flex-col items-center opacity-30">
+                                <div className="w-16 h-16 text-white mb-2">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full text-moto-accent fill-current"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-b from-transparent to-gray-50/90 dark:to-black/90 pointer-events-none" />
                 </div>
 
                 <div className="absolute top-4 w-full px-4 z-10 flex justify-between">

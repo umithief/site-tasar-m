@@ -73,6 +73,11 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
     const [selectedStoryGroup, setSelectedStoryGroup] = useState<StoryGroup | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
 
+    const handleCommentClick = React.useCallback((postId: string) => {
+        setActivePostId(postId);
+        setIsCommentSheetOpen(true);
+    }, []);
+
     const loadStories = async () => {
         try {
             const groups = await storyService.getStories();
@@ -474,10 +479,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                         isFetchingNextPage={isFetchingNextPage}
                                         hasNextPage={hasNextPage}
                                         fetchNextPage={fetchNextPage}
-                                        onCommentClick={(postId) => {
-                                            setActivePostId(postId);
-                                            setIsCommentSheetOpen(true);
-                                        }}
+                                        onCommentClick={handleCommentClick}
                                     />
                                 </div>
                             </PullToRefresh>

@@ -1,5 +1,5 @@
 
-import React, { useRef } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
 import { SocialPost, ViewState } from '../../types';
 import { ResponsivePostCard } from './ResponsivePostCard';
@@ -51,38 +51,42 @@ export const SpatialFeed: React.FC<SpatialFeedProps> = ({
                 </motion.div>
             )}
 
-            {data?.pages.map((page: any, i: number) => (
-                <React.Fragment key={i}>
-                    {page?.map((post: SocialPost, index: number) => (
-                        <React.Fragment key={post._id}>
-                            <FeedItem index={index}>
-                                <div className="relative group perspective-item">
-                                    {/* Glassmorphic Background Card */}
-                                    <div className="absolute inset-0 bg-white/80 dark:bg-black/40 backdrop-blur-xl rounded-[2.5rem] -z-10 border border-white/40 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] transition-all duration-300 group-hover:bg-white/90 group-hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.2)] group-hover:border-white/50" />
+            {/* Deduplicate posts to prevent key collisions */}
+            {(() => {
+                const seen = new Set();
+                return data?.pages?.flatMap((page: any) => page || []).filter((post: SocialPost) => {
+                    const duplicate = seen.has(post._id);
+                    seen.add(post._id);
+                    return !duplicate;
+                }).map((post: SocialPost, index: number) => (
+                    <React.Fragment key={post._id}>
+                        <FeedItem index={index}>
+                            <div className="relative group perspective-item">
+                                {/* Glassmorphic Background Card */}
+                                <div className="absolute inset-0 bg-white/80 dark:bg-black/40 backdrop-blur-xl rounded-[2.5rem] -z-10 border border-white/40 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] transition-all duration-300 group-hover:bg-white/90 group-hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.2)] group-hover:border-white/50" />
 
-                                    <ResponsivePostCard
-                                        post={post}
-                                        currentUserId={currentUser?._id}
-                                        onNavigate={onNavigate}
-                                        onCommentClick={() => onCommentClick(post._id)}
-                                        variant="glass"
-                                        className="!bg-transparent !shadow-none !border-none"
-                                    />
+                                <ResponsivePostCard
+                                    post={post}
+                                    currentUserId={currentUser?._id}
+                                    onNavigate={onNavigate}
+                                    onCommentClick={() => onCommentClick(post._id)}
+                                    variant="glass"
+                                    className="!bg-transparent !shadow-none !border-none"
+                                />
+                            </div>
+                        </FeedItem>
+
+                        {/* Inject Route Suggestions after the 3rd post (index 2) */}
+                        {index === 2 && (
+                            <FeedItem index={index + 0.5}>
+                                <div className="py-4">
+                                    <RouteSuggestions />
                                 </div>
                             </FeedItem>
-
-                            {/* Inject Route Suggestions after the 3rd post of the first page */}
-                            {i === 0 && index === 2 && (
-                                <FeedItem index={index + 0.5}>
-                                    <div className="py-4">
-                                        <RouteSuggestions />
-                                    </div>
-                                </FeedItem>
-                            )}
-                        </React.Fragment>
-                    ))}
-                </React.Fragment>
-            ))}
+                        )}
+                    </React.Fragment>
+                ));
+            })()}
 
             {isFetchingNextPage && (
                 <div className="flex justify-center py-12">

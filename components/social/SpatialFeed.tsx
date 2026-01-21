@@ -1,6 +1,5 @@
-
-import React, { useRef, useMemo } from 'react';
-import { motion, useScroll, useTransform, useSpring } from 'framer-motion';
+import React, { useMemo, memo } from 'react';
+import { motion } from 'framer-motion';
 import { SocialPost, ViewState } from '../../types';
 import { ResponsivePostCard } from './ResponsivePostCard';
 import { RouteSuggestions } from './RouteSuggestions';
@@ -15,7 +14,7 @@ interface SpatialFeedProps {
     onCommentClick: (postId: string) => void;
 }
 
-export const SpatialFeed: React.FC<SpatialFeedProps> = ({
+export const SpatialFeed: React.FC<SpatialFeedProps> = memo(({
     data,
     currentUser,
     onNavigate,
@@ -24,26 +23,31 @@ export const SpatialFeed: React.FC<SpatialFeedProps> = ({
     fetchNextPage,
     onCommentClick
 }) => {
-    // Simplified Container to prevent layer flickering
-    const FeedContainer = ({ children }: { children: React.ReactNode }) => {
-        return (
-            <div className="space-y-8 py-4 px-2 w-full max-w-lg mx-auto">
-                {children}
-            </div>
-        );
-    };
+    // Memoize posts list - deduplicate and prepare
+    const posts = useMemo(() => {
+        if (!data?.pages) return [];
+        const seen = new Set<string>();
+        return data.pages
+            .flatMap((page: any) => page || [])
+            .filter((post: SocialPost) => {
+                if (seen.has(post._id)) return false;
+                seen.add(post._id);
+                return true;
+            });
+    }, [data]);
+
+    const isEmpty = !isFetchingNextPage && posts.length === 0;
 
     return (
-        <FeedContainer>
+        <div className="space-y-6 py-4 px-2 w-full max-w-lg mx-auto">
             {/* Empty State */}
-            {!isFetchingNextPage && data?.pages?.[0]?.length === 0 && (
+            {isEmpty && (
                 <motion.div
                     initial={{ opacity: 0, scale: 0.9 }}
                     animate={{ opacity: 1, scale: 1 }}
                     className="flex flex-col items-center justify-center py-20 px-4 text-center"
                 >
                     <div className="w-24 h-24 bg-gradient-to-br from-zinc-800 to-black rounded-[2rem] flex items-center justify-center mb-6 border border-white/5 shadow-2xl shadow-black/50 relative overflow-hidden">
-                        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.05]" />
                         <span className="text-4xl">📭</span>
                     </div>
                     <h3 className="text-2xl font-black italic uppercase tracking-tighter text-white mb-2">Sessiz Bölge</h3>
@@ -51,44 +55,35 @@ export const SpatialFeed: React.FC<SpatialFeedProps> = ({
                 </motion.div>
             )}
 
-            {/* Deduplicate posts to prevent key collisions */}
-            {useMemo(() => {
-                const seen = new Set();
-                return data?.pages?.flatMap((page: any) => page || []).filter((post: SocialPost) => {
-                    const duplicate = seen.has(post._id);
-                    seen.add(post._id);
-                    return !duplicate;
-                }).map((post: SocialPost, index: number) => (
-                    <React.Fragment key={post._id}>
-                        <FeedItem index={index} priority={index === 0}>
-                            <ResponsivePostCard
-                                post={post}
-                                currentUserId={currentUser?._id}
-                                onNavigate={onNavigate}
-                                onCommentClick={() => onCommentClick(post._id)}
-                                variant="default"
-                                priority={index < 2}
-                            />
-                        </FeedItem>
+            {/* Post List */}
+            {posts.map((post: SocialPost, index: number) => (
+                <div key={post._id}>
+                    <ResponsivePostCard
+                        post={post}
+                        currentUserId={currentUser?._id}
+                        onNavigate={onNavigate}
+                        onCommentClick={() => onCommentClick(post._id)}
+                        variant="default"
+                        priority={index < 2}
+                    />
 
-                        {/* Inject Route Suggestions after the 3rd post (index 2) */}
-                        {index === 2 && (
-                            <FeedItem index={index + 0.5}>
-                                <div className="py-4">
-                                    <RouteSuggestions />
-                                </div>
-                            </FeedItem>
-                        )}
-                    </React.Fragment>
-                ));
-            }, [data, currentUser, onNavigate, onCommentClick])}
+                    {/* Inject Route Suggestions after 3rd post */}
+                    {index === 2 && (
+                        <div className="py-4 mt-6">
+                            <RouteSuggestions />
+                        </div>
+                    )}
+                </div>
+            ))}
 
+            {/* Loading Spinner */}
             {isFetchingNextPage && (
                 <div className="flex justify-center py-12">
-                    <div className="w-10 h-10 border-2 border-moto-accent border-t-transparent rounded-full animate-spin shadow-[0_0_20px_rgba(226,255,59,0.3)]" />
+                    <div className="w-10 h-10 border-2 border-moto-accent border-t-transparent rounded-full animate-spin" />
                 </div>
             )}
 
+            {/* Load More Button */}
             {hasNextPage && (
                 <div className="flex justify-center pt-8 pb-20">
                     <button
@@ -100,15 +95,6 @@ export const SpatialFeed: React.FC<SpatialFeedProps> = ({
                     </button>
                 </div>
             )}
-        </FeedContainer>
-    );
-};
-
-// Animation Wrapper for Individual Items
-const FeedItem = ({ children, index, priority = false }: { children: React.ReactNode, index: number, priority?: boolean }) => {
-    return (
-        <div className="relative transform-gpu backface-hidden">
-            {children}
         </div>
     );
-};
+});

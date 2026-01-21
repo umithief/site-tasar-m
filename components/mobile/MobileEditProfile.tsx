@@ -117,23 +117,34 @@ export const MobileEditProfile: React.FC<MobileEditProfileProps> = ({ onClose, o
                     </button>
                 </div>
 
-                {/* Tabs */}
-                <div className="flex px-4 pb-0 gap-6 overflow-x-auto no-scrollbar">
-                    {[
-                        { id: 'profile', label: 'Profil', icon: User },
-                        { id: 'garage', label: 'Garaj', icon: Bike },
-                        { id: 'security', label: 'Güvenlik', icon: Shield },
-                    ].map(tab => (
-                        <button
-                            key={tab.id}
-                            onClick={() => setActiveTab(tab.id as any)}
-                            className={`flex items-center gap-2 pb-3 border-b-2 transition-colors whitespace-nowrap ${activeTab === tab.id ? 'border-moto-accent text-gray-900' : 'border-transparent text-gray-400'
-                                }`}
-                        >
-                            <tab.icon className="w-4 h-4" />
-                            <span className="text-sm font-bold uppercase tracking-wide">{tab.label}</span>
-                        </button>
-                    ))}
+                {/* Tabs - Sliding Pill Design */}
+                <div className="px-4 pb-2 pt-2">
+                    <div className="flex bg-gray-100/50 p-1 rounded-2xl relative isolate">
+                        {[
+                            { id: 'profile', label: 'Profil', icon: User },
+                            { id: 'garage', label: 'Garaj', icon: Bike },
+                            { id: 'security', label: 'Güvenlik', icon: Shield },
+                        ].map(tab => {
+                            const isActive = activeTab === tab.id;
+                            return (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id as any)}
+                                    className={`relative flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl transition-all duration-300 z-10 ${isActive ? 'text-white' : 'text-gray-500 hover:text-gray-900'}`}
+                                >
+                                    {isActive && (
+                                        <motion.div
+                                            layoutId="activeEditTab"
+                                            className="absolute inset-0 bg-gray-900 rounded-xl z-[-1]"
+                                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                        />
+                                    )}
+                                    <tab.icon className={`w-4 h-4 ${isActive ? 'text-moto-accent' : 'text-current'}`} />
+                                    <span className="text-xs font-black uppercase tracking-wide">{tab.label}</span>
+                                </button>
+                            );
+                        })}
+                    </div>
                 </div>
             </div>
 
@@ -176,35 +187,46 @@ export const MobileEditProfile: React.FC<MobileEditProfileProps> = ({ onClose, o
                                 </div>
                             </div>
 
-                            <div className="px-6 space-y-4">
-                                <div className="bg-gray-50 border border-gray-100 rounded-2xl p-4 transition-colors">
-                                    <label className="text-[10px] font-bold text-gray-500 uppercase flex items-center gap-2 mb-1"><User className="w-3 h-3" /> Ad Soyad</label>
-                                    <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full bg-transparent text-gray-900 font-bold focus:outline-none" />
-                                </div>
-                                <div className="bg-gray-50 border border-gray-100 rounded-2xl p-4 transition-colors">
-                                    <label className="text-[10px] font-bold text-gray-500 uppercase flex items-center gap-2 mb-1"><User className="w-3 h-3" /> Kullanıcı Adı</label>
-                                    <input type="text" value={formData.username} onChange={(e) => setFormData({ ...formData, username: e.target.value })} className="w-full bg-transparent text-gray-900 font-bold focus:outline-none" />
-                                </div>
-                                <div className="bg-gray-50 border border-gray-100 rounded-2xl p-4 transition-colors">
-                                    <label className="text-[10px] font-bold text-gray-500 uppercase flex items-center gap-2 mb-1"><FileText className="w-3 h-3" /> Biyografi</label>
-                                    <textarea value={formData.bio} onChange={(e) => setFormData({ ...formData, bio: e.target.value })} className="w-full bg-transparent text-gray-900 font-medium focus:outline-none h-20 resize-none" />
-                                </div>
-                                <div className="bg-gray-50 border border-gray-100 rounded-2xl p-4 transition-colors">
-                                    <label className="text-[10px] font-bold text-gray-500 uppercase flex items-center gap-2 mb-1"><MapPin className="w-3 h-3" /> Konum</label>
-                                    <input type="text" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} className="w-full bg-transparent text-gray-900 font-bold focus:outline-none" />
+                            <div className="px-6 space-y-5">
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-wider ml-1">Kişisel Bilgiler</label>
+                                    <div className="bg-gray-50/50 border border-gray-100 rounded-2xl p-1 shadow-sm">
+                                        <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-3">
+                                            <User className="w-4 h-4 text-gray-400" />
+                                            <input type="text" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} className="w-full bg-transparent text-gray-900 font-bold focus:outline-none placeholder-gray-300" placeholder="Ad Soyad" />
+                                        </div>
+                                        <div className="px-4 py-3 flex items-center gap-3">
+                                            <span className="text-gray-400 text-sm font-bold">@</span>
+                                            <input type="text" value={formData.username} onChange={(e) => setFormData({ ...formData, username: e.target.value })} className="w-full bg-transparent text-gray-900 font-bold focus:outline-none placeholder-gray-300" placeholder="kullaniciadi" />
+                                        </div>
+                                    </div>
                                 </div>
 
-                                <div className="bg-gray-50 border border-gray-100 rounded-2xl p-4 transition-colors">
-                                    <label className="text-[10px] font-bold text-gray-500 uppercase flex items-center gap-2 mb-1">
-                                        <Bike className="w-3 h-3" /> Ana Motosiklet
-                                    </label>
-                                    <input
-                                        type="text"
-                                        value={formData.primaryBike}
-                                        onChange={(e) => setFormData({ ...formData, primaryBike: e.target.value })}
-                                        className="w-full bg-transparent text-gray-900 font-bold focus:outline-none"
-                                        placeholder="Örn: Yamaha R6"
-                                    />
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-wider ml-1">Hakkında</label>
+                                    <div className="bg-gray-50/50 border border-gray-100 rounded-2xl p-4 shadow-sm relative focus-within:ring-2 focus-within:ring-moto-accent/20 transition-shadow">
+                                        <textarea
+                                            value={formData.bio}
+                                            onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+                                            className="w-full bg-transparent text-gray-900 font-medium focus:outline-none h-24 resize-none leading-relaxed text-sm"
+                                            placeholder="Sürüş tutkundan bahset..."
+                                        />
+                                        <FileText className="absolute bottom-4 right-4 w-4 h-4 text-gray-300" />
+                                    </div>
+                                </div>
+
+                                <div className="space-y-1">
+                                    <label className="text-[10px] font-black text-gray-400 uppercase tracking-wider ml-1">Detaylar</label>
+                                    <div className="bg-gray-50/50 border border-gray-100 rounded-2xl p-1 shadow-sm">
+                                        <div className="px-4 py-3 border-b border-gray-100 flex items-center gap-3">
+                                            <MapPin className="w-4 h-4 text-gray-400" />
+                                            <input type="text" value={formData.location} onChange={(e) => setFormData({ ...formData, location: e.target.value })} className="w-full bg-transparent text-gray-900 font-bold focus:outline-none placeholder-gray-300" placeholder="Konum (İstanbul, TR)" />
+                                        </div>
+                                        <div className="px-4 py-3 flex items-center gap-3">
+                                            <Bike className="w-4 h-4 text-gray-400" />
+                                            <input type="text" value={formData.primaryBike} onChange={(e) => setFormData({ ...formData, primaryBike: e.target.value })} className="w-full bg-transparent text-gray-900 font-bold focus:outline-none placeholder-gray-300" placeholder="Ana Motosiklet" />
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </motion.div>

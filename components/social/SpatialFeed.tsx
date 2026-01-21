@@ -112,18 +112,8 @@ export const SpatialFeed: React.FC<SpatialFeedProps> = ({
 // Animation Wrapper for Individual Items
 const FeedItem = ({ children, index, priority = false }: { children: React.ReactNode, index: number, priority?: boolean }) => {
     return (
-        <motion.div
-            initial={priority ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "0px" }}
-            transition={{
-                duration: 0.4,
-                ease: "easeOut",
-                delay: priority ? 0 : index % 5 * 0.05 // No delay for priority items
-            }}
-            style={{ transformStyle: 'preserve-3d' }}
-        >
+        <div className="transform-style-3d">
             {children}
-        </motion.div>
+        </div>
     );
 };

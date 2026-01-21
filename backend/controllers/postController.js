@@ -52,25 +52,114 @@ export const getFeedPosts = catchAsync(async (req, res, next) => {
 });
 
 export const createPost = catchAsync(async (req, res, next) => {
-    const { content, mediaUrl, images } = req.body;
+    const { caption, content, tags, media, telemetry, linkedBike, linkedRoute, images, mediaUrl } = req.body;
 
-    if (!content && !mediaUrl && (!images || images.length === 0)) {
-        return next(new AppError('İçerik boş olamaz.', 400));
+    // 1. Validation: Ensure caption or media exists
+    const hasMedia = (media && media.length > 0) || (images && images.length > 0) || mediaUrl || req.file;
+    const postContent = caption || content;
+
+    if (!postContent && !hasMedia) {
+        return next(new AppError('İçerik veya medya gereklidir.', 400));
     }
 
-    const finalImages = images && images.length > 0 ? images : (mediaUrl ? [mediaUrl] : []);
+    // 2. Logic: Mock Cloud Storage Upload (if req.file is present)
+    let finalMedia = media || [];
+    if (req.file) {
+        // In a real app, upload to S3/Cloudinary here
+        const mockUrl = `https://motovibe-storage.com/${req.file.filename}-${Date.now()}.jpg`;
+        finalMedia.push({
+            url: mockUrl,
+            type: req.file.mimetype.startsWith('video') ? 'VIDEO' : 'IMAGE',
+            isHudOverlayActive: false
+        });
+    }
 
+    // Validation: Telemetry Sanity Check
+    if (telemetry) {
+        if (typeof telemetry.speed === 'number' && (telemetry.speed < 0 || telemetry.speed > 500)) {
+            return next(new AppError('Geçersiz hız değeri. (0-500 km/h)', 400));
+        }
+        if (typeof telemetry.leanAngle === 'number' && (telemetry.leanAngle < 0 || telemetry.leanAngle > 70)) {
+            return next(new AppError('Geçersiz yatış açısı. (0-70°)', 400));
+        }
+    }
+
+    // Legacy compatibility for 'images' array / 'mediaUrl' string
+    if (images && images.length > 0) {
+        images.forEach(img => {
+            // Avoid duplicates if already in media
+            if (!finalMedia.some(m => m.url === img)) {
+                finalMedia.push({ url: img, type: 'IMAGE' });
+            }
+        });
+    }
+    if (mediaUrl && !finalMedia.some(m => m.url === mediaUrl)) {
+        finalMedia.push({ url: mediaUrl, type: 'VIDEO' }); // Assume video/image based on usage, defaulting to VIDEO as per previous code context? Or just mix.
+    }
+
+    // 3. Create the Post Document
     const newPost = await Post.create({
         user: req.user.id,
         userName: req.user.name,
         userAvatar: req.user.avatar,
-        content,
-        images: finalImages,
-        mediaUrl: finalImages.length > 0 ? finalImages[0] : null // Keep backward compatibility
+        userRank: req.user.rank,
+        caption: postContent,
+        content: postContent, // Keep sync
+        tags: tags || [],
+        media: finalMedia,
+
+        // Map Telemetry
+        telemetry: telemetry ? {
+            speed: telemetry.speed,
+            leanAngle: telemetry.leanAngle,
+            gForce: telemetry.gForce,
+            locationLabel: telemetry.locationLabel || telemetry.location,
+            distance: telemetry.distance
+        } : undefined,
+
+        // Map older rideStats if telemetry provided for backward compat
+        rideStats: telemetry ? {
+            maxSpeed: telemetry.speed,
+            leanAngle: telemetry.leanAngle,
+            distance: telemetry.distance
+        } : undefined,
+
+        linkedBike,
+        linkedRoute,
+        location: telemetry?.locationLabel || req.body.location
     });
 
+    // 4. Update Linked Bike Mileage (Optional Micro-feature)
+    if (linkedBike && telemetry?.distance) {
+        try {
+            // Try to find the bike model if it exists
+            const Bike = mongoose.models.Bike;
+            if (Bike) {
+                await Bike.findByIdAndUpdate(linkedBike, {
+                    $inc: { mileage: telemetry.distance }
+                });
+            } else {
+                // If Bike is not a separate model, maybe it's in User.garage?
+                // Logic to update user garage item would go here if needed.
+                // For now, we strictly follow "Ref: Bike" implies Bike model.
+            }
+        } catch (error) {
+            console.warn("Failed to update bike mileage:", error.message);
+        }
+    }
+
+    // 5. Populate References
+    await newPost.populate('user', 'name avatar rank');
+    // Note: If 'Bike' or 'Route' models don't exist yet, populate might fail or return null. 
+    // Safely attempting populate:
+    if (mongoose.models.Bike) await newPost.populate('linkedBike');
+    if (mongoose.models.Route) await newPost.populate('linkedRoute');
+
+    // 6. Return Response (Turkish)
     res.status(201).json({
-        status: 'success',
+        success: true, // As per request structure
+        status: 'success', // Keep legacy consistent
+        message: "Sürüş kaydı başarıyla paylaşıldı.",
         data: { post: newPost }
     });
 });

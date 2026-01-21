@@ -11,28 +11,53 @@ const postSchema = new mongoose.Schema({
     userRank: String,
     bikeModel: String,
 
+    caption: { type: String, trim: true }, // content -> caption alias or replacement? User asked for 'caption'. I will keep 'content' as alias or just use caption. Let's use caption and map content to it if needed? The user said "caption (String)".
+    // Backward compatibility:
     content: { type: String, trim: true },
-    images: [String], // Array of URLs
-    mediaUrl: { type: String }, // Backwards compatibility or sinle video
+
+    tags: [String],
+
+    // Media Objects
+    media: [{
+        url: { type: String, required: true },
+        type: { type: String, enum: ['IMAGE', 'VIDEO'], default: 'IMAGE' },
+        isHudOverlayActive: { type: Boolean, default: false }
+    }],
+
+    // Legacy support
+    images: [String],
+    mediaUrl: { type: String },
 
     // Engagement
     likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
-    // comments: Removed embedded array in favor of separate Comment collection for scalability
-
-    // Meta
 
     // Meta
     location: String,
-    hashtags: [String],
 
-    // Ride Stats Integration
+    // Telemetry Data (Embedded Object)
+    telemetry: {
+        speed: Number,
+        leanAngle: Number,
+        gForce: Number,
+        locationLabel: String,
+        // Legacy rideStats mapping
+        distance: Number,
+        duration: String
+    },
+
+    // Legacy Ride Stats Integration (keeping for backward compatibility or mapping)
     rideStats: {
         maxSpeed: Number,
         distance: Number,
         duration: String,
+        leanAngle: Number,
         routeSvg: String,
-        rideId: { type: mongoose.Schema.Types.ObjectId, ref: 'Route' } // Link to actual route if needed
+        rideId: { type: mongoose.Schema.Types.ObjectId, ref: 'Route' }
     },
+
+    // References
+    linkedBike: { type: mongoose.Schema.Types.ObjectId, ref: 'Bike' },
+    linkedRoute: { type: mongoose.Schema.Types.ObjectId, ref: 'Route' },
 
     // Counters (managed via hooks or controllers for perf)
     likeCount: { type: Number, default: 0 },
@@ -45,5 +70,10 @@ const postSchema = new mongoose.Schema({
 // Indexes for feed performance
 postSchema.index({ user: 1, createdAt: -1 });
 
-const Post = mongoose.models.SocialPost || mongoose.model('SocialPost', postSchema); // Keep 'SocialPost' collection name to match previous steps
+// Virtual for caption/content compatibility
+postSchema.virtual('displayContent').get(function () {
+    return this.caption || this.content;
+});
+
+const Post = mongoose.models.SocialPost || mongoose.model('SocialPost', postSchema);
 export default Post;

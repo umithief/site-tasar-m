@@ -60,7 +60,7 @@ export const SpatialFeed: React.FC<SpatialFeedProps> = ({
                     return !duplicate;
                 }).map((post: SocialPost, index: number) => (
                     <React.Fragment key={post._id}>
-                        <FeedItem index={index}>
+                        <FeedItem index={index} priority={index === 0}>
                             <div className="relative group perspective-item">
                                 {/* Glassmorphic Background Card */}
                                 <div className="absolute inset-0 bg-white/80 dark:bg-black/40 backdrop-blur-xl rounded-[2.5rem] -z-10 border border-white/40 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] transition-all duration-300 group-hover:bg-white/90 group-hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.2)] group-hover:border-white/50" />
@@ -110,16 +110,16 @@ export const SpatialFeed: React.FC<SpatialFeedProps> = ({
 };
 
 // Animation Wrapper for Individual Items
-const FeedItem = ({ children, index }: { children: React.ReactNode, index: number }) => {
+const FeedItem = ({ children, index, priority = false }: { children: React.ReactNode, index: number, priority?: boolean }) => {
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={priority ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "0px" }}
             transition={{
                 duration: 0.4,
                 ease: "easeOut",
-                delay: index % 5 * 0.05 // Keep slight stagger
+                delay: priority ? 0 : index % 5 * 0.05 // No delay for priority items
             }}
             style={{ transformStyle: 'preserve-3d' }}
         >

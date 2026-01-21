@@ -145,7 +145,7 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user: initialUser, onNav
     };
 
     return (
-        <div className="flex bg-[#050505] min-h-screen text-white font-sans selection:bg-moto-accent selection:text-black">
+        <div className="flex bg-white min-h-screen text-gray-900 font-sans selection:bg-moto-accent selection:text-black">
             <UserListModal
                 isOpen={isUserListOpen}
                 onClose={() => setIsUserListOpen(false)}
@@ -165,10 +165,10 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user: initialUser, onNav
                         alt="Cover"
                         className="w-full h-full object-cover fixed-parallax-effect"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-transparent to-[#050505]" />
+                    <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-white" />
 
                     {/* Dark gradient overlay at bottom for readability */}
-                    <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#050505] to-transparent" />
+                    <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-white to-transparent" />
                 </div>
 
                 {/* Content Container - Overlapping the Banner */}
@@ -185,7 +185,7 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user: initialUser, onNav
                         >
                             <div className="relative group">
                                 <div className="absolute -inset-1 bg-moto-accent/30 rounded-3xl blur-xl opacity-50 group-hover:opacity-100 transition-opacity duration-500" />
-                                <div className="relative p-1 bg-[#050505]/50 backdrop-blur-xl border border-white/10 rounded-3xl">
+                                <div className="relative p-1 bg-white/80 backdrop-blur-xl border border-gray-200 rounded-3xl">
                                     <UserAvatar
                                         src={getAvatarSrc()}
                                         name={profileUser.name}
@@ -204,7 +204,7 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user: initialUser, onNav
                             </div>
 
                             <div className="mb-2 space-y-1">
-                                <h1 className="text-3xl md:text-5xl font-display font-black uppercase tracking-tighter italic text-white flex items-center gap-4">
+                                <h1 className="text-3xl md:text-5xl font-display font-black uppercase tracking-tighter italic text-gray-900 flex items-center gap-4">
                                     {profileUser.name}
                                     {profileUser.rank && (
                                         <span className="text-sm not-italic font-bold bg-moto-accent text-black px-2 py-1 rounded-sm tracking-normal">
@@ -212,7 +212,7 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user: initialUser, onNav
                                         </span>
                                     )}
                                 </h1>
-                                <p className="text-gray-400 font-mono text-xs md:text-sm max-w-md">
+                                <p className="text-gray-500 font-mono text-xs md:text-sm max-w-md">
                                     @{profileUser.username || 'rider'} • {profileUser.bio || 'Adrenaline Junkie • Track Day Enthusiast'}
                                 </p>
                                 <div className="flex items-center gap-4 text-xs text-gray-500 font-bold uppercase tracking-wider mt-2">
@@ -226,14 +226,14 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user: initialUser, onNav
                         <motion.div
                             initial={{ x: 50, opacity: 0 }}
                             animate={{ x: 0, opacity: 1 }}
-                            className="bg-white/5 backdrop-blur-md border border-white/10 rounded-2xl p-6 flex flex-wrap items-center gap-8 xl:gap-12"
+                            className="bg-white border border-gray-200 shadow-xl shadow-gray-200/50 rounded-2xl p-6 flex flex-wrap items-center gap-8 xl:gap-12"
                         >
                             <StatItem
                                 label="Takipçi"
                                 value={profileStats.followers}
                                 onClick={() => handleStatClick('followers')}
                             />
-                            <div className="w-px h-8 bg-white/10 hidden md:block" />
+                            <div className="w-px h-8 bg-gray-200 hidden md:block" />
                             <StatItem
                                 label="Takip Edilen"
                                 value={profileStats.following}
@@ -242,23 +242,23 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user: initialUser, onNav
 
                             {/* Desktop only dividers/stats for robustness */}
                             <div className="hidden md:flex items-center gap-12">
-                                <div className="w-px h-8 bg-white/10" />
+                                <div className="w-px h-8 bg-gray-200" />
                                 <StatItem label="Toplam KM" value="12.5k" isMono />
-                                <div className="w-px h-8 bg-white/10" />
+                                <div className="w-px h-8 bg-gray-200" />
                                 <StatItem label="Garaj Değeri" value={profileStats.garageValue} isMono highlight />
                             </div>
 
                             {/* Actions */}
-                            <div className="ml-4 pl-8 border-l border-white/10 flex gap-3">
+                            <div className="ml-4 pl-8 border-l border-gray-200 flex gap-3">
                                 {isOwnProfile ? (
                                     <>
                                         <button
                                             onClick={() => onNavigate('settings' as any)}
-                                            className="p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 transition-colors text-white"
+                                            className="p-3 rounded-xl bg-gray-50 hover:bg-gray-100 border border-gray-200 transition-colors text-gray-900"
                                         >
                                             <Settings className="w-5 h-5" />
                                         </button>
-                                        <button onClick={onLogout} className="p-3 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-500 transition-colors">
+                                        <button onClick={onLogout} className="p-3 rounded-xl bg-red-50 hover:bg-red-100 border border-red-100 text-red-500 transition-colors">
                                             <LogOut className="w-5 h-5" />
                                         </button>
                                     </>
@@ -268,7 +268,7 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user: initialUser, onNav
                                             onClick={handleFollow}
                                             disabled={isFollowPending}
                                             className={`px-8 py-3 font-bold uppercase tracking-wider rounded-xl transition-colors ${isFollowing
-                                                ? 'bg-zinc-800 text-gray-400 hover:bg-zinc-700'
+                                                ? 'bg-gray-200 text-gray-500 hover:bg-gray-300'
                                                 : 'bg-moto-accent text-black hover:bg-[#cbe62b]'
                                                 }`}
                                         >
@@ -282,7 +282,7 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user: initialUser, onNav
                     </div>
 
                     {/* 4. Content Navigation (Sticky) */}
-                    <div className="sticky top-0 z-40 bg-[#050505]/80 backdrop-blur-xl border-y border-white/5 mb-8 -mx-8 px-8 py-2">
+                    <div className="sticky top-0 z-40 bg-white/80 backdrop-blur-xl border-y border-gray-200 mb-8 -mx-8 px-8 py-2">
                         <div className="flex items-center gap-8 overflow-x-auto no-scrollbar">
                             {TABS.map(tab => {
                                 const Icon = tab.icon;
@@ -291,9 +291,9 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user: initialUser, onNav
                                     <button
                                         key={tab.id}
                                         onClick={() => setActiveTab(tab.id)}
-                                        className={`group flex items-center gap-2 py-4 relative text-sm font-bold uppercase tracking-wider transition-colors whitespace-nowrap ${isActive ? 'text-white' : 'text-gray-500 hover:text-white'}`}
+                                        className={`group flex items-center gap-2 py-4 relative text-sm font-bold uppercase tracking-wider transition-colors whitespace-nowrap ${isActive ? 'text-gray-900' : 'text-gray-400 hover:text-gray-600'}`}
                                     >
-                                        <Icon className={`w-4 h-4 ${isActive ? 'text-moto-accent' : 'text-gray-600 group-hover:text-white'}`} />
+                                        <Icon className={`w-4 h-4 ${isActive ? 'text-moto-accent' : 'text-gray-400 group-hover:text-gray-600'}`} />
                                         {tab.label}
                                         {isActive && (
                                             <motion.div layoutId="activeTab" className="absolute bottom-0 left-0 right-0 h-0.5 bg-moto-accent shadow-[0_0_10px_#E2FF3B]" />
@@ -344,7 +344,7 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user: initialUser, onNav
                                         onClick={() => onNavigate('garage' as any)} // Or explicit bike detail
                                     />
                                 )) : (
-                                    <div className="col-span-full py-20 text-center border border-dashed border-white/10 rounded-3xl bg-white/5">
+                                    <div className="col-span-full py-20 text-center border border-dashed border-gray-200 rounded-3xl bg-gray-50">
                                         <p className="text-gray-400 font-mono">Garaj boş.</p>
                                     </div>
                                 )}
@@ -359,14 +359,14 @@ export const WebProfile: React.FC<WebProfileProps> = ({ user: initialUser, onNav
                                 animate={{ opacity: 1, y: 0 }}
                                 className="flex justify-center py-20"
                             >
-                                <div className="text-center p-8 bg-[#0D0D0D] border border-[#E2FF3B]/20 rounded-2xl max-w-md cursor-pointer group hover:border-[#E2FF3B]/50 transition-colors"
+                                <div className="text-center p-8 bg-gray-50 border border-gray-200 rounded-2xl max-w-md cursor-pointer group hover:border-[#E2FF3B]/50 transition-colors"
                                     onClick={() => onNavigate('achievements' as any)}
                                 >
                                     <div className="w-20 h-20 mx-auto bg-[#E2FF3B]/10 rounded-full flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-500">
                                         <Award className="w-10 h-10 text-[#E2FF3B]" />
                                     </div>
-                                    <h3 className="text-2xl font-bold text-white mb-2">TROPHY ROOM</h3>
-                                    <p className="text-gray-400 mb-6">Badges, achievements and stats.</p>
+                                    <h3 className="text-2xl font-bold text-gray-900 mb-2">TROPHY ROOM</h3>
+                                    <p className="text-gray-500 mb-6">Badges, achievements and stats.</p>
                                     <button className="px-6 py-2 bg-[#E2FF3B] text-black font-bold rounded-lg hover:bg-[#cbe62b] transition-colors uppercase tracking-wider">
                                         Enter Room
                                     </button>
@@ -394,7 +394,7 @@ const StatItem = ({ label, value, isMono = false, highlight = false, onClick }: 
         className={`flex flex-col ${onClick ? 'cursor-pointer hover:opacity-80 transition-opacity' : ''}`}
         onClick={onClick}
     >
-        <span className={`text-2xl font-black ${isMono ? 'font-mono' : 'font-display'} ${highlight ? 'text-moto-accent' : 'text-white'}`}>
+        <span className={`text-2xl font-black ${isMono ? 'font-mono' : 'font-display'} ${highlight ? 'text-moto-accent' : 'text-gray-900'}`}>
             {value}
         </span>
         <span className="text-[10px] font-bold text-gray-500 uppercase tracking-widest mt-1">

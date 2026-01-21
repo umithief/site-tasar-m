@@ -24,12 +24,11 @@ export const WebGarageCard: React.FC<WebGarageCardProps> = ({ bike, onClick }) =
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
 
-            {/* Neon Border Glow */}
+            {/* Neon Border Glow - Cleaned for Light Mode */}
             <div className="absolute inset-0 border border-moto-accent/0 group-hover:border-moto-accent/100 rounded-2xl transition-colors duration-300 pointer-events-none" />
-            <div className="absolute inset-0 bg-moto-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
 
-            {/* Gradient Overlay (Always Visible) */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent opacity-80" />
+            {/* Gradient Overlay (Always Visible) - Adjusted */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent opacity-80" />
 
             {/* Content: Brand & Model */}
             <div className="absolute bottom-0 left-0 p-6 z-20 w-full transition-transform duration-300 group-hover:-translate-y-2">
@@ -39,25 +38,25 @@ export const WebGarageCard: React.FC<WebGarageCardProps> = ({ bike, onClick }) =
                 </h3>
             </div>
 
-            {/* Specs Overlay (Reveal on Hover) */}
-            <div className="absolute inset-0 bg-black/80 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-30">
+            {/* Specs Overlay (Reveal on Hover) - Light Theme */}
+            <div className="absolute inset-0 bg-white/90 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center z-30">
                 <div className="grid grid-cols-2 gap-4 w-full px-8">
                     {bike.cc && (
                         <div className="text-center">
                             <Gauge className="w-5 h-5 text-moto-accent mx-auto mb-1" />
-                            <span className="block text-white font-mono font-bold text-lg">{bike.cc}cc</span>
-                            <span className="text-[10px] text-gray-400 uppercase tracking-widest">Engine</span>
+                            <span className="block text-gray-900 font-mono font-bold text-lg">{bike.cc}cc</span>
+                            <span className="text-[10px] text-gray-500 uppercase tracking-widest">Engine</span>
                         </div>
                     )}
                     {bike.hp && (
                         <div className="text-center">
                             <Zap className="w-5 h-5 text-moto-accent mx-auto mb-1" />
-                            <span className="block text-white font-mono font-bold text-lg">{bike.hp} HP</span>
-                            <span className="text-[10px] text-gray-400 uppercase tracking-widest">Power</span>
+                            <span className="block text-gray-900 font-mono font-bold text-lg">{bike.hp} HP</span>
+                            <span className="text-[10px] text-gray-500 uppercase tracking-widest">Power</span>
                         </div>
                     )}
                     <div className="text-center col-span-2 mt-2">
-                        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 border border-white/20 text-xs font-mono text-white">
+                        <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gray-100 border border-gray-200 text-xs font-mono text-gray-600">
                             <Calendar className="w-3 h-3 text-gray-400" />
                             {bike.year} Model
                         </span>

@@ -80,30 +80,46 @@ export const RightWidgets: React.FC<RightWidgetsProps> = ({ suggestedRiders = []
                 </div>
 
                 <div className="space-y-4">
-                    {(suggestedRiders.length > 0 ? suggestedRiders.slice(0, 3) : [1, 2, 3]).map((rider, i) => (
-                        <div key={i} className="flex items-center justify-between group/user">
-                            <div className="flex items-center gap-3 cursor-pointer" onClick={() => onNavigate?.('public-profile', { _id: rider._id })}>
-                                <UserAvatar
-                                    src={rider.avatar}
-                                    name={rider.name || 'Rider'}
-                                    size={40}
-                                    className="ring-2 ring-gray-100 group-hover/user:ring-moto-accent/50 transition-all"
-                                />
-                                <div>
-                                    <h5 className="font-bold text-sm text-gray-900 group-hover/user:text-moto-accent transition-colors">
-                                        {rider.name || 'Ali K.'}
-                                    </h5>
-                                    <p className="text-[10px] font-medium text-gray-500 font-mono">
-                                        {rider.bike || 'MT-09'}
-                                    </p>
+                    {suggestedRiders.length > 0 ? (
+                        suggestedRiders.slice(0, 3).map((rider, i) => (
+                            <div key={i} className="flex items-center justify-between group/user">
+                                <div className="flex items-center gap-3 cursor-pointer" onClick={() => onNavigate?.('public-profile', { _id: rider._id })}>
+                                    <UserAvatar
+                                        src={rider.avatar}
+                                        name={rider.name}
+                                        size={40}
+                                        className="ring-2 ring-gray-100 group-hover/user:ring-moto-accent/50 transition-all"
+                                    />
+                                    <div>
+                                        <h5 className="font-bold text-sm text-gray-900 group-hover/user:text-moto-accent transition-colors">
+                                            {rider.name}
+                                        </h5>
+                                        <p className="text-[10px] font-medium text-gray-500 font-mono">
+                                            {rider.bike}
+                                        </p>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <button className="w-9 h-9 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400 hover:bg-[#E2FF3B] hover:text-black hover:scale-105 transition-all">
-                                <Plus className="w-5 h-5" />
-                            </button>
-                        </div>
-                    ))}
+                                <button className="w-9 h-9 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400 hover:bg-[#E2FF3B] hover:text-black hover:scale-105 transition-all">
+                                    <Plus className="w-5 h-5" />
+                                </button>
+                            </div>
+                        ))
+                    ) : (
+                        /* Loading Skeletons */
+                        [1, 2, 3].map((_, i) => (
+                            <div key={i} className="flex items-center justify-between animate-pulse">
+                                <div className="flex items-center gap-3">
+                                    <div className="w-10 h-10 rounded-full bg-gray-200" />
+                                    <div className="space-y-2">
+                                        <div className="h-3 w-24 bg-gray-200 rounded" />
+                                        <div className="h-2 w-16 bg-gray-200 rounded" />
+                                    </div>
+                                </div>
+                                <div className="w-9 h-9 rounded-xl bg-gray-200" />
+                            </div>
+                        ))
+                    )}
                 </div>
             </motion.div>
 

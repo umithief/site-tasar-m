@@ -124,7 +124,13 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                 socialService.getSuggestedRiders(),
                 rideService.getRides().catch(() => [])
             ]);
-            setSuggestedRiders(riders);
+
+            // Filter out current user
+            const filteredRiders = currentUser?._id
+                ? riders.filter(r => r._id !== currentUser._id)
+                : riders;
+
+            setSuggestedRiders(filteredRiders);
             setActiveRides(rides);
         };
 
@@ -139,7 +145,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
         return () => {
             window.removeEventListener('ride-created', handleRideCreated);
         };
-    }, []);
+    }, [currentUser?._id]);
 
     const handlePostCreate = async (content: string, media: string | null, stats?: any, location?: string) => {
         if (!currentUser) return;

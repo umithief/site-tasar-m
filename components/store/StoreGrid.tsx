@@ -42,16 +42,16 @@ export const StoreGrid: React.FC<StoreGridProps> = ({
         }
     };
 
-    const categories = Array.from(new Set(products.map(p => p.category)));
-    const brands = Array.from(new Set(products.map(p => p.brand)));
+    const categories = React.useMemo(() => Array.from(new Set(products.map(p => p.category))), [products]);
+    const brands = React.useMemo(() => Array.from(new Set(products.map(p => p.brand))), [products]);
 
-    const filteredProducts = products.filter(p => {
+    const filteredProducts = React.useMemo(() => products.filter(p => {
         const matchCategory = selectedCategory ? p.category === selectedCategory : true;
         const matchBrand = selectedBrands.length > 0 ? selectedBrands.includes(p.brand) : true;
         const matchSearch = p.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
             p.brand.toLowerCase().includes(searchQuery.toLowerCase());
         return matchCategory && matchBrand && matchSearch;
-    });
+    }), [products, selectedCategory, selectedBrands, searchQuery]);
 
     const toggleBrand = (brand: string) => {
         if (selectedBrands.includes(brand)) {

@@ -6,68 +6,14 @@ import { BottomNav } from './components/layout/BottomNav';
 import { CartDrawer } from './components/layout/CartDrawer';
 import { AuthModal } from './components/AuthModal';
 import { PaymentModal } from './components/PaymentModal';
-import { About } from './components/About';
-import { Forum } from './components/Forum';
-import { AdminPanel } from './components/AdminPanel';
-import { ProductQuickViewModal } from './components/ProductQuickViewModal';
-import { ToastType, ToastContainer, ToastMessage } from './components/Toast';
-import { RideMode } from './components/RideMode';
 
-import { MotoTool } from './components/MotoTool';
-import { RouteExplorer } from './components/RouteExplorer';
-import { MobileOnboarding } from './components/mobile/MobileOnboarding';
-import { MobileRoutes } from './components/mobile/MobileRoutes';
-import { MobileAuth } from './components/mobile/MobileAuth';
-import { MotoMeetup } from './components/MotoMeetup';
-import { FlyToCart } from './components/FlyToCart';
-import { Blog } from './components/Blog';
-import { ServiceFinder } from './components/ServiceFinder';
-import { IntroAnimation } from './components/IntroAnimation';
-import { OnboardingTour } from './components/OnboardingTour';
-import { ScrollProgress } from './components/ScrollProgress';
-import { ProModal } from './components/ProModal';
-import { FeedbackModal } from './components/FeedbackModal';
-import { MotoValuation } from './components/MotoValuation';
-
-import { HelmetQRGenerator } from './components/HelmetQRGenerator';
-import { MotoVlogMap } from './components/MotoVlogMap';
-import { LifeSaver } from './components/LifeSaver';
-import { RidersDirectory } from './components/RidersDirectory';
-import { TuvTurkChecklist } from './components/TuvTurkChecklist';
-import { ExhaustLab } from './components/ExhaustLab';
-import { RedlineChallenge } from './components/RedlineChallenge';
-import { LegalGuide } from './components/LegalGuide';
-
-import { StolenPool } from './components/StolenPool';
-import { SocialHub } from './components/social/SocialHub';
-import { authService } from './services/auth';
-import { orderService } from './services/orderService';
-import { productService } from './services/productService';
-import { statsService } from './services/statsService';
-import { tourService } from './services/tourService';
-import { recordingService } from './services/recordingService';
-import { notify } from './services/notificationService';
-import { gamificationService } from './services/gamificationService';
-import { TrophyRoom } from './components/achievements/TrophyRoom';
-import { useAuthStore } from './store/authStore';
-import { useUIStore } from './store/useUIStore';
-
-import { useAppSounds } from './hooks/useAppSounds';
-import { ArrowUp, Zap, Instagram, Twitter, Youtube, Facebook, MapPin, Phone, Mail } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useLivingTime } from './hooks/useLivingTime';
-import { useThemeStore } from './store/useThemeStore';
-
-// Import Components
 import { Home } from './components/Home';
 import { Showcase } from './components/Showcase';
 import { AuthPage } from './components/AuthPage';
-import { StoreGrid } from './components/store/StoreGrid';
 import { MobileShop } from './components/mobile/MobileShop';
 import { MobileProfile } from './components/mobile/MobileProfile';
 import { WebProfile } from './components/desktop/WebProfile';
 import { Favorites } from './components/Favorites';
-import { AIAssistantPage } from './components/AIAssistantPage';
 import { ProductDetail } from './components/ProductDetail';
 import { ProductDetails } from './components/store/ProductDetails';
 import { SocketProvider } from './context/SocketContext';
@@ -77,13 +23,58 @@ import { MobileExplore } from './components/mobile/MobileExplore';
 import { ReelsPage } from './components/reels/ReelsPage';
 import { MobileProductDetail } from './components/mobile/MobileProductDetail';
 import { CartBottomSheet } from './components/mobile/CartBottomSheet';
-import { CheckoutPage } from './components/store/checkout/CheckoutPage';
-import { CartPage } from './components/store/cart/CartPage';
-import { OrderTracking } from './components/checkout/OrderTracking';
-import { WebSettings } from './components/desktop/WebSettings';
-import { Garage } from './components/garage/Garage';
+import { ToastType, ToastContainer, ToastMessage } from './components/Toast';
+import { useAuthStore } from './store/authStore';
+import { useUIStore } from './store/useUIStore';
+import { useThemeStore } from './store/useThemeStore';
+import { useAppSounds } from './hooks/useAppSounds';
+import { productService } from './services/productService';
+import { authService } from './services/auth';
+import { tourService } from './services/tourService';
+import { recordingService } from './services/recordingService';
+import { statsService } from './services/statsService';
+import { orderService } from './services/orderService';
+import { notify } from './services/notificationService';
+import { MobileAuth } from './components/mobile/MobileAuth';
+import { RideMode } from './components/RideMode';
+import { MobileOnboarding } from './components/mobile/MobileOnboarding';
 import { ExploreMap } from './components/map/ExploreMap';
-import { MobileNotifications } from './components/mobile/MobileNotifications';
+import { TrophyRoom } from './components/achievements/TrophyRoom';
+import { IntroAnimation } from './components/IntroAnimation';
+import { ScrollProgress } from './components/ScrollProgress';
+import { FlyToCart } from './components/FlyToCart';
+import { ProModal } from './components/ProModal';
+import { FeedbackModal } from './components/FeedbackModal';
+import { ProductQuickViewModal } from './components/ProductQuickViewModal';
+import { AnimatePresence, motion } from 'framer-motion';
+// Lazy Load Heavy Components
+const StoreGrid = React.lazy(() => import('./components/store/StoreGrid').then(module => ({ default: module.StoreGrid })));
+const SocialHub = React.lazy(() => import('./components/social/SocialHub').then(module => ({ default: module.SocialHub })));
+const RouteExplorer = React.lazy(() => import('./components/RouteExplorer').then(module => ({ default: module.RouteExplorer })));
+const MotoVlogMap = React.lazy(() => import('./components/MotoVlogMap').then(module => ({ default: module.MotoVlogMap })));
+const MotoMeetup = React.lazy(() => import('./components/MotoMeetup').then(module => ({ default: module.MotoMeetup })));
+const Forum = React.lazy(() => import('./components/Forum').then(module => ({ default: module.Forum })));
+const AdminPanel = React.lazy(() => import('./components/AdminPanel').then(module => ({ default: module.AdminPanel })));
+const RidersDirectory = React.lazy(() => import('./components/RidersDirectory').then(module => ({ default: module.RidersDirectory })));
+const WebSettings = React.lazy(() => import('./components/desktop/WebSettings').then(module => ({ default: module.WebSettings })));
+const Garage = React.lazy(() => import('./components/garage/Garage').then(module => ({ default: module.Garage })));
+const CheckoutPage = React.lazy(() => import('./components/store/checkout/CheckoutPage').then(module => ({ default: module.CheckoutPage })));
+const CartPage = React.lazy(() => import('./components/store/cart/CartPage').then(module => ({ default: module.CartPage })));
+const OrderTracking = React.lazy(() => import('./components/checkout/OrderTracking').then(module => ({ default: module.OrderTracking })));
+const AIAssistantPage = React.lazy(() => import('./components/AIAssistantPage').then(module => ({ default: module.AIAssistantPage })));
+const Blog = React.lazy(() => import('./components/Blog').then(module => ({ default: module.Blog })));
+const About = React.lazy(() => import('./components/About').then(module => ({ default: module.About })));
+const TuvTurkChecklist = React.lazy(() => import('./components/TuvTurkChecklist').then(module => ({ default: module.TuvTurkChecklist })));
+const ExhaustLab = React.lazy(() => import('./components/ExhaustLab').then(module => ({ default: module.ExhaustLab })));
+const RedlineChallenge = React.lazy(() => import('./components/RedlineChallenge').then(module => ({ default: module.RedlineChallenge })));
+const LegalGuide = React.lazy(() => import('./components/LegalGuide').then(module => ({ default: module.LegalGuide })));
+const StolenPool = React.lazy(() => import('./components/StolenPool').then(module => ({ default: module.StolenPool })));
+const ServiceFinder = React.lazy(() => import('./components/ServiceFinder').then(module => ({ default: module.ServiceFinder })));
+const MotoTool = React.lazy(() => import('./components/MotoTool').then(module => ({ default: module.MotoTool })));
+const MotoValuation = React.lazy(() => import('./components/MotoValuation').then(module => ({ default: module.MotoValuation })));
+const HelmetQRGenerator = React.lazy(() => import('./components/HelmetQRGenerator').then(module => ({ default: module.HelmetQRGenerator })));
+const LifeSaver = React.lazy(() => import('./components/LifeSaver').then(module => ({ default: module.LifeSaver })));
+const MobileNotifications = React.lazy(() => import('./components/mobile/MobileNotifications').then(module => ({ default: module.MobileNotifications })));
 
 export const App: React.FC = () => {
     const [view, setView] = useState<ViewState>('home');
@@ -601,7 +592,9 @@ export const App: React.FC = () => {
                                     transition={{ duration: 0.3 }}
                                     className="w-full h-full"
                                 >
-                                    {renderView()}
+                                    <React.Suspense fallback={<div className="flex h-screen items-center justify-center bg-black"><div className="w-10 h-10 border-4 border-gray-600 border-t-[#E2FF3B] rounded-full animate-spin"></div></div>}>
+                                        {renderView()}
+                                    </React.Suspense>
                                 </motion.div>
                             </AnimatePresence>
                         </main>
@@ -655,7 +648,9 @@ export const App: React.FC = () => {
                                         transition={{ duration: 0.3 }}
                                         className="px-4 md:px-8 max-w-[1600px] mx-auto"
                                     >
-                                        {renderView()}
+                                        <React.Suspense fallback={<div className="flex h-screen items-center justify-center bg-transparent"><div className="w-10 h-10 border-4 border-gray-300 border-t-[#E2FF3B] rounded-full animate-spin"></div></div>}>
+                                            {renderView()}
+                                        </React.Suspense>
                                     </motion.div>
                                 </AnimatePresence>
                             </main>

@@ -88,7 +88,7 @@ export const useLikePost = () => {
         },
         onSettled: () => {
             console.log('✅ [React Query] Like Mutation Settled (Refetching...)');
-            queryClient.invalidateQueries({ queryKey: ['posts'] });
+            // queryClient.invalidateQueries({ queryKey: ['posts'] });
         }
     });
 };

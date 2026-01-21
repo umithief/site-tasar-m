@@ -28,8 +28,17 @@ export default defineConfig(({ mode }) => {
     }
     ,
     build: {
-      chunkSizeWarningLimit: 1600,
-      sourcemap: true
+      chunkSizeWarningLimit: 1000,
+      sourcemap: false, // Disable source maps in production for speed/size
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            vendor: ['react', 'react-dom', 'framer-motion', 'lucide-react', 'zustand'],
+            three: ['three'],
+            leaflet: ['leaflet', 'react-leaflet']
+          }
+        }
+      }
     }
   };
 });

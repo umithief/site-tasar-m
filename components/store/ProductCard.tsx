@@ -14,7 +14,7 @@ interface ProductCardProps {
 const ROTATION_RANGE = 25;
 const HALF_ROTATION_RANGE = ROTATION_RANGE / 2;
 
-export const ProductCard: React.FC<ProductCardProps> = ({
+export const ProductCard: React.FC<ProductCardProps> = React.memo(({
     product,
     onAddToCart,
     onProductClick,
@@ -149,4 +149,4 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             </div>
         </motion.div>
     );
-};
+});

@@ -154,7 +154,7 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                     src={post.images?.[0] || (post as any).image}
                     alt="Post"
                     className="w-full h-full object-cover"
-                    loading="eager"
+                    loading="lazy"
                     onLoad={handleImageLoad}
                 />
 

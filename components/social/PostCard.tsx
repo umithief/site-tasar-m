@@ -7,6 +7,8 @@ import { socialService } from '../../services/socialService';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
 
+import { memo } from 'react';
+
 interface PostCardProps {
     post: SocialPost;
     onLike?: (id: string) => void;
@@ -15,7 +17,7 @@ interface PostCardProps {
     variant?: 'default' | 'glass';
 }
 
-export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment, onNavigate, variant = 'default' }) => {
+export const PostCard: React.FC<PostCardProps> = memo(({ post, onLike, onComment, onNavigate, variant = 'default' }) => {
     // ... (keep state logic same)
     const { user: currentUser } = useAuthStore();
     const [isLiked, setIsLiked] = useState(post.isLiked);
@@ -301,4 +303,4 @@ export const PostCard: React.FC<PostCardProps> = ({ post, onLike, onComment, onN
             </div>
         </motion.div>
     );
-};
+});

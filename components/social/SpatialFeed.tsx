@@ -52,7 +52,7 @@ export const SpatialFeed: React.FC<SpatialFeedProps> = ({
             )}
 
             {/* Deduplicate posts to prevent key collisions */}
-            {(() => {
+            {useMemo(() => {
                 const seen = new Set();
                 return data?.pages?.flatMap((page: any) => page || []).filter((post: SocialPost) => {
                     const duplicate = seen.has(post._id);
@@ -86,7 +86,7 @@ export const SpatialFeed: React.FC<SpatialFeedProps> = ({
                         )}
                     </React.Fragment>
                 ));
-            })()}
+            }, [data, currentUser, onNavigate, onCommentClick])}
 
             {isFetchingNextPage && (
                 <div className="flex justify-center py-12">

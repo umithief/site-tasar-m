@@ -68,17 +68,16 @@ export const AdvancedCreatePostModal: React.FC<AdvancedCreatePostModalProps> = (
 
     // Handle Telemetry Fetch
     const fetchTelemetry = async () => {
-        const data = await socialService.getLatestRideActivity();
-        if (data) {
-            setStats(data);
-        } else {
-            // Simulate data for demo/testing if real data missing
-            setStats({
-                maxSpeed: 184,
-                leanAngle: 42,
-                distance: 12.5,
-                duration: "45dk"
-            });
+        try {
+            const data = await socialService.getLatestRideActivity();
+            if (data && data.user) { // Check if valid data returned
+                setStats(data);
+            } else {
+                alert("Son sürüş verisi bulunamadı. Lütfen önce bir sürüş kaydedin.");
+            }
+        } catch (error) {
+            console.error("Telemetry fetch error", error);
+            alert("Veri alınırken hata oluştu.");
         }
     };
 

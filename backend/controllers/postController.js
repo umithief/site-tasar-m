@@ -72,30 +72,40 @@ export const createPost = catchAsync(async (req, res, next) => {
             type: req.file.mimetype.startsWith('video') ? 'VIDEO' : 'IMAGE',
             isHudOverlayActive: false
         });
-    }
 
-    // Validation: Telemetry Sanity Check
-    if (telemetry) {
-        if (typeof telemetry.speed === 'number' && (telemetry.speed < 0 || telemetry.speed > 500)) {
-            return next(new AppError('Geçersiz hız değeri. (0-500 km/h)', 400));
-        }
-        if (typeof telemetry.leanAngle === 'number' && (telemetry.leanAngle < 0 || telemetry.leanAngle > 70)) {
-            return next(new AppError('Geçersiz yatış açısı. (0-70°)', 400));
+        if (type === 'IMAGE') {
+            finalImages.push(mockUrl);
         }
     }
 
-    // Legacy compatibility for 'images' array / 'mediaUrl' string
-    if (images && images.length > 0) {
-        images.forEach(img => {
-            // Avoid duplicates if already in media
-            if (!finalMedia.some(m => m.url === img)) {
-                finalMedia.push({ url: img, type: 'IMAGE' });
-            }
-        });
+    // Legacy compatibility: Map 'mediaUrl' string to structures
+    if (mediaUrl && typeof mediaUrl === 'string') {
+        const type = mediaUrl.match(/\.(mp4|mov|webm)$/i) ? 'VIDEO' : 'IMAGE';
+
+        // Add to media if not exists
+        if (!finalMedia.some(m => m.url === mediaUrl)) {
+            finalMedia.push({ url: mediaUrl, type: type });
+        }
+
+        // Add to images if it's an image
+        if (type === 'IMAGE' && !finalImages.includes(mediaUrl)) {
+            finalImages.push(mediaUrl);
+        }
     }
-    if (mediaUrl && !finalMedia.some(m => m.url === mediaUrl)) {
-        finalMedia.push({ url: mediaUrl, type: 'VIDEO' }); // Assume video/image based on usage, defaulting to VIDEO as per previous code context? Or just mix.
-    }
+
+    // Bi-directional sync: Ensure all 'media' images are in 'images' array
+    finalMedia.forEach(m => {
+        if (m.type === 'IMAGE' && m.url && !finalImages.includes(m.url)) {
+            finalImages.push(m.url);
+        }
+    });
+
+    // Bi-directional sync: Ensure all 'images' string URLs are in 'media' array
+    finalImages.forEach(url => {
+        if (!finalMedia.some(m => m.url === url)) {
+            finalMedia.push({ url: url, type: 'IMAGE' });
+        }
+    });
 
     // 3. Create the Post Document
     const newPost = await Post.create({
@@ -107,6 +117,7 @@ export const createPost = catchAsync(async (req, res, next) => {
         content: postContent, // Keep sync
         tags: tags || [],
         media: finalMedia,
+        images: finalImages, // Explicitly save legacy array for frontend compatibility
 
         // Map Telemetry
         telemetry: telemetry ? {

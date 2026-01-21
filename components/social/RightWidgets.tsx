@@ -84,7 +84,7 @@ export const RightWidgets: React.FC<RightWidgetsProps> = ({ suggestedRiders = []
                         <div key={i} className="flex items-center justify-between group/user">
                             <div className="flex items-center gap-3 cursor-pointer" onClick={() => onNavigate?.('public-profile', { _id: rider._id })}>
                                 <UserAvatar
-                                    src={rider.avatar || `https://i.pravatar.cc/150?u=${i}`}
+                                    src={rider.avatar}
                                     name={rider.name || 'Rider'}
                                     size={40}
                                     className="ring-2 ring-gray-100 group-hover/user:ring-moto-accent/50 transition-all"

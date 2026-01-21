@@ -1,25 +1,54 @@
 
-import React from 'react';
-import Avatar from 'boring-avatars';
+import { useState, useEffect } from 'react';
+import { Zap } from 'lucide-react';
 
 interface UserAvatarProps {
-  name: string;
+  name?: string;
   src?: string;
   size?: number;
-  variant?: 'beam' | 'marble' | 'pixel' | 'sunset' | 'ring' | 'bauhaus';
   className?: string;
   onClick?: () => void;
+  // Deprecated props kept to prevent breaking changes, but unused
+  variant?: any;
 }
 
+const BG_COLORS = [
+  'bg-orange-500',
+  'bg-blue-500',
+  'bg-purple-500',
+  'bg-pink-500',
+  'bg-red-500',
+  'bg-green-500',
+  'bg-cyan-500',
+  'bg-indigo-500',
+  'bg-rose-500',
+  'bg-amber-500'
+];
+
 export const UserAvatar: React.FC<UserAvatarProps> = ({
-  name,
+  name = 'User',
   size = 40,
-  variant = 'beam',
   className = '',
   src,
   onClick
 }) => {
-  const colors = ["#ff1f1f", "#050505", "#ffffff", "#27272a", "#a1a1aa"];
+  const [imgError, setImgError] = useState(false);
+
+  // Reset error when src property changes
+  useEffect(() => {
+    setImgError(false);
+  }, [src]);
+
+  // Deterministic random color based on name
+  const getColorIndex = (str: string) => {
+    let hash = 0;
+    for (let i = 0; i < str.length; i++) {
+      hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return Math.abs(hash % BG_COLORS.length);
+  };
+
+  const bgColor = BG_COLORS[getColorIndex(name || 'User')];
 
   return (
     <div
@@ -27,15 +56,18 @@ export const UserAvatar: React.FC<UserAvatarProps> = ({
       style={{ width: size, height: size }}
       onClick={onClick}
     >
-      {src ? (
-        <img src={src} alt={name} className="w-full h-full object-cover" />
-      ) : (
-        <Avatar
-          size={size}
-          name={name}
-          variant={variant}
-          colors={colors}
+      {src && !imgError ? (
+        <img
+          src={src}
+          alt={name}
+          className="w-full h-full object-cover"
+          onError={() => setImgError(true)}
         />
+      ) : (
+        <div className={`w-full h-full flex items-center justify-center ${bgColor} text-white`}>
+          {/* Logo Icon as Profile */}
+          <Zap className="fill-white/30" style={{ width: size * 0.5, height: size * 0.5 }} />
+        </div>
       )}
     </div>
   );

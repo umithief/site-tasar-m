@@ -1,12 +1,11 @@
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Check, Heart, Share2, ShoppingBag, Star, ChevronRight } from 'lucide-react';
-import { Product, ViewState, NegotiationOffer } from '../../types';
+import {
+    ArrowLeft, Share2, Heart, Shield, CloudRain, Wind, Layers,
+    Star, ChevronRight, ShoppingBag, Plus, Minus
+} from 'lucide-react';
+import { Product, ViewState } from '../../types';
 import { useAuthStore } from '../../store/authStore';
-import { negotiationService } from '../../services/negotiationService';
-import { statsService } from '../../services/statsService';
-import { useLanguage } from '../../contexts/LanguageProvider';
 
 interface MobileProductDetailProps {
     product: Product | null;
@@ -21,188 +20,266 @@ export const MobileProductDetail: React.FC<MobileProductDetailProps> = ({
     onNavigate,
     onOpenCart
 }) => {
-    const { user } = useAuthStore();
-    const { t } = useLanguage();
+    // Falls back to mock data if product is null, just for visualization of the new design
+    const dummyProduct = {
+        brand: 'DAINESE',
+        name: product?.name || 'Avro 4 Deri Ceket',
+        price: product?.price || 24500,
+        rating: 4.8,
+        reviews: 124,
+        images: product?.images?.length ? product.images : [
+            'https://images.unsplash.com/photo-1551028919-ac7675cf5c63?q=80&w=1887&auto=format&fit=crop', // Jacket placeholder
+            'https://images.unsplash.com/photo-1591561954557-26941169b49e?q=80&w=1587&auto=format&fit=crop',
+            'https://images.unsplash.com/photo-1544652478-6653e09f1826?q=80&w=1887&auto=format&fit=crop'
+        ],
+        description: product?.description || "Dainese Avro 4 deri motosiklet ceketi, en üst düzey güvenlik ve konforu bir araya getiriyor. Tutu dana derisi yapısı, bi-elastik S1 kumaş ekleri ve Nanofeel astarı ile her sürüşte mükemmel performans sağlar. Zorlu hava koşullarına dayanıklıdır ve şehir içi kullanım için..."
+    };
 
     const [currentImageIndex, setCurrentImageIndex] = useState(0);
-    const [activeOffer, setActiveOffer] = useState<NegotiationOffer | null>(null);
+    const [selectedColor, setSelectedColor] = useState<'black' | 'red' | 'neon'>('neon');
+    const [selectedSize, setSelectedSize] = useState('L');
     const [isFavorite, setIsFavorite] = useState(false);
-    const [selectedSize, setSelectedSize] = useState<string>('39'); // Default selection for demo
 
-    // Mock sizes for the "shoe" style selector
-    const sizes = ['37', '38', '39', '40', '41', '42', '43', '44'];
+    const sizes = ['S', 'M', 'L', 'XL'];
+    const colors = [
+        { id: 'black', hex: '#000000', name: 'Siyah' },
+        { id: 'red', hex: '#EF4444', name: 'Kırmızı' },
+        { id: 'neon', hex: '#E2FF3B', name: 'Neon' }
+    ];
 
-    const images = product?.images && product.images.length > 0 ? product.images : [product?.image || ''];
+    const nextImage = () => {
+        setCurrentImageIndex((prev) => (prev + 1) % dummyProduct.images.length);
+    };
 
-    useEffect(() => {
-        if (product && user && product.isNegotiable) {
-            negotiationService.checkUserOffer(user._id, product._id).then(offer => {
-                if (offer) setActiveOffer(offer);
-            });
-        }
-        if (product) {
-            statsService.trackEvent('view_product', { productId: product._id, productName: product.name });
-        }
-    }, [product, user]);
-
-    if (!product) return null;
-
-    const currentPrice = activeOffer ? activeOffer.offerPrice : product.price;
+    const prevImage = () => {
+        setCurrentImageIndex((prev) => (prev - 1 + dummyProduct.images.length) % dummyProduct.images.length);
+    };
 
     const handleAddToCart = () => {
-        if (navigator.vibrate) navigator.vibrate([50, 30, 50]);
-        const productToAdd = activeOffer ? { ...product, price: activeOffer.offerPrice } : product;
-        onAddToCart(productToAdd);
+        if (navigator.vibrate) navigator.vibrate(50);
+        if (product) {
+            onAddToCart(product);
+        }
         onOpenCart();
     };
 
     return (
-        <div className="min-h-screen bg-[#Fdfdfd] text-zinc-900 font-sans pb-32 overflow-x-hidden relative">
+        <div className="min-h-screen bg-black text-white font-sans relative overflow-x-hidden">
 
-            {/* 1. HEADER: Clean & Minimal */}
-            <div className="fixed top-0 left-0 right-0 px-6 py-4 z-50 flex justify-between items-center pointer-events-none">
-                <motion.button
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    whileTap={{ scale: 0.9 }}
+            {/* 1. NAVIGATION & HERO IMAGE */}
+            <header className="absolute top-0 left-0 right-0 z-50 p-6 flex justify-between items-center bg-gradient-to-b from-black/60 to-transparent">
+                <button
                     onClick={() => onNavigate('shop')}
-                    className="w-10 h-10 rounded-full bg-white shadow-lg shadow-black/5 flex items-center justify-center text-zinc-900 pointer-events-auto"
+                    className="p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-white hover:bg-white/20 transition-colors"
                 >
                     <ArrowLeft className="w-5 h-5" />
-                </motion.button>
+                </button>
+                <div className="flex gap-4">
+                    <button className="p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/10 text-white hover:bg-white/20 transition-colors">
+                        <Share2 className="w-5 h-5" />
+                    </button>
+                    <button
+                        onClick={() => setIsFavorite(!isFavorite)}
+                        className={`p-3 rounded-full bg-white/10 backdrop-blur-md border border-white/10 transition-colors ${isFavorite ? 'text-red-500 bg-red-500/10' : 'text-white hover:bg-white/20'}`}
+                    >
+                        <Heart className={`w-5 h-5 ${isFavorite ? 'fill-current' : ''}`} />
+                    </button>
+                </div>
+            </header>
 
-                <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    className="flex items-center gap-2 bg-[#fee2e2]/0 pointer-events-auto" // Transparent container
-                >
-                    <div className="bg-[#FFF8F0] px-3 py-1.5 rounded-full flex items-center gap-1.5 shadow-sm border border-[#FFE4C4]/50">
-                        <Check className="w-4 h-4 text-black bg-[#Eedc82] rounded-full p-0.5" />
-                        <span className="text-xs font-bold text-zinc-800">{product.brand || 'Nike'}</span>
-                    </div>
-                </motion.div>
-            </div>
-
-
-            {/* 2. TITLE SECTION (Above Image) */}
-            <div className="pt-24 px-6 mb-4">
-                <motion.h1
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    className="text-3xl font-bold text-zinc-900 leading-tight tracking-tight"
-                >
-                    {product.name}
-                </motion.h1>
-                <motion.p
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.1 }}
-                    className="text-zinc-500 font-medium text-sm mt-1"
-                >
-                    {product.category}
-                </motion.p>
-            </div>
-
-
-            {/* 3. HERO IMAGE CAROUSEL */}
-            <div className="relative w-full h-[35vh] flex items-center justify-center mb-8">
+            {/* Immersive Image Swiper */}
+            <div className="relative w-full h-[55vh]">
                 <AnimatePresence mode="wait">
                     <motion.img
                         key={currentImageIndex}
-                        src={images[currentImageIndex]}
-                        initial={{ opacity: 0, scale: 0.9, rotate: -5 }}
-                        animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                        exit={{ opacity: 0, scale: 1.1, rotate: 5 }}
-                        transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                        className="h-full object-contain drop-shadow-[0_20px_20px_rgba(0,0,0,0.15)] z-10"
+                        src={dummyProduct.images[currentImageIndex]}
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.5 }}
+                        className="w-full h-full object-cover"
+                        referrerPolicy="no-referrer"
                     />
                 </AnimatePresence>
 
-                {/* Decorative background circle */}
-                <div className="absolute inset-0 flex items-center justify-center -z-0">
-                    <div className="w-[80%] aspect-square rounded-full bg-gradient-to-tr from-gray-100 to-white opacity-80" />
+                {/* Pagination Dots */}
+                <div className="absolute bottom-12 left-0 right-0 flex justify-center gap-2 z-20">
+                    {dummyProduct.images.map((_, idx) => (
+                        <div
+                            key={idx}
+                            onClick={() => setCurrentImageIndex(idx)}
+                            className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${currentImageIndex === idx ? 'w-8 bg-[#E2FF3B]' : 'w-1.5 bg-white/50'}`}
+                        />
+                    ))}
                 </div>
+
+                {/* Overlay Gradient for smooth transition to info sheet */}
+                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-black to-transparent pointer-events-none" />
             </div>
 
+            {/* 2. PRODUCT INFO SHEET */}
+            <motion.div
+                initial={{ y: 50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                className="relative -mt-10 bg-[#050505] rounded-t-[40px] px-6 pt-10 pb-32 min-h-[50vh] border-t border-white/5 shadow-[0_-10px_40px_rgba(0,0,0,0.8)]"
+            >
+                {/* Drag Indicator */}
+                <div className="w-12 h-1 bg-white/20 rounded-full mx-auto mb-8" />
 
-            {/* 4. THUMBNAIL GALLERY */}
-            <div className="px-6 flex gap-4 overflow-x-auto no-scrollbar mb-8">
-                {images.map((img, idx) => (
-                    <motion.button
-                        key={idx}
-                        onClick={() => setCurrentImageIndex(idx)}
-                        whileTap={{ scale: 0.9 }}
-                        className={`relative w-20 h-20 rounded-xl flex-shrink-0 flex items-center justify-center bg-gray-50 border transition-all ${currentImageIndex === idx ? 'border-zinc-300 shadow-md' : 'border-transparent'}`}
-                    >
-                        <img src={img} className="w-16 h-16 object-contain mix-blend-multiply" />
-                    </motion.button>
-                ))}
-            </div>
-
-
-            {/* 5. SIZE SELECTOR (Circular) */}
-            <div className="px-6 mb-8">
-                <div className="flex items-center justify-between mb-4">
-                    <h3 className="text-lg font-bold text-zinc-900">Size</h3>
-                    <button className="text-zinc-400 text-sm font-medium">Size Guide</button>
-                </div>
-                <div className="flex gap-4 overflow-x-auto no-scrollbar py-2">
-                    {sizes.map((size) => {
-                        const isActive = selectedSize === size;
-                        return (
-                            <motion.button
-                                key={size}
-                                onClick={() => setSelectedSize(size)}
-                                className={`w-14 h-14 rounded-full flex items-center justify-center text-lg font-bold transition-all shadow-sm ${isActive ? 'bg-[#FBE89F] text-black scale-110 shadow-md ring-4 ring-[#FFF9E5]' : 'bg-white text-zinc-500 border border-gray-100'}`}
-                            >
-                                {size}
-                            </motion.button>
-                        );
-                    })}
-                </div>
-            </div>
-
-
-            {/* 6. DESCRIPTION */}
-            <div className="px-6 mb-32">
-                <h3 className="text-lg font-bold text-zinc-900 mb-2">About</h3>
-                <p className="text-zinc-500 text-sm leading-relaxed">
-                    {product.description || "The eye-catching design features premium materials and advanced comfort technology. Perfect for long rides or casual outings, ensuring you stay stylish and protected wherever the road takes you."}
-                </p>
-            </div>
-
-
-            {/* 7. ORGANIC BOTTOM BAR */}
-            <div className="fixed bottom-0 left-0 right-0 z-[100] pointer-events-none">
-                {/* The SVG and Buttons Container - Using SVG for complex shape */}
-                <div className="relative w-full h-[100px] flex items-end justify-center pointer-events-auto">
-
-                    {/* Main Black Bar Shape */}
-                    <div className="absolute bottom-4 left-4 right-4 h-20 bg-black rounded-[40px] shadow-2xl flex items-center justify-between pl-10 pr-2 overflow-visible">
-
-                        {/* Buy Text */}
-                        <motion.button
-                            onClick={handleAddToCart}
-                            whileTap={{ scale: 0.95 }}
-                            className="flex-1 text-left"
-                        >
-                            <span className="text-white text-2xl font-bold tracking-wide">Satın Al</span>
-                        </motion.button>
-
-                        {/* White Price Badge (Overlapping) */}
-                        <div className="relative w-24 h-24 -mt-2 -mr-2 bg-white rounded-full flex items-center justify-center border-[6px] border-[#Fdfdfd] shadow-xl">
-                            <div className="flex flex-col items-center leading-none">
-                                <span className="text-[10px] text-zinc-400 font-bold uppercase mb-0.5">TL</span>
-                                <span className="text-xl font-black text-black tracking-tighter">
-                                    {currentPrice.toLocaleString('tr-TR')}
-                                </span>
-                            </div>
+                <div className="mb-8">
+                    <div className="flex justify-between items-start mb-2">
+                        <div>
+                            <span className="text-gray-400 text-sm font-bold tracking-widest uppercase mb-1 block">{dummyProduct.brand}</span>
+                            <h1 className="text-3xl md:text-4xl font-black text-white leading-tight mb-2 tracking-tight">{dummyProduct.name}</h1>
                         </div>
                     </div>
 
+                    <div className="flex items-center justify-between">
+                        <div className="text-[#E2FF3B] text-3xl font-black tracking-tight">
+                            ₺{dummyProduct.price.toLocaleString('tr-TR')}
+                        </div>
+                        <div className="flex items-center gap-1.5 px-3 py-1.5 bg-yellow-400/10 rounded-lg border border-yellow-400/20">
+                            <Star className="w-4 h-4 text-yellow-400 fill-current" />
+                            <span className="text-yellow-400 font-bold text-sm">{dummyProduct.rating}</span>
+                            <span className="text-yellow-400/60 text-xs font-medium">({dummyProduct.reviews} Değerlendirme)</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 3. SELECTORS */}
+                <div className="space-y-8 mb-10">
+                    {/* Color Selector */}
+                    <div>
+                        <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Renk Seç</h3>
+                        <div className="flex gap-4">
+                            {colors.map((color) => (
+                                <button
+                                    key={color.id}
+                                    onClick={() => setSelectedColor(color.id as any)}
+                                    className={`w-12 h-12 rounded-full flex items-center justify-center transition-all relative ${selectedColor === color.id ? 'ring-2 ring-white ring-offset-2 ring-offset-black scale-110' : 'hover:scale-105'}`}
+                                    style={{ backgroundColor: color.hex }}
+                                >
+                                    {selectedColor === color.id && color.id === 'neon' && <Check className="w-6 h-6 text-black" />}
+                                    {selectedColor === color.id && color.id !== 'neon' && <div className="w-12 h-12 rounded-full border-2 border-white/20" />}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    {/* Size Selector */}
+                    <div>
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Beden Seç</h3>
+                            <button className="text-xs text-[#E2FF3B] font-bold hover:underline">Beden Tablosu</button>
+                        </div>
+                        <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+                            {sizes.map((size) => (
+                                <button
+                                    key={size}
+                                    onClick={() => setSelectedSize(size)}
+                                    className={`flex-1 min-w-[60px] h-12 rounded-2xl flex items-center justify-center text-sm font-black transition-all border ${selectedSize === size
+                                            ? 'bg-[#E2FF3B] text-black border-[#E2FF3B] shadow-[0_0_20px_rgba(226,255,59,0.3)]'
+                                            : 'bg-white/5 text-gray-400 border-white/5 hover:bg-white/10 hover:border-white/10'
+                                        }`}
+                                >
+                                    {size}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* 4. TECH SPECS */}
+                <div className="mb-10">
+                    <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-4">Teknik Özellikler</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                        <div className="bg-white/5 border border-white/5 p-4 rounded-2xl flex items-start gap-4 hover:bg-white/10 transition-colors">
+                            <div className="p-2 bg-white/10 rounded-lg text-white">
+                                <Shield className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <span className="block text-xs text-gray-500 font-bold uppercase mb-1">Koruma</span>
+                                <span className="text-sm text-white font-bold">Seviye 2</span>
+                            </div>
+                        </div>
+                        <div className="bg-white/5 border border-white/5 p-4 rounded-2xl flex items-start gap-4 hover:bg-white/10 transition-colors">
+                            <div className="p-2 bg-white/10 rounded-lg text-white">
+                                <CloudRain className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <span className="block text-xs text-gray-500 font-bold uppercase mb-1">Su Geçirmez</span>
+                                <span className="text-sm text-white font-bold">100%</span>
+                            </div>
+                        </div>
+                        <div className="bg-white/5 border border-white/5 p-4 rounded-2xl flex items-start gap-4 hover:bg-white/10 transition-colors">
+                            <div className="p-2 bg-white/10 rounded-lg text-white">
+                                <Wind className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <span className="block text-xs text-gray-500 font-bold uppercase mb-1">Direnç</span>
+                                <span className="text-sm text-white font-bold">Rüzgar</span>
+                            </div>
+                        </div>
+                        <div className="bg-white/5 border border-white/5 p-4 rounded-2xl flex items-start gap-4 hover:bg-white/10 transition-colors">
+                            <div className="p-2 bg-white/10 rounded-lg text-white">
+                                <Layers className="w-5 h-5" />
+                            </div>
+                            <div>
+                                <span className="block text-xs text-gray-500 font-bold uppercase mb-1">Malzeme</span>
+                                <span className="text-sm text-white font-bold">Dana Derisi</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                {/* 5. DESCRIPTION */}
+                <div className="mb-8">
+                    <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest mb-3">Ürün Hakkında</h3>
+                    <p className="text-gray-300 text-sm leading-relaxed opacity-80">
+                        {dummyProduct.description}
+                        <button className="text-[#E2FF3B] font-bold ml-1 hover:underline">Devamını Oku</button>
+                    </p>
+                </div>
+
+            </motion.div>
+
+            {/* 6. STICKY BOTTOM BAR */}
+            <div className="fixed bottom-0 left-0 right-0 p-4 pb-6 bg-[#050505]/80 backdrop-blur-xl border-t border-white/10 z-40">
+                <div className="flex items-center gap-6 max-w-lg mx-auto">
+                    <div className="flex-1">
+                        <span className="block text-[10px] text-gray-500 font-bold uppercase tracking-widest mb-0.5">Toplam Tutar</span>
+                        <div className="text-2xl font-black text-white tracking-tight">
+                            ₺{dummyProduct.price.toLocaleString('tr-TR')}
+                        </div>
+                    </div>
+                    <button
+                        onClick={handleAddToCart}
+                        className="flex-[2] bg-[#E2FF3B] text-black h-14 rounded-xl font-black text-base uppercase tracking-wider hover:bg-[#d4f030] active:scale-95 transition-all shadow-[0_0_20px_rgba(226,255,59,0.3)] flex items-center justify-center gap-2"
+                    >
+                        Sepete Ekle
+                        <ShoppingBag className="w-5 h-5 mb-0.5" />
+                    </button>
                 </div>
             </div>
+
+            {/* Safe Area Spacer for Bottom Bar */}
+            <div className="h-24" />
 
         </div>
     );
 };
+
+// Helper component for Color Check
+const Check = ({ className }: { className?: string }) => (
+    <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className={className}
+    >
+        <polyline points="20 6 9 17 4 12" />
+    </svg>
+);

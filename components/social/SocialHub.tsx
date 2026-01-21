@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Compass, Home, MessageSquare, Calendar, User, Search, Map as MapIcon, Navigation, Plus, Image, Grid, Users, Bell, ShoppingBag, Settings, LogOut, PlusCircle, Archive, Heart, MessageCircle, Sun, Moon, Gauge } from 'lucide-react';
 import { ResponsivePostCard } from './ResponsivePostCard';
 import { SpatialFeed } from './SpatialFeed';
-import { PostComposer } from './PostComposer';
+import { AdvancedCreatePostModal } from './AdvancedCreatePostModal';
 import { FollowButton } from './FollowButton';
 import { SocialPost, ViewState } from '../../types';
 import { UserAvatar } from '../ui/UserAvatar';
@@ -454,12 +454,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                 </div>
                             )}
 
-                            {/* Create Post Area */}
-                            <AnimatePresence>
-                                {isCreateOpen && (
-                                    <PostComposer currentUser={currentUser} onPostCreate={handlePostCreate} />
-                                )}
-                            </AnimatePresence>
+
 
                             {/* Feed Stream */}
                             <PullToRefresh onRefresh={async () => { await refetch(); }} isMobile={true}>
@@ -526,6 +521,13 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                     />
                 )
             }
+
+            <AdvancedCreatePostModal
+                isOpen={isCreateOpen}
+                onClose={() => setIsCreateOpen(false)}
+                currentUser={currentUser}
+                onPostCreate={handlePostCreate}
+            />
 
             <CreateRideModal
                 isOpen={isCreateRideOpen}

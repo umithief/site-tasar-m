@@ -98,7 +98,7 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
             <div className="px-4 -mt-16 relative z-10">
                 <div className="bg-white dark:bg-[#111] rounded-[2rem] p-6 shadow-xl shadow-gray-200/50 dark:shadow-none border border-gray-100 dark:border-white/5 text-center transition-colors">
                     <div className="relative inline-block mb-3">
-                        <UserAvatar name={user.name} src={user.avatar} size={100} className="border-4 border-white dark:border-[#111] shadow-lg" />
+                        <UserAvatar name={user.name} src={user.avatar || user.profileImage} size={100} className="border-4 border-white dark:border-[#111] shadow-lg" />
                         <div className="absolute bottom-0 right-0 bg-moto-accent rounded-full p-1.5 border-4 border-white dark:border-[#111]">
                             <Shield className="w-3 h-3 text-black fill-current" />
                         </div>
@@ -173,8 +173,8 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
                         {activeTab === 'posts' && (
                             <div className="space-y-4 pb-4">
                                 {posts.map((post) => (
-                                                                    <PostCard key={post._id} post={post} />
-                                                                ))}
+                                    <PostCard key={post._id} post={post} />
+                                ))}
                                 <div className="text-center py-16 text-gray-400 dark:text-gray-600">
                                     <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-white/5 flex items-center justify-center mx-auto mb-4">
                                         <Grid className="w-8 h-8 opacity-50" />

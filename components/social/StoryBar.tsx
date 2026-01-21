@@ -31,7 +31,12 @@ export const StoryBar: React.FC<StoryBarProps> = ({ storyGroups, onStorySelect, 
                     <div className="relative w-[70px] h-[70px]">
                         <div className="absolute inset-0 rounded-full border-2 border-dashed border-white/20 group-hover:border-[#E2FF3B] transition-colors" />
                         <div className="absolute inset-[4px] rounded-full overflow-hidden bg-zinc-900 flex items-center justify-center">
-                            <UserAvatar name={user?.name || 'Sen'} size={62} className="w-full h-full rounded-full" />
+                            <UserAvatar
+                                src={user?.profileImage || user?.avatar}
+                                name={user?.name || 'Sen'}
+                                size={62}
+                                className="w-full h-full rounded-full"
+                            />
                         </div>
 
                         <div className="absolute bottom-0 right-0 w-6 h-6 bg-[#E2FF3B] rounded-full border-2 border-black flex items-center justify-center shadow-lg">

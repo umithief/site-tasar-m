@@ -13,6 +13,7 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({ onRefresh, childre
     const [isRefreshing, setIsRefreshing] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const startY = useRef(0);
+    const isValidPull = useRef(false);
     const controls = useAnimation();
     const THRESHOLD = 80;
 
@@ -24,12 +25,18 @@ export const PullToRefresh: React.FC<PullToRefreshProps> = ({ onRefresh, childre
         if (!container) return;
 
         const handleTouchStart = (e: TouchEvent) => {
+            // Only allow pulling if we are exactly at the top
             if (window.scrollY === 0) {
+                isValidPull.current = true;
                 startY.current = e.touches[0].clientY;
+            } else {
+                isValidPull.current = false;
             }
         };
 
         const handleTouchMove = (e: TouchEvent) => {
+            if (!isValidPull.current) return;
+
             const currentY = e.touches[0].clientY;
             const diff = currentY - startY.current;
 

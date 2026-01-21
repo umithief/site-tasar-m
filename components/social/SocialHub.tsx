@@ -54,7 +54,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
     const [isCreateRideOpen, setIsCreateRideOpen] = useState(false); // New state
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
-    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status } = usePosts();
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status, refetch } = usePosts();
     const { mutate: createPost } = useCreatePost();
     const [suggestedRiders, setSuggestedRiders] = useState<any[]>([]);
 
@@ -462,7 +462,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                             </AnimatePresence>
 
                             {/* Feed Stream */}
-                            <PullToRefresh onRefresh={async () => { await fetchNextPage(); }} isMobile={true}>
+                            <PullToRefresh onRefresh={async () => { await refetch(); }} isMobile={true}>
                                 <div className="space-y-6 pt-0 pb-32">
                                     <SpatialFeed
                                         data={data}

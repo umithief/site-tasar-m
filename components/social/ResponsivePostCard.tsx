@@ -11,6 +11,7 @@ interface ResponsivePostCardProps {
     onCommentClick?: () => void;
     className?: string;
     variant?: 'default' | 'glass';
+    priority?: boolean;
 }
 
 export const ResponsivePostCard: React.FC<ResponsivePostCardProps> = memo((props) => {
@@ -24,6 +25,7 @@ export const ResponsivePostCard: React.FC<ResponsivePostCardProps> = memo((props
                     currentUserId={props.currentUserId}
                     onNavigate={props.onNavigate}
                     onCommentClick={props.onCommentClick}
+                    priority={props.priority}
                 />
             ) : (
                 <PostCard

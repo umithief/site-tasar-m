@@ -16,9 +16,10 @@ interface MobilePostCardProps {
     currentUserId?: string;
     onNavigate?: (view: any, data?: any) => void;
     onCommentClick?: () => void;
+    priority?: boolean;
 }
 
-export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, currentUserId, onNavigate, onCommentClick }) => {
+export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, currentUserId, onNavigate, onCommentClick, priority = false }) => {
     const [isLiked, setIsLiked] = useState(post.isLiked);
     // Safe access for likes count with fallback
     const [likeCount, setLikeCount] = useState(
@@ -154,7 +155,7 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                     src={post.images?.[0] || (post as any).image}
                     alt="Post"
                     className="w-full h-full object-cover"
-                    loading="lazy"
+                    loading={priority ? 'eager' : 'lazy'}
                     onLoad={handleImageLoad}
                 />
 

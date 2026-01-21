@@ -72,6 +72,7 @@ export const SpatialFeed: React.FC<SpatialFeedProps> = ({
                                     onCommentClick={() => onCommentClick(post._id)}
                                     variant="glass"
                                     className="!bg-transparent !shadow-none !border-none"
+                                    priority={index < 2}
                                 />
                             </div>
                         </FeedItem>

@@ -34,6 +34,16 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
     const [showHeartOverlay, setShowHeartOverlay] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const [showOptions, setShowOptions] = useState(false);
+    const [imageOrientation, setImageOrientation] = useState<'portrait' | 'landscape'>('portrait');
+
+    const handleImageLoad = (event: React.SyntheticEvent<HTMLImageElement>) => {
+        const { naturalWidth, naturalHeight } = event.currentTarget;
+        if (naturalWidth > naturalHeight) {
+            setImageOrientation('landscape');
+        } else {
+            setImageOrientation('portrait');
+        }
+    };
 
     // Live Follow Logic
     const { mutate: toggleFollow, isPending } = useFollow();
@@ -137,7 +147,7 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
 
             {/* Media - Immersive Full Width */}
             <div
-                className="relative w-full aspect-[4/5] bg-gray-100 dark:bg-zinc-900 overflow-hidden rounded-[2rem]"
+                className={`relative w-full ${imageOrientation === 'landscape' ? 'aspect-video' : 'aspect-[4/5]'} bg-gray-100 dark:bg-zinc-900 overflow-hidden rounded-[2rem] transition-all duration-500 ease-in-out`}
                 onClick={handleDoubleTap}
             >
                 <img
@@ -145,6 +155,7 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                     alt="Post"
                     className="w-full h-full object-cover"
                     loading="lazy"
+                    onLoad={handleImageLoad}
                 />
 
                 {/* Heart Animation Overlay */}

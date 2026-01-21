@@ -1,7 +1,6 @@
 // Main Application Component
 import React, { useState, useEffect, useRef } from 'react';
 import { Product, CartItem, ProductCategory, User, AuthMode, Route as RouteType, ViewState } from './types';
-import { Navbar } from './components/layout/Navbar';
 import { Sidebar } from './components/layout/Sidebar';
 import { BottomNav } from './components/layout/BottomNav';
 import { CartDrawer } from './components/layout/CartDrawer';

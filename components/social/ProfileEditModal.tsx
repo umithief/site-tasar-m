@@ -43,13 +43,13 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
             <motion.div
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="relative bg-[#1A1A17] border border-white/10 w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
+                className="relative bg-white border border-gray-100 w-full max-w-2xl rounded-3xl overflow-hidden shadow-2xl flex flex-col max-h-[90vh]"
             >
-                <div className="p-6 border-b border-white/10 flex justify-between items-center bg-[#1A1A17]">
-                    <h2 className="text-xl font-display font-black text-white flex items-center gap-2 uppercase tracking-wide">
-                        <User className="w-5 h-5 text-moto-accent" /> System Config
+                <div className="p-6 border-b border-gray-100 flex justify-between items-center bg-white">
+                    <h2 className="text-xl font-display font-black text-gray-900 flex items-center gap-2 uppercase tracking-wide">
+                        <User className="w-5 h-5 text-moto-accent" /> Profil Ayarları
                     </h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-white transition-colors">
+                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors">
                         <X className="w-6 h-6" />
                     </button>
                 </div>
@@ -57,7 +57,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
                 <form onSubmit={handleSubmit} className="p-8 overflow-y-auto custom-scrollbar space-y-6">
 
                     {/* Cover Image Preview */}
-                    <div className="relative h-32 rounded-xl overflow-hidden group border border-white/10">
+                    <div className="relative h-32 rounded-xl overflow-hidden group border border-gray-200">
                         <img
                             src={formData.coverImage || 'https://images.unsplash.com/photo-1625055088214-5d8f6155680d?q=80&w=2069'}
                             className="w-full h-full object-cover opacity-60 group-hover:opacity-40 transition-opacity"
@@ -75,7 +75,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
                             <input
                                 value={formData.name}
                                 onChange={e => setFormData({ ...formData, name: e.target.value })}
-                                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-moto-accent outline-none font-bold"
+                                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:border-moto-accent outline-none font-bold"
                             />
                         </div>
                         <div className="space-y-2">
@@ -83,7 +83,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
                             <input
                                 value={formData.username}
                                 onChange={e => setFormData({ ...formData, username: e.target.value })}
-                                className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-moto-accent outline-none font-mono text-sm"
+                                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:border-moto-accent outline-none font-mono text-sm"
                             />
                         </div>
                     </div>
@@ -95,7 +95,7 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
                         <input
                             value={formData.location}
                             onChange={e => setFormData({ ...formData, location: e.target.value })}
-                            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-moto-accent outline-none text-sm"
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:border-moto-accent outline-none text-sm"
                             placeholder="İstanbul, Türkiye"
                         />
                     </div>
@@ -107,14 +107,14 @@ export const ProfileEditModal: React.FC<ProfileEditModalProps> = ({ isOpen, onCl
                         <textarea
                             value={formData.bio}
                             onChange={e => setFormData({ ...formData, bio: e.target.value })}
-                            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white focus:border-moto-accent outline-none min-h-[120px] resize-none text-sm leading-relaxed"
+                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-gray-900 focus:border-moto-accent outline-none min-h-[120px] resize-none text-sm leading-relaxed"
                             placeholder="Kendinden bahset..."
                         />
                     </div>
 
                 </form>
 
-                <div className="p-6 border-t border-white/10 bg-[#1A1A17]">
+                <div className="p-6 border-t border-gray-100 bg-white">
                     <button
                         onClick={handleSubmit}
                         disabled={isLoading}

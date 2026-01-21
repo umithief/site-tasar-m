@@ -62,14 +62,22 @@ export const createPost = catchAsync(async (req, res, next) => {
         return next(new AppError('İçerik veya medya gereklidir.', 400));
     }
 
-    // 2. Logic: Mock Cloud Storage Upload (if req.file is present)
+    // 2. Media Handling
     let finalMedia = media || [];
+    let finalImages = images || [];
+
+    // Ensure array structures
+    if (!Array.isArray(finalMedia)) finalMedia = [];
+    if (!Array.isArray(finalImages)) finalImages = [];
+
+    // Handle File Upload (Mock)
     if (req.file) {
-        // In a real app, upload to S3/Cloudinary here
         const mockUrl = `https://motovibe-storage.com/${req.file.filename}-${Date.now()}.jpg`;
+        const type = req.file.mimetype.startsWith('video') ? 'VIDEO' : 'IMAGE';
+
         finalMedia.push({
             url: mockUrl,
-            type: req.file.mimetype.startsWith('video') ? 'VIDEO' : 'IMAGE',
+            type: type,
             isHudOverlayActive: false
         });
 
@@ -78,7 +86,7 @@ export const createPost = catchAsync(async (req, res, next) => {
         }
     }
 
-    // Legacy compatibility: Map 'mediaUrl' string to structures
+    // Legacy compatibility: Map 'mediaUrl' string
     if (mediaUrl && typeof mediaUrl === 'string') {
         const type = mediaUrl.match(/\.(mp4|mov|webm)$/i) ? 'VIDEO' : 'IMAGE';
 
@@ -149,10 +157,6 @@ export const createPost = catchAsync(async (req, res, next) => {
                 await Bike.findByIdAndUpdate(linkedBike, {
                     $inc: { mileage: telemetry.distance }
                 });
-            } else {
-                // If Bike is not a separate model, maybe it's in User.garage?
-                // Logic to update user garage item would go here if needed.
-                // For now, we strictly follow "Ref: Bike" implies Bike model.
             }
         } catch (error) {
             console.warn("Failed to update bike mileage:", error.message);
@@ -161,15 +165,13 @@ export const createPost = catchAsync(async (req, res, next) => {
 
     // 5. Populate References
     await newPost.populate('user', 'name avatar rank');
-    // Note: If 'Bike' or 'Route' models don't exist yet, populate might fail or return null. 
-    // Safely attempting populate:
     if (mongoose.models.Bike) await newPost.populate('linkedBike');
     if (mongoose.models.Route) await newPost.populate('linkedRoute');
 
-    // 6. Return Response (Turkish)
+    // 6. Return Response
     res.status(201).json({
-        success: true, // As per request structure
-        status: 'success', // Keep legacy consistent
+        success: true,
+        status: 'success',
         message: "Sürüş kaydı başarıyla paylaşıldı.",
         data: { post: newPost }
     });

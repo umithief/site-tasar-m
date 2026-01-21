@@ -216,8 +216,11 @@ export const socialService = {
             // Backend returns array of user objects for GET /users
             const users = Array.isArray(data) ? data : (data.data?.users || data.users || []);
 
+            // Randomly shuffle the users array to show different suggestions on each refresh
+            const shuffled = users.sort(() => 0.5 - Math.random());
+
             // Limit to 5 for the sidebar and basic mapping
-            return users.slice(0, 5).map((u: any) => ({
+            return shuffled.slice(0, 5).map((u: any) => ({
                 _id: u._id,
                 name: u.name,
                 bike: u.garage && u.garage.length > 0 ? `${u.garage[0].brand} ${u.garage[0].model}` : 'Motor Tutkunu',

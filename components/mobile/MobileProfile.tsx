@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Settings, Grid, Bookmark, LogOut,
@@ -10,6 +10,7 @@ import { UserAvatar } from '../ui/UserAvatar';
 import { UserListModal } from '../UserListModal';
 import { MobileEditProfile } from './MobileEditProfile';
 import { PostCard } from '../social/PostCard'; // Ensure this handles mobile view via internal logic or unified props
+import { socialService } from '../../services/socialService';
 
 // Mock Data
 const MOCK_REELS = [
@@ -29,8 +30,27 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
     const { user: authUser, logout } = useAuthStore();
 
     const [posts, setPosts] = useState<SocialPost[]>([]);
+    const [isLoadingPosts, setIsLoadingPosts] = useState(false);
     // Determine which user to show
     const user = propUser || authUser;
+
+    useEffect(() => {
+        const fetchPosts = async () => {
+            if (user?._id) {
+                setIsLoadingPosts(true);
+                try {
+                    const fetchedPosts = await socialService.getUserPosts(user._id);
+                    setPosts(fetchedPosts);
+                } catch (error) {
+                    console.error('Failed to fetch user posts', error);
+                } finally {
+                    setIsLoadingPosts(false);
+                }
+            }
+        };
+
+        fetchPosts();
+    }, [user?._id]);
 
     // Check if it's the own profile
     const isOwnProfile = authUser && user && authUser._id === user._id;
@@ -207,16 +227,26 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
                     >
                         {activeTab === 'posts' && (
                             <div className="space-y-4 pb-4">
-                                {posts.map((post) => (
-                                    <PostCard key={post._id} post={post} />
-                                ))}
-                                <div className="text-center py-16 text-gray-400">
-                                    <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
-                                        <Grid className="w-8 h-8 opacity-50" />
+                                {isLoadingPosts ? (
+                                    <div className="flex justify-center py-12">
+                                        <div className="w-8 h-8 border-2 border-gray-200 border-t-moto-accent rounded-full animate-spin" />
                                     </div>
-                                    <h3 className="text-sm font-bold text-gray-900 mb-1">Henüz gönderi yok</h3>
-                                    <p className="text-xs">Paylaşımlarınız burada görünecek.</p>
-                                </div>
+                                ) : (
+                                    <>
+                                        {posts.map((post) => (
+                                            <PostCard key={post._id} post={post} />
+                                        ))}
+                                        {posts.length === 0 && (
+                                            <div className="text-center py-16 text-gray-400">
+                                                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                                                    <Grid className="w-8 h-8 opacity-50" />
+                                                </div>
+                                                <h3 className="text-sm font-bold text-gray-900 mb-1">Henüz gönderi yok</h3>
+                                                <p className="text-xs">Paylaşımlarınız burada görünecek.</p>
+                                            </div>
+                                        )}
+                                    </>
+                                )}
                             </div>
                         )}
 

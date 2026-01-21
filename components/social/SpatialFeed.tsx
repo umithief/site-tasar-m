@@ -24,10 +24,10 @@ export const SpatialFeed: React.FC<SpatialFeedProps> = ({
     fetchNextPage,
     onCommentClick
 }) => {
-    // 3D Tilt Effect Container
+    // Simplified Container to prevent layer flickering
     const FeedContainer = ({ children }: { children: React.ReactNode }) => {
         return (
-            <div className="perspective-[2000px] space-y-8 py-4 px-2">
+            <div className="space-y-8 py-4 px-2 w-full max-w-lg mx-auto">
                 {children}
             </div>
         );
@@ -61,20 +61,14 @@ export const SpatialFeed: React.FC<SpatialFeedProps> = ({
                 }).map((post: SocialPost, index: number) => (
                     <React.Fragment key={post._id}>
                         <FeedItem index={index} priority={index === 0}>
-                            <div className="relative group perspective-item">
-                                {/* Glassmorphic Background Card */}
-                                <div className="absolute inset-0 bg-white/80 dark:bg-black/40 backdrop-blur-xl rounded-[2.5rem] -z-10 border border-white/40 shadow-[0_8px_32px_0_rgba(31,38,135,0.15)] transition-all duration-300 group-hover:bg-white/90 group-hover:shadow-[0_8px_32px_0_rgba(31,38,135,0.2)] group-hover:border-white/50" />
-
-                                <ResponsivePostCard
-                                    post={post}
-                                    currentUserId={currentUser?._id}
-                                    onNavigate={onNavigate}
-                                    onCommentClick={() => onCommentClick(post._id)}
-                                    variant="glass"
-                                    className="!bg-transparent !shadow-none !border-none"
-                                    priority={index < 2}
-                                />
-                            </div>
+                            <ResponsivePostCard
+                                post={post}
+                                currentUserId={currentUser?._id}
+                                onNavigate={onNavigate}
+                                onCommentClick={() => onCommentClick(post._id)}
+                                variant="default"
+                                priority={index < 2}
+                            />
                         </FeedItem>
 
                         {/* Inject Route Suggestions after the 3rd post (index 2) */}
@@ -113,7 +107,7 @@ export const SpatialFeed: React.FC<SpatialFeedProps> = ({
 // Animation Wrapper for Individual Items
 const FeedItem = ({ children, index, priority = false }: { children: React.ReactNode, index: number, priority?: boolean }) => {
     return (
-        <div className="transform-style-3d">
+        <div className="relative transform-gpu backface-hidden">
             {children}
         </div>
     );

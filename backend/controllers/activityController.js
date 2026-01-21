@@ -3,18 +3,12 @@ import RideActivity from '../models/RideActivity.js';
 export const getLatestActivity = async (req, res) => {
     try {
         // Fix: Use req.user.id (from checkAuth middleware) and query 'user' field
-        const latestRide = await RideActivity.findOne({ user: req.user.id }).sort({ startTime: -1 });
+        const latestRide = await RideActivity.findOne({ user: req.user.id })
+            .sort({ startTime: -1 })
+            .populate('route'); // Get linked route details if available
 
         if (!latestRide) {
-            // Demo Fallback: Return a mock ride so the UI isn't empty
-            return res.json({
-                user: req.user.id,
-                distance: 12.5,
-                maxSpeed: 184,
-                leanAngle: 42,
-                duration: "45dk",
-                startTime: new Date().toISOString()
-            });
+            return res.status(404).json({ message: 'Son sürüş kaydı bulunamadı.' });
         }
 
         res.json(latestRide);

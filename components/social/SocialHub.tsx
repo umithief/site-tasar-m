@@ -153,7 +153,9 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                 images: media ? [media] : [],
                 bikeModel: currentUser.garage && currentUser.garage.length > 0 ? `${currentUser.garage[0].brand} ${currentUser.garage[0].model}` : 'Bilinmeyen Motor',
                 userRank: currentUser.rank || 'Yeni Üye',
-                rideStats: stats,
+                telemetry: stats, // Use telemetry field as expected by backend
+                // Extract route ID if available in stats
+                linkedRoute: stats?.route?._id || (typeof stats?.route === 'string' ? stats.route : undefined),
                 location: location
             }, {
                 onSuccess: () => {

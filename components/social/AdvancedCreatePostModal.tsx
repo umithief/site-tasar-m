@@ -72,6 +72,7 @@ export const AdvancedCreatePostModal: React.FC<AdvancedCreatePostModalProps> = (
             const data = await socialService.getLatestRideActivity();
             if (data && data.user) { // Check if valid data returned
                 setStats(data);
+                if (data.route) setIncludeRoute(true);
             } else {
                 alert("Son sürüş verisi bulunamadı. Lütfen önce bir sürüş kaydedin.");
             }
@@ -270,16 +271,25 @@ export const AdvancedCreatePostModal: React.FC<AdvancedCreatePostModalProps> = (
                                                 </div>
 
                                                 <div
-                                                    onClick={() => setIncludeRoute(!includeRoute)}
-                                                    className={`cursor-pointer p-3 rounded-xl border transition-all flex items-center justify-between ${includeRoute ? 'bg-white/5 border-green-500/30' : 'bg-transparent border-white/5 opacity-50'}`}
+                                                    onClick={() => stats.route && setIncludeRoute(!includeRoute)}
+                                                    className={`cursor-pointer p-3 rounded-xl border transition-all flex items-center justify-between ${includeRoute ? 'bg-white/5 border-green-500/30' : 'bg-transparent border-white/5 opacity-50'} ${!stats.route ? 'opacity-30 cursor-not-allowed' : ''}`}
                                                 >
                                                     <div className="flex items-center gap-3">
                                                         <div className={`p-2 rounded-lg ${includeRoute ? 'bg-green-500 text-white' : 'bg-white/10 text-gray-400'}`}>
                                                             <Navigation className="w-4 h-4" />
                                                         </div>
-                                                        <span className="text-sm font-medium text-white">Rota</span>
+                                                        <div className="flex flex-col">
+                                                            <span className="text-sm font-medium text-white">Rota</span>
+                                                            {stats.route && (
+                                                                <span className="text-[10px] text-gray-400 max-w-[150px] truncate">
+                                                                    {stats.route.title || 'İsimsiz Rota'}
+                                                                </span>
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                    <span className="text-xs text-gray-400">{includeRoute ? 'Eklendi' : 'Kapalı'}</span>
+                                                    <span className="text-xs text-gray-400">
+                                                        {stats.route ? (includeRoute ? 'Eklendi' : 'Kapalı') : 'Yok'}
+                                                    </span>
                                                 </div>
                                             </>
                                         ) : (

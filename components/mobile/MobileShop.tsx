@@ -70,8 +70,8 @@ export const MobileShop: React.FC<MobileShopProps> = ({ onNavigate, initialCateg
                             key={cat.id}
                             onClick={() => setActiveCategory(cat.id)}
                             className={`relative px-5 py-2.5 rounded-full text-xs font-bold whitespace-nowrap transition-all border ${activeCategory === cat.id
-                                    ? 'bg-[#E2FF3B] text-black border-[#E2FF3B]'
-                                    : 'bg-transparent text-white border-white/10 hover:bg-white/5'
+                                ? 'bg-[#E2FF3B] text-black border-[#E2FF3B]'
+                                : 'bg-transparent text-white border-white/10 hover:bg-white/5'
                                 }`}
                         >
                             {activeCategory === cat.id && (
@@ -132,7 +132,7 @@ export const MobileShop: React.FC<MobileShopProps> = ({ onNavigate, initialCateg
                                 {/* Image Area */}
                                 <div className="aspect-[3/4] w-full relative bg-white/5">
                                     <img
-                                        src={product.images?.[0] || product.image}
+                                        src={(product as any).images?.[0] || product.image}
                                         alt={product.name}
                                         className="w-full h-full object-cover"
                                     />
@@ -173,7 +173,7 @@ export const MobileShop: React.FC<MobileShopProps> = ({ onNavigate, initialCateg
                         initial={{ y: 100, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         exit={{ y: 100, opacity: 0 }}
-                        className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100]"
+                        className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100]"
                     >
                         <button
                             onClick={() => onNavigate('cart')}

@@ -1,32 +1,29 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence, useMotionValue, useTransform, useSpring } from 'framer-motion';
 import { ArrowLeft, ArrowRight, MapPin, Wind, Zap } from 'lucide-react';
-
-// --- DATA ---
-const SLIDES = [
-    {
-        id: 1,
-        title: "ŞEHRİN HAKİMİ OL",
-        subtitle: "En iyi rotaları keşfet, grubunu kur, asfalta izini bırak.",
-        image: "https://images.unsplash.com/photo-1609630875171-b1321377ee65?q=80&w=1000&auto=format&fit=crop", // Dark sporty bike
-        cta: "SÜRÜŞE BAŞLA",
-        vibeText: "DOMINATE",
-        accent: "#E2FF3B"
-    },
-    {
-        id: 2,
-        title: "SINIRLARI ZORLA",
-        subtitle: "Telemetri verilerinle performansını analiz et, virajların ustası ol.",
-        image: "https://images.unsplash.com/photo-1558980664-2506fca6bfc2?q=80&w=1000&auto=format&fit=crop", // Action shot or aggressive bike
-        cta: "VERİLERİ GÖR",
-        vibeText: "ADRENALINE",
-        accent: "#FF4500"
-    }
-];
+import { heroService } from '../services/heroService';
+import { Slide } from '../types';
 
 export const HeroShowcase = () => {
+    const [slides, setSlides] = useState<Slide[]>([]);
     const [index, setIndex] = useState(0);
     const containerRef = useRef<HTMLDivElement>(null);
+
+    // Initial Data Load
+    useEffect(() => {
+        const loadSlides = async () => {
+            try {
+                const data = await heroService.getSlides();
+                const activeSlides = data.filter(s => s.isActive);
+                if (activeSlides.length > 0) {
+                    setSlides(activeSlides);
+                }
+            } catch (error) {
+                console.error("Failed to load hero slides", error);
+            }
+        };
+        loadSlides();
+    }, []);
 
     // Mouse Parallax Logic
     const mouseX = useMotionValue(0);
@@ -57,16 +54,19 @@ export const HeroShowcase = () => {
 
     // Auto Play
     useEffect(() => {
+        if (slides.length <= 1) return;
         const timer = setInterval(() => {
             handleNext();
         }, 6000);
         return () => clearInterval(timer);
-    }, [index]);
+    }, [index, slides.length]);
 
-    const handleNext = () => setIndex((prev) => (prev + 1) % SLIDES.length);
-    const handlePrev = () => setIndex((prev) => (prev - 1 + SLIDES.length) % SLIDES.length);
+    const handleNext = () => setIndex((prev) => (prev + 1) % slides.length);
+    const handlePrev = () => setIndex((prev) => (prev - 1 + slides.length) % slides.length);
 
-    const activeSlide = SLIDES[index];
+    if (slides.length === 0) return null;
+
+    const activeSlide = slides[index];
 
     return (
         <div
@@ -88,7 +88,7 @@ export const HeroShowcase = () => {
 
             <AnimatePresence mode="wait">
                 <motion.div
-                    key={activeSlide.id}
+                    key={activeSlide._id}
                     className="absolute inset-0 z-10 flex items-center justify-center"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
@@ -107,10 +107,10 @@ export const HeroShowcase = () => {
                             transition={{ duration: 1, ease: "circOut" }}
                             className="text-[25vw] font-black uppercase tracking-tighter text-white stroke-text leading-none text-center opacity-10"
                             style={{
-                                WebkitTextStroke: `2px ${activeSlide.accent}`
+                                WebkitTextStroke: `2px ${activeSlide.accent || '#E2FF3B'}`
                             }}
                         >
-                            {activeSlide.vibeText}
+                            {activeSlide.vibeText || 'MOTOVIBE'}
                         </motion.h1>
                     </motion.div>
 
@@ -174,16 +174,16 @@ export const HeroShowcase = () => {
                                 exit={{ opacity: 0, x: -20 }}
                                 transition={{ duration: 0.5, delay: 0.6 }}
                                 className="pointer-events-auto group relative px-8 py-4 bg-white/5 backdrop-blur-md border border-white/20 text-white font-bold uppercase tracking-[0.2em] rounded-sm overflow-hidden hover:bg-white hover:text-black transition-all duration-300"
-                                style={{ borderColor: activeSlide.accent }}
+                                style={{ borderColor: activeSlide.accent || '#E2FF3B' }}
                             >
                                 <span className="relative z-10 flex items-center gap-3">
-                                    {activeSlide.cta}
+                                    {activeSlide.buttonText || 'İNCELE'}
                                     <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
                                 </span>
                                 {/* Hover Fill Effect */}
                                 <div
                                     className="absolute inset-0 bg-white translate-y-[101%] group-hover:translate-y-0 transition-transform duration-300"
-                                    style={{ backgroundColor: activeSlide.accent }}
+                                    style={{ backgroundColor: activeSlide.accent || '#E2FF3B' }}
                                 />
                             </motion.button>
                         </div>
@@ -218,7 +218,7 @@ export const HeroShowcase = () => {
                 <div className="flex-1 max-w-md hidden md:flex flex-col gap-2">
                     <div className="flex justify-between text-[10px] text-zinc-500 font-mono">
                         <span>00</span>
-                        <span>0{index + 1} / 0{SLIDES.length}</span>
+                        <span>0{index + 1} / 0{slides.length}</span>
                     </div>
                     <div className="h-0.5 bg-zinc-800 w-full relative overflow-hidden">
                         <motion.div

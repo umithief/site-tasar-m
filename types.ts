@@ -501,4 +501,6 @@ export interface Slide {
   buttonLink?: string;
   order: number;
   isActive: boolean;
+  vibeText?: string; // Large background text
+  accent?: string; // Color hex
 }

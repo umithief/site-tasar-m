@@ -14,7 +14,7 @@ interface AdminPanelProps {
     onNavigate: (view: any) => void;
 }
 
-type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community' | 'paddock' | 'vlogs' | 'showcase' | 'reels' | 'ui-settings';
+type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'hero' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community' | 'paddock' | 'vlogs' | 'showcase' | 'reels' | 'ui-settings';
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, onNavigate }) => {
     const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
@@ -96,6 +96,10 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
                         <CategoriesLoader
                             onShowToast={onShowToast}
                         />
+                    )}
+
+                    {activeTab === 'hero' && (
+                        <AdminHeroShowcase />
                     )}
 
 
@@ -198,7 +202,7 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
                     )}
 
                     {activeTab !== 'dashboard' && activeTab !== 'products' && activeTab !== 'orders' &&
-                        activeTab !== 'users' && activeTab !== 'categories' && activeTab !== 'routes' && activeTab !== 'ui-settings' &&
+                        activeTab !== 'users' && activeTab !== 'categories' && activeTab !== 'routes' && activeTab !== 'ui-settings' && activeTab !== 'hero' &&
                         !['stories', 'negotiations', 'models', 'events', 'community', 'paddock', 'vlogs', 'showcase', 'reels'].includes(activeTab) && (
                             <div className="p-20 text-center text-gray-500">
                                 Bu modül henüz aktif edilmedi: <b>{activeTab}</b>
@@ -242,6 +246,7 @@ import { AdminShowcase } from './admin/AdminShowcase';
 import { AdminVlogs } from './admin/AdminVlogs';
 import { AdminReelManager } from './admin/AdminReelManager';
 import { AdminUISettings } from './admin/AdminUISettings';
+import { AdminHeroShowcase } from './admin/AdminHeroShowcase';
 
 import { ProductModal } from './admin/modals/ProductModal';
 import { CategoryModal } from './admin/modals/CategoryModal';

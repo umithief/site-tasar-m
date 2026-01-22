@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import LiquidSlider from './LiquidSlider';
+
 import { CategoryGrid } from './CategoryGrid';
 import { ProductCard } from './ProductCard';
 import { PopularProducts } from './PopularProducts';
@@ -87,17 +87,7 @@ export const Showcase: React.FC<ShowcaseProps> = ({
 
     return (
         <>
-            {/* --- HERO SLIDER (PARALLAX FIXED) --- */}
-            {/* Placeholder to reserve space in flow */}
-            <div className="relative w-full h-[80vh] min-h-[600px]" />
 
-            {/* Actual Slider fixed at top */}
-            <motion.div
-                style={{ filter: blurAmount, opacity: opacityAmount }}
-                className="fixed top-0 left-0 w-full h-[80vh] min-h-[600px] z-0"
-            >
-                <LiquidSlider />
-            </motion.div>
 
             {/* --- MAIN CONTENT (Scrolls over the slider) --- */}
             <div className="relative z-10 bg-gray-50 shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">

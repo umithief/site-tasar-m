@@ -74,26 +74,26 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({ children, currentVie
                 {children}
             </main>
 
-            {/* Premium Fixed-Bottom Navigation Rail */}
-            <nav className="fixed bottom-0 left-0 w-full h-[80px] bg-[#050505]/85 backdrop-blur-xl border-t border-white/10 z-50 pb-safe lg:hidden flex items-center justify-center">
-                <div className="w-full max-w-md flex items-center justify-around h-full px-2 relative">
+            {/* Premium Fixed-Bottom Navigation Rail - Light/Glass */}
+            <nav className="fixed bottom-0 left-0 w-full h-auto min-h-[60px] bg-white/95 backdrop-blur-2xl border-t border-gray-200 z-50 pb-safe lg:hidden flex items-end justify-center shadow-[0_-5px_20px_rgba(0,0,0,0.03)]">
+                <div className="w-full max-w-md flex items-end justify-around px-2 pb-1 relative h-14">
 
                     {/* 1. Home */}
                     <button
                         onClick={() => handleNavigate('home')}
-                        className="relative w-16 h-16 flex items-center justify-center -top-1"
+                        className="relative w-14 h-14 flex items-center justify-center"
                     >
                         <motion.div whileTap={{ scale: 0.9 }}>
                             <div className={`relative flex items-center justify-center w-12 h-8 rounded-full ${isActive('home') ? '' : ''}`}>
                                 {isActive('home') && (
                                     <motion.div
                                         layoutId="nav-pill"
-                                        className="absolute inset-0 bg-[#E2FF3B]/20 rounded-full"
+                                        className="absolute inset-0 bg-black/5 rounded-full"
                                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                     />
                                 )}
                                 <Home
-                                    className={`w-6 h-6 transition-colors ${isActive('home') ? 'text-[#E2FF3B]' : 'text-gray-500'}`}
+                                    className={`w-6 h-6 transition-colors ${isActive('home') ? 'text-black fill-black/5' : 'text-gray-400'}`}
                                     strokeWidth={isActive('home') ? 2.5 : 2}
                                 />
                             </div>
@@ -103,19 +103,19 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({ children, currentVie
                     {/* 2. Explore */}
                     <button
                         onClick={() => handleNavigate('explore')}
-                        className="relative w-16 h-16 flex items-center justify-center -top-1"
+                        className="relative w-14 h-14 flex items-center justify-center"
                     >
                         <motion.div whileTap={{ scale: 0.9 }}>
                             <div className="relative flex items-center justify-center w-12 h-8 rounded-full">
                                 {isActive('explore') && (
                                     <motion.div
                                         layoutId="nav-pill"
-                                        className="absolute inset-0 bg-[#E2FF3B]/20 rounded-full"
+                                        className="absolute inset-0 bg-black/5 rounded-full"
                                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                     />
                                 )}
                                 <Compass
-                                    className={`w-6 h-6 transition-colors ${isActive('explore') ? 'text-[#E2FF3B]' : 'text-gray-500'}`}
+                                    className={`w-6 h-6 transition-colors ${isActive('explore') ? 'text-black fill-black/5' : 'text-gray-400'}`}
                                     strokeWidth={isActive('explore') ? 2.5 : 2}
                                 />
                             </div>
@@ -125,17 +125,17 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({ children, currentVie
                     {/* 3. Center Action (Create) */}
                     <button
                         onClick={() => handleNavigate('create')}
-                        className="relative w-16 h-16 flex items-center justify-center -mt-4 active:scale-95 transition-transform"
+                        className="relative w-14 h-14 flex items-center justify-center active:scale-95 transition-transform"
                     >
                         <motion.div
                             whileTap={{ scale: 0.95 }}
                             animate={{ rotate: isActive('create') ? 90 : 0 }}
                         >
                             <PlusSquare
-                                className="w-9 h-9 text-[#E2FF3B] drop-shadow-[0_0_12px_rgba(226,255,59,0.6)]"
+                                className="w-8 h-8 text-black drop-shadow-lg"
                                 strokeWidth={2}
-                                fill="black"
-                                fillOpacity={0.5}
+                                fill="currentColor"
+                                fillOpacity={0.1}
                             />
                         </motion.div>
                     </button>
@@ -143,19 +143,19 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({ children, currentVie
                     {/* 4. Shop */}
                     <button
                         onClick={() => handleNavigate('shop')}
-                        className="relative w-16 h-16 flex items-center justify-center -top-1"
+                        className="relative w-14 h-14 flex items-center justify-center"
                     >
                         <motion.div whileTap={{ scale: 0.9 }}>
                             <div className="relative flex items-center justify-center w-12 h-8 rounded-full">
                                 {isActive('shop') && (
                                     <motion.div
                                         layoutId="nav-pill"
-                                        className="absolute inset-0 bg-[#E2FF3B]/20 rounded-full"
+                                        className="absolute inset-0 bg-black/5 rounded-full"
                                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                     />
                                 )}
                                 <ShoppingBag
-                                    className={`w-6 h-6 transition-colors ${isActive('shop') ? 'text-[#E2FF3B]' : 'text-gray-500'}`}
+                                    className={`w-6 h-6 transition-colors ${isActive('shop') ? 'text-black fill-black/5' : 'text-gray-400'}`}
                                     strokeWidth={isActive('shop') ? 2.5 : 2}
                                 />
                             </div>
@@ -165,19 +165,19 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({ children, currentVie
                     {/* 5. Profile */}
                     <button
                         onClick={() => handleNavigate('my-profile')}
-                        className="relative w-16 h-16 flex items-center justify-center -top-1"
+                        className="relative w-14 h-14 flex items-center justify-center"
                     >
                         <motion.div whileTap={{ scale: 0.9 }}>
                             <div className="relative flex items-center justify-center w-12 h-8 rounded-full">
                                 {(isActive('my-profile') || isActive('profile')) && (
                                     <motion.div
                                         layoutId="nav-pill"
-                                        className="absolute inset-0 bg-[#E2FF3B]/20 rounded-full"
+                                        className="absolute inset-0 bg-black/5 rounded-full"
                                         transition={{ type: "spring", stiffness: 300, damping: 30 }}
                                     />
                                 )}
                                 <User
-                                    className={`w-6 h-6 transition-colors ${isActive('my-profile') || isActive('profile') ? 'text-[#E2FF3B]' : 'text-gray-500'}`}
+                                    className={`w-6 h-6 transition-colors ${isActive('my-profile') || isActive('profile') ? 'text-black fill-black/5' : 'text-gray-400'}`}
                                     strokeWidth={isActive('my-profile') || isActive('profile') ? 2.5 : 2}
                                 />
                             </div>

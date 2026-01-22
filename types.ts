@@ -272,16 +272,7 @@ export interface ChatThread {
 }
 // SocialPost definition removed
 
-export interface Slide {
-  _id: string;
-  image: string;
-  videoUrl?: string; // Optional video URL
-  type?: 'image' | 'video'; // Type of slide
-  title: string;
-  subtitle: string;
-  cta: string;
-  action: string;
-}
+
 
 export interface ActivityLog {
   _id: string;

@@ -138,27 +138,26 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                 </button>
             </div>
 
-            {/* Media - Immersive Full Width */}
+            {/* Media - Dynamic Aspect Ratio */}
             <div
-                className="relative w-full aspect-square bg-gray-100 dark:bg-zinc-900 overflow-hidden rounded-[2rem]"
+                className="relative w-full bg-gray-100 dark:bg-zinc-900 overflow-hidden"
                 onClick={handleDoubleTap}
             >
                 {priority ? (
                     <img
                         src={post.images?.[0] || (post as any).image}
                         alt="Post"
-                        className="w-full h-full object-cover"
+                        className="w-full h-auto max-h-[135vw] object-cover" // Limit max height to avoid super tall images
                         loading="eager"
                     />
                 ) : (
                     <LazyLoadImage
                         src={post.images?.[0] || (post as any).image}
                         alt="Post"
-                        className="w-full h-full object-cover"
+                        className="w-full h-auto max-h-[135vw] object-cover"
                         effect="blur"
-                        wrapperClassName="w-full h-full"
+                        wrapperClassName="w-full h-auto"
                         width="100%"
-                        height="100%"
                     />
                 )}
 

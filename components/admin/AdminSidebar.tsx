@@ -3,7 +3,7 @@ import { Logo } from '../ui/Logo';
 import { LayoutDashboard, Package, ShoppingCart, Users, Grid, Map, Circle, MessageSquare, Image as ImageIcon, Box, Zap, Globe, LogOut, Calendar, Activity, Film, Palette } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'slider' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community' | 'paddock' | 'showcase' | 'vlogs' | 'reels' | 'ui-settings';
+type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community' | 'paddock' | 'showcase' | 'vlogs' | 'reels' | 'ui-settings';
 
 interface AdminSidebarProps {
     activeTab: AdminTab;
@@ -54,7 +54,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, setActive
                 <NavItem id="events" label="Etkinlikler" icon={Calendar} active={activeTab === 'events'} onClick={setActiveTab} />
                 <NavItem id="community" label="Topluluk" icon={MessageSquare} active={activeTab === 'community'} onClick={setActiveTab} />
                 <NavItem id="paddock" label="Paddock" icon={Activity} active={activeTab === 'paddock'} onClick={setActiveTab} />
-                <NavItem id="slider" label="Slider" icon={ImageIcon} active={activeTab === 'slider'} onClick={setActiveTab} />
+
                 <NavItem id="showcase" label="Vitrin (Cinema)" icon={Film} active={activeTab === 'showcase'} onClick={setActiveTab} />
                 <NavItem id="reels" label="Velocity Reels" icon={Film} active={activeTab === 'reels'} onClick={setActiveTab} />
                 <NavItem id="models" label="3D Modeller" icon={Box} active={activeTab === 'models'} onClick={setActiveTab} />

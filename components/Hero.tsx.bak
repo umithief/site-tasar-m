@@ -105,16 +105,8 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
                                     className="w-full h-full object-cover opacity-80"
                                     src={current.videoUrl}
                                     poster={current.image}
-                                    autoPlay
-                                    loop
-                                    muted={isMuted}
-                                    playsInline
-                                    onError={(e) => console.error("Video load error:", current.videoUrl)}
-                                >
-                                    <source src={current.videoUrl} type="video/mp4" />
-                                    <source src={current.videoUrl} type="video/webm" />
-                                    Your browser does not support the video tag.
-                                </video>
+                                    autoPlay loop muted={isMuted} playsInline
+                                />
                             )}
                         </div>
                     ) : (

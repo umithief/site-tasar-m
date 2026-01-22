@@ -72,9 +72,10 @@ export const TuvTurkChecklist: React.FC<TuvTurkChecklistProps> = ({ onBack, onNa
     }, {} as Record<string, ChecklistItem[]>);
 
     return (
-        <div className="absolute inset-0 z-50 bg-[#09090b] flex flex-col overflow-hidden">
+        <div className="absolute inset-0 z-50 bg-[#050505] flex flex-col overflow-hidden">
             {/* Header */}
-            <div className="p-4 flex items-center gap-4 border-b border-white/10 bg-[#1A1A17]">
+            {/* Header */}
+            <div className="p-4 pt-12 flex items-center gap-4 border-b border-white/10 bg-black/90 backdrop-blur-xl sticky top-0 z-10">
                 <button onClick={onBack} className="p-2 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white">
                     <ArrowLeft className="w-6 h-6" />
                 </button>

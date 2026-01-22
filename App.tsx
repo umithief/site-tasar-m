@@ -475,11 +475,11 @@ export const App: React.FC = () => {
                     }}
                 />;
             case 'settings': return <WebSettings onNavigate={navigateTo} />;
-            case 'tuvturk': return <TuvTurkChecklist onBack={() => navigateTo('home')} onNavigateShop={(k) => navigateTo('shop', k)} />;
-            case 'exhaust': return <ExhaustLab onBack={() => navigateTo('home')} />;
-            case 'redline': return <RedlineChallenge onBack={() => navigateTo('home')} />;
-            case 'legal': return <LegalGuide onBack={() => navigateTo('home')} />;
-            case 'stolen': return <StolenPool onBack={() => navigateTo('home')} />;
+            case 'tuvturk': return <TuvTurkChecklist onBack={() => navigateTo('explore')} onNavigateShop={(k) => navigateTo('shop', k)} />;
+            case 'exhaust': return <ExhaustLab onBack={() => navigateTo('explore')} />;
+            case 'redline': return <RedlineChallenge onBack={() => navigateTo('explore')} />;
+            case 'legal': return <LegalGuide onBack={() => navigateTo('explore')} />;
+            case 'stolen': return <StolenPool onBack={() => navigateTo('explore')} />;
 
             default: return <Home onNavigate={navigateTo} products={products} onAddToCart={addToCart} onProductClick={(p: any) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
         }

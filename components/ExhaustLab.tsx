@@ -43,7 +43,7 @@ export const ExhaustLab: React.FC<ExhaustLabProps> = ({ onBack }) => {
         // Main Oscillator
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-        
+
         // Engine Characteristics
         if (activeEngine === 'inline4') {
             osc.type = 'sawtooth';
@@ -77,10 +77,10 @@ export const ExhaustLab: React.FC<ExhaustLabProps> = ({ onBack }) => {
 
     const handleThrottle = (isPressing: boolean) => {
         if (!isEngineOn || !audioCtxRef.current || !oscRef.current || !gainRef.current) return;
-        
+
         const ctx = audioCtxRef.current;
         const baseFreq = engines.find(e => e.id === activeEngine)!.baseFreq;
-        
+
         if (isPressing) {
             // Rev Up
             oscRef.current.frequency.linearRampToValueAtTime(baseFreq * 4, ctx.currentTime + 0.5);
@@ -100,9 +100,9 @@ export const ExhaustLab: React.FC<ExhaustLabProps> = ({ onBack }) => {
     };
 
     return (
-        <div className="absolute inset-0 bg-[#09090b] flex flex-col z-50">
-            <div className="p-4 border-b border-white/10 flex items-center gap-4 bg-[#111]">
-                <button onClick={onBack} className="p-2 hover:bg-white/10 rounded-full text-white">
+        <div className="absolute inset-0 bg-[#050505] flex flex-col z-50 overflow-hidden">
+            <div className="p-4 pt-12 flex items-center gap-4 border-b border-white/10 bg-black/90 backdrop-blur-xl sticky top-0 z-10">
+                <button onClick={onBack} className="p-2 hover:bg-white/10 rounded-full text-white transition-colors">
                     <ArrowLeft className="w-6 h-6" />
                 </button>
                 <div>
@@ -126,11 +126,10 @@ export const ExhaustLab: React.FC<ExhaustLabProps> = ({ onBack }) => {
                         <button
                             key={engine.id}
                             onClick={() => { stopEngine(); setActiveEngine(engine.id as EngineType); }}
-                            className={`p-4 rounded-2xl border flex flex-col items-center gap-2 transition-all ${
-                                activeEngine === engine.id 
-                                ? `bg-white/10 border-white ${engine.color}` 
-                                : 'bg-[#111] border-white/10 text-gray-500 hover:bg-[#1a1a1a]'
-                            }`}
+                            className={`p-4 rounded-2xl border flex flex-col items-center gap-2 transition-all ${activeEngine === engine.id
+                                    ? `bg-white/10 border-white ${engine.color}`
+                                    : 'bg-[#111] border-white/10 text-gray-500 hover:bg-[#1a1a1a]'
+                                }`}
                         >
                             <Activity className="w-6 h-6" />
                             <span className="text-xs font-bold uppercase">{engine.label}</span>
@@ -153,18 +152,17 @@ export const ExhaustLab: React.FC<ExhaustLabProps> = ({ onBack }) => {
                         onTouchStart={() => handleThrottle(true)}
                         onTouchEnd={() => handleThrottle(false)}
                         disabled={!isEngineOn}
-                        className={`w-40 h-40 rounded-full border-8 border-[#111] flex flex-col items-center justify-center transition-all active:scale-95 shadow-2xl ${
-                            isEngineOn 
-                            ? 'bg-gradient-to-t from-red-600 to-orange-500 shadow-orange-500/50 cursor-pointer' 
-                            : 'bg-gray-800 opacity-50 cursor-not-allowed'
-                        }`}
+                        className={`w-40 h-40 rounded-full border-8 border-[#111] flex flex-col items-center justify-center transition-all active:scale-95 shadow-2xl ${isEngineOn
+                                ? 'bg-gradient-to-t from-red-600 to-orange-500 shadow-orange-500/50 cursor-pointer'
+                                : 'bg-gray-800 opacity-50 cursor-not-allowed'
+                            }`}
                     >
                         <span className="text-white font-black text-xl tracking-widest">GAZ</span>
                         <span className="text-[10px] text-white/80 font-bold uppercase">Basılı Tut</span>
                     </button>
 
-                    <Button 
-                        onClick={toggleEngine} 
+                    <Button
+                        onClick={toggleEngine}
                         variant={isEngineOn ? 'outline' : 'primary'}
                         className="w-48"
                     >

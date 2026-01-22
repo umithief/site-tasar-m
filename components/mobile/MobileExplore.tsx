@@ -1,3 +1,5 @@
+import React from 'react';
+import { ViewState } from '../../types';
 import { Zap, Map as MapIcon, Calculator, FileWarning, ClipboardList, Scale, QrCode, Activity, Volume2, Gauge, AlertTriangle, ChevronRight } from 'lucide-react';
 
 interface MobileExploreProps {
@@ -6,7 +8,7 @@ interface MobileExploreProps {
 
 export const MobileExplore: React.FC<MobileExploreProps> = ({ onNavigate }) => {
     return (
-        <div className="min-h-[100dvh] bg-[#050505] pb-24 font-sans text-white">
+        <div className="min-h-[100dvh] bg-[#050505] pb-40 font-sans text-white">
 
             {/* Header */}
             <div className="sticky top-0 z-30 px-6 pt-12 pb-4 bg-[#050505]/95 backdrop-blur-xl border-b border-white/5">

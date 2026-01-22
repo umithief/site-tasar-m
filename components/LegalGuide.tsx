@@ -57,9 +57,9 @@ export const LegalGuide: React.FC<LegalGuideProps> = ({ onBack }) => {
     };
 
     return (
-        <div className="absolute inset-0 z-50 bg-[#09090b] flex flex-col overflow-hidden">
+        <div className="absolute inset-0 z-50 bg-[#050505] flex flex-col overflow-hidden">
             {/* Header */}
-            <div className="p-4 flex items-center gap-4 border-b border-white/10 bg-[#1A1A17]">
+            <div className="p-4 pt-12 flex items-center gap-4 border-b border-white/10 bg-black/90 backdrop-blur-xl sticky top-0 z-10">
                 <button onClick={onBack} className="p-2 hover:bg-white/10 rounded-full transition-colors text-gray-400 hover:text-white">
                     <ArrowLeft className="w-6 h-6" />
                 </button>
@@ -73,7 +73,7 @@ export const LegalGuide: React.FC<LegalGuideProps> = ({ onBack }) => {
 
             {/* Content */}
             <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-                
+
                 <div className="bg-blue-900/20 border border-blue-500/30 p-4 rounded-2xl mb-6 flex gap-3">
                     <Info className="w-6 h-6 text-blue-400 flex-shrink-0" />
                     <p className="text-sm text-blue-200">
@@ -84,17 +84,17 @@ export const LegalGuide: React.FC<LegalGuideProps> = ({ onBack }) => {
                 <div className="space-y-4">
                     {GUIDE_DATA.map((section, idx) => (
                         <div key={idx} className="bg-[#1A1A17] border border-white/5 rounded-2xl overflow-hidden">
-                            <button 
+                            <button
                                 onClick={() => toggleCategory(idx)}
                                 className="w-full flex items-center justify-between p-4 bg-white/5 hover:bg-white/10 transition-colors"
                             >
                                 <span className="font-bold text-white">{section.category}</span>
                                 {openCategory === idx ? <ChevronUp className="w-5 h-5 text-gray-400" /> : <ChevronDown className="w-5 h-5 text-gray-400" />}
                             </button>
-                            
+
                             <AnimatePresence>
                                 {openCategory === idx && (
-                                    <motion.div 
+                                    <motion.div
                                         initial={{ height: 0 }}
                                         animate={{ height: 'auto' }}
                                         exit={{ height: 0 }}
@@ -109,10 +109,9 @@ export const LegalGuide: React.FC<LegalGuideProps> = ({ onBack }) => {
                                                         {item.status === 'warning' && <AlertTriangle className="w-5 h-5 text-yellow-500" />}
                                                     </div>
                                                     <div>
-                                                        <h4 className={`text-sm font-bold mb-1 ${
-                                                            item.status === 'legal' ? 'text-green-400' : 
-                                                            item.status === 'illegal' ? 'text-red-400' : 'text-yellow-400'
-                                                        }`}>
+                                                        <h4 className={`text-sm font-bold mb-1 ${item.status === 'legal' ? 'text-green-400' :
+                                                                item.status === 'illegal' ? 'text-red-400' : 'text-yellow-400'
+                                                            }`}>
                                                             {item.title}
                                                         </h4>
                                                         <p className="text-xs text-gray-400 leading-relaxed">{item.desc}</p>

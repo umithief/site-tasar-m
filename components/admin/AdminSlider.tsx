@@ -32,6 +32,8 @@ export const AdminSlider: React.FC<AdminSliderProps> = ({ slides, handleAddNew, 
                             {/* Background Image / Poster */}
                             {slide.image ? (
                                 <img src={slide.image} className="w-full h-full object-cover" />
+                            ) : slide.videoUrl ? (
+                                <video src={slide.videoUrl} className="w-full h-full object-cover" muted />
                             ) : (
                                 <div className="w-full h-full flex items-center justify-center bg-zinc-900 border-r border-white/5">
                                     <ImageIcon className="w-12 h-12 text-zinc-700" />

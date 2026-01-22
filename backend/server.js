@@ -105,7 +105,7 @@ const Product = mongoose.models.Product || mongoose.model('Product', productSche
 // Order model moved to backend/models/Order.js
 
 const slideSchema = new mongoose.Schema({
-    image: { type: String, required: true },
+    image: { type: String }, // Made optional to support video-only slides or waiting for upload
     title: { type: String, required: true },
     subtitle: String,
     cta: { type: String, default: 'İNCELE' },

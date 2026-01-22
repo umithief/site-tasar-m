@@ -118,13 +118,25 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
                                 ></iframe>
                             ) : (
                                 <video
+                                    key={current.videoUrl} // Force re-render if URL changes
                                     ref={videoRef}
                                     className="w-full h-full object-cover opacity-80"
                                     src={current.videoUrl}
                                     poster={current.image}
                                     loop
                                     muted
+                                    autoPlay
                                     playsInline
+                                    onCanPlay={() => {
+                                        // Double check play state when ready
+                                        if (videoRef.current) {
+                                            videoRef.current.muted = true; // Ensure muted property is set
+                                            const p = videoRef.current.play();
+                                            if (p !== undefined) {
+                                                p.catch(e => console.log("Force play caught:", e));
+                                            }
+                                        }
+                                    }}
                                     onError={(e) => console.error("Video load error:", current.videoUrl, e)}
                                 />
                             )}

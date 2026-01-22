@@ -3,6 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Search, ShoppingBag, Filter, Heart, ArrowRight } from 'lucide-react';
 import { useProducts } from '../../hooks/useProducts';
 import { ProductCategory } from '../../types';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 // New Categories compatible with design
 const CATEGORIES = [
@@ -107,10 +109,14 @@ export const MobileShop: React.FC<MobileShopProps> = ({ onNavigate, initialCateg
                             >
                                 {/* Image Area */}
                                 <div className="aspect-[3/4] w-full relative bg-white/5">
-                                    <img
+                                    <LazyLoadImage
                                         src={(product as any).images?.[0] || product.image}
                                         alt={product.name}
                                         className="w-full h-full object-cover"
+                                        effect="blur"
+                                        wrapperClassName="w-full h-full"
+                                        width="100%"
+                                        height="100%"
                                     />
                                     {/* Wishlist Button */}
                                     <button className="absolute top-3 right-3 w-8 h-8 rounded-full bg-black/30 backdrop-blur-md flex items-center justify-center text-white hover:bg-[#E2FF3B] hover:text-black transition-colors">

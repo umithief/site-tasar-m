@@ -2,6 +2,8 @@ import React from 'react';
 import { Route } from '../../types';
 import { motion } from 'framer-motion';
 import { MapPin, Film, Play, Gauge, TrendingUp, Navigation, Info } from 'lucide-react';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface RouteCardProps {
     route: Route;
@@ -32,10 +34,14 @@ export const RouteCard: React.FC<RouteCardProps> = ({ route, onClick, onNavigate
         >
             {/* Background Image Area */}
             <div className="absolute inset-0 z-0">
-                <img
+                <LazyLoadImage
                     src={route.image || 'https://images.unsplash.com/photo-1605152276897-4f618f831968?q=80&w=800'}
                     alt={route.title}
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110 opacity-70 group-hover:opacity-60"
+                    effect="blur"
+                    wrapperClassName="w-full h-full"
+                    width="100%"
+                    height="100%"
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-[#121212]/40 to-[#121212] flex flex-col justify-end p-6"></div>
             </div>

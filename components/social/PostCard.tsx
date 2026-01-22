@@ -6,6 +6,8 @@ import { useAuthStore } from '../../store/authStore';
 import { socialService } from '../../services/socialService';
 import { formatDistanceToNow } from 'date-fns';
 import { tr } from 'date-fns/locale';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 import { memo } from 'react';
 
@@ -125,10 +127,14 @@ export const PostCard: React.FC<PostCardProps> = memo(({ post, onLike, onComment
                     >
                         <div className="relative p-0.5 rounded-full bg-gradient-to-tr from-moto-accent/50 to-transparent">
                             <div className="p-0.5 rounded-full bg-white dark:bg-black">
-                                <img
+                                <LazyLoadImage
                                     src={post.userAvatar || 'https://via.placeholder.com/40'}
                                     alt={post.userName}
                                     className="w-11 h-11 rounded-full object-cover"
+                                    effect="blur"
+                                    wrapperClassName="w-11 h-11 rounded-full"
+                                    width={44}
+                                    height={44}
                                 />
                             </div>
                         </div>
@@ -195,13 +201,21 @@ export const PostCard: React.FC<PostCardProps> = memo(({ post, onLike, onComment
                     onDoubleClick={handleLike}
                 >
                     {post.images && post.images.length > 0 ? (
-                        <motion.img
+                        <motion.div
                             whileHover={{ scale: 1.05 }}
                             transition={{ duration: 0.6 }}
-                            src={post.images[0]}
-                            alt="Post"
-                            className="w-full h-full object-cover"
-                        />
+                            className="w-full h-full"
+                        >
+                            <LazyLoadImage
+                                src={post.images[0]}
+                                alt="Post"
+                                className="w-full h-full object-cover"
+                                effect="blur"
+                                wrapperClassName="w-full h-full"
+                                width="100%"
+                                height="100%"
+                            />
+                        </motion.div>
                     ) : (
                         <div className="w-full h-full flex items-center justify-center">
                             <Zap className="w-12 h-12 text-gray-300 dark:text-gray-700" />

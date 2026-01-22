@@ -4,6 +4,8 @@ import { Heart, MessageCircle, Share2, MoreHorizontal, Bookmark, Trash2, Edit2, 
 import { SocialPost } from '../../types';
 import { UserAvatar } from '../ui/UserAvatar';
 import { socialService } from '../../services/socialService';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 import { MobileBottomSheet } from './MobileBottomSheet';
 import { MobileComments } from './MobileComments'; // Import Added
@@ -141,12 +143,24 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                 className="relative w-full aspect-square bg-gray-100 dark:bg-zinc-900 overflow-hidden rounded-[2rem]"
                 onClick={handleDoubleTap}
             >
-                <img
-                    src={post.images?.[0] || (post as any).image}
-                    alt="Post"
-                    className="w-full h-full object-cover"
-                    loading={priority ? 'eager' : 'lazy'}
-                />
+                {priority ? (
+                    <img
+                        src={post.images?.[0] || (post as any).image}
+                        alt="Post"
+                        className="w-full h-full object-cover"
+                        loading="eager"
+                    />
+                ) : (
+                    <LazyLoadImage
+                        src={post.images?.[0] || (post as any).image}
+                        alt="Post"
+                        className="w-full h-full object-cover"
+                        effect="blur"
+                        wrapperClassName="w-full h-full"
+                        width="100%"
+                        height="100%"
+                    />
+                )}
 
                 {/* Heart Animation Overlay */}
                 <AnimatePresence>

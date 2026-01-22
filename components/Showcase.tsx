@@ -20,6 +20,8 @@ import { useLanguage } from '../contexts/LanguageProvider';
 import ProductCatalog from './ProductCatalog';
 import { CinemaShowcase } from './CinemaShowcase';
 import { ErrorBoundary } from './ErrorBoundary';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 
 interface ShowcaseProps {
@@ -208,7 +210,15 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                         className="max-w-[1800px] mx-auto bg-[#0a0a0a] border border-white/10 rounded-[2rem] overflow-hidden cursor-pointer group shadow-2xl relative"
                     >
                         <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent z-10 pointer-events-none"></div>
-                        <img src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1600&auto=format&fit=crop" className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-1000" alt="Vlog Map" />
+                        <LazyLoadImage
+                            src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1600&auto=format&fit=crop"
+                            className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-1000"
+                            alt="Vlog Map"
+                            effect="blur"
+                            wrapperClassName="absolute inset-0 w-full h-full"
+                            width="100%"
+                            height="100%"
+                        />
 
                         <div className="relative z-20 p-8 md:p-16 flex flex-col justify-center min-h-[400px]">
                             <div className="flex items-center gap-3 text-red-500 font-bold tracking-[0.3em] text-xs uppercase mb-4">

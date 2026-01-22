@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { StarRating } from './ui/StarRating';
 import { Highlighter } from './Highlighter';
 import { useLanguage } from '../contexts/LanguageProvider';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface ProductCardProps {
     product: Product;
@@ -67,14 +69,15 @@ export const ProductCard: React.FC<ProductCardProps> = ({
 
             {/* Image Section */}
             <div className="relative aspect-square overflow-hidden bg-dark-surface">
-                <motion.img
+                <LazyLoadImage
                     src={product.image}
                     alt={product.name}
                     className={`w-full h-full object-cover transition-all duration-700 ${imageLoaded ? 'opacity-100' : 'opacity-0'}`}
-                    animate={{ scale: isHovered ? 1.1 : 1 }}
-                    transition={{ duration: 0.6 }}
-                    loading="lazy"
-                    onLoad={() => setImageLoaded(true)}
+                    effect="blur"
+                    wrapperClassName="w-full h-full"
+                    afterLoad={() => setImageLoaded(true)}
+                    width="100%"
+                    height="100%"
                 />
 
                 {/* Overlay Actions */}

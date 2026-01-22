@@ -9,14 +9,7 @@ import { useAuthStore } from '../../store/authStore';
 import { productService } from '../../services/productService';
 import { useCartStore } from '../../store/useCartStore';
 
-// Mock Data for Hero if needed
-const HERO_ITEM = {
-    brand: 'AGV',
-    model: 'PISTA GP RR',
-    variant: 'FUTURO',
-    price: 42000,
-    image: 'https://images.unsplash.com/photo-1622185135755-1e3500d02b54?q=80&w=2070&auto=format&fit=crop'
-};
+
 
 const FILTERS = {
     categories: [
@@ -290,60 +283,7 @@ export const WebShop: React.FC<WebShopProps> = ({
                 {/* Right Content Showcase */}
                 <main className="flex-1 space-y-10 min-w-0">
 
-                    {/* 3. Hero Section (The "Featured Drop") */}
-                    <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-                        className="h-[450px] w-full rounded-[32px] overflow-hidden relative group shadow-2xl"
-                    >
-                        {/* Background Image */}
-                        <img
-                            src={HERO_ITEM.image}
-                            alt="Featured"
-                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-105"
-                        />
 
-                        {/* Overlay Gradient Left -> Right */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/40 to-transparent" />
-
-                        {/* Text Layer */}
-                        <div className="absolute inset-0 flex flex-col justify-center p-12 lg:p-20 items-start">
-                            <motion.span
-                                initial={{ opacity: 0, x: -20 }}
-                                animate={{ opacity: 1, x: 0 }}
-                                transition={{ delay: 0.3 }}
-                                className="inline-block px-4 py-1.5 border border-[#E2FF3B] text-[#E2FF3B] text-xs font-black tracking-[0.2em] uppercase rounded-full mb-8 backdrop-blur-sm"
-                            >
-                                YENİ KOLEKSİYON
-                            </motion.span>
-
-                            <motion.h1
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.4 }}
-                                className="text-5xl lg:text-7xl font-black text-white leading-[0.9] mb-6 italic tracking-tighter"
-                            >
-                                {HERO_ITEM.model} <br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">{HERO_ITEM.variant}</span>
-                            </motion.h1>
-
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.5 }}
-                                className="flex items-center gap-8"
-                            >
-                                <span className="text-4xl lg:text-5xl font-bold text-[#E2FF3B] tracking-tighter shadow-black drop-shadow-lg">
-                                    ₺{HERO_ITEM.price.toLocaleString('tr-TR')}
-                                </span>
-                                <button className="h-14 px-10 bg-[#E2FF3B] text-black font-black text-lg rounded-full hover:bg-white hover:scale-105 active:scale-95 transition-all flex items-center gap-3 shadow-[0_0_30px_rgba(226,255,59,0.3)]">
-                                    ŞİMDİ İNCELE
-                                    <ArrowRight className="w-5 h-5" strokeWidth={3} />
-                                </button>
-                            </motion.div>
-                        </div>
-                    </motion.div>
 
 
                     {/* 4. Product Grid (The Gear Rack) */}

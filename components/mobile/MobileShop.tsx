@@ -89,31 +89,7 @@ export const MobileShop: React.FC<MobileShopProps> = ({ onNavigate, initialCateg
 
             <div className="px-4 space-y-6 mt-4">
 
-                {/* 3. Featured "Hero" Item (The Drop) */}
-                {!searchQuery && activeCategory === 'ALL' && (
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        className="relative w-full aspect-[4/5] rounded-[32px] overflow-hidden group cursor-pointer"
-                        onClick={() => onNavigate('product-detail', filteredProducts[0])} // Mock navigation
-                    >
-                        <img
-                            src="https://images.unsplash.com/photo-1622185135505-2d795043dfeb?q=80&w=1964&auto=format&fit=crop"
-                            alt="Featured"
-                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-                        />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent opacity-90" />
 
-                        <div className="absolute top-4 left-4 px-3 py-1 bg-[#E2FF3B] text-black text-[10px] font-black uppercase tracking-wider rounded-md">
-                            YENİ SEZON
-                        </div>
-
-                        <div className="absolute bottom-0 left-0 right-0 p-6">
-                            <h2 className="text-3xl font-black text-white leading-none mb-2">AGV Pista GP RR</h2>
-                            <p className="text-[#E2FF3B] text-xl font-bold">₺42.000</p>
-                        </div>
-                    </motion.div>
-                )}
 
                 {/* 4. The Product Grid (Main List) */}
                 <div className="grid grid-cols-2 gap-4">

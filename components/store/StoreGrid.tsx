@@ -9,7 +9,6 @@ import { useAuthStore } from '../../store/authStore';
 import { productService } from '../../services/productService';
 import { useCartStore } from '../../store/useCartStore';
 import { LazyLoadImage } from 'react-lazy-load-image-component';
-import 'react-lazy-load-image-component/src/effects/blur.css';
 
 
 
@@ -315,7 +314,6 @@ export const StoreGrid: React.FC<StoreGridProps> = ({
                                                 src={product.image || product.images?.[0] || 'https://via.placeholder.com/400x500'}
                                                 alt={product.name}
                                                 className="w-full h-full object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.4)] transition-all duration-700 group-hover:scale-110 group-hover:-rotate-2 group-hover:-translate-y-2 origin-bottom"
-                                                effect="blur"
                                                 wrapperClassName="w-full h-full"
                                                 width="100%"
                                                 height="100%"

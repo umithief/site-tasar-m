@@ -4,6 +4,8 @@ import { Plus, Heart, Award } from 'lucide-react';
 import { Product } from '../../hooks/useProducts';
 import { useCartStore } from '../../store/useCartStore';
 import { notify } from '../../services/notificationService';
+import { LazyLoadImage } from 'react-lazy-load-image-component';
+import 'react-lazy-load-image-component/src/effects/blur.css';
 
 interface ProductCardProps {
     product: Product;
@@ -35,10 +37,14 @@ const ProductCard: React.FC<ProductCardProps> = ({ product, onClick }) => {
         >
             {/* Image Area */}
             <div className="aspect-[4/5] bg-zinc-800 relative overflow-hidden">
-                <img
+                <LazyLoadImage
                     src={product.image || "https://images.unsplash.com/photo-1557844352-761f2565b576?auto=format&fit=crop&q=80&w=400"}
                     alt={product.name}
                     className="w-full h-full object-cover"
+                    effect="blur"
+                    wrapperClassName="w-full h-full"
+                    width="100%"
+                    height="100%"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60" />
 

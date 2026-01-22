@@ -36,7 +36,7 @@ export const AdminSidebar: React.FC<AdminSidebarProps> = ({ activeTab, setActive
         >
             {/* Logo Area */}
             <div className={`h-20 flex items-center ${isSidebarOpen ? 'px-8 justify-start' : 'justify-center'} border-b border-white/5`}>
-                <Logo variant={isSidebarOpen ? 'full' : 'icon'} className="h-8 text-white w-auto" />
+                <Logo showText={isSidebarOpen} className="h-8 text-white w-auto" />
             </div>
 
             {/* Navigation */}

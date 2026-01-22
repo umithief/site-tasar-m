@@ -489,3 +489,16 @@ export interface StolenItem {
 }
 
 
+
+export interface Slide {
+  _id: string;
+  image: string;
+  mobileImage?: string;
+  title: string;
+  subtitle?: string;
+  description?: string;
+  buttonText?: string;
+  buttonLink?: string;
+  order: number;
+  isActive: boolean;
+}

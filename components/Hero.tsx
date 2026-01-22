@@ -13,6 +13,8 @@ interface HeroProps {
 }
 
 export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
+    // Bypass strict type checking for ReactPlayer due to environment mismatches
+    const Player = ReactPlayer as any;
     const { t } = useLanguage();
     const [slides, setSlides] = useState<Slide[]>(DEFAULT_SLIDES);
     const [currentSlide, setCurrentSlide] = useState(0);
@@ -88,7 +90,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
                     {isVideo ? (
                         <div className="relative w-full h-full">
                             {/* REACT PLAYER INTEGRATION */}
-                            <ReactPlayer
+                            <Player
                                 ref={playerRef}
                                 url={current.videoUrl}
                                 playing={isPlaying}
@@ -103,7 +105,6 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
                                 config={{
                                     youtube: {
                                         playerVars: {
-                                            // @ts-ignore
                                             showinfo: 0,
                                             controls: 0,
                                             disablekb: 1,
@@ -119,7 +120,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
                                             playsInline: true
                                         }
                                     }
-                                }}
+                                } as any}
                             />
                             {/* Texture Overlay */}
                             <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 pointer-events-none mix-blend-overlay"></div>

@@ -117,28 +117,34 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
                                     allow="autoplay; encrypted-media"
                                 ></iframe>
                             ) : (
-                                <video
-                                    key={current.videoUrl} // Force re-render if URL changes
-                                    ref={videoRef}
-                                    className="w-full h-full object-cover opacity-80"
-                                    src={current.videoUrl}
-                                    poster={current.image}
-                                    loop
-                                    muted
-                                    autoPlay
-                                    playsInline
-                                    onCanPlay={() => {
-                                        // Double check play state when ready
-                                        if (videoRef.current) {
-                                            videoRef.current.muted = true; // Ensure muted property is set
-                                            const p = videoRef.current.play();
-                                            if (p !== undefined) {
-                                                p.catch(e => console.log("Force play caught:", e));
+                                <div className="relative w-full h-full">
+                                    <video
+                                        key={current.videoUrl}
+                                        ref={videoRef}
+                                        className="w-full h-full object-cover opacity-80"
+                                        src={current.videoUrl}
+                                        poster={current.image}
+                                        loop
+                                        muted
+                                        autoPlay
+                                        playsInline
+                                        onError={(e) => console.error("Video load error:", current.videoUrl, e)}
+                                    />
+                                    {/* Manual Play Fallback */}
+                                    <button
+                                        onClick={() => {
+                                            if (videoRef.current) {
+                                                videoRef.current.muted = false; // Unmute on click
+                                                videoRef.current.play();
                                             }
-                                        }
-                                    }}
-                                    onError={(e) => console.error("Video load error:", current.videoUrl, e)}
-                                />
+                                        }}
+                                        className="absolute inset-0 z-10 w-full h-full flex items-center justify-center bg-transparent opacity-0 hover:opacity-100 transition-opacity group/video"
+                                    >
+                                        <div className="bg-white/20 backdrop-blur-md p-4 rounded-full border border-white/30 text-white group-hover/video:scale-110 transition-transform">
+                                            <Play className="w-8 h-8 fill-current" />
+                                        </div>
+                                    </button>
+                                </div>
                             )}
                         </div>
                     ) : (

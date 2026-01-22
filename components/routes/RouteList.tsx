@@ -1,8 +1,8 @@
-
 import React, { useMemo } from 'react';
 import { Route } from '../../types';
 import { RouteCard } from './RouteCard';
-import { Search, Map as MapIcon, Loader2 } from 'lucide-react';
+import { Search, Map as MapIcon, Loader2, Filter, SlidersHorizontal, Mic } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 interface RouteListProps {
     routes: Route[];
@@ -44,51 +44,85 @@ export const RouteList: React.FC<RouteListProps> = ({
         return (
             <div className="flex flex-col items-center justify-center h-64 text-zinc-500">
                 <Loader2 className="w-8 h-8 animate-spin mb-4 text-[#E2FF3B]" />
-                <p>Rotalar yükleniyor...</p>
+                <p>Motosiklet rotaları yükleniyor...</p>
             </div>
         );
     }
 
     return (
-        <div className="space-y-6">
-            {/* Filters Header */}
-            <div className="bg-zinc-900/80 backdrop-blur-md border border-white/5 p-4 rounded-2xl shadow-lg flex flex-col md:flex-row gap-4 justify-between items-center sticky top-24 z-10">
-                <div className="relative group w-full md:w-64">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500 group-focus-within:text-white transition-colors" />
-                    <input
-                        type="text"
-                        placeholder="Rota ara..."
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        className="w-full bg-black/40 border border-white/10 rounded-xl py-2 pl-10 pr-4 text-sm text-white focus:border-[#E2FF3B]/50 outline-none transition-all placeholder:text-zinc-600"
-                    />
-                </div>
+        <div className="space-y-8">
+            {/* Premium Filter Header */}
+            <div className="sticky top-24 z-30">
+                <div className="bg-[#121212]/80 backdrop-blur-xl border border-white/10 p-2 md:p-3 rounded-2xl shadow-2xl flex flex-col md:flex-row gap-3">
 
-                <div className="flex bg-black/40 rounded-xl p-1 gap-1 overflow-x-auto max-w-full">
-                    {['All', 'Kolay', 'Orta', 'Zor', 'Extreme'].map((lvl) => (
-                        <button
-                            key={lvl}
-                            onClick={() => setDifficultyFilter(lvl)}
-                            className={`px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap ${difficultyFilter === lvl
-                                ? 'bg-zinc-800 text-white shadow-md border border-white/10'
-                                : 'text-zinc-500 hover:text-white hover:bg-white/5'
-                                }`}
-                        >
-                            {lvl === 'All' ? 'TÜMÜ' : lvl.toUpperCase()}
-                        </button>
-                    ))}
+                    {/* Search Bar */}
+                    <div className="relative group w-full md:flex-1">
+                        <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <Search className="h-4 w-4 text-zinc-500 group-focus-within:text-[#E2FF3B] transition-colors" />
+                        </div>
+                        <input
+                            type="text"
+                            placeholder="Rota, şehir veya özellik ara..."
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            className="block w-full pl-10 pr-10 py-3 rounded-xl bg-white/5 border border-white/5 text-sm text-white placeholder-zinc-500 focus:bg-black focus:border-[#E2FF3B] focus:ring-1 focus:ring-[#E2FF3B] transition-all outline-none"
+                        />
+                        <div className="absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer hover:text-white text-zinc-500">
+                            <Mic size={16} />
+                        </div>
+                    </div>
+
+                    {/* Filter Tabs */}
+                    <div className="flex bg-black/40 p-1.5 rounded-xl border border-white/5 overflow-x-auto custom-scrollbar">
+                        {['All', 'Kolay', 'Orta', 'Zor', 'Extreme'].map((lvl) => {
+                            const isActive = difficultyFilter === lvl;
+                            return (
+                                <button
+                                    key={lvl}
+                                    onClick={() => setDifficultyFilter(lvl)}
+                                    className={`relative px-4 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap z-10 ${isActive ? 'text-black' : 'text-zinc-400 hover:text-white'
+                                        }`}
+                                >
+                                    {isActive && (
+                                        <motion.div
+                                            layoutId="activeFilter"
+                                            className="absolute inset-0 bg-[#E2FF3B] rounded-lg -z-10 shadow-[0_0_15px_rgba(226,255,59,0.3)]"
+                                            transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                                        />
+                                    )}
+                                    {lvl === 'All' ? 'TÜMÜ' : lvl.toUpperCase()}
+                                </button>
+                            );
+                        })}
+                    </div>
+
+                    {/* More Filters Button */}
+                    <button className="hidden md:flex items-center justify-center p-3 rounded-xl bg-white/5 border border-white/5 text-white hover:bg-white/10 hover:border-white/20 transition-all">
+                        <SlidersHorizontal size={18} />
+                    </button>
+
                 </div>
             </div>
 
-            {/* Grid */}
+            {/* Results Grid */}
             {filteredRoutes.length === 0 ? (
-                <div className="text-center py-20 bg-zinc-900/20 rounded-3xl border border-white/5 border-dashed">
-                    <MapIcon className="w-16 h-16 text-zinc-700 mx-auto mb-4" />
-                    <h3 className="text-xl font-bold text-white mb-2">Rota Bulunamadı</h3>
-                    <p className="text-zinc-500">Arama kriterlerinize uygun rota yok.</p>
+                <div className="flex flex-col items-center justify-center py-32 text-center rounded-3xl border border-white/5 bg-gradient-to-b from-white/5 to-transparent">
+                    <div className="w-24 h-24 rounded-full bg-white/5 flex items-center justify-center mb-6">
+                        <MapIcon className="w-10 h-10 text-zinc-600" />
+                    </div>
+                    <h3 className="text-2xl font-bold text-white mb-2">Rota Bulunamadı</h3>
+                    <p className="text-zinc-500 max-w-md mx-auto px-4">
+                        Aradığınız kriterlere uygun sürüş rotası bulunamadı. Filtreleri temizleyip tekrar deneyin.
+                    </p>
+                    <button
+                        onClick={() => { setSearchQuery(''); setDifficultyFilter('All'); }}
+                        className="mt-6 text-[#E2FF3B] hover:underline text-sm font-bold uppercase tracking-wider"
+                    >
+                        Filtreleri Temizle
+                    </button>
                 </div>
             ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 animate-in fade-in zoom-in-95 duration-500">
+                <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-6 px-1">
                     {filteredRoutes.map(route => (
                         <RouteCard
                             key={route._id}
@@ -100,6 +134,9 @@ export const RouteList: React.FC<RouteListProps> = ({
                     ))}
                 </div>
             )}
+
+            {/* Bottom Gradient Fade */}
+            <div className="fixed bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-black to-transparent pointer-events-none z-20" />
         </div>
     );
 };

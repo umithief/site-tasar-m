@@ -71,6 +71,22 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
         });
     };
 
+    const videoRef = useRef<HTMLVideoElement>(null);
+
+    useEffect(() => {
+        if (currentSlide !== undefined && slides[currentSlide].type === 'video' && videoRef.current) {
+            videoRef.current.defaultMuted = true;
+            videoRef.current.muted = true;
+            videoRef.current.load();
+            const playPromise = videoRef.current.play();
+            if (playPromise !== undefined) {
+                playPromise.catch((error) => {
+                    console.error("Auto-play prevented:", error);
+                });
+            }
+        }
+    }, [currentSlide, slides]);
+
     const current = slides[currentSlide];
 
     return (
@@ -102,19 +118,15 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
                                 ></iframe>
                             ) : (
                                 <video
+                                    ref={videoRef}
                                     className="w-full h-full object-cover opacity-80"
                                     src={current.videoUrl}
                                     poster={current.image}
-                                    autoPlay
                                     loop
-                                    muted={isMuted}
+                                    muted
                                     playsInline
-                                    onError={(e) => console.error("Video load error:", current.videoUrl)}
-                                >
-                                    <source src={current.videoUrl} type="video/mp4" />
-                                    <source src={current.videoUrl} type="video/webm" />
-                                    Your browser does not support the video tag.
-                                </video>
+                                    onError={(e) => console.error("Video load error:", current.videoUrl, e)}
+                                />
                             )}
                         </div>
                     ) : (

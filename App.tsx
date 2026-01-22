@@ -47,6 +47,7 @@ import { ProModal } from './components/ProModal';
 import { FeedbackModal } from './components/FeedbackModal';
 import { ProductQuickViewModal } from './components/ProductQuickViewModal';
 import { AnimatePresence, motion } from 'framer-motion';
+import { LoadingSkeleton } from './components/ui/LoadingSkeleton';
 // Lazy Load Heavy Components
 const StoreGrid = React.lazy(() => import('./components/store/StoreGrid').then(module => ({ default: module.StoreGrid })));
 const SocialHub = React.lazy(() => import('./components/social/SocialHub').then(module => ({ default: module.SocialHub })));
@@ -592,7 +593,7 @@ export const App: React.FC = () => {
                                     transition={{ duration: 0.3 }}
                                     className="w-full h-full"
                                 >
-                                    <React.Suspense fallback={<div className="flex h-screen items-center justify-center bg-black"><div className="w-10 h-10 border-4 border-gray-600 border-t-[#E2FF3B] rounded-full animate-spin"></div></div>}>
+                                    <React.Suspense fallback={<LoadingSkeleton className="bg-black" />}>
                                         {renderView()}
                                     </React.Suspense>
                                 </motion.div>
@@ -648,7 +649,7 @@ export const App: React.FC = () => {
                                         transition={{ duration: 0.3 }}
                                         className="px-4 md:px-8 max-w-[1600px] mx-auto"
                                     >
-                                        <React.Suspense fallback={<div className="flex h-screen items-center justify-center bg-transparent"><div className="w-10 h-10 border-4 border-gray-300 border-t-[#E2FF3B] rounded-full animate-spin"></div></div>}>
+                                        <React.Suspense fallback={<LoadingSkeleton />}>
                                             {renderView()}
                                         </React.Suspense>
                                     </motion.div>

@@ -55,5 +55,10 @@ export const storyService = {
     // Mark story as viewed
     viewStory: async (storyId: string): Promise<void> => {
         await api.post(`/stories/${storyId}/view`);
+    },
+
+    // Delete a story
+    deleteStory: async (storyId: string): Promise<void> => {
+        await api.delete(`/stories/${storyId}`);
     }
 };

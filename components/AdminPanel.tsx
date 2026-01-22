@@ -93,14 +93,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
                     )}
 
                     {activeTab === 'categories' && (
-                        <GenericLoader
-                            fetchData={categoryService.getCategories}
-                            loadingMsg="Kategoriler yükleniyor..."
-                            errorMsg="Kategoriler alınamadı"
+                        <CategoriesLoader
                             onShowToast={onShowToast}
-                            renderItem={(data: any, handleDelete: any) => (
-                                <AdminCategories categories={data} handleDelete={(id) => handleDelete(categoryService.deleteCategory, id)} handleEdit={() => { }} handleAddNew={() => onShowToast('info', 'Ekleme özelliği eklenecek')} />
-                            )}
                         />
                     )}
 
@@ -260,7 +254,8 @@ import { AdminReelManager } from './admin/AdminReelManager';
 import { AdminUISettings } from './admin/AdminUISettings';
 
 import { ProductModal } from './admin/modals/ProductModal';
-import { Product, Order } from '../types';
+import { CategoryModal } from './admin/modals/CategoryModal';
+import { Product, Order, CategoryItem } from '../types';
 
 // --- Generic Component for Simple Lists ---
 const GenericLoader = ({ fetchData, renderItem, loadingMsg, errorMsg, onShowToast }: any) => {
@@ -441,6 +436,85 @@ const ProductsLoader = ({ onShowToast, searchTerm }: any) => {
                     editingProduct={editingProduct}
                 />
             )}
+        </>
+    );
+};
+
+const CategoriesLoader = ({ onShowToast }: any) => {
+    const [categories, setCategories] = useState<CategoryItem[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingCategory, setEditingCategory] = useState<CategoryItem | null>(null);
+
+    const loadCategories = async () => {
+        try {
+            setLoading(true);
+            const data = await categoryService.getCategories();
+            setCategories(data);
+        } catch (err) {
+            onShowToast('error', 'Kategoriler yüklenemedi');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    React.useEffect(() => {
+        loadCategories();
+    }, []);
+
+    const handleAddNew = () => {
+        setEditingCategory(null);
+        setIsModalOpen(true);
+    };
+
+    const handleEdit = (category: CategoryItem) => {
+        setEditingCategory(category);
+        setIsModalOpen(true);
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!confirm('Bu kategoriyi silmek istediğinize emin misiniz?')) return;
+        try {
+            await categoryService.deleteCategory(id);
+            setCategories(prev => prev.filter(c => c._id !== id));
+            onShowToast('success', 'Kategori silindi');
+        } catch (e) {
+            onShowToast('error', 'Silme işlemi başarısız');
+        }
+    };
+
+    const handleSave = async (categoryData: any) => {
+        try {
+            if (editingCategory) {
+                await categoryService.updateCategory(categoryData);
+                onShowToast('success', 'Kategori güncellendi');
+            } else {
+                await categoryService.addCategory(categoryData);
+                onShowToast('success', 'Kategori eklendi');
+            }
+            await loadCategories();
+        } catch (e) {
+            console.error(e);
+            onShowToast('error', 'İşlem başarısız');
+        }
+    };
+
+    if (loading) return <div className="text-white text-center p-10 animate-pulse">Kategoriler Yükleniyor...</div>;
+
+    return (
+        <>
+            <AdminCategories
+                categories={categories}
+                handleAddNew={handleAddNew}
+                handleEdit={handleEdit}
+                handleDelete={handleDelete}
+            />
+            <CategoryModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSave={handleSave}
+                editingCategory={editingCategory}
+            />
         </>
     );
 };

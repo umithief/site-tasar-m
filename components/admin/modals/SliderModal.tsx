@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { X, Upload, Link, Loader2 } from 'lucide-react';
 import { Slide } from '../../../types';
 import { Button } from '../../ui/Button';
+import { api } from '../../../services/api';
 
 interface SliderModalProps {
     isOpen: boolean;
@@ -20,6 +21,8 @@ export const SliderModal: React.FC<SliderModalProps> = ({ isOpen, onClose, onSav
         image: '',
         videoUrl: ''
     });
+    const [isUploading, setIsUploading] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     useEffect(() => {
         if (editingSlide) {
@@ -43,6 +46,36 @@ export const SliderModal: React.FC<SliderModalProps> = ({ isOpen, onClose, onSav
         e.preventDefault();
         onSave(formData);
         onClose();
+    };
+
+    const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setIsUploading(true);
+        try {
+            const uploadData = new FormData();
+            uploadData.append('file', file);
+
+            const response = await api.post('/upload', uploadData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+
+            if (formData.type === 'image') {
+                setFormData(prev => ({ ...prev, image: response.data.url }));
+            } else {
+                setFormData(prev => ({ ...prev, videoUrl: response.data.url }));
+            }
+        } catch (error) {
+            console.error('Upload failed', error);
+            alert('Dosya yüklenirken bir hata oluştu.');
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const triggerFileInput = () => {
+        fileInputRef.current?.click();
     };
 
     return (
@@ -103,31 +136,60 @@ export const SliderModal: React.FC<SliderModalProps> = ({ isOpen, onClose, onSav
                             />
                         </div>
 
-                        {formData.type === 'image' && (
-                            <div className="col-span-2">
-                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Görsel URL</label>
-                                <input
-                                    type="text"
-                                    className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-[#E2FF3B] focus:outline-none transition-colors"
-                                    placeholder="https://..."
-                                    value={formData.image}
-                                    onChange={e => setFormData({ ...formData, image: e.target.value })}
-                                />
-                            </div>
-                        )}
+                        {/* Image/Video Upload Section */}
+                        <div className="col-span-2">
+                            <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
+                                {formData.type === 'image' ? 'Slide Görseli' : 'Slide Videosu'}
+                            </label>
 
-                        {formData.type === 'video' && (
-                            <div className="col-span-2">
-                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Video URL (MP4 / WebM)</label>
-                                <input
-                                    type="text"
-                                    className="w-full bg-black/40 border border-white/10 rounded-lg p-3 text-white focus:border-[#E2FF3B] focus:outline-none transition-colors"
-                                    placeholder="https://...mp4"
-                                    value={formData.videoUrl}
-                                    onChange={e => setFormData({ ...formData, videoUrl: e.target.value })}
-                                />
+                            {/* Hidden File Input */}
+                            <input
+                                type="file"
+                                ref={fileInputRef}
+                                className="hidden"
+                                accept={formData.type === 'image' ? "image/*" : "video/*"}
+                                onChange={handleFileUpload}
+                            />
+
+                            <div className="flex flex-col gap-3">
+                                {/* Upload Button */}
+                                <div
+                                    onClick={triggerFileInput}
+                                    className="border-2 border-dashed border-white/20 rounded-xl p-6 flex flex-col items-center justify-center cursor-pointer hover:border-[#E2FF3B] hover:bg-white/5 transition-all group"
+                                >
+                                    {isUploading ? (
+                                        <Loader2 className="w-8 h-8 text-[#E2FF3B] animate-spin mb-2" />
+                                    ) : (
+                                        <Upload className="w-8 h-8 text-gray-400 group-hover:text-[#E2FF3B] mb-2" />
+                                    )}
+                                    <span className="text-sm text-gray-400 font-medium">
+                                        {isUploading ? 'Yükleniyor...' : 'Cihazdan Yükle'}
+                                    </span>
+                                </div>
+
+                                {/* OR Divider */}
+                                <div className="flex items-center gap-3">
+                                    <div className="h-px bg-white/10 flex-1" />
+                                    <span className="text-xs text-gray-500 font-bold">VEYA URL GİR</span>
+                                    <div className="h-px bg-white/10 flex-1" />
+                                </div>
+
+                                {/* URL Input */}
+                                <div className="relative">
+                                    <Link className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                                    <input
+                                        type="text"
+                                        className="w-full bg-black/40 border border-white/10 rounded-lg p-3 pl-10 text-white focus:border-[#E2FF3B] focus:outline-none transition-colors"
+                                        placeholder={formData.type === 'image' ? "https://... (Görsel URL)" : "https://... (Video URL)"}
+                                        value={formData.type === 'image' ? formData.image : formData.videoUrl}
+                                        onChange={e => formData.type === 'image'
+                                            ? setFormData({ ...formData, image: e.target.value })
+                                            : setFormData({ ...formData, videoUrl: e.target.value })
+                                        }
+                                    />
+                                </div>
                             </div>
-                        )}
+                        </div>
 
                         <div>
                             <label className="block text-xs font-bold text-gray-500 uppercase mb-1">Buton Metni (CTA)</label>
@@ -156,7 +218,9 @@ export const SliderModal: React.FC<SliderModalProps> = ({ isOpen, onClose, onSav
 
                     <div className="pt-4 flex justify-end gap-3 border-t border-white/10 mt-4">
                         <Button type="button" variant="outline" onClick={onClose}>İptal</Button>
-                        <Button type="submit" className="bg-[#E2FF3B] text-black hover:bg-[#ccee00]">Kaydet</Button>
+                        <Button type="submit" disabled={isUploading} className="bg-[#E2FF3B] text-black hover:bg-[#ccee00]">
+                            {isUploading ? 'Yükleniyor...' : 'Kaydet'}
+                        </Button>
                     </div>
                 </form>
             </div>

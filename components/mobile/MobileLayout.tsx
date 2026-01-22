@@ -74,87 +74,85 @@ export const MobileLayout: React.FC<MobileLayoutProps> = ({ children, currentVie
                 {children}
             </main>
 
-            {/* Bottom Navigation Bar */}
-            <nav className="fixed bottom-0 left-0 right-0 bg-white dark:bg-black border-t border-gray-100 dark:border-white/10 pb-safe z-50 lg:hidden shadow-[0_-5px_20px_rgba(0,0,0,0.03)] dark:shadow-none transition-colors">
-                <div className="flex items-center justify-around h-16 px-2">
-                    <button
-                        onClick={() => handleNavigate('home')}
-                        className={`relative flex flex-col items-center justify-center w-full h-full gap-1 transition-colors ${isActive('home') ? 'text-moto-accent' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'}`}
-                    >
-                        <div className="relative p-1.5">
-                            <Home className={`w-6 h-6 ${isActive('home') ? 'fill-current' : ''}`} strokeWidth={isActive('home') ? 2.5 : 2} />
-                            {isActive('home') && (
-                                <motion.div
-                                    layoutId="nav-pill"
-                                    className="absolute inset-0 bg-moto-accent/10 dark:bg-moto-accent/20 rounded-xl -z-10"
-                                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                />
-                            )}
-                        </div>
-                        <span className="text-[10px] font-bold">Akış</span>
-                    </button>
+            {/* Bottom Navigation Bar - Floating / Native Feel */}
+            <div className="fixed bottom-4 left-4 right-4 z-50 lg:hidden">
+                <nav className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-xl border border-gray-200 dark:border-white/10 rounded-2xl shadow-2xl shadow-black/20 overflow-hidden">
+                    <div className="flex items-center justify-around h-16 px-1">
+                        <button
+                            onClick={() => handleNavigate('home')}
+                            className={`relative flex flex-col items-center justify-center w-full h-full gap-1 transition-all active:scale-95 ${isActive('home') ? 'text-moto-accent' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'}`}
+                        >
+                            <div className="relative p-2 rounded-xl">
+                                <Home className={`w-6 h-6 ${isActive('home') ? 'fill-current' : ''}`} strokeWidth={isActive('home') ? 2.5 : 2} />
+                                {isActive('home') && (
+                                    <motion.div
+                                        layoutId="nav-bg"
+                                        className="absolute inset-0 bg-moto-accent/15 rounded-xl -z-10"
+                                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                    />
+                                )}
+                            </div>
+                        </button>
 
-                    <button
-                        onClick={() => handleNavigate('explore')}
-                        className={`relative flex flex-col items-center justify-center w-full h-full gap-1 transition-colors ${isActive('explore') ? 'text-moto-accent' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'}`}
-                    >
-                        <div className="relative p-1.5">
-                            <Compass className={`w-6 h-6 ${isActive('explore') ? 'fill-current' : ''}`} strokeWidth={isActive('explore') ? 2.5 : 2} />
-                            {isActive('explore') && (
-                                <motion.div
-                                    layoutId="nav-pill"
-                                    className="absolute inset-0 bg-moto-accent/10 dark:bg-moto-accent/20 rounded-xl -z-10"
-                                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                />
-                            )}
-                        </div>
-                        <span className="text-[10px] font-bold">Keşfet</span>
-                    </button>
+                        <button
+                            onClick={() => handleNavigate('explore')}
+                            className={`relative flex flex-col items-center justify-center w-full h-full gap-1 transition-all active:scale-95 ${isActive('explore') ? 'text-moto-accent' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'}`}
+                        >
+                            <div className="relative p-2 rounded-xl">
+                                <Compass className={`w-6 h-6 ${isActive('explore') ? 'fill-current' : ''}`} strokeWidth={isActive('explore') ? 2.5 : 2} />
+                                {isActive('explore') && (
+                                    <motion.div
+                                        layoutId="nav-bg"
+                                        className="absolute inset-0 bg-moto-accent/15 rounded-xl -z-10"
+                                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                    />
+                                )}
+                            </div>
+                        </button>
 
-                    <button
-                        onClick={() => handleNavigate('create')}
-                        className="relative -top-6"
-                    >
-                        <div className="w-14 h-14 rounded-full bg-gray-900 dark:bg-white flex items-center justify-center shadow-lg shadow-gray-300 dark:shadow-none transform transition-transform active:scale-95 border-4 border-gray-50 dark:border-black">
-                            <PlusSquare className="w-6 h-6 text-white dark:text-black" />
-                        </div>
-                    </button>
+                        <button
+                            onClick={() => handleNavigate('create')}
+                            className="relative -top-5 active:scale-90 transition-transform"
+                        >
+                            <div className="w-14 h-14 rounded-2xl bg-moto-accent flex items-center justify-center shadow-lg shadow-moto-accent/30 rotate-45 border-4 border-[#050505]">
+                                <PlusSquare className="w-7 h-7 text-black -rotate-45" strokeWidth={2.5} />
+                            </div>
+                        </button>
 
-                    <button
-                        onClick={() => handleNavigate('shop')}
-                        className={`relative flex flex-col items-center justify-center w-full h-full gap-1 transition-colors ${isActive('shop') ? 'text-moto-accent' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'}`}
-                    >
-                        <div className="relative p-1.5">
-                            <ShoppingBag className={`w-6 h-6 ${isActive('shop') ? 'fill-current' : ''}`} strokeWidth={isActive('shop') ? 2.5 : 2} />
-                            {isActive('shop') && (
-                                <motion.div
-                                    layoutId="nav-pill"
-                                    className="absolute inset-0 bg-moto-accent/10 dark:bg-moto-accent/20 rounded-xl -z-10"
-                                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                />
-                            )}
-                        </div>
-                        <span className="text-[10px] font-bold">Mağaza</span>
-                    </button>
+                        <button
+                            onClick={() => handleNavigate('shop')}
+                            className={`relative flex flex-col items-center justify-center w-full h-full gap-1 transition-all active:scale-95 ${isActive('shop') ? 'text-moto-accent' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'}`}
+                        >
+                            <div className="relative p-2 rounded-xl">
+                                <ShoppingBag className={`w-6 h-6 ${isActive('shop') ? 'fill-current' : ''}`} strokeWidth={isActive('shop') ? 2.5 : 2} />
+                                {isActive('shop') && (
+                                    <motion.div
+                                        layoutId="nav-bg"
+                                        className="absolute inset-0 bg-moto-accent/15 rounded-xl -z-10"
+                                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                    />
+                                )}
+                            </div>
+                        </button>
 
-                    <button
-                        onClick={() => handleNavigate('my-profile')}
-                        className={`relative flex flex-col items-center justify-center w-full h-full gap-1 transition-colors ${isActive('my-profile') || isActive('profile') ? 'text-moto-accent' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'}`}
-                    >
-                        <div className="relative p-1.5">
-                            <User className={`w-6 h-6 ${isActive('my-profile') || isActive('profile') ? 'fill-current' : ''}`} strokeWidth={isActive('my-profile') || isActive('profile') ? 2.5 : 2} />
-                            {(isActive('my-profile') || isActive('profile')) && (
-                                <motion.div
-                                    layoutId="nav-pill"
-                                    className="absolute inset-0 bg-moto-accent/10 dark:bg-moto-accent/20 rounded-xl -z-10"
-                                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                                />
-                            )}
-                        </div>
-                        <span className="text-[10px] font-bold">Profil</span>
-                    </button>
-                </div>
-            </nav>
+                        <button
+                            onClick={() => handleNavigate('my-profile')}
+                            className={`relative flex flex-col items-center justify-center w-full h-full gap-1 transition-all active:scale-95 ${isActive('my-profile') || isActive('profile') ? 'text-moto-accent' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'}`}
+                        >
+                            <div className="relative p-2 rounded-xl">
+                                <User className={`w-6 h-6 ${isActive('my-profile') || isActive('profile') ? 'fill-current' : ''}`} strokeWidth={isActive('my-profile') || isActive('profile') ? 2.5 : 2} />
+                                {(isActive('my-profile') || isActive('profile')) && (
+                                    <motion.div
+                                        layoutId="nav-bg"
+                                        className="absolute inset-0 bg-moto-accent/15 rounded-xl -z-10"
+                                        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                    />
+                                )}
+                            </div>
+                        </button>
+                    </div>
+                </nav>
+            </div>
         </div>
     );
 };

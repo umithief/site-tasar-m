@@ -1,307 +1,465 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
     Search, Filter, ShoppingBag, ChevronDown, Check,
     ArrowRight, Star, Heart, Plus, Minus, X
 } from 'lucide-react';
+import { Product, ProductCategory } from '../../types';
+import { useAuthStore } from '../../store/authStore';
+import { productService } from '../../services/productService';
+import { useCartStore } from '../../store/useCartStore';
 
-// Mock Data
-const PRODUCTS = [
-    {
-        id: '1',
-        brand: 'SHOEI',
-        name: 'NXR2 Kask - Mat Siyah',
-        price: 18900,
-        image: 'https://images.unsplash.com/photo-1622185135505-2d795043dfeb?q=80&w=1964&auto=format&fit=crop',
-        category: 'Kask',
-        isNew: true
-    },
-    {
-        id: '2',
-        brand: 'DAINESE',
-        name: 'Avro 4 Deri Mont',
-        price: 24500,
-        image: 'https://images.unsplash.com/photo-1551028919-ac7675cf5c63?q=80&w=1887&auto=format&fit=crop',
-        category: 'Mont',
-        discount: 10
-    },
-    {
-        id: '3',
-        brand: 'AGV',
-        name: 'Pista GP RR - Carbon',
-        price: 42000,
-        image: 'https://images.unsplash.com/photo-1591561954557-26941169b49e?q=80&w=1587&auto=format&fit=crop',
-        category: 'Kask',
-        isNew: true
-    },
-    {
-        id: '4',
-        brand: 'ALPINESTARS',
-        name: 'GP Pro R3 Eldiven',
-        price: 8500,
-        image: 'https://images.unsplash.com/photo-1544652478-6653e09f1826?q=80&w=1887&auto=format&fit=crop',
-        category: 'Eldiven'
-    },
-    {
-        id: '5',
-        brand: 'REVIT',
-        name: 'Quantum 2 Air',
-        price: 12400,
-        image: 'https://images.unsplash.com/photo-1551028919-ac7675cf5c63?q=80&w=1887&auto=format&fit=crop',
-        category: 'Mont'
-    },
-    {
-        id: '6',
-        brand: 'SHOEI',
-        name: 'GT-Air II - Redux',
-        price: 21000,
-        image: 'https://images.unsplash.com/photo-1622185135505-2d795043dfeb?q=80&w=1964&auto=format&fit=crop',
-        category: 'Kask'
-    }
-];
+// Mock Data for Hero if needed, or we can fetch special items
+const HERO_ITEM = {
+    brand: 'AGV',
+    model: 'PISTA GP RR',
+    variant: 'FUTURO',
+    price: 42000,
+    image: 'https://images.unsplash.com/photo-1622185135755-1e3500d02b54?q=80&w=2070&auto=format&fit=crop'
+};
 
 const FILTERS = {
-    categories: ['Kask', 'Mont', 'Eldiven', 'Bot', 'Pantolon', 'Aksesuar'],
+    categories: [
+        { id: ProductCategory.HELMET, label: 'Kask' },
+        { id: ProductCategory.JACKET, label: 'Mont' },
+        { id: ProductCategory.GLOVES, label: 'Eldiven' },
+        { id: ProductCategory.BOOTS, label: 'Bot' },
+        { id: ProductCategory.PANTS, label: 'Pantolon' },
+        { id: ProductCategory.ACCESSORY, label: 'Aksesuar' }
+    ],
     brands: ['Dainese', 'Alpinestars', 'Shoei', 'AGV', 'Revit', 'Spidi']
 };
 
-export default function WebStore() {
-    const [cartCount, setCartCount] = useState(2);
-    const [priceRange, setPriceRange] = useState(15000);
+interface WebStoreProps {
+    onNavigate?: (view: string, data?: any) => void;
+}
+
+export const WebStore: React.FC<WebStoreProps> = ({ onNavigate }) => {
+    const { user } = useAuthStore();
+    const { cart, addToCart } = useCartStore();
+
+    // State
+    const [products, setProducts] = useState<Product[]>([]);
+    const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [searchQuery, setSearchQuery] = useState('');
+
+    // Filters
+    const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+    const [selectedBrand, setSelectedBrand] = useState<string | null>(null);
+    const [priceRange, setPriceRange] = useState(50000);
+
+    // UI State
     const [isCartExpanded, setIsCartExpanded] = useState(false);
+    const [accordionState, setAccordionState] = useState({
+        categories: true,
+        brands: true,
+        price: true
+    });
+
+    const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+    const cartTotal = cart.reduce((acc, item) => acc + (item.price * item.quantity), 0);
+
+    // Initial Load
+    useEffect(() => {
+        loadProducts();
+    }, []);
+
+    // Filter Logic
+    useEffect(() => {
+        let result = products;
+
+        if (selectedCategory) {
+            result = result.filter(p => p.category === selectedCategory);
+        }
+
+        if (selectedBrand) {
+            result = result.filter(p => p.brand === selectedBrand);
+        }
+
+        if (searchQuery) {
+            const q = searchQuery.toLowerCase();
+            result = result.filter(p =>
+                p.name.toLowerCase().includes(q) ||
+                p.brand?.toLowerCase().includes(q)
+            );
+        }
+
+        result = result.filter(p => p.price <= priceRange);
+
+        setFilteredProducts(result);
+    }, [products, selectedCategory, selectedBrand, searchQuery, priceRange]);
+
+    const loadProducts = async () => {
+        setIsLoading(true);
+        try {
+            const data = await productService.getProducts();
+            setProducts(data);
+        } catch (error) {
+            console.error("Failed to load products", error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const toggleAccordion = (section: keyof typeof accordionState) => {
+        setAccordionState(prev => ({ ...prev, [section]: !prev[section] }));
+    };
+
+    const handleAddToCart = (product: Product) => {
+        addToCart({
+            productId: product._id,
+            name: product.name,
+            price: product.price,
+            image: product.image || product.images?.[0] || '',
+            quantity: 1
+        });
+    };
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-[#E2FF3B] selection:text-black relative overflow-hidden">
+        <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-[#E2FF3B] selection:text-black relative overflow-x-hidden">
 
-            {/* Background Texture */}
-            <div className="fixed inset-0 pointer-events-none opacity-20">
+            {/* Background Texture with Heavy Blur */}
+            <div className="fixed inset-0 pointer-events-none opacity-20 z-0">
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center" />
                 <div className="absolute inset-0 bg-[#050505]/90 backdrop-blur-3xl" />
             </div>
 
-            {/* Main Layout */}
-            <div className="relative z-10 max-w-[1600px] mx-auto p-8 flex gap-8">
+            {/* Main Layout Container */}
+            <div className="relative z-10 max-w-[1920px] mx-auto p-6 lg:p-10 flex gap-8">
 
                 {/* 2. Left Sidebar: The "Filter Cockpit" */}
-                <aside className="w-64 flex-shrink-0">
-                    <div className="sticky top-24 h-[85vh] bg-[#0F1012]/60 backdrop-blur-xl border border-white/5 rounded-[32px] p-6 flex flex-col shadow-2xl">
+                {/* Fixed width, sticky position */}
+                <aside className="hidden lg:block w-72 flex-shrink-0">
+                    <div className="sticky top-24 h-[85vh] bg-[#0F1012]/60 backdrop-blur-xl border border-white/5 rounded-[32px] p-6 flex flex-col shadow-2xl overflow-hidden">
 
-                        <div className="flex items-center justify-between mb-8">
+                        <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
                             <h2 className="font-bold tracking-widest text-sm text-gray-400 font-display">FİLTRELER</h2>
-                            <button className="text-xs text-[#E2FF3B] hover:text-white transition-colors">Temizle</button>
+                            <motion.button
+                                whileTap={{ scale: 0.95 }}
+                                onClick={() => { setSelectedCategory(null); setSelectedBrand(null); setSearchQuery(''); }}
+                                className="text-xs text-[#E2FF3B] hover:text-white transition-colors font-medium"
+                            >
+                                Temizle
+                            </motion.button>
                         </div>
 
-                        <div className="flex-1 overflow-y-auto no-scrollbar space-y-8">
+                        <div className="flex-1 overflow-y-auto no-scrollbar space-y-8 pr-2">
 
-                            {/* Categories */}
+                            {/* Search Input in Sidebar */}
+                            <div className="relative">
+                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+                                <input
+                                    type="text"
+                                    placeholder="Ürün ara..."
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-[#E2FF3B]/50 transition-colors placeholder:text-gray-600"
+                                />
+                            </div>
+
+                            {/* Categories Accordion */}
                             <div>
-                                <h3 className="font-bold text-white mb-4 flex items-center justify-between cursor-pointer group">
+                                <h3
+                                    onClick={() => toggleAccordion('categories')}
+                                    className="font-bold text-white mb-4 flex items-center justify-between cursor-pointer group select-none"
+                                >
                                     <span>Kategoriler</span>
-                                    <ChevronDown className="w-4 h-4 text-gray-500 group-hover:text-white transition-colors" />
+                                    <ChevronDown className={`w-4 h-4 text-gray-500 group-hover:text-white transition-transform ${accordionState.categories ? 'rotate-180' : ''}`} />
                                 </h3>
-                                <div className="space-y-2">
-                                    {FILTERS.categories.map((cat, i) => (
-                                        <label key={i} className="flex items-center gap-3 cursor-pointer group">
-                                            <div className="w-4 h-4 rounded border border-white/20 flex items-center justify-center group-hover:border-[#E2FF3B] transition-colors">
-                                                {/* Mock Checkbox logic */}
-                                                {i === 0 && <div className="w-2 h-2 bg-[#E2FF3B] rounded-[1px]" />}
-                                            </div>
-                                            <span className="text-sm text-gray-400 group-hover:text-white transition-colors">{cat}</span>
-                                        </label>
-                                    ))}
-                                </div>
+                                <AnimatePresence>
+                                    {accordionState.categories && (
+                                        <motion.div
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: 'auto', opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            className="space-y-2 overflow-hidden"
+                                        >
+                                            {FILTERS.categories.map((cat) => (
+                                                <label key={cat.id} className="flex items-center gap-3 cursor-pointer group py-1">
+                                                    <div
+                                                        onClick={() => setSelectedCategory(selectedCategory === cat.id ? null : cat.id)}
+                                                        className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selectedCategory === cat.id ? 'bg-[#E2FF3B] border-[#E2FF3B]' : 'border-white/20 group-hover:border-white'}`}
+                                                    >
+                                                        {selectedCategory === cat.id && <Check className="w-3 h-3 text-black" />}
+                                                    </div>
+                                                    <span className={`text-sm transition-colors ${selectedCategory === cat.id ? 'text-white font-bold' : 'text-gray-400 group-hover:text-white'}`}>
+                                                        {cat.label}
+                                                    </span>
+                                                </label>
+                                            ))}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
 
-                            {/* Brands */}
+                            {/* Brands Accordion */}
                             <div>
-                                <h3 className="font-bold text-white mb-4 flex items-center justify-between cursor-pointer group">
+                                <h3
+                                    onClick={() => toggleAccordion('brands')}
+                                    className="font-bold text-white mb-4 flex items-center justify-between cursor-pointer group select-none"
+                                >
                                     <span>Markalar</span>
-                                    <ChevronDown className="w-4 h-4 text-gray-500 group-hover:text-white transition-colors" />
+                                    <ChevronDown className={`w-4 h-4 text-gray-500 group-hover:text-white transition-transform ${accordionState.brands ? 'rotate-180' : ''}`} />
                                 </h3>
-                                <div className="space-y-2">
-                                    {FILTERS.brands.map((brand, i) => (
-                                        <label key={i} className="flex items-center gap-3 cursor-pointer group">
-                                            <div className="w-4 h-4 rounded border border-white/20 flex items-center justify-center group-hover:border-[#E2FF3B] transition-colors">
-                                            </div>
-                                            <span className="text-sm text-gray-400 group-hover:text-white transition-colors">{brand}</span>
-                                        </label>
-                                    ))}
-                                </div>
+                                <AnimatePresence>
+                                    {accordionState.brands && (
+                                        <motion.div
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: 'auto', opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            className="space-y-2 overflow-hidden"
+                                        >
+                                            {FILTERS.brands.map((brand) => (
+                                                <label key={brand} className="flex items-center gap-3 cursor-pointer group py-1">
+                                                    <div
+                                                        onClick={() => setSelectedBrand(selectedBrand === brand ? null : brand)}
+                                                        className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selectedBrand === brand ? 'bg-[#E2FF3B] border-[#E2FF3B]' : 'border-white/20 group-hover:border-white'}`}
+                                                    >
+                                                        {selectedBrand === brand && <Check className="w-3 h-3 text-black" />}
+                                                    </div>
+                                                    <span className={`text-sm transition-colors ${selectedBrand === brand ? 'text-white font-bold' : 'text-gray-400 group-hover:text-white'}`}>
+                                                        {brand}
+                                                    </span>
+                                                </label>
+                                            ))}
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
 
-                            {/* Price Range */}
+                            {/* Price Range Accordion */}
                             <div>
-                                <h3 className="font-bold text-white mb-6">Fiyat Aralığı</h3>
-                                <div className="relative h-1 bg-white/10 rounded-full mb-4">
-                                    <div className="absolute left-0 top-0 h-full bg-[#E2FF3B] w-[60%]" />
-                                    <div className="absolute left-[60%] top-1/2 -translate-y-1/2 w-4 h-4 bg-[#E2FF3B] rounded-full shadow-[0_0_10px_#E2FF3B] cursor-grab active:cursor-grabbing" />
-                                </div>
-                                <div className="flex justify-between text-xs text-gray-400 font-mono">
-                                    <span>₺0</span>
-                                    <span className="text-white">₺{priceRange.toLocaleString('tr-TR')}</span>
-                                </div>
+                                <h3
+                                    onClick={() => toggleAccordion('price')}
+                                    className="font-bold text-white mb-6 flex items-center justify-between cursor-pointer group select-none"
+                                >
+                                    <span>Fiyat Aralığı</span>
+                                    <ChevronDown className={`w-4 h-4 text-gray-500 group-hover:text-white transition-transform ${accordionState.price ? 'rotate-180' : ''}`} />
+                                </h3>
+                                <AnimatePresence>
+                                    {accordionState.price && (
+                                        <motion.div
+                                            initial={{ height: 0, opacity: 0 }}
+                                            animate={{ height: 'auto', opacity: 1 }}
+                                            exit={{ height: 0, opacity: 0 }}
+                                            className="overflow-hidden px-1"
+                                        >
+                                            <input
+                                                type="range"
+                                                min="0"
+                                                max="100000"
+                                                step="1000"
+                                                value={priceRange}
+                                                onChange={(e) => setPriceRange(Number(e.target.value))}
+                                                className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#E2FF3B]"
+                                            />
+                                            <div className="flex justify-between text-xs text-gray-400 font-mono mt-4">
+                                                <span>₺0</span>
+                                                <span className="text-[#E2FF3B] font-bold">₺{priceRange.toLocaleString('tr-TR')}</span>
+                                            </div>
+                                        </motion.div>
+                                    )}
+                                </AnimatePresence>
                             </div>
 
                         </div>
                     </div>
                 </aside>
 
-                {/* Right Content */}
-                <main className="flex-1 space-y-8">
+                {/* Right Content Showcase */}
+                <main className="flex-1 space-y-10 min-w-0">
 
                     {/* 3. Hero Section (The "Featured Drop") */}
                     <motion.div
-                        initial={{ opacity: 0, y: 20 }}
+                        initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="h-[400px] w-full rounded-[32px] overflow-hidden relative group"
+                        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
+                        className="h-[450px] w-full rounded-[32px] overflow-hidden relative group shadow-2xl"
                     >
                         {/* Background Image */}
                         <img
-                            src="https://images.unsplash.com/photo-1622185135755-1e3500d02b54?q=80&w=2070&auto=format&fit=crop"
+                            src={HERO_ITEM.image}
                             alt="Featured"
-                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-[1.5s] group-hover:scale-105"
                         />
 
-                        {/* Overlay */}
-                        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/50 to-transparent" />
+                        {/* Overlay Gradient Left -> Right */}
+                        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/40 to-transparent" />
 
-                        {/* Content */}
-                        <div className="absolute inset-0 flex flex-col justify-center p-16">
-                            <span className="inline-block px-3 py-1 border border-[#E2FF3B] text-[#E2FF3B] text-xs font-bold tracking-widest uppercase rounded-full w-fit mb-6">
-                                Yeni Koleksiyon
-                            </span>
-                            <h1 className="text-6xl font-black text-white leading-none mb-4 tracking-tighter italic">
-                                PISTA GP RR <br />
-                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">FUTURO</span>
-                            </h1>
-                            <p className="text-xl text-gray-300 mb-8 max-w-lg font-light">
-                                Profesyonel yarışçılar için tasarlanmış, rüzgar tünelinde şekillendirilmiş karbon fiber şaheser.
-                            </p>
+                        {/* Text Layer */}
+                        <div className="absolute inset-0 flex flex-col justify-center p-12 lg:p-20 items-start">
+                            <motion.span
+                                initial={{ opacity: 0, x: -20 }}
+                                animate={{ opacity: 1, x: 0 }}
+                                transition={{ delay: 0.3 }}
+                                className="inline-block px-4 py-1.5 border border-[#E2FF3B] text-[#E2FF3B] text-xs font-black tracking-[0.2em] uppercase rounded-full mb-8 backdrop-blur-sm"
+                            >
+                                YENİ KOLEKSİYON
+                            </motion.span>
 
-                            <div className="flex items-center gap-8">
-                                <span className="text-5xl font-bold text-[#E2FF3B] tracking-tight">
-                                    ₺42.000
+                            <motion.h1
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.4 }}
+                                className="text-5xl lg:text-7xl font-black text-white leading-[0.9] mb-6 italic tracking-tighter"
+                            >
+                                {HERO_ITEM.model} <br />
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-500">{HERO_ITEM.variant}</span>
+                            </motion.h1>
+
+                            <motion.div
+                                initial={{ opacity: 0, y: 20 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: 0.5 }}
+                                className="flex items-center gap-8"
+                            >
+                                <span className="text-4xl lg:text-5xl font-bold text-[#E2FF3B] tracking-tighter shadow-black drop-shadow-lg">
+                                    ₺{HERO_ITEM.price.toLocaleString('tr-TR')}
                                 </span>
-                                <button className="h-14 px-8 bg-[#E2FF3B] text-black font-bold text-lg rounded-full hover:bg-white hover:scale-105 transition-all flex items-center gap-2">
+                                <button className="h-14 px-10 bg-[#E2FF3B] text-black font-black text-lg rounded-full hover:bg-white hover:scale-105 active:scale-95 transition-all flex items-center gap-3 shadow-[0_0_30px_rgba(226,255,59,0.3)]">
                                     ŞİMDİ İNCELE
-                                    <ArrowRight className="w-5 h-5" />
+                                    <ArrowRight className="w-5 h-5" strokeWidth={3} />
                                 </button>
-                            </div>
+                            </motion.div>
                         </div>
                     </motion.div>
 
 
                     {/* 4. Product Grid (The Gear Rack) */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20">
-                        {PRODUCTS.map((product, index) => (
-                            <motion.div
-                                key={product.id}
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: index * 0.1 }}
-                                className="group relative bg-[#1A1A1A]/40 backdrop-blur-md border border-white/5 rounded-3xl overflow-hidden hover:border-white/20 transition-all hover:bg-[#1A1A1A]/60 hover:shadow-[0_0_30px_rgba(0,0,0,0.3)]"
-                            >
-                                {/* Badges */}
-                                <div className="absolute top-4 left-4 z-20 flex flex-col gap-2">
-                                    {product.isNew && (
-                                        <span className="px-2 py-1 bg-[#E2FF3B] text-black text-[10px] font-black uppercase rounded-md tracking-wider">
-                                            YENİ
-                                        </span>
-                                    )}
-                                    {product.discount && (
-                                        <span className="px-2 py-1 bg-white text-black text-[10px] font-black uppercase rounded-md tracking-wider">
-                                            %{product.discount} İNDİRİM
-                                        </span>
-                                    )}
-                                </div>
-
-                                {/* Wishlist */}
-                                <button className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-black/20 backdrop-blur-sm border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-black/50 transition-colors">
-                                    <Heart className="w-4 h-4" />
-                                </button>
-
-                                {/* Image Area */}
-                                <div className="aspect-[4/5] relative p-6 flex items-center justify-center">
-                                    <div className="absolute inset-0 bg-gradient-to-tr from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
-                                    <img
-                                        src={product.image}
-                                        alt={product.name}
-                                        className="w-full h-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.5)] transition-transform duration-500 group-hover:scale-110 group-hover:-rotate-3"
-                                    />
-
-                                    {/* Quick View Button - Fade in on hover */}
-                                    <div className="absolute inset-x-0 bottom-6 flex justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0">
-                                        <button className="px-6 py-2 bg-white/10 backdrop-blur-md border border-white/20 text-white text-sm font-bold rounded-full hover:bg-white hover:text-black transition-colors">
-                                            Hızlı Bakış
+                    {isLoading ? (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                            {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
+                                <div key={i} className="aspect-[3/4] rounded-3xl bg-white/5 animate-pulse" />
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 pb-32">
+                            <AnimatePresence>
+                                {filteredProducts.map((product, index) => (
+                                    <motion.div
+                                        key={product._id}
+                                        initial={{ opacity: 0, scale: 0.95 }}
+                                        animate={{ opacity: 1, scale: 1 }}
+                                        transition={{ delay: index * 0.05 }}
+                                        layoutId={product._id}
+                                        className="group relative bg-[#1A1A1A]/40 backdrop-blur-md border border-white/5 rounded-3xl overflow-hidden hover:border-white/20 transition-all hover:bg-[#1A1A1A]/60 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] flex flex-col"
+                                    >
+                                        {/* Wishlist Button */}
+                                        <button className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-[#E2FF3B] hover:text-black hover:border-transparent transition-all active:scale-90">
+                                            <Heart className="w-5 h-5" />
                                         </button>
-                                    </div>
-                                </div>
 
-                                {/* Info Area */}
-                                <div className="p-5 border-t border-white/5 bg-black/20">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <div>
-                                            <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-1">{product.brand}</p>
-                                            <h3 className="text-lg font-bold text-white leading-tight group-hover:text-[#E2FF3B] transition-colors truncate pr-4">
-                                                {product.name}
-                                            </h3>
+                                        {/* Discount Badge */}
+                                        {product.discountPrice && (
+                                            <div className="absolute top-4 left-4 z-20 px-3 py-1 bg-[#E2FF3B] text-black text-[10px] font-black uppercase rounded-lg tracking-wider shadow-lg">
+                                                İNDİRİM
+                                            </div>
+                                        )}
+
+                                        {/* Image Area - Floating in center */}
+                                        <div className="relative aspect-[4/5] p-8 flex items-center justify-center overflow-hidden">
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+
+                                            <img
+                                                src={product.image || product.images?.[0] || 'https://via.placeholder.com/400x500'}
+                                                alt={product.name}
+                                                className="w-full h-full object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.4)] transition-all duration-700 group-hover:scale-110 group-hover:-rotate-2 group-hover:-translate-y-2 origin-bottom"
+                                            />
+
+                                            {/* Quick View Button (Fade In) */}
+                                            <div className="absolute inset-x-0 bottom-8 flex justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-4 group-hover:translate-y-0">
+                                                <button className="px-6 py-2.5 bg-white/10 backdrop-blur-xl border border-white/20 text-white text-xs font-bold uppercase tracking-wider rounded-full hover:bg-white hover:text-black transition-colors shadow-xl">
+                                                    Göz At
+                                                </button>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <div className="flex items-end justify-between mt-2">
-                                        <div className="flex flex-col">
-                                            {product.discount ? (
-                                                <div className="flex items-center gap-2">
-                                                    <span className="text-gray-500 text-xs line-through">
-                                                        ₺{Math.round(product.price * 1.1).toLocaleString('tr-TR')}
-                                                    </span>
-                                                    <span className="text-white font-bold text-lg">
-                                                        ₺{product.price.toLocaleString('tr-TR')}
-                                                    </span>
+                                        {/* Info Area (Bottom) */}
+                                        <div className="p-6 pt-0 mt-auto">
+                                            <div className="mb-4">
+                                                <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mb-1.5">{product.brand || 'Marka'}</p>
+                                                <h3 className="text-lg font-bold text-white leading-tight group-hover:text-[#E2FF3B] transition-colors truncate">
+                                                    {product.name}
+                                                </h3>
+                                            </div>
+
+                                            <div className="flex items-center justify-between border-t border-white/5 pt-4">
+                                                <div className="flex flex-col">
+                                                    {product.discountPrice ? (
+                                                        <>
+                                                            <span className="text-gray-500 text-xs line-through decoration-red-500 decoration-2">
+                                                                ₺{product.price.toLocaleString('tr-TR')}
+                                                            </span>
+                                                            <span className="text-white font-bold text-lg">
+                                                                ₺{product.discountPrice.toLocaleString('tr-TR')}
+                                                            </span>
+                                                        </>
+                                                    ) : (
+                                                        <span className="text-white font-bold text-lg">
+                                                            ₺{product.price.toLocaleString('tr-TR')}
+                                                        </span>
+                                                    )}
                                                 </div>
-                                            ) : (
-                                                <span className="text-white font-bold text-lg">
-                                                    ₺{product.price.toLocaleString('tr-TR')}
-                                                </span>
-                                            )}
-                                        </div>
 
-                                        <button className="w-10 h-10 rounded-full bg-[#E2FF3B] flex items-center justify-center text-black hover:scale-110 active:scale-95 transition-all shadow-[0_0_15px_rgba(226,255,59,0.3)]">
-                                            <Plus className="w-5 h-5" strokeWidth={3} />
-                                        </button>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </div>
+                                                <motion.button
+                                                    whileTap={{ scale: 0.9 }}
+                                                    onClick={() => handleAddToCart(product)}
+                                                    className="w-10 h-10 rounded-full bg-[#E2FF3B] flex items-center justify-center text-black hover:bg-white transition-colors shadow-[0_0_20px_rgba(226,255,59,0.2)]"
+                                                >
+                                                    <Plus className="w-5 h-5" strokeWidth={3} />
+                                                </motion.button>
+                                            </div>
+                                        </div>
+                                    </motion.div>
+                                ))}
+                            </AnimatePresence>
+                        </div>
+                    )}
                 </main>
             </div>
 
             {/* 5. Floating Cart Widget */}
-            <motion.div
-                className="fixed bottom-8 right-8 z-50"
-                onHoverStart={() => setIsCartExpanded(true)}
-                onHoverEnd={() => setIsCartExpanded(false)}
-            >
-                <motion.button
-                    className="relative bg-black/60 backdrop-blur-xl border border-[#E2FF3B]/30 rounded-full h-16 flex items-center overflow-hidden shadow-[0_0_30px_rgba(0,0,0,0.5)]"
-                    animate={{ width: isCartExpanded ? 200 : 64 }}
-                    transition={{ type: "spring", stiffness: 300, damping: 30 }}
-                >
-                    <div className="absolute left-0 w-16 h-16 flex items-center justify-center">
-                        <ShoppingBag className="w-6 h-6 text-[#E2FF3B]" />
-                        {cartCount > 0 && (
-                            <div className="absolute top-4 right-4 w-2.5 h-2.5 bg-red-500 rounded-full border border-black animate-pulse" />
-                        )}
-                    </div>
+            <AnimatePresence>
+                {cartCount > 0 && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 50 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 50 }}
+                        className="fixed bottom-8 right-8 z-50 flex flex-col items-end gap-2"
+                        onHoverStart={() => setIsCartExpanded(true)}
+                        onHoverEnd={() => setIsCartExpanded(false)}
+                    >
+                        <motion.button
+                            layout
+                            className="bg-[#0F1012]/80 backdrop-blur-2xl border border-[#E2FF3B]/50 rounded-full h-16 flex items-center overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.6)] group relative"
+                            animate={{ width: isCartExpanded ? 240 : 64 }}
+                            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+                        >
+                            {/* Glowing effect */}
+                            <div className="absolute inset-0 bg-[#E2FF3B]/5 group-hover:bg-[#E2FF3B]/10 transition-colors" />
 
-                    <div className="pl-16 pr-6 whitespace-nowrap">
-                        <span className="text-xs text-gray-400 block font-medium">Toplam Tutar</span>
-                        <span className="text-sm text-white font-bold">₺18.900</span>
-                    </div>
-                </motion.button>
-            </motion.div>
+                            <div className="absolute left-0 w-16 h-16 flex items-center justify-center z-10">
+                                <ShoppingBag className="w-6 h-6 text-[#E2FF3B]" strokeWidth={2.5} />
+                                <div className="absolute top-4 right-4 w-3 h-3 bg-red-500 rounded-full border-2 border-[#0F1012] flex items-center justify-center">
+                                    <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
+                                </div>
+                            </div>
+
+                            <div className="pl-16 pr-8 whitespace-nowrap z-10 flex flex-col items-start leading-tight">
+                                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Sepet Özeti</span>
+                                <div className="flex items-baseline gap-2">
+                                    <span className="text-lg text-white font-black tracking-tight shrink-0">
+                                        ₺{cartTotal.toLocaleString('tr-TR')}
+                                    </span>
+                                    <span className="text-xs text-gray-500 font-bold">({cartCount} Ürün)</span>
+                                </div>
+                            </div>
+                        </motion.button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
         </div>
     );
-}
+};

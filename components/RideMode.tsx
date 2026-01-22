@@ -808,7 +808,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
 
                 <div className="pointer-events-auto">
                     <button
-                        onClick={() => onNavigate('home')}
+                        onClick={() => onNavigate('explore')}
                         className="w-10 h-10 rounded-full bg-red-600/10 border border-red-500/30 text-red-500 hover:bg-red-600 hover:text-white transition-all backdrop-blur-md flex items-center justify-center"
                     >
                         <X className="w-6 h-6" />

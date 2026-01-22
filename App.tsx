@@ -584,20 +584,11 @@ export const App: React.FC = () => {
 
                     {isFullScreenMode ? (
                         <main className={`w-full h-full relative z-10 bg-black ${view === 'product-detail' ? 'overflow-y-auto' : ''}`}>
-                            <AnimatePresence mode="wait">
-                                <motion.div
-                                    key={view}
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    transition={{ duration: 0.3 }}
-                                    className="w-full h-full"
-                                >
-                                    <React.Suspense fallback={<LoadingSkeleton className="bg-black" />}>
-                                        {renderView()}
-                                    </React.Suspense>
-                                </motion.div>
-                            </AnimatePresence>
+                            <div className="w-full h-full">
+                                <React.Suspense fallback={<LoadingSkeleton className="bg-black" />}>
+                                    {renderView()}
+                                </React.Suspense>
+                            </div>
                         </main>
                     ) : (
                         <MobileLayout
@@ -640,20 +631,11 @@ export const App: React.FC = () => {
                                     : 'pt-0 pb-20' /* Mobile Padding */
                                     }`}
                             >
-                                <AnimatePresence mode="wait">
-                                    <motion.div
-                                        key={view}
-                                        initial={{ opacity: 0, y: 20 }}
-                                        animate={{ opacity: 1, y: 0 }}
-                                        exit={{ opacity: 0, y: -20 }}
-                                        transition={{ duration: 0.3 }}
-                                        className="px-4 md:px-8 max-w-[1600px] mx-auto"
-                                    >
-                                        <React.Suspense fallback={<LoadingSkeleton />}>
-                                            {renderView()}
-                                        </React.Suspense>
-                                    </motion.div>
-                                </AnimatePresence>
+                                <div className="px-4 md:px-8 max-w-[1600px] mx-auto">
+                                    <React.Suspense fallback={<LoadingSkeleton />}>
+                                        {renderView()}
+                                    </React.Suspense>
+                                </div>
                             </main>
 
 

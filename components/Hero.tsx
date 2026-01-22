@@ -23,7 +23,7 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
 
     const autoPlayRef = useRef<ReturnType<typeof setInterval> | null>(null);
     const AUTO_PLAY_DURATION = 8000;
-    const playerRef = useRef<ReactPlayer>(null);
+    const playerRef = useRef<any>(null);
 
     useEffect(() => {
         const loadSlides = async () => {
@@ -98,13 +98,18 @@ export const Hero: React.FC<HeroProps> = ({ onNavigate }) => {
                                 height="100%"
                                 className="react-player absolute top-0 left-0"
                                 style={{ objectFit: 'cover', position: 'absolute', top: 0, left: 0 }}
-                                width="100%"
-                                height="100%"
                                 controls={false}
                                 playsinline={true}
                                 config={{
                                     youtube: {
-                                        playerVars: { showinfo: 0, controls: 0, disablekb: 1, modestbranding: 1, rel: 0 }
+                                        playerVars: {
+                                            // @ts-ignore
+                                            showinfo: 0,
+                                            controls: 0,
+                                            disablekb: 1,
+                                            modestbranding: 1,
+                                            rel: 0
+                                        }
                                     },
                                     file: {
                                         attributes: {

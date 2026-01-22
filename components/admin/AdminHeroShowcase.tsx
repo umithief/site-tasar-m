@@ -1,13 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Plus, Edit2, Trash2, Save, X, Image as ImageIcon, ArrowRight } from 'lucide-react';
+import { Plus, Edit2, Trash2, Save, X, Image as ImageIcon, ArrowRight, Video } from 'lucide-react';
 import { heroService } from '../../services/heroService';
 import { Slide } from '../../types';
+// @ts-ignore
+import { FilePond, registerPlugin } from 'react-filepond';
+import 'filepond/dist/filepond.min.css';
+import 'filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css';
+// @ts-ignore
+import FilePondPluginImagePreview from 'filepond-plugin-image-preview';
+import { storageService } from '../../services/storageService';
+
+registerPlugin(FilePondPluginImagePreview);
 
 export const AdminHeroShowcase = () => {
     const [slides, setSlides] = useState<Slide[]>([]);
     const [loading, setLoading] = useState(true);
     const [isEditing, setIsEditing] = useState(false);
+    const [files, setFiles] = useState<any[]>([]);
+    const [uploadType, setUploadType] = useState<'image' | 'video'>('image');
 
     // Form State
     const [currentSlide, setCurrentSlide] = useState<Partial<Slide>>({
@@ -18,7 +29,9 @@ export const AdminHeroShowcase = () => {
         accent: '#E2FF3B',
         buttonText: 'İNCELE',
         isActive: true,
-        order: 0
+        order: 0,
+        mediaType: 'image',
+        videoUrl: ''
     });
 
     useEffect(() => {
@@ -46,6 +59,7 @@ export const AdminHeroShowcase = () => {
             }
             setIsEditing(false);
             setCurrentSlide({});
+            setFiles([]);
             loadSlides();
         } catch (error) {
             alert('İşlem başarısız');
@@ -64,6 +78,8 @@ export const AdminHeroShowcase = () => {
 
     const handleEdit = (slide: Slide) => {
         setCurrentSlide(slide);
+        setFiles([]); // Clear files on edit open, or populate if possible (FilePond makes this tricky with URLs)
+        setUploadType(slide.mediaType || 'image');
         setIsEditing(true);
     };
 
@@ -76,8 +92,11 @@ export const AdminHeroShowcase = () => {
             accent: '#E2FF3B',
             buttonText: 'İNCELE',
             isActive: true,
-            order: slides.length + 1
+            order: slides.length + 1,
+            mediaType: 'image',
+            videoUrl: ''
         });
+        setFiles([]);
         setIsEditing(true);
     };
 
@@ -191,19 +210,65 @@ export const AdminHeroShowcase = () => {
                             <form onSubmit={handleSubmit} className="p-6 space-y-6">
                                 {/* Visuals */}
                                 <div className="space-y-4">
-                                    <h4 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Görsel & Stil</h4>
-                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <label className="text-sm text-gray-400">Görsel URL</label>
-                                            <input
-                                                type="url"
-                                                value={currentSlide.image}
-                                                onChange={e => setCurrentSlide({ ...currentSlide, image: e.target.value })}
-                                                className="w-full bg-white/5 border border-white/10 rounded-lg p-3 focus:outline-none focus:border-[#E2FF3B]"
-                                                placeholder="https://..."
-                                                required
+                                    <h4 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Medya</h4>
+
+                                    <div className="flex gap-4 p-2 bg-white/5 rounded-lg w-fit">
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setUploadType('image');
+                                                setCurrentSlide(prev => ({ ...prev, mediaType: 'image' }));
+                                            }}
+                                            className={`flex items-center gap-2 px-3 py-1.5 rounded transition-colors ${uploadType === 'image' ? 'bg-[#E2FF3B] text-black font-bold' : 'text-gray-400 hover:text-white'}`}
+                                        >
+                                            <ImageIcon size={16} /> Görsel
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                setUploadType('video');
+                                                setCurrentSlide(prev => ({ ...prev, mediaType: 'video' }));
+                                            }}
+                                            className={`flex items-center gap-2 px-3 py-1.5 rounded transition-colors ${uploadType === 'video' ? 'bg-[#E2FF3B] text-black font-bold' : 'text-gray-400 hover:text-white'}`}
+                                        >
+                                            <Video size={16} /> Video
+                                        </button>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        <label className="text-sm text-gray-400">Dosya Yükle</label>
+                                        <div className="bg-white/5 rounded-lg p-2 border border-white/10">
+                                            <FilePond
+                                                files={files}
+                                                onupdatefiles={setFiles}
+                                                allowMultiple={false}
+                                                server={{
+                                                    process: async (fieldName: any, file: any, metadata: any, load: any, error: any, progress: any, abort: any) => {
+                                                        try {
+                                                            const url = await storageService.uploadFile(file);
+                                                            if (uploadType === 'video') {
+                                                                setCurrentSlide(prev => ({ ...prev, videoUrl: url, image: url })); // Use same for image if simple
+                                                            } else {
+                                                                setCurrentSlide(prev => ({ ...prev, image: url }));
+                                                            }
+                                                            load(url);
+                                                        } catch (err) { error('Upload failed'); }
+                                                    }
+                                                }}
+                                                labelIdle={`Sürükle bırak veya <span class="filepond--label-action">Gözat</span> (${uploadType})`}
+                                                credits={false}
+                                                className="filepond-dark"
                                             />
+                                            {(uploadType === 'image' ? currentSlide.image : currentSlide.videoUrl) && !files.length && (
+                                                <div className="mt-2 text-xs text-green-400 flex items-center gap-1">
+                                                    <ArrowRight size={12} /> Mevcut dosya korunuyor
+                                                </div>
+                                            )}
                                         </div>
+                                    </div>
+
+                                    <div className="space-y-4 pt-4 border-t border-white/10">
+                                        <h4 className="text-sm font-bold text-gray-500 uppercase tracking-wider">Görsel & Stil</h4>
                                         <div className="space-y-2">
                                             <label className="text-sm text-gray-400">Accent Color (Hex)</label>
                                             <div className="flex gap-2">

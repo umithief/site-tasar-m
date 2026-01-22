@@ -125,15 +125,26 @@ export const HeroShowcase = () => {
                             }}
                             className="relative w-full max-w-5xl aspect-[16/9] flex items-center justify-center"
                         >
-                            <motion.img
-                                src={activeSlide.image}
-                                alt={activeSlide.title}
-                                initial={{ opacity: 0, scale: 0.8, y: 100, rotate: -5 }}
-                                animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
-                                exit={{ opacity: 0, scale: 1.1, x: 100 }}
-                                transition={{ duration: 0.8, ease: "circOut" }}
-                                className="w-full h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
-                            />
+                            {activeSlide.mediaType === 'video' ? (
+                                <video
+                                    src={activeSlide.videoUrl || activeSlide.image}
+                                    autoPlay
+                                    muted
+                                    loop
+                                    playsInline
+                                    className="w-full h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+                                />
+                            ) : (
+                                <motion.img
+                                    src={activeSlide.image}
+                                    alt={activeSlide.title}
+                                    initial={{ opacity: 0, scale: 0.8, y: 100, rotate: -5 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
+                                    exit={{ opacity: 0, scale: 1.1, x: 100 }}
+                                    transition={{ duration: 0.8, ease: "circOut" }}
+                                    className="w-full h-full object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+                                />
+                            )}
                             {/* Reflection/Shadow */}
                             <div className="absolute -bottom-10 left-10 right-10 h-20 bg-black/60 blur-3xl rounded-[100%]" />
                         </motion.div>

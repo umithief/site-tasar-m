@@ -503,4 +503,6 @@ export interface Slide {
   isActive: boolean;
   vibeText?: string; // Large background text
   accent?: string; // Color hex
+  mediaType?: 'image' | 'video';
+  videoUrl?: string; // MP4 or URL
 }

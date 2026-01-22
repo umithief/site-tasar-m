@@ -99,14 +99,8 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
                     )}
 
                     {activeTab === 'slider' && (
-                        <GenericLoader
-                            fetchData={sliderService.getSlides}
-                            loadingMsg="Slider yükleniyor..."
-                            errorMsg="Slider alınamadı"
+                        <SliderLoader
                             onShowToast={onShowToast}
-                            renderItem={(data: any, handleDelete: any) => (
-                                <AdminSlider slides={data} handleDelete={(id) => handleDelete(sliderService.deleteSlide, id)} handleEdit={() => { }} handleAddNew={() => onShowToast('info', 'Ekleme özellik eklenecek')} />
-                            )}
                         />
                     )}
 
@@ -255,7 +249,8 @@ import { AdminUISettings } from './admin/AdminUISettings';
 
 import { ProductModal } from './admin/modals/ProductModal';
 import { CategoryModal } from './admin/modals/CategoryModal';
-import { Product, Order, CategoryItem } from '../types';
+import { SliderModal } from './admin/modals/SliderModal';
+import { Product, Order, CategoryItem, Slide } from '../types';
 
 // --- Generic Component for Simple Lists ---
 const GenericLoader = ({ fetchData, renderItem, loadingMsg, errorMsg, onShowToast }: any) => {
@@ -514,6 +509,85 @@ const CategoriesLoader = ({ onShowToast }: any) => {
                 onClose={() => setIsModalOpen(false)}
                 onSave={handleSave}
                 editingCategory={editingCategory}
+            />
+        </>
+    );
+};
+
+const SliderLoader = ({ onShowToast }: any) => {
+    const [slides, setSlides] = useState<Slide[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingSlide, setEditingSlide] = useState<Slide | null>(null);
+
+    const loadSlides = async () => {
+        try {
+            setLoading(true);
+            const data = await sliderService.getSlides();
+            setSlides(data);
+        } catch (err) {
+            onShowToast('error', 'Slider verisi yüklenemedi');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    React.useEffect(() => {
+        loadSlides();
+    }, []);
+
+    const handleAddNew = () => {
+        setEditingSlide(null);
+        setIsModalOpen(true);
+    };
+
+    const handleEdit = (slide: Slide) => {
+        setEditingSlide(slide);
+        setIsModalOpen(true);
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!confirm('Bu slide\'ı silmek istediğinize emin misiniz?')) return;
+        try {
+            await sliderService.deleteSlide(id);
+            setSlides(prev => prev.filter(s => s._id !== id));
+            onShowToast('success', 'Slide silindi');
+        } catch (e) {
+            onShowToast('error', 'Silme işlemi başarısız');
+        }
+    };
+
+    const handleSave = async (slideData: any) => {
+        try {
+            if (editingSlide) {
+                await sliderService.updateSlide(slideData);
+                onShowToast('success', 'Slide güncellendi');
+            } else {
+                await sliderService.addSlide(slideData);
+                onShowToast('success', 'Slide eklendi');
+            }
+            await loadSlides();
+        } catch (e) {
+            console.error(e);
+            onShowToast('error', 'İşlem başarısız');
+        }
+    };
+
+    if (loading) return <div className="text-white text-center p-10 animate-pulse">Slider Yükleniyor...</div>;
+
+    return (
+        <>
+            <AdminSlider
+                slides={slides}
+                handleAddNew={handleAddNew}
+                handleEdit={handleEdit}
+                handleDelete={handleDelete}
+            />
+            <SliderModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSave={handleSave}
+                editingSlide={editingSlide}
             />
         </>
     );

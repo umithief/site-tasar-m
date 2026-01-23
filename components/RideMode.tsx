@@ -397,6 +397,103 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
         updateMarkerIcon();
     }, [isLowPowerMode]);
 
+    // --- LIVE TRAFFIC / OTHER RIDERS SIMULATION ---
+    const [otherRiders, setOtherRiders] = useState<{ id: string; lat: number; lng: number; bearing: number; speed: number }[]>([]);
+    const otherRidersRef = useRef<{ [key: string]: L.Marker }>({});
+
+    // MOCK: Generate and Move Dummy Riders
+    useEffect(() => {
+        if (!mapRef.current || !currentLoc) return;
+
+        // Init Dummy Riders if empty
+        if (otherRiders.length === 0) {
+            const dummies = Array.from({ length: 4 }).map((_, i) => ({
+                id: `rider-${i}`,
+                lat: currentLoc.lat + (Math.random() - 0.5) * 0.02,
+                lng: currentLoc.lng + (Math.random() - 0.5) * 0.02,
+                bearing: Math.random() * 360,
+                speed: 30 + Math.random() * 40 // 30-70 km/h
+            }));
+            setOtherRiders(dummies);
+        }
+
+        // Live Movement Loop
+        const interval = setInterval(() => {
+            setOtherRiders(prev => prev.map(rider => {
+                // Move rider slightly based on bearing/speed
+                const dist = (rider.speed / 3600) * (1000 / 1000); // dist per second (approx)
+                // Simple equirectangular approximation for movement
+                const dLat = (dist / 111.32) * Math.cos(rider.bearing * Math.PI / 180);
+                const dLng = (dist / (111.32 * Math.cos(rider.lat * Math.PI / 180))) * Math.sin(rider.bearing * Math.PI / 180);
+
+                // Add some random turn
+                const newBearing = (rider.bearing + (Math.random() - 0.5) * 10) % 360;
+
+                return {
+                    ...rider,
+                    lat: rider.lat + dLat * 0.05, // Scale down for visible smooth mock movement
+                    lng: rider.lng + dLng * 0.05,
+                    bearing: newBearing
+                };
+            }));
+        }, 1000);
+
+        return () => clearInterval(interval);
+    }, [currentLoc]); // Depend on currentLoc to init near user
+
+    // Render Other Riders
+    useEffect(() => {
+        if (!mapRef.current) return;
+
+        otherRiders.forEach(rider => {
+            let marker = otherRidersRef.current[rider.id];
+
+            // Create if not exists
+            if (!marker) {
+                const iconHtml = `
+                    <div style="transform: rotate(${rider.bearing}deg); transition: transform 1s linear;">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L4.5 20.29C4.21 21.01 4.96 21.72 5.67 21.37L12 18.25L18.33 21.37C19.04 21.72 19.79 21.01 19.5 20.29L12 2Z" fill="#94a3b8" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                `;
+                const icon = L.divIcon({
+                    className: 'other-rider-icon',
+                    html: iconHtml,
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 16]
+                });
+
+                marker = L.marker([rider.lat, rider.lng], { icon }).addTo(mapRef.current);
+                marker.bindPopup(`<span class="text-slate-800 font-bold text-xs">Sürücü ${rider.id}</span>`);
+                otherRidersRef.current[rider.id] = marker;
+            } else {
+                // Update Pos
+                marker.setLatLng([rider.lat, rider.lng]);
+
+                // Update Rotation (Icon)
+                const iconHtml = `
+                    <div style="transform: rotate(${rider.bearing}deg); transition: transform 1s linear;">
+                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 2L4.5 20.29C4.21 21.01 4.96 21.72 5.67 21.37L12 18.25L18.33 21.37C19.04 21.72 19.79 21.01 19.5 20.29L12 2Z" fill="#64748b" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                `;
+                // Use a light update if possible, but Leaflet divIcon needs re-set for HTML content change usually
+                // Or we can manipulate DOM directly if we had ref to element. For simplicity, re-set icon.
+                const icon = L.divIcon({
+                    className: 'other-rider-icon',
+                    html: iconHtml,
+                    iconSize: [32, 32],
+                    iconAnchor: [16, 16]
+                });
+                marker.setIcon(icon);
+            }
+        });
+
+        // Cleanup removed riders (optional for full sync)
+    }, [otherRiders]);
+
     // GPS Watcher Toggle Logic
     useEffect(() => {
         if (isDemoMode) return;

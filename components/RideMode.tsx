@@ -136,8 +136,6 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
 
     const [isGpsEnabled, setIsGpsEnabled] = useState(true); // Default ON
     const [gpsStatus, setGpsStatus] = useState<'active' | 'searching' | 'off' | 'denied' | 'unavailable'>('searching');
-    const [isGpsEnabled, setIsGpsEnabled] = useState(true); // Default ON
-    const [gpsStatus, setGpsStatus] = useState<'active' | 'searching' | 'off' | 'denied' | 'unavailable'>('searching');
     const [heading, setHeading] = useState(0);
     const [socketStatus, setSocketStatus] = useState<'connected' | 'disconnected' | 'connecting'>('disconnected'); // DEBUG STATE
 

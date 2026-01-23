@@ -152,6 +152,13 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
             });
             mapRef.current = map;
         }
+
+        return () => {
+            if (mapRef.current) {
+                mapRef.current.remove();
+                mapRef.current = null;
+            }
+        };
     }, []);
 
     // Update Markers

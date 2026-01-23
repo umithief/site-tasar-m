@@ -407,13 +407,21 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
         const token = localStorage.getItem('token');
         if (!token) return;
 
-        // Dynamic Socket URL based on environment
-        const socketUrl = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '/';
+        // Determine Socket URL
+        let socketUrl = '/'; // Default relative
+
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+            socketUrl = 'http://localhost:5000';
+        } else if (window.location.hostname.includes('onrender')) {
+            // Explicitly point to the backend service URL for Render deployments
+            socketUrl = 'https://motovibe-api.onrender.com';
+        }
 
         import('socket.io-client').then(({ io }) => {
             socketRef.current = io(socketUrl, {
                 auth: { token },
-                transports: ['websocket']
+                transports: ['websocket', 'polling'], // Fallback enabled
+                path: '/socket.io'
             });
 
             const socket = socketRef.current;

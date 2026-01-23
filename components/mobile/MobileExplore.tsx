@@ -18,25 +18,7 @@ export const MobileExplore: React.FC<MobileExploreProps> = ({ onNavigate }) => {
 
             <div className="p-4 space-y-6">
 
-                {/* 1. MAP CARD (Hero) */}
-                <div
-                    onClick={() => onNavigate('vlog-map')} // Usually map view
-                    className="relative aspect-[2/1] bg-zinc-900 rounded-3xl overflow-hidden border border-white/10 shadow-2xl shadow-black/50 cursor-pointer group"
-                >
-                    <img
-                        src="https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?auto=format&fit=crop&q=80&w=1000"
-                        className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
-                        alt="Map"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent p-6 flex flex-col justify-end">
-                        <div className="flex items-center gap-2 mb-1">
-                            <span className="w-2 h-2 bg-[#E2FF3B] rounded-full animate-pulse"></span>
-                            <span className="text-[#E2FF3B] text-[10px] font-black uppercase tracking-widest">CANLI</span>
-                        </div>
-                        <h3 className="text-2xl font-bold leading-none mb-1">ROTA KEŞFET</h3>
-                        <p className="text-zinc-400 text-xs">Çevrendeki rotaları ve sürücüleri gör.</p>
-                    </div>
-                </div>
+
 
                 {/* 2. MAIN TOOLS GRID */}
                 <div className="grid grid-cols-2 gap-3">

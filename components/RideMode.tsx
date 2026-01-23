@@ -1007,20 +1007,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
             {/* --- ACTIVE RIDER LIST (Always Visible for Debug) --- */}
             <div className="absolute top-20 right-4 z-40 pointer-events-auto flex flex-col gap-2 animate-in slide-in-from-right-10">
                 <div className="bg-black/80 backdrop-blur-xl border border-cyan-500/30 p-3 rounded-2xl shadow-2xl min-w-[140px]">
-                    <div className="text-[10px] font-bold text-cyan-400 uppercase tracking-widest mb-2 flex items-center gap-2 cursor-pointer hover:text-cyan-300 transition-colors"
-                        onClick={() => {
-                            // Hidden Easter Egg: Simulate Rider on Title Click
-                            const baseLat = currentLoc ? currentLoc.lat : 39.92;
-                            const baseLng = currentLoc ? currentLoc.lng : 32.85;
-                            const fakeId = 'sim-' + Date.now();
-                            setOtherRiders(prev => [...prev, {
-                                id: fakeId, name: 'Ghost Rider',
-                                lat: baseLat + 0.002, lng: baseLng + 0.002,
-                                bearing: Math.random() * 360, speed: 45
-                            }]);
-                        }}
-                        title="Simülasyon için tıkla"
-                    >
+                    <div className="text-[10px] font-bold text-cyan-400 uppercase tracking-widest mb-2 flex items-center gap-2">
                         <div className={`w-2 h-2 rounded-full animate-pulse ${socketStatus === 'connected' ? 'bg-cyan-400' : 'bg-red-500'}`}></div>
                         SÜRÜCÜLER ({otherRiders.length})
                     </div>

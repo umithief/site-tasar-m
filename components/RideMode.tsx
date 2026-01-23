@@ -137,7 +137,6 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
     const [isGpsEnabled, setIsGpsEnabled] = useState(true); // Default ON
     const [gpsStatus, setGpsStatus] = useState<'active' | 'searching' | 'off' | 'denied' | 'unavailable'>('searching');
     const [heading, setHeading] = useState(0);
-    const [socketStatus, setSocketStatus] = useState<'connected' | 'disconnected' | 'connecting'>('disconnected'); // DEBUG STATE
 
     // Physics & Demo
     const [speed, setSpeed] = useState(0);
@@ -440,7 +439,6 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
 
             socket.on('connect', () => {
                 console.log('⚡ [RideMode] Socket Connected');
-                setSocketStatus('connected');
                 // Force broadcast location immediately on connect
                 if (currentLocRef.current) {
                     socket.emit('update_location', {
@@ -453,7 +451,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
             });
 
             socket.on('disconnect', () => {
-                setSocketStatus('disconnected');
+                console.log('⚡ [RideMode] Socket Disconnected');
             });
 
             // Initial Snapshot
@@ -903,37 +901,8 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
     const dashCircumference = 2 * Math.PI * dashRadius;
     const dashOffset = dashCircumference - (rpmPercentage * dashCircumference);
 
-    // --- SIMULATE RIDER (DEBUG) ---
-    const simulateRider = () => {
-        // Create a fake rider near current location (or default)
-        const baseLat = currentLoc ? currentLoc.lat : 39.92;
-        const baseLng = currentLoc ? currentLoc.lng : 32.85;
-
-        const fakeId = 'sim-' + Date.now();
-        const fakeRider = {
-            id: fakeId,
-            name: 'Ghost Rider',
-            lat: baseLat + (Math.random() * 0.005 - 0.0025),
-            lng: baseLng + (Math.random() * 0.005 - 0.0025),
-            bearing: Math.random() * 360,
-            speed: 50
-        };
-
-        setOtherRiders(prev => [...prev, fakeRider]);
-    };
-
     return (
         <div className="fixed inset-0 z-[100] bg-gray-50/10 text-slate-800 flex flex-col font-sans select-none overflow-hidden h-[100dvh]">
-
-            {/* DEBUG OVERLAY */}
-            <div className="absolute top-20 right-4 z-[9999] flex flex-col gap-1 items-end pointer-events-none">
-                <div className={`px-2 py-1 rounded text-[10px] font-bold ${socketStatus === 'connected' ? 'bg-green-500/80 text-white' : 'bg-red-500/80 text-white'}`}>
-                    SOCK: {socketStatus.toUpperCase()} ({otherRiders.length})
-                </div>
-                <div className={`px-2 py-1 rounded text-[10px] font-bold ${currentLoc ? 'bg-blue-500/80 text-white' : 'bg-orange-500/80 text-white'}`}>
-                    GPS: {gpsStatus}
-                </div>
-            </div>
 
             {/* --- MAP BACKGROUND (Clean & Full) --- */}
             <div className="absolute inset-0 z-0 overflow-hidden">
@@ -947,13 +916,6 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
             {/* --- TOP HUD BAR (Compact Mobile) --- */}
             <div className="absolute top-0 left-0 right-0 h-16 pt-safe-top z-50 flex justify-between items-center px-4 pointer-events-none bg-gradient-to-b from-black/90 to-transparent">
                 <div className="pointer-events-auto flex items-center gap-3">
-                    {/* DEBUG SIMULATE BUTTON */}
-                    <button
-                        onClick={simulateRider}
-                        className="bg-purple-600 text-white px-2 py-1 rounded text-[10px] font-bold shadow-lg active:scale-95 transition-transform"
-                    >
-                        +SIM
-                    </button>
                     <button
                         onClick={toggleGps}
                         className={`w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-md border transition-all ${isGpsEnabled

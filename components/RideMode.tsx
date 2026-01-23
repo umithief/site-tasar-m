@@ -340,12 +340,11 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                 inertia: true
             }).setView(initialCenter, 15);
 
-            // SATELLITE MAP (Google Maps Hybrid) - High Reliability & Color
-            // Google Maps Tiles: s = satellite, h = labels
-            tileLayerRef.current = L.tileLayer('http://{s}.google.com/vt/lyrs=s,h&x={x}&y={y}&z={z}', {
+            // Dark Matter Tiles (CartoDB) - Ultra Premium Dark Look
+            tileLayerRef.current = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
                 maxZoom: 20,
-                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
-                className: 'vibrant-satellite'
+                subdomains: 'abcd',
+                className: 'dark-matter-tiles'
             }).addTo(map);
 
             mapRef.current = map;
@@ -358,30 +357,25 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
             }).addTo(map);
             updateMarkerIcon(); // Call AFTER creation
 
-            // GLOWING TRAIL Polyline (History)
+            // GLOWING TRAIL Polyline (History) - Neon Cyan with Glow
             trailPolylineRef.current = L.polyline([], {
                 color: '#00f3ff', // Cyan Neon
                 weight: 4,
-                opacity: 0.5,
+                opacity: 1,
                 lineCap: 'round',
                 className: 'trail-polyline'
             }).addTo(map);
 
-            // Add CSS for the neon line and VIBRANT MAP
+            // Add CSS for the neon line and DARK MAP
             const style = document.createElement('style');
             style.innerHTML = `
-            .neon-polyline { filter: drop-shadow(0 0 8px #E2FF3B); }
-            .trail-polyline { filter: drop-shadow(0 0 5px #00f3ff); }
-            .leaflet-container { background: #1a1a1a !important; }
+            .neon-polyline { filter: drop-shadow(0 0 10px #E2FF3B); }
+            .trail-polyline { filter: drop-shadow(0 0 8px #00f3ff); }
+            .leaflet-container { background: #09090b !important; }
             
-            /* NUCLEAR RESET: Force all map tiles to be color first */
-            .leaflet-tile-pane img {
-                filter: none !important; 
-            }
-
-            /* Then apply Vibrance explicitly to our layer */
-            .leaflet-tile-pane .leaflet-layer .vibrant-satellite {
-                filter: saturate(1.4) contrast(1.1) brightness(1.1) !important;
+            /* Dark Matter Optimizations */
+            .leaflet-tile-pane .leaflet-layer .dark-matter-tiles {
+                filter: contrast(1.1) brightness(1.1) !important;
             }
           `;
             document.head.appendChild(style);

@@ -27,11 +27,11 @@ export const DiscoverySidebar = ({ routes, onSelectRoute, isOpen, onClose }: any
                         transition={{ type: 'spring', damping: 25, stiffness: 300 }}
                         className="fixed bottom-8 left-0 right-0 z-[900] flex justify-center pointer-events-none"
                     >
-                        <div className="bg-[#0f0f0f]/90 backdrop-blur-2xl border border-white/5 rounded-full p-2 pl-6 pr-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-center gap-6 pointer-events-auto ring-1 ring-white/5">
+                        <div className="bg-black/50 backdrop-blur-2xl border border-white/10 rounded-full p-2 pl-6 pr-2 shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-center gap-6 pointer-events-auto ring-1 ring-white/5 hover:border-moto-accent/30 transition-colors duration-500">
 
                             {/* Dock Title */}
                             <div className="flex flex-col">
-                                <span className="text-[9px] text-amber-200/80 uppercase tracking-[0.2em] font-medium">Keşfet</span>
+                                <span className="text-[9px] text-moto-accent/80 uppercase tracking-[0.2em] font-medium">Keşfet</span>
                                 <span className="text-sm font-semibold text-white tracking-tight">Popüler Rotalar</span>
                             </div>
 
@@ -46,18 +46,18 @@ export const DiscoverySidebar = ({ routes, onSelectRoute, isOpen, onClose }: any
                                         onClick={() => onSelectRoute(route)}
                                         className="relative group min-w-[60px] cursor-pointer"
                                     >
-                                        <div className="w-12 h-12 rounded-full overflow-hidden border border-white/10 group-hover:border-amber-200/50 transition-all duration-500 relative">
+                                        <div className="w-12 h-12 rounded-full overflow-hidden border border-white/10 group-hover:border-moto-accent transition-all duration-300 relative ring-2 ring-transparent group-hover:ring-moto-accent/20">
                                             <img src={route.image || "https://images.unsplash.com/photo-1568772585407-9361f9bf3a87"} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-500" />
                                         </div>
                                         <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
-                                            <span className="text-[9px] text-white bg-black/80 px-2 py-0.5 rounded-full backdrop-blur-md">{route.time}</span>
+                                            <span className="text-[9px] text-black font-bold bg-moto-accent px-2 py-0.5 rounded-full shadow-lg">{route.time}</span>
                                         </div>
                                     </div>
                                 ))}
                             </div>
 
                             {/* Close Action */}
-                            <button onClick={onClose} className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white transition-colors">
+                            <button onClick={onClose} className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white transition-colors border border-white/5">
                                 <X className="w-4 h-4" />
                             </button>
                         </div>
@@ -72,10 +72,10 @@ export const FloatingSearch = ({ onSearch }: any) => {
     return (
         <div className="absolute top-0 left-0 right-0 z-[1000] p-4 pointer-events-none flex justify-center">
             {/* "Island" Header */}
-            <div className="w-full max-w-[90%] md:max-w-[600px] bg-[#0f0f0f]/80 backdrop-blur-3xl border border-white/5 rounded-full p-2 pl-5 pr-2 shadow-2xl pointer-events-auto flex items-center justify-between ring-1 ring-white/5 transition-all hover:bg-[#0f0f0f]/90">
+            <div className="w-full max-w-[90%] md:max-w-[600px] bg-black/50 backdrop-blur-xl border border-white/10 rounded-full p-2 pl-5 pr-2 shadow-2xl pointer-events-auto flex items-center justify-between ring-1 ring-white/5 transition-all hover:bg-black/60 group">
 
                 <div className="flex items-center gap-4 flex-1">
-                    <Menu className="w-5 h-5 text-zinc-400 hover:text-white transition-colors cursor-pointer" />
+                    <Menu className="w-5 h-5 text-zinc-400 group-hover:text-white transition-colors cursor-pointer" />
                     <input
                         type="text"
                         placeholder="Rota, lokasyon veya sürücü ara..."
@@ -87,7 +87,7 @@ export const FloatingSearch = ({ onSearch }: any) => {
                     <button className="w-10 h-10 rounded-full flex items-center justify-center hover:bg-white/5 text-zinc-400 hover:text-white transition-colors">
                         <Filter className="w-4 h-4" />
                     </button>
-                    <button className="w-10 h-10 rounded-full bg-amber-200/10 text-amber-200 flex items-center justify-center hover:bg-amber-200 hover:text-black transition-all duration-500">
+                    <button className="w-10 h-10 rounded-full bg-moto-accent text-black flex items-center justify-center hover:scale-105 transition-all duration-300 shadow-[0_0_15px_rgba(226,255,59,0.3)]">
                         <Search className="w-4 h-4" />
                     </button>
                 </div>
@@ -121,7 +121,7 @@ export const MapHUD = ({ coords, userCount, onRecenter }: any) => {
             <div className="absolute bottom-6 right-6 z-[950] flex flex-col gap-3 pointer-events-none">
                 <button
                     onClick={onRecenter}
-                    className="pointer-events-auto w-12 h-12 bg-[#0f0f0f] text-white border border-white/10 rounded-2xl flex items-center justify-center shadow-2xl hover:bg-amber-200 hover:text-black transition-all duration-500 group"
+                    className="pointer-events-auto w-12 h-12 bg-black/50 backdrop-blur-xl text-white border border-white/10 rounded-2xl flex items-center justify-center shadow-2xl hover:bg-moto-accent hover:text-black hover:border-moto-accent transition-all duration-300 group ring-1 ring-white/5"
                 >
                     <Navigation className="w-5 h-5 fill-current transition-transform group-hover:rotate-45" />
                 </button>

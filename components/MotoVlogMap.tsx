@@ -96,7 +96,10 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
             if (tempMarkerRef.current) tempMarkerRef.current.remove();
             const pulsingIcon = L.divIcon({
                 className: 'selection-marker',
-                html: `<div class="w-6 h-6 bg-[#E2FF3B] rounded-full animate-ping"></div>`,
+                html: `<div class="relative w-full h-full flex items-center justify-center">
+                        <div class="absolute w-full h-full bg-moto-accent/30 rounded-full animate-ping"></div>
+                        <div class="relative w-3 h-3 bg-moto-accent rounded-full border-2 border-[#111] shadow-[0_0_20px_rgba(226,255,59,0.8)]"></div>
+                       </div>`,
                 iconSize: [24, 24], iconAnchor: [12, 12]
             });
             const newMarker = L.marker([lat, lng], { icon: pulsingIcon }).addTo(mapRef.current);
@@ -121,21 +124,24 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
     useEffect(() => {
         if (mapContainerRef.current && !mapRef.current && typeof L !== 'undefined') {
             const map = L.map(mapContainerRef.current, { zoomControl: false, attributionControl: false }).setView([39.0, 35.0], 6);
-            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', { attribution: '&copy; OSM' }).addTo(map);
+            // Dark Matter Tiles (CartoDB) - Ultra Premium Dark Look
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                attribution: '&copy; CartoDB',
+                maxZoom: 20,
+                subdomains: 'abcd'
+            }).addTo(map);
 
-            // Dark Mode Filter
-            if (mapContainerRef.current) {
-                const tiles = mapContainerRef.current.querySelectorAll('.leaflet-tile-pane');
-                tiles.forEach((t: any) => t.style.filter = 'grayscale(100%) invert(100%) brightness(0.7) contrast(1.2)');
-            }
-
+            // Removed manual CSS filter hack as we now use native dark tiles
             map.on('click', (e: any) => {
                 const { lat, lng } = e.latlng;
                 if (tempMarkerRef.current) tempMarkerRef.current.remove();
 
                 const pulsingIcon = L.divIcon({
                     className: 'selection-marker',
-                    html: `<div class="relative w-full h-full"><div class="absolute inset-0 bg-moto-accent rounded-full animate-ping opacity-75"></div><div class="absolute inset-0 m-auto w-3 h-3 bg-white rounded-full shadow-[0_0_15px_#E2FF3B]"></div></div>`,
+                    html: `<div class="relative w-full h-full flex items-center justify-center">
+                            <div class="absolute w-full h-full bg-moto-accent/30 rounded-full animate-ping"></div>
+                            <div class="relative w-3 h-3 bg-moto-accent rounded-full border-2 border-[#111] shadow-[0_0_20px_rgba(226,255,59,0.8)]"></div>
+                           </div>`,
                     iconSize: [32, 32], iconAnchor: [16, 16]
                 });
                 const newMarker = L.marker([lat, lng], { icon: pulsingIcon }).addTo(map);

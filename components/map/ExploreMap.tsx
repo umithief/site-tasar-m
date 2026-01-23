@@ -8,16 +8,17 @@ import { Layers } from 'lucide-react';
 
 // --- Styles for Custom Markers (Leaflet needs CSS classes) ---
 const PULSE_ICON_HTML = `
-  <div class="relative w-full h-full">
-    <div class="absolute inset-0 bg-cyan-400 rounded-full opacity-40 animate-ping"></div>
-    <div class="absolute inset-2 bg-cyan-400 rounded-full border-2 border-white shadow-[0_0_15px_rgba(34,211,238,0.6)]"></div>
+  <div class="relative w-full h-full flex items-center justify-center">
+    <div class="absolute w-full h-full bg-moto-accent/30 rounded-full animate-ping"></div>
+    <div class="relative w-3 h-3 bg-moto-accent rounded-full border-2 border-[#111] shadow-[0_0_20px_rgba(226,255,59,0.8)]"></div>
   </div>
 `;
 
 const USER_PUCK_HTML = `
-  <div class="relative w-full h-full">
-    <div class="absolute inset-[-10px] bg-blue-500 rounded-full opacity-30 animate-pulse"></div>
-    <div class="absolute inset-0 bg-blue-500 rounded-full border-2 border-white shadow-[0_0_20px_rgba(59,130,246,0.6)]"></div>
+  <div class="relative w-full h-full flex items-center justify-center">
+    <div class="absolute w-[40px] h-[40px] bg-blue-500/20 rounded-full animate-pulse"></div>
+    <div class="relative w-4 h-4 bg-blue-500 rounded-full border-[3px] border-white shadow-[0_0_25px_rgba(59,130,246,0.8)] z-10"></div>
+    <div class="absolute w-[100px] h-[100px] bg-gradient-to-t from-blue-500/10 to-transparent rounded-full transform rotate-45 pointer-events-none"></div>
   </div>
 `;
 
@@ -99,14 +100,21 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate, variant = 'd
             zoomControl: false,
             attributionControl: false,
             center: [41.1744, 29.6116], // Istanbul
-            zoom: 13
+            zoom: 13,
+            // Smooth zoom interaction
+            zoomSnap: 0.1,
+            zoomDelta: 0.5,
+            wheelPxPerZoomLevel: 120
         });
 
-        // Light Matter Tiles (CartoDB) - Premium Look
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+        // Dark Matter Tiles (CartoDB) - Ultra Premium Dark Look
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
             maxZoom: 20,
             subdomains: 'abcd',
         }).addTo(map.current);
+
+        // Optional: Custom canvas renderer for better performance with many markers
+        const myRenderer = L.canvas({ padding: 0.5 });
 
         // Layer Groups
         ridersLayer.current = L.layerGroup().addTo(map.current);
@@ -142,11 +150,14 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate, variant = 'd
 
             L.marker([rider.lat, rider.lng], { icon })
                 .bindPopup(`
-                    <div class="p-2 bg-white text-gray-900 font-mono text-xs shadow-lg rounded-lg border border-gray-200">
-                        <strong class="text-moto-accent-dark">${rider.name}</strong><br/>
-                        ${rider.speed}
+                    <div class="p-3 bg-[#09090b] text-white font-mono text-xs shadow-2xl rounded-xl border border-white/10 min-w-[120px]">
+                        <strong class="text-moto-accent text-sm block mb-1 tracking-wider">${rider.name}</strong>
+                        <div class="flex items-center gap-2 text-gray-400">
+                             <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                             ${rider.speed}
+                        </div>
                     </div>
-                `, { closeButton: false, className: 'leaflet-popup-light' })
+                `, { closeButton: false, className: 'leaflet-popup-dark custom-popup-arrow' })
                 .addTo(ridersLayer.current!);
         });
 
@@ -168,17 +179,18 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate, variant = 'd
 
             // Base Line (Outer Glow)
             L.polyline(route.coordinates, {
-                color: isSelected ? '#111' : '#666',
-                weight: isSelected ? 8 : 4,
-                opacity: isSelected ? 0.6 : 0.3,
-                className: isSelected ? 'drop-shadow-[0_0_10px_rgba(0,0,0,0.2)]' : ''
+                color: isSelected ? 'rgba(226, 255, 59, 0.2)' : 'rgba(255, 255, 255, 0.1)',
+                weight: isSelected ? 10 : 4,
+                opacity: 1,
+                className: isSelected ? 'drop-shadow-[0_0_15px_rgba(226,255,59,0.4)]' : ''
             }).addTo(routesLayer.current!);
 
             // Core Line
             const poly = L.polyline(route.coordinates, {
-                color: '#E2FF3B', // Keep moto accent but maybe darker or specific color? Let's use accent.
-                weight: isSelected ? 4 : 2,
-                opacity: 1
+                color: isSelected ? '#E2FF3B' : '#555', // Moto Accent for selected, dark grey for others
+                weight: isSelected ? 3 : 2,
+                opacity: 1,
+                dashArray: isSelected ? '' : '5, 10'
             }).addTo(routesLayer.current!);
 
             // Click Handler
@@ -283,10 +295,10 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate, variant = 'd
                 navLayer.current.clearLayers();
                 // Draw Calculated Path
                 L.polyline(coords, {
-                    color: '#0ea5e9', // Sky blue for Light Mode Navigation
+                    color: '#3B82F6', // Electric Blue
                     weight: 6,
-                    opacity: 0.9,
-                    className: 'drop-shadow-[0_0_15px_rgba(14,165,233,0.5)]'
+                    opacity: 1,
+                    className: 'drop-shadow-[0_0_20px_rgba(59,130,246,0.6)] animate-pulse-slow'
                 }).addTo(navLayer.current);
             }
 
@@ -339,9 +351,9 @@ export const ExploreMap: React.FC<ExploreMapProps> = ({ onNavigate, variant = 'd
     };
 
     return (
-        <div className={`relative w-full bg-gray-100 overflow-hidden ${variant === 'mobile'
+        <div className={`relative w-full bg-[#09090b] overflow-hidden ${variant === 'mobile'
             ? 'h-[100dvh] rounded-none border-none'
-            : 'h-[85vh] rounded-3xl border border-gray-200 shadow-xl'
+            : 'h-[85vh] rounded-[2rem] border border-white/5 shadow-2xl ring-1 ring-white/5'
             }`}>
             {/* Map Container */}
             <div ref={mapContainer} className="w-full h-full z-0" />

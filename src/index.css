@@ -57,10 +57,8 @@ body {
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
 
 /* Consistent Map Styles */
-/* Consistent Map Styles */
 .leaflet-container {
     background: #09090b !important;
-    /* Premium Dark Background */
     font-family: 'Inter', sans-serif !important;
 }
 
@@ -189,12 +187,6 @@ button {
     touch-action: manipulation;
 }
 
-/* Map Styles */
-.neon-polyline {
-    filter: drop-shadow(0 0 8px #E2FF3B) drop-shadow(0 0 15px #E2FF3B);
-    stroke-linecap: round;
-}
-
 .custom-marker {
     background: transparent;
     border: none;
@@ -247,4 +239,23 @@ button {
 
 .mapboxgl-canvas {
     outline: none;
+}
+
+/* --- NIGHT PILOT 3D MAP STYLES --- */
+.map-3d-container {
+    perspective: 1000px;
+    transform-style: preserve-3d;
+    overflow: hidden;
+    background: #000;
+}
+
+.map-3d-view {
+    transform: rotateX(40deg) scale(1.4) translateY(-10%);
+    transform-origin: center center;
+    transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Matrix Blue/Night Filter applied to Google Hybrid/Roadmap */
+.night-pilot-tiles {
+    filter: invert(100%) hue-rotate(190deg) brightness(0.9) contrast(1.2) saturate(1.1);
 }

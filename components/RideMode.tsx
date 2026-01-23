@@ -331,20 +331,21 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
             const map = L.map(mapContainerRef.current, {
                 zoomControl: false,
                 attributionControl: false,
-                dragging: true, // Allow dragging to inspect route
+                dragging: true,
                 scrollWheelZoom: true,
                 doubleClickZoom: false,
                 fadeAnimation: true,
                 markerZoomAnimation: true,
                 zoomAnimation: true,
                 inertia: true
-            }).setView(initialCenter, 15);
+            }).setView(initialCenter, 16);
 
-            // Dark Matter Tiles (CartoDB) - Ultra Premium Dark Look
-            tileLayerRef.current = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+            // GOOGLE HYBRID TILES (Texture for 3D effect)
+            // We use 'y' (hybrid) to get roads + satellite texture, then filter it heavily
+            tileLayerRef.current = L.tileLayer('http://{s}.google.com/vt/lyrs=y&x={x}&y={y}&z={z}', {
                 maxZoom: 20,
-                subdomains: 'abcd',
-                className: 'dark-matter-tiles'
+                subdomains: ['mt0', 'mt1', 'mt2', 'mt3'],
+                className: 'night-pilot-tiles' // Defined in index.css
             }).addTo(map);
 
             mapRef.current = map;
@@ -740,8 +741,8 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
         <div className="fixed inset-0 z-[100] bg-black text-white flex flex-col font-sans select-none overflow-hidden h-[100dvh]">
 
             {/* --- MAP BACKGROUND (Clean & Full) --- */}
-            <div className="absolute inset-0 z-0 overflow-hidden">
-                <div ref={mapContainerRef} className="w-full h-full brightness-100 contrast-110 saturate-100" />
+            <div className="absolute inset-0 z-0 overflow-hidden map-3d-container">
+                <div ref={mapContainerRef} className="w-full h-full brightness-100 contrast-110 saturate-100 map-3d-view" />
                 {/* Tech Vignette */}
                 <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.4)_70%,rgba(0,0,0,0.9)_100%)] z-10"></div>
 

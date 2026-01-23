@@ -58,204 +58,35 @@ body {
 
 /* Consistent Map Styles */
 .leaflet-container {
-    background: #09090b !important;
     font-family: 'Inter', sans-serif !important;
+    z-index: 1;
 }
 
-.leaflet-control-zoom a {
-    background-color: rgba(20, 20, 20, 0.8) !important;
-    color: white !important;
-    border: 1px solid rgba(255, 255, 255, 0.1) !important;
-    backdrop-filter: blur(8px);
-}
-
-.leaflet-control-zoom a:hover {
-    background-color: rgba(255, 255, 255, 0.1) !important;
-}
-
-/* Dark Tiles Optimization */
-.dark-matter-tiles {
-    filter: contrast(1.1) brightness(1.1) saturate(0.8);
-}
-
-/* Neon Paths */
-.neon-polyline {
-    filter: drop-shadow(0 0 8px #E2FF3B) drop-shadow(0 0 15px #E2FF3B);
-    stroke-dasharray: 1000;
-    stroke-dashoffset: 1000;
-    animation: drawPath 3s ease-out forwards;
-}
-
-.trail-polyline {
-    filter: drop-shadow(0 0 6px #00f3ff);
-}
-
-@keyframes drawPath {
-    to {
-        stroke-dashoffset: 0;
-    }
-}
-
-/* Leaflet Dark Popup Overrides */
-
-
-/* Animation Keyframes */
-@keyframes shine {
-    0% {
-        transform: translateX(-150%) skewX(-20deg);
-    }
-
-    100% {
-        transform: translateX(250%) skewX(-20deg);
-    }
-}
-
-@keyframes scan-v {
-    0% {
-        top: -10%;
-    }
-
-    100% {
-        top: 110%;
-    }
-}
-
-@keyframes scan {
-    0% {
-        transform: translateY(-100%);
-    }
-
-    100% {
-        transform: translateY(1100%);
-    }
-}
-
-@keyframes radar-pulse {
-    0% {
-        transform: scale(1);
-        opacity: 0.5;
-    }
-
-    100% {
-        transform: scale(2);
-        opacity: 0;
-    }
-}
-
-@keyframes spin-slow {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-.animate-scan-v {
-    animation: scan-v 4s linear infinite;
-}
-
-.animate-scan {
-    animation: scan 2s linear infinite;
-}
-
-.animate-radar-pulse {
-    animation: radar-pulse 2s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
-
-.animate-spin-slow {
-    animation: spin-slow 8s linear infinite;
-}
-
-.slant {
-    transform: skewX(-20deg);
-}
-
-/* Utilities */
-.no-scrollbar::-webkit-scrollbar {
-    display: none;
-}
-
-
-/* Button styles have been moved to components/Button.tsx */
-
-/* Global Button Reset for Feel */
-button {
-    cursor: pointer;
-    user-select: none;
-    touch-action: manipulation;
-}
-
-.custom-marker {
-    background: transparent;
-    border: none;
-}
-
-@keyframes pulse {
-    0% {
-        transform: scale(1);
-        opacity: 0.8;
-    }
-
-    100% {
-        transform: scale(3);
-        opacity: 0;
-    }
-}
-
-.pulse-ring {
-    animation: pulse 2s infinite;
-}
-
-/* Premium Popup - Mapbox */
-.mapboxgl-popup-content {
-    background: rgba(10, 10, 10, 0.95) !important;
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 12px !important;
-    color: white !important;
-    padding: 0 !important;
-    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
-}
-
-.mapboxgl-popup-tip {
-    border-top-color: rgba(10, 10, 10, 0.95) !important;
-}
-
-/* Custom Animations */
-@keyframes ping-slow {
-
-    75%,
-    100% {
-        transform: scale(2);
-        opacity: 0;
-    }
-}
-
-.animate-ping-slow {
-    animation: ping-slow 2s cubic-bezier(0, 0, 0.2, 1) infinite;
-}
-
-.mapboxgl-canvas {
-    outline: none;
-}
-
-/* --- NIGHT PILOT 3D MAP STYLES --- */
-.map-3d-container {
-    perspective: 1000px;
-    transform-style: preserve-3d;
+.leaflet-popup-content-wrapper {
+    border-radius: 0.5rem;
+    padding: 0;
     overflow: hidden;
-    background: #000;
 }
 
-.map-3d-view {
-    transform: rotateX(40deg) scale(1.4) translateY(-10%);
-    transform-origin: center center;
-    transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+.leaflet-popup-content {
+    margin: 0;
+    width: 200px !important;
 }
 
-/* Matrix Blue/Night Filter applied to Google Hybrid/Roadmap */
-.night-pilot-tiles {
-    filter: invert(100%) hue-rotate(190deg) brightness(0.9) contrast(1.2) saturate(1.1);
+/* Custom Scrollbar for Sidebar */
+.custom-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
 }

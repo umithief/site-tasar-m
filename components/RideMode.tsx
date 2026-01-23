@@ -397,49 +397,83 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
         updateMarkerIcon();
     }, [isLowPowerMode]);
 
-    // --- LIVE TRAFFIC / OTHER RIDERS SIMULATION ---
-    const [otherRiders, setOtherRiders] = useState<{ id: string; lat: number; lng: number; bearing: number; speed: number }[]>([]);
+    // --- LIVE TRAFFIC / OTHER RIDERS (REAL SOCKET) ---
+    const [otherRiders, setOtherRiders] = useState<{ id: string; lat: number; lng: number; bearing: number; speed: number; name?: string }[]>([]);
     const otherRidersRef = useRef<{ [key: string]: L.Marker }>({});
+    const socketRef = useRef<any>(null);
 
-    // MOCK: Generate and Move Dummy Riders
+    // 1. Connect to Socket
     useEffect(() => {
-        if (!mapRef.current || !currentLoc) return;
+        const token = localStorage.getItem('token');
+        if (!token) return;
 
-        // Init Dummy Riders if empty
-        if (otherRiders.length === 0) {
-            const dummies = Array.from({ length: 4 }).map((_, i) => ({
-                id: `rider-${i}`,
-                lat: currentLoc.lat + (Math.random() - 0.5) * 0.02,
-                lng: currentLoc.lng + (Math.random() - 0.5) * 0.02,
-                bearing: Math.random() * 360,
-                speed: 30 + Math.random() * 40 // 30-70 km/h
-            }));
-            setOtherRiders(dummies);
-        }
+        // Dynamic Socket URL based on environment
+        const socketUrl = window.location.hostname === 'localhost' ? 'http://localhost:5000' : '/';
 
-        // Live Movement Loop
-        const interval = setInterval(() => {
-            setOtherRiders(prev => prev.map(rider => {
-                // Move rider slightly based on bearing/speed
-                const dist = (rider.speed / 3600) * (1000 / 1000); // dist per second (approx)
-                // Simple equirectangular approximation for movement
-                const dLat = (dist / 111.32) * Math.cos(rider.bearing * Math.PI / 180);
-                const dLng = (dist / (111.32 * Math.cos(rider.lat * Math.PI / 180))) * Math.sin(rider.bearing * Math.PI / 180);
+        import('socket.io-client').then(({ io }) => {
+            socketRef.current = io(socketUrl, {
+                auth: { token },
+                transports: ['websocket']
+            });
 
-                // Add some random turn
-                const newBearing = (rider.bearing + (Math.random() - 0.5) * 10) % 360;
+            const socket = socketRef.current;
 
-                return {
-                    ...rider,
-                    lat: rider.lat + dLat * 0.05, // Scale down for visible smooth mock movement
-                    lng: rider.lng + dLng * 0.05,
-                    bearing: newBearing
-                };
-            }));
-        }, 1000);
+            socket.on('connect', () => {
+                console.log('⚡ [RideMode] Socket Connected');
+            });
 
-        return () => clearInterval(interval);
-    }, [currentLoc]); // Depend on currentLoc to init near user
+            // Initial Snapshot
+            socket.on('active_riders_snapshot', (riders: any[]) => {
+                // Filter out self
+                // We don't have our own ID easily here without decoding token or storing it, 
+                // but usually the server can filter. For now, we allow self-echo or filter by ID if we had it.
+                // Let's assume server sends all.
+                setOtherRiders(riders);
+            });
+
+            // Live Updates
+            socket.on('rider_moved', (data: any) => {
+                setOtherRiders(prev => {
+                    const exists = prev.find(r => r.id === data.userId);
+                    if (exists) {
+                        return prev.map(r => r.id === data.userId ? { ...r, ...data, id: data.userId } : r);
+                    } else {
+                        return [...prev, { ...data, id: data.userId }];
+                    }
+                });
+            });
+
+            socket.on('rider_left', (data: { userId: string }) => {
+                setOtherRiders(prev => prev.filter(r => r.id !== data.userId));
+                // Remove marker from map immediately
+                if (otherRidersRef.current[data.userId]) {
+                    otherRidersRef.current[data.userId].remove();
+                    delete otherRidersRef.current[data.userId];
+                }
+            });
+        });
+
+        return () => {
+            if (socketRef.current) socketRef.current.disconnect();
+        };
+    }, []);
+
+    // 2. Broadcast My Location (Throttled)
+    useEffect(() => {
+        if (!socketRef.current || !currentLoc) return;
+
+        const now = Date.now();
+        // Limit updates to 2 per second to save bandwidth
+        if (now - lastUiUpdateRef.current < 500) return;
+
+        socketRef.current.emit('update_location', {
+            lat: currentLoc.lat,
+            lng: currentLoc.lng,
+            speed: speed,
+            bearing: heading
+        });
+
+    }, [currentLoc, speed, heading]); // dependencies match updatePosition calls
 
     // Render Other Riders
     useEffect(() => {
@@ -465,7 +499,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                 });
 
                 marker = L.marker([rider.lat, rider.lng], { icon }).addTo(mapRef.current);
-                marker.bindPopup(`<span class="text-slate-800 font-bold text-xs">Sürücü ${rider.id}</span>`);
+                marker.bindPopup(`<span class="text-slate-800 font-bold text-xs">${rider.name || 'Sürücü ' + rider.id}</span>`);
                 otherRidersRef.current[rider.id] = marker;
             } else {
                 // Update Pos

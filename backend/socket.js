@@ -7,6 +7,7 @@ import mongoose from 'mongoose';
 
 let io;
 const userSocketMap = new Map(); // userId -> socketId
+const activeRiders = new Map(); // userId -> { lat, lng, speed, bearing }
 
 export const initSync = (httpServer) => {
     io = new Server(httpServer, {
@@ -61,8 +62,37 @@ export const initSync = (httpServer) => {
         socket.on('disconnect', () => {
             console.log(`🚫 Rider Disconnected: ${username}`);
             userSocketMap.delete(userId);
+            activeRiders.delete(userId); // Remove from tracking
             socket.broadcast.emit('user_offline', { userId });
+            socket.broadcast.emit('rider_left', { userId }); // Notify map
         });
+
+        // --- 3. LIVE RIDE TRACKING ---
+        socket.on('update_location', ({ lat, lng, speed, bearing }) => {
+            // Update in memory
+            activeRiders.set(userId, {
+                id: userId,
+                name: username,
+                lat,
+                lng,
+                speed,
+                bearing,
+                lastUpdate: Date.now()
+            });
+
+            // Broadcast to everyone (or room 'riders')
+            socket.broadcast.emit('rider_moved', {
+                userId,
+                name: username,
+                lat,
+                lng,
+                speed,
+                bearing
+            });
+        });
+
+        // Send initial state to the connecting user
+        socket.emit('active_riders_snapshot', Array.from(activeRiders.values()));
 
         // 5. Public Rooms (Community Chat)
         socket.on('join_public_room', ({ room }) => {

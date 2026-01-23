@@ -156,6 +156,17 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
     const lastMapUpdateRef = useRef(0);
     const lastUiUpdateRef = useRef(0);
 
+    // Sync state to refs for socket callbacks
+    const currentLocRef = useRef(currentLoc);
+    const speedRef = useRef(speed);
+    const headingRef = useRef(heading);
+
+    useEffect(() => {
+        currentLocRef.current = currentLoc;
+        speedRef.current = speed;
+        headingRef.current = heading;
+    }, [currentLoc, speed, heading]);
+
     // Nav
     const [navMessage, setNavMessage] = useState<string | null>(route ? `ROTA: ${route.title}` : 'SİSTEM HAZIR');
     const [nextTurn, setNextTurn] = useState<NavInstruction | null>(null);
@@ -428,6 +439,15 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
 
             socket.on('connect', () => {
                 console.log('⚡ [RideMode] Socket Connected');
+                // Force broadcast location immediately on connect
+                if (currentLocRef.current) {
+                    socket.emit('update_location', {
+                        lat: currentLocRef.current.lat,
+                        lng: currentLocRef.current.lng,
+                        speed: speedRef.current || 0,
+                        bearing: headingRef.current || 0
+                    });
+                }
             });
 
             // Initial Snapshot
@@ -471,8 +491,8 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
         if (!socketRef.current || !currentLoc) return;
 
         const now = Date.now();
-        // Limit updates to 2 per second to save bandwidth
-        if (now - lastUiUpdateRef.current < 500) return;
+        // Limit updates to ~10 per second for smoother tracking (was 500ms)
+        if (now - lastUiUpdateRef.current < 100) return;
 
         socketRef.current.emit('update_location', {
             lat: currentLoc.lat,

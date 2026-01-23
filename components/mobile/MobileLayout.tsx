@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Home, Compass, PlusSquare, ShoppingBag, User, Bell, Menu } from 'lucide-react';
+import { Home, Compass, PlusSquare, ShoppingBag, User } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useNotificationStore } from '../../store/useNotificationStore';
 import { AnimatePresence, motion } from 'framer-motion';

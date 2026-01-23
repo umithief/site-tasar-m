@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { ViewState } from '../types';
-import maplibregl from 'maplibre-gl';
+import * as maplibregl from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { House, Cube } from 'lucide-react'; // Using lucide-react icons instead of FontAwesome for consistency with current codebase
+import { House, Box } from 'lucide-react'; // Using lucide-react icons instead of FontAwesome for consistency with current codebase
 
 interface RideModeProps {
     onNavigate: (view: ViewState) => void;
@@ -115,7 +115,7 @@ export const RideMode: React.FC<RideModeProps> = ({ onNavigate }) => {
                 {/* Header */}
                 <div className="bg-white/95 backdrop-blur-md border border-white/30 shadow-lg p-4 rounded-xl pointer-events-auto">
                     <h1 className="text-xl font-bold text-slate-800 flex items-center gap-2">
-                        <Cube className="w-5 h-5 text-blue-600" /> 3D Harita Keşfi
+                        <Box className="w-5 h-5 text-blue-600" /> 3D Harita Keşfi
                     </h1>
                     <p className="text-xs text-slate-500 mt-1 uppercase tracking-wider font-semibold">OpenStreetMap Verisi</p>
                 </div>

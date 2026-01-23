@@ -519,32 +519,38 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
             // Create if not exists
             if (!marker) {
                 const iconHtml = `
-                    <div style="transform: rotate(${rider.bearing}deg); transition: transform 1s linear;">
-                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 2L4.5 20.29C4.21 21.01 4.96 21.72 5.67 21.37L12 18.25L18.33 21.37C19.04 21.72 19.79 21.01 19.5 20.29L12 2Z" fill="#94a3b8" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+                    <div style="transform: rotate(${rider.bearing}deg); transition: transform 0.5s linear;">
+                        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 0 8px #06b6d4);">
+                            <path d="M12 2L4.5 20.29C4.21 21.01 4.96 21.72 5.67 21.37L12 18.25L18.33 21.37C19.04 21.72 19.79 21.01 19.5 20.29L12 2Z" fill="#06b6d4" stroke="white" stroke-width="2" stroke-linejoin="round"/>
                         </svg>
+                        <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-black/50 text-white text-[10px] px-1 rounded whitespace-nowrap backdrop-blur-sm">
+                            ${rider.name}
+                        </div>
                     </div>
                 `;
                 const icon = L.divIcon({
                     className: 'other-rider-icon',
                     html: iconHtml,
-                    iconSize: [32, 32],
-                    iconAnchor: [16, 16]
+                    iconSize: [40, 40],
+                    iconAnchor: [20, 20]
                 });
 
                 marker = L.marker([rider.lat, rider.lng], { icon }).addTo(mapRef.current);
-                marker.bindPopup(`<span class="text-slate-800 font-bold text-xs">${rider.name || 'Sürücü ' + rider.id}</span>`);
                 otherRidersRef.current[rider.id] = marker;
             } else {
                 // Update Pos
                 marker.setLatLng([rider.lat, rider.lng]);
 
                 // Update Rotation (Icon)
+                // Update Rotation (Icon)
                 const iconHtml = `
-                    <div style="transform: rotate(${rider.bearing}deg); transition: transform 1s linear;">
-                         <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path d="M12 2L4.5 20.29C4.21 21.01 4.96 21.72 5.67 21.37L12 18.25L18.33 21.37C19.04 21.72 19.79 21.01 19.5 20.29L12 2Z" fill="#64748b" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+                    <div style="transform: rotate(${rider.bearing}deg); transition: transform 0.5s linear;">
+                         <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="filter: drop-shadow(0 0 8px #06b6d4);">
+                            <path d="M12 2L4.5 20.29C4.21 21.01 4.96 21.72 5.67 21.37L12 18.25L18.33 21.37C19.04 21.72 19.79 21.01 19.5 20.29L12 2Z" fill="#06b6d4" stroke="white" stroke-width="2" stroke-linejoin="round"/>
                         </svg>
+                        <div class="absolute -bottom-6 left-1/2 -translate-x-1/2 bg-black/50 text-white text-[10px] px-1 rounded whitespace-nowrap backdrop-blur-sm">
+                            ${rider.name}
+                        </div>
                     </div>
                 `;
                 // Use a light update if possible, but Leaflet divIcon needs re-set for HTML content change usually
@@ -552,8 +558,8 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                 const icon = L.divIcon({
                     className: 'other-rider-icon',
                     html: iconHtml,
-                    iconSize: [32, 32],
-                    iconAnchor: [16, 16]
+                    iconSize: [40, 40],
+                    iconAnchor: [20, 20]
                 });
                 marker.setIcon(icon);
             }

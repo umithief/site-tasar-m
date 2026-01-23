@@ -458,28 +458,32 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
 
             // Initial Snapshot
             socket.on('active_riders_snapshot', (riders: any[]) => {
-                // Filter out self
-                // We don't have our own ID easily here without decoding token or storing it, 
-                // but usually the server can filter. For now, we allow self-echo or filter by ID if we had it.
-                // Let's assume server sends all.
-                setOtherRiders(riders);
+                // Filter out self using socket.id
+                const myId = socketRef.current?.id;
+                const filtered = riders.filter(r => r.id !== myId);
+                setOtherRiders(filtered);
             });
 
             // Live Updates
             socket.on('rider_moved', (data: any) => {
-                const targetId = data.userId || data.id; // Robust ID check
+                // Ignore self-echo
+                if (data.id === socketRef.current?.id) return;
+
+                // Use socket ID as unique key to support multiple devices
+                const targetId = data.id || data.userId;
+
                 setOtherRiders(prev => {
-                    const exists = prev.find(r => (r.id === targetId || r.id === data.userId));
+                    const exists = prev.find(r => r.id === targetId);
                     if (exists) {
-                        return prev.map(r => (r.id === targetId || r.id === data.userId) ? { ...r, ...data, id: targetId } : r);
+                        return prev.map(r => r.id === targetId ? { ...r, ...data, id: targetId } : r);
                     } else {
                         return [...prev, { ...data, id: targetId }];
                     }
                 });
             });
 
-            socket.on('rider_left', (data: { userId: string }) => {
-                const targetId = data.userId;
+            socket.on('rider_left', (data: { id?: string, userId: string }) => {
+                const targetId = data.id || data.userId;
                 setOtherRiders(prev => prev.filter(r => r.id !== targetId));
                 // Remove marker from map immediately
                 if (otherRidersRef.current[targetId]) {

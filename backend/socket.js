@@ -62,16 +62,17 @@ export const initSync = (httpServer) => {
         socket.on('disconnect', () => {
             console.log(`🚫 Rider Disconnected: ${username}`);
             userSocketMap.delete(userId);
-            activeRiders.delete(userId); // Remove from tracking
+            activeRiders.delete(socket.id); // Remove using socket ID
             socket.broadcast.emit('user_offline', { userId });
-            socket.broadcast.emit('rider_left', { userId }); // Notify map
+            socket.broadcast.emit('rider_left', { id: socket.id, userId }); // Send both IDs
         });
 
         // --- 3. LIVE RIDE TRACKING ---
         socket.on('update_location', ({ lat, lng, speed, bearing }) => {
-            // Update in memory
-            activeRiders.set(userId, {
-                id: userId,
+            // Update in memory using SOCKET ID as key to allow multiple devices for same user
+            activeRiders.set(socket.id, {
+                id: socket.id,
+                userId: userId,
                 name: username,
                 lat,
                 lng,
@@ -82,6 +83,7 @@ export const initSync = (httpServer) => {
 
             // Broadcast to everyone (or room 'riders')
             socket.broadcast.emit('rider_moved', {
+                id: socket.id,
                 userId,
                 name: username,
                 lat,

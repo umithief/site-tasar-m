@@ -563,7 +563,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                     waypoints,
                     router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1', profile: 'driving', language: 'tr' }),
                     lineOptions: {
-                        styles: [{ color: '#00f3ff', opacity: 0.8, weight: 8, className: 'neon-polyline' }]
+                        styles: [{ color: '#3b82f6', opacity: 0.8, weight: 6 }]
                     },
                     show: false,
                     addWaypoints: false,
@@ -615,7 +615,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                         waypoints: waypoints,
                         router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1', profile: 'driving', language: 'tr' }),
                         lineOptions: {
-                            styles: [{ color: '#E2FF3B', opacity: 0.8, weight: 8, className: 'neon-polyline' }]
+                            styles: [{ color: '#3b82f6', opacity: 0.8, weight: 6 }]
                         },
                         show: false,
                         addWaypoints: false,
@@ -648,8 +648,8 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                 } catch (e) {
                     console.error("Static Route Error", e);
                     // Fallback in catch
-                    // Fallback in catch
-                    const polyline = L.polyline(points.map((p: any) => [p.lat, p.lng]), { color: '#E2FF3B', opacity: 0.8, weight: 8 }).addTo(mapRef.current);
+                    // Fallback: Just draw the polyline if OSRM fails
+                    const polyline = L.polyline(points.map((p: any) => [p.lat, p.lng]), { color: '#3b82f6', opacity: 0.8, weight: 6, smoothFactor: 1 }).addTo(mapRef.current);
                     try { mapRef.current.fitBounds(polyline.getBounds()); } catch (ex) { }
                 }
             }

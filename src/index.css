@@ -241,21 +241,73 @@ button {
     outline: none;
 }
 
-/* --- NIGHT PILOT 3D MAP STYLES --- */
-.map-3d-container {
-    perspective: 1000px;
-    transform-style: preserve-3d;
-    overflow: hidden;
-    background: #000;
+/* --- GLASSMORPHISM PANELLER --- */
+.glass-panel {
+    background: rgba(255, 255, 255, 0.90);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 16px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    pointer-events: auto;
 }
 
-.map-3d-view {
-    transform: rotateX(40deg) scale(1.4) translateY(-10%);
-    transform-origin: center center;
-    transition: transform 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+/* --- PULSE MARKER --- */
+.marker-pulse {
+    width: 22px;
+    height: 22px;
+    background-color: #3b82f6;
+    border-radius: 50%;
+    border: 3px solid white;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    cursor: pointer;
+    position: relative;
+    z-index: 10;
 }
 
-/* Matrix Blue/Night Filter applied to Google Hybrid/Roadmap */
-.night-pilot-tiles {
-    filter: invert(100%) hue-rotate(190deg) brightness(0.9) contrast(1.2) saturate(1.1);
+.marker-pulse::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background-color: inherit;
+    opacity: 0.6;
+    animation: pulse-animation 2s infinite;
+    z-index: -1;
 }
+
+@keyframes pulse-animation {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.6;
+    }
+
+    70% {
+        transform: translate(-50%, -50%) scale(2.5);
+        opacity: 0;
+    }
+
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0;
+    }
+}
+
+/* --- SCROLLBAR --- */
+.custom-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.custom-scroll::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.custom-scroll::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+/* Clean up old 3D/Dark styles if not needed or keep minimal */

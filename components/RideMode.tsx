@@ -137,6 +137,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
     const [isGpsEnabled, setIsGpsEnabled] = useState(true); // Default ON
     const [gpsStatus, setGpsStatus] = useState<'active' | 'searching' | 'off' | 'denied' | 'unavailable'>('searching');
     const [heading, setHeading] = useState(0);
+    const [socketStatus, setSocketStatus] = useState<'connected' | 'disconnected'>('disconnected');
 
     // Physics & Demo
     const [speed, setSpeed] = useState(0);
@@ -439,6 +440,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
 
             socket.on('connect', () => {
                 console.log('⚡ [RideMode] Socket Connected');
+                setSocketStatus('connected');
                 // Force broadcast location immediately on connect
                 if (currentLocRef.current) {
                     socket.emit('update_location', {
@@ -451,7 +453,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
             });
 
             socket.on('disconnect', () => {
-                console.log('⚡ [RideMode] Socket Disconnected');
+                setSocketStatus('disconnected');
             });
 
             // Initial Snapshot
@@ -995,6 +997,57 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                                 <div className="text-zinc-400 font-medium text-sm truncate leading-tight mt-0.5">{nextTurn.text}</div>
                             </div>
                         </div>
+                    )}
+                </div>
+            </div>
+            {/* --- ACTIVE RIDER LIST (Always Visible for Debug) --- */}
+            <div className="absolute top-20 right-4 z-40 pointer-events-auto flex flex-col gap-2 animate-in slide-in-from-right-10">
+                <div className="bg-black/80 backdrop-blur-xl border border-cyan-500/30 p-3 rounded-2xl shadow-2xl min-w-[140px]">
+                    <div className="text-[10px] font-bold text-cyan-400 uppercase tracking-widest mb-2 flex items-center gap-2 cursor-pointer hover:text-cyan-300 transition-colors"
+                        onClick={() => {
+                            // Hidden Easter Egg: Simulate Rider on Title Click
+                            const baseLat = currentLoc ? currentLoc.lat : 39.92;
+                            const baseLng = currentLoc ? currentLoc.lng : 32.85;
+                            const fakeId = 'sim-' + Date.now();
+                            setOtherRiders(prev => [...prev, {
+                                id: fakeId, name: 'Ghost Rider',
+                                lat: baseLat + 0.002, lng: baseLng + 0.002,
+                                bearing: Math.random() * 360, speed: 45
+                            }]);
+                        }}
+                        title="Simülasyon için tıkla"
+                    >
+                        <div className={`w-2 h-2 rounded-full animate-pulse ${socketStatus === 'connected' ? 'bg-cyan-400' : 'bg-red-500'}`}></div>
+                        SÜRÜCÜLER ({otherRiders.length})
+                    </div>
+
+                    <div className="space-y-1 max-h-[150px] overflow-y-auto custom-scrollbar">
+                        {otherRiders.length === 0 ? (
+                            <div className="text-zinc-500 text-xs italic py-2 text-center">
+                                {socketStatus === 'connected' ? 'Kimse yok...' : 'Bağlanıyor...'}
+                            </div>
+                        ) : (
+                            otherRiders.map(r => (
+                                <div key={r.id} className="text-white text-xs flex items-center justify-between border-b border-white/5 pb-1 last:border-0 last:pb-0">
+                                    <span className="font-medium truncate max-w-[80px]">{r.name || 'Misafir'}</span>
+                                    <span className="text-cyan-200 text-[10px]">{Math.round(r.speed || 0)} km/h</span>
+                                </div>
+                            ))
+                        )}
+                    </div>
+
+                    {otherRiders.length > 0 && (
+                        <button
+                            onClick={() => {
+                                if (!mapRef.current) return;
+                                const group = new L.featureGroup(Object.values(otherRidersRef.current));
+                                if (currentLoc) group.addLayer(L.marker([currentLoc.lat, currentLoc.lng]));
+                                mapRef.current.fitBounds(group.getBounds(), { padding: [50, 50] });
+                            }}
+                            className="w-full mt-2 bg-cyan-500/20 hover:bg-cyan-500/30 text-cyan-400 text-[10px] py-1 rounded transition-colors"
+                        >
+                            TÜMÜNÜ GÖR
+                        </button>
                     )}
                 </div>
             </div>

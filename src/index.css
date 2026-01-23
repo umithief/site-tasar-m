@@ -78,12 +78,29 @@ body {
     filter: contrast(1.1) brightness(1.1) saturate(0.8);
 }
 
-/* Neon Paths */
-.neon-polyline {
+/* OLD Neon Paths (Deprecated for Zoom Fix) */
+/* .neon-polyline {
     filter: drop-shadow(0 0 8px #E2FF3B) drop-shadow(0 0 15px #E2FF3B);
     stroke-dasharray: 1000;
     stroke-dashoffset: 1000;
     animation: drawPath 3s ease-out forwards;
+} */
+
+/* --- NEW SMOOTH ROUTE ANIMATION --- */
+.animated-route {
+    stroke-dasharray: 12;
+    animation: dash-flow 1s linear infinite;
+    stroke-linecap: round;
+}
+
+@keyframes dash-flow {
+    from {
+        stroke-dashoffset: 24;
+    }
+
+    to {
+        stroke-dashoffset: 0;
+    }
 }
 
 .trail-polyline {
@@ -309,5 +326,3 @@ button {
     background: #cbd5e1;
     border-radius: 10px;
 }
-
-/* Clean up old 3D/Dark styles if not needed or keep minimal */

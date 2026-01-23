@@ -563,7 +563,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                     waypoints,
                     router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1', profile: 'driving', language: 'tr' }),
                     lineOptions: {
-                        styles: [{ color: '#3b82f6', opacity: 0.8, weight: 6 }]
+                        styles: [{ color: '#3b82f6', opacity: 1, weight: 6, className: 'animated-route' }]
                     },
                     show: false,
                     addWaypoints: false,
@@ -615,7 +615,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                         waypoints: waypoints,
                         router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1', profile: 'driving', language: 'tr' }),
                         lineOptions: {
-                            styles: [{ color: '#3b82f6', opacity: 0.8, weight: 6 }]
+                            styles: [{ color: '#3b82f6', opacity: 1, weight: 6, className: 'animated-route' }]
                         },
                         show: false,
                         addWaypoints: false,

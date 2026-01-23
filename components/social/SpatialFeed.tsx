@@ -46,40 +46,42 @@ export const SpatialFeed: React.FC<SpatialFeedProps> = memo(({
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     transition={{ type: "spring", stiffness: 200, damping: 20 }}
-                    className="flex flex-col items-center justify-center py-20 px-6 text-center"
+                    className="flex flex-col items-center justify-center py-12 px-6 text-center w-full"
                 >
-                    <div className="relative mb-8 group cursor-default">
-                        {/* Glow Effect */}
-                        <div className="absolute inset-0 bg-moto-accent/20 blur-3xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-700"></div>
+                    <div className="bg-white rounded-[2.5rem] p-8 shadow-2xl border border-gray-100 max-w-sm w-full flex flex-col items-center relative overflow-hidden group">
 
-                        {/* Icon Container */}
-                        <div className="w-28 h-28 bg-gradient-to-br from-[#1a1a1a] to-black rounded-[2.5rem] flex items-center justify-center border border-white/5 shadow-2xl relative z-10 group-hover:scale-105 transition-transform duration-500 ring-1 ring-white/10 group-hover:ring-moto-accent/50">
-                            <span className="text-5xl filter drop-shadow-lg group-hover:rotate-12 transition-transform duration-300">🪐</span>
+                        {/* Decorative Background Pattern */}
+                        <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]"></div>
+
+                        {/* Icon */}
+                        <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6 relative z-10 group-hover:scale-110 transition-transform duration-500 shadow-inner">
+                            <span className="text-5xl filter drop-shadow-md">🏍️</span>
+                            {/* Animated Speed Lines */}
+                            <div className="absolute -right-4 top-1/2 -translate-y-1/2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <div className="w-4 h-0.5 bg-gray-300 rounded-full animate-pulse"></div>
+                                <div className="w-6 h-0.5 bg-gray-300 rounded-full animate-pulse delay-75"></div>
+                                <div className="w-3 h-0.5 bg-gray-300 rounded-full animate-pulse delay-150"></div>
+                            </div>
                         </div>
 
-                        {/* Orbit Animation Element */}
-                        <div className="absolute -top-2 -right-2 w-8 h-8 bg-[#222] rounded-full border border-white/10 flex items-center justify-center z-20 shadow-lg animate-bounce-slow">
-                            <span className="text-xs">💤</span>
-                        </div>
+                        <h3 className="text-2xl font-black italic uppercase tracking-tighter text-gray-900 mb-2 z-10">
+                            Henüz Kimse Yok
+                        </h3>
+
+                        <p className="text-gray-500 mb-8 font-medium leading-relaxed text-sm z-10 px-4">
+                            Motorunu çalıştır ve ilk izi sen bırak! Akış şimdilik boş görünüyor.
+                        </p>
+
+                        <button
+                            onClick={() => onNavigate?.('explore')}
+                            className="w-full py-4 bg-black text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-gray-800 active:scale-95 transition-all shadow-lg flex items-center justify-center gap-2 z-10"
+                        >
+                            <span>Keşfe Çık</span>
+                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                            </svg>
+                        </button>
                     </div>
-
-                    <h3 className="text-3xl font-black italic uppercase tracking-tighter text-white mb-3 bg-clip-text text-transparent bg-gradient-to-r from-white via-gray-200 to-gray-500">
-                        Sessiz Bölge
-                    </h3>
-
-                    <p className="text-gray-400 mb-8 max-w-[280px] mx-auto font-medium leading-relaxed text-sm">
-                        Henüz hiç gönderi düşmemiş. Burası şimdilik derin uzay kadar sessiz.
-                    </p>
-
-                    <button
-                        onClick={() => onNavigate?.('explore')}
-                        className="px-8 py-3.5 bg-white text-black rounded-full font-black text-xs uppercase tracking-widest hover:bg-moto-accent hover:text-white hover:scale-105 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,255,255,0.15)] flex items-center gap-2 group"
-                    >
-                        <span>Keşfe Çık</span>
-                        <svg className="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                        </svg>
-                    </button>
                 </motion.div>
             )}
 

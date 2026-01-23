@@ -57,15 +57,45 @@ body {
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
 
 /* Consistent Map Styles */
+/* Consistent Map Styles */
 .leaflet-container {
-    background: #e5e7eb !important;
+    background: #09090b !important;
+    /* Premium Dark Background */
     font-family: 'Inter', sans-serif !important;
 }
 
 .leaflet-control-zoom a {
-    background-color: white !important;
-    color: black !important;
-    border: 1px solid #e5e7eb !important;
+    background-color: rgba(20, 20, 20, 0.8) !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    backdrop-filter: blur(8px);
+}
+
+.leaflet-control-zoom a:hover {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+}
+
+/* Dark Tiles Optimization */
+.dark-matter-tiles {
+    filter: contrast(1.1) brightness(1.1) saturate(0.8);
+}
+
+/* Neon Paths */
+.neon-polyline {
+    filter: drop-shadow(0 0 8px #E2FF3B) drop-shadow(0 0 15px #E2FF3B);
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: drawPath 3s ease-out forwards;
+}
+
+.trail-polyline {
+    filter: drop-shadow(0 0 6px #00f3ff);
+}
+
+@keyframes drawPath {
+    to {
+        stroke-dashoffset: 0;
+    }
 }
 
 /* Leaflet Dark Popup Overrides */

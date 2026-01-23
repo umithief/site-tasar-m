@@ -170,11 +170,11 @@ export const MotoVlogMap: React.FC<MotoVlogMapProps> = ({ onNavigate, onAddToCar
 
             filtered.forEach(vlog => {
                 const iconHtml = `
-                <div class="group relative cursor-pointer w-10 h-10 transition-transform duration-300 hover:scale-125">
-                     <div class="absolute inset-0 rounded-full border-2 border-white bg-black overflow-hidden shadow-lg">
+                <div class="group relative cursor-pointer w-10 h-10 transition-transform duration-300 hover:scale-125 z-50">
+                     <div class="absolute inset-0 rounded-full border-2 border-white bg-black overflow-hidden shadow-[0_0_15px_rgba(255,255,255,0.3)] group-hover:shadow-[0_0_25px_rgba(226,255,59,0.6)] transition-shadow">
                         <img src="${vlog.thumbnail}" class="w-full h-full object-cover" />
                      </div>
-                     <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-moto-accent rounded-full flex items-center justify-center border border-black text-[8px] font-black text-black">
+                     <div class="absolute -bottom-1 -right-1 w-4 h-4 bg-moto-accent rounded-full flex items-center justify-center border border-black text-[8px] font-black text-black shadow-lg">
                         <svg width="8" height="8" viewBox="0 0 24 24" fill="currentColor"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
                      </div>
                 </div>`;

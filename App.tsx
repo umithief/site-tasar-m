@@ -479,6 +479,7 @@ export const App: React.FC = () => {
             case 'redline': return <RedlineChallenge onBack={() => navigateTo('explore')} />;
             case 'legal': return <LegalGuide onBack={() => navigateTo('explore')} />;
             case 'stolen': return <StolenPool onBack={() => navigateTo('explore')} />;
+            case 'explore': return <MobileExplore onNavigate={navigateTo} />;
 
             default: return <Home onNavigate={navigateTo} products={products} onAddToCart={addToCart} onProductClick={(p: any) => navigateTo('product-detail', p)} favoriteIds={favoriteIds} onToggleFavorite={toggleFavorite} onQuickView={setQuickViewProduct} onToggleMenu={() => setIsMobileMenuOpen(true)} />;
         }

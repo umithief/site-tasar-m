@@ -367,18 +367,8 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
             }).addTo(map);
 
             // Add CSS for the neon line and DARK MAP
-            const style = document.createElement('style');
-            style.innerHTML = `
-            .neon-polyline { filter: drop-shadow(0 0 10px #E2FF3B); }
-            .trail-polyline { filter: drop-shadow(0 0 8px #00f3ff); }
-            .leaflet-container { background: #09090b !important; }
-            
-            /* Dark Matter Optimizations */
-            .leaflet-tile-pane .leaflet-layer .dark-matter-tiles {
-                filter: contrast(1.1) brightness(1.1) !important;
-            }
-          `;
-            document.head.appendChild(style);
+            // Add CSS for the neon line and DARK MAP
+            // Styles handled in index.css for consistency
         }
 
         // IMMEDIATE LOCATION CHECK (Force Update)

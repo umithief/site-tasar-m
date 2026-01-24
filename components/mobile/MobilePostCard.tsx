@@ -120,27 +120,27 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
     };
 
     return (
-        <div className="w-full mb-8 bg-transparent">
+        <div className="mx-3 mb-8 bg-white dark:bg-[#0A0A0A] rounded-[2.5rem] border border-gray-100 dark:border-white/10 shadow-[0_20px_40px_-10px_rgba(0,0,0,0.08)] dark:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] overflow-hidden">
             {/* Header - Minimal & Floating-like */}
-            <div className="px-4 py-3 flex items-center justify-between">
+            <div className="px-5 py-4 flex items-center justify-between">
                 <div
                     className="flex items-center gap-3 cursor-pointer"
                     onClick={() => onNavigate && post.userId && onNavigate('public-profile', { userId: post.userId, username: post.userName })}
                 >
-                    <UserAvatar name={post.userName} src={post.userAvatar} size={32} className="ring-2 ring-white dark:ring-black" />
+                    <UserAvatar name={post.userName} src={post.userAvatar} size={36} className="ring-2 ring-gray-50 dark:ring-black" />
                     <div className="flex flex-col">
                         <span className="text-sm font-bold text-gray-900 dark:text-white leading-none">{post.userName}</span>
                         {post.location && <span className="text-[10px] text-gray-500 font-medium mt-0.5">{post.location}</span>}
                     </div>
                 </div>
-                <button onClick={() => setShowOptions(true)} className="p-2 -mr-2 text-gray-500 dark:text-gray-400">
+                <button onClick={() => setShowOptions(true)} className="p-2 -mr-2 text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
                     <MoreHorizontal className="w-5 h-5" />
                 </button>
             </div>
 
             {/* Media - Dynamic Aspect Ratio */}
             <div
-                className="relative w-full bg-gray-100 dark:bg-zinc-900 overflow-hidden"
+                className="relative w-full bg-gray-50 dark:bg-black overflow-hidden"
                 onClick={handleDoubleTap}
             >
                 {priority ? (

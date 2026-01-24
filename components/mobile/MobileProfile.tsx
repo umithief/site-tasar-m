@@ -69,10 +69,10 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
     if (!user) return null;
 
     return (
-        <div className="min-h-screen bg-gray-50 pb-24 transition-colors duration-300">
+        <div className="min-h-screen bg-gray-50 dark:bg-[#050505] pb-24 transition-colors duration-300">
             {/* 1. Header & Cover - Clean & Light */}
             <div className="relative">
-                <div className="h-64 w-full overflow-hidden bg-gray-100 relative">
+                <div className="h-64 w-full overflow-hidden bg-gray-100 dark:bg-black relative">
                     {user.coverImage ? (
                         <motion.img
                             initial={{ scale: 1.1 }}
@@ -83,7 +83,7 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
                             className="w-full h-full object-cover"
                         />
                     ) : (
-                        <div className={`w-full h-full flex items-center justify-center bg-gray-100`}>
+                        <div className={`w-full h-full flex items-center justify-center bg-gray-100 dark:bg-black`}>
                             <div className="flex flex-col items-center opacity-20">
                                 <div className="w-16 h-16 text-gray-400 mb-2">
                                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round" className="w-full h-full"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>
@@ -91,7 +91,7 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
                             </div>
                         </div>
                     )}
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-50 via-transparent to-black/20 pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-gray-50 via-transparent to-black/20 dark:from-[#050505] pointer-events-none" />
                 </div>
 
                 <div className="absolute top-4 w-full px-4 z-10 flex justify-between">
@@ -100,7 +100,7 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
                         {onBack && (
                             <button
                                 onClick={onBack}
-                                className="p-2 bg-white/80 backdrop-blur-md rounded-full text-gray-700 shadow-sm border border-gray-200"
+                                className="p-2 bg-white/80 dark:bg-black/50 backdrop-blur-md rounded-full text-gray-700 dark:text-white shadow-sm border border-gray-200 dark:border-white/10"
                             >
                                 <ArrowLeft className="w-5 h-5" />
                             </button>
@@ -112,13 +112,13 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
                         <div className="flex gap-2">
                             <button
                                 onClick={() => setIsEditing(true)}
-                                className="p-2 bg-white/80 backdrop-blur-md rounded-full text-gray-700 shadow-sm border border-gray-200"
+                                className="p-2 bg-white/80 dark:bg-black/50 backdrop-blur-md rounded-full text-gray-700 dark:text-white shadow-sm border border-gray-200 dark:border-white/10"
                             >
                                 <Settings className="w-5 h-5" />
                             </button>
                             <button
                                 onClick={logout}
-                                className="p-2 bg-red-50 backdrop-blur-md rounded-full text-red-600 shadow-sm border border-red-100"
+                                className="p-2 bg-red-50 dark:bg-red-500/20 backdrop-blur-md rounded-full text-red-600 dark:text-red-400 shadow-sm border border-red-100 dark:border-red-500/30"
                             >
                                 <LogOut className="w-5 h-5" />
                             </button>
@@ -129,53 +129,53 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
 
             {/* 2. Identity Section - Card Style */}
             <div className="px-4 -mt-20 relative z-10">
-                <div className="bg-white/80 backdrop-blur-xl rounded-[2.5rem] p-6 shadow-2xl shadow-gray-200/50 border border-white/50 text-center transition-all">
+                <div className="bg-white/80 dark:bg-[#111]/90 backdrop-blur-xl rounded-[2.5rem] p-6 shadow-2xl shadow-gray-200/50 dark:shadow-none border border-white/50 dark:border-white/10 text-center transition-all">
                     <div className="relative inline-block mb-4">
-                        <div className="p-1.5 bg-white rounded-full shadow-sm">
-                            <UserAvatar name={user.name} src={user.avatar || user.profileImage} size={110} className="border-4 border-gray-50 shadow-inner" />
+                        <div className="p-1.5 bg-white dark:bg-[#111] rounded-full shadow-sm">
+                            <UserAvatar name={user.name} src={user.avatar || user.profileImage} size={110} className="border-4 border-gray-50 dark:border-white/5 shadow-inner" />
                         </div>
-                        <div className="absolute bottom-1 right-1 bg-moto-accent text-black p-1.5 rounded-full border-4 border-white shadow-md">
+                        <div className="absolute bottom-1 right-1 bg-moto-accent text-black p-1.5 rounded-full border-4 border-white dark:border-[#111] shadow-md">
                             <Shield className="w-3.5 h-3.5 fill-current" />
                         </div>
                     </div>
 
-                    <h1 className="text-3xl font-display font-black text-gray-900 mb-1 tracking-tighter uppercase italic">{user.name}</h1>
+                    <h1 className="text-3xl font-display font-black text-gray-900 dark:text-white mb-1 tracking-tighter uppercase italic">{user.name}</h1>
                     <div className="flex items-center justify-center gap-2 mb-6">
-                        <span className="text-xs font-bold text-gray-500 bg-gray-100 px-3 py-1 rounded-full border border-gray-200/50">
+                        <span className="text-xs font-bold text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-white/5 px-3 py-1 rounded-full border border-gray-200/50 dark:border-white/5">
                             @{user.username || 'rider'}
                         </span>
                         {user.rank && (
-                            <span className="text-[10px] font-black uppercase tracking-wider bg-black text-white px-2 py-1 rounded-md">
+                            <span className="text-[10px] font-black uppercase tracking-wider bg-black dark:bg-white text-white dark:text-black px-2 py-1 rounded-md">
                                 {user.rank}
                             </span>
                         )}
                     </div>
 
                     {/* Stats Grid */}
-                    <div className="grid grid-cols-3 gap-2 border-t border-gray-100 pt-6 mb-6">
+                    <div className="grid grid-cols-3 gap-2 border-t border-gray-100 dark:border-white/10 pt-6 mb-6">
                         <div onClick={() => handleOpenUserList('followers')} className="group active:scale-95 transition-transform cursor-pointer">
-                            <div className="text-xl font-black text-gray-900 group-hover:text-moto-accent transition-colors">
+                            <div className="text-xl font-black text-gray-900 dark:text-white group-hover:text-moto-accent transition-colors">
                                 {Array.isArray(user.followers) ? user.followers.length : (user.followersCount || 0)}
                             </div>
-                            <div className="text-[9px] font-bold text-gray-400 uppercase tracking-widest group-hover:text-gray-600">Takipçi</div>
+                            <div className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest group-hover:text-gray-600 dark:group-hover:text-gray-300">Takipçi</div>
                         </div>
-                        <div className="w-[1px] h-8 bg-gray-100 absolute left-1/3 top-auto translate-y-2 opacity-50" />
+                        <div className="w-[1px] h-8 bg-gray-100 dark:bg-white/10 absolute left-1/3 top-auto translate-y-2 opacity-50" />
                         <div onClick={() => handleOpenUserList('following')} className="group active:scale-95 transition-transform cursor-pointer">
-                            <div className="text-xl font-black text-gray-900 group-hover:text-moto-accent transition-colors">
+                            <div className="text-xl font-black text-gray-900 dark:text-white group-hover:text-moto-accent transition-colors">
                                 {Array.isArray(user.following) ? user.following.length : (user.followingCount || 0)}
                             </div>
-                            <div className="text-[9px] font-bold text-gray-400 uppercase tracking-widest group-hover:text-gray-600">Takip</div>
+                            <div className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest group-hover:text-gray-600 dark:group-hover:text-gray-300">Takip</div>
                         </div>
-                        <div className="w-[1px] h-8 bg-gray-100 absolute right-1/3 top-auto translate-y-2 opacity-50" />
+                        <div className="w-[1px] h-8 bg-gray-100 dark:bg-white/10 absolute right-1/3 top-auto translate-y-2 opacity-50" />
                         <div className="group">
-                            <div className="text-xl font-black text-gray-900 group-hover:text-moto-accent transition-colors">{user.garage?.length || 0}</div>
-                            <div className="text-[9px] font-bold text-gray-400 uppercase tracking-widest group-hover:text-gray-600">Garaj</div>
+                            <div className="text-xl font-black text-gray-900 dark:text-white group-hover:text-moto-accent transition-colors">{user.garage?.length || 0}</div>
+                            <div className="text-[9px] font-bold text-gray-400 dark:text-gray-500 uppercase tracking-widest group-hover:text-gray-600 dark:group-hover:text-gray-300">Garaj</div>
                         </div>
                     </div>
 
                     {/* Bio */}
                     {user.bio ? (
-                        <p className="text-sm text-gray-600 leading-relaxed font-medium px-4 py-3 bg-gray-50/50 rounded-2xl border border-gray-100/50">
+                        <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed font-medium px-4 py-3 bg-gray-50/50 dark:bg-white/5 rounded-2xl border border-gray-100/50 dark:border-white/5">
                             "{user.bio}"
                         </p>
                     ) : (
@@ -185,8 +185,8 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
             </div>
 
             {/* 3. Navigation Tabs - Sticky */}
-            <div className="sticky top-0 z-30 pt-4 pb-2 mt-4 px-4 bg-gray-50/95 backdrop-blur-md">
-                <div className="flex gap-1 justify-between bg-white/80 p-1.5 rounded-[1.5rem] border border-gray-200/50 shadow-sm relative isolate">
+            <div className="sticky top-0 z-30 pt-4 pb-2 mt-4 px-4 bg-gray-50/95 dark:bg-[#050505]/95 backdrop-blur-md">
+                <div className="flex gap-1 justify-between bg-white/80 dark:bg-[#111]/80 p-1.5 rounded-[1.5rem] border border-gray-200/50 dark:border-white/10 shadow-sm relative isolate">
                     {[
                         { id: 'posts', label: 'Gönderiler', icon: Grid },
                         { id: 'reels', label: 'Reels', icon: Film },
@@ -198,17 +198,17 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
                             <button
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id as any)}
-                                className={`relative flex flex-1 items-center justify-center gap-2 py-3 px-3 rounded-2xl transition-all duration-300 ${isActive ? 'text-white shadow-lg shadow-black/10' : 'text-gray-400 hover:text-gray-600'}`}
+                                className={`relative flex flex-1 items-center justify-center gap-2 py-3 px-3 rounded-2xl transition-all duration-300 ${isActive ? 'text-white dark:text-black shadow-lg shadow-black/10' : 'text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300'}`}
                             >
                                 {isActive && (
                                     <motion.div
                                         layoutId="activeTabBg"
-                                        className="absolute inset-0 bg-gray-900 rounded-2xl z-[-1]"
+                                        className="absolute inset-0 bg-gray-900 dark:bg-white rounded-2xl z-[-1]"
                                         transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
                                     />
                                 )}
                                 <tab.icon className={`w-4 h-4 z-10 ${isActive ? 'fill-moto-accent text-moto-accent' : 'text-current'}`} strokeWidth={isActive ? 2 : 2.5} />
-                                <span className={`hidden sm:inline text-xs font-bold tracking-wide z-10 ${isActive ? 'text-white' : ''}`}>{tab.label}</span>
+                                <span className={`hidden sm:inline text-xs font-bold tracking-wide z-10 ${isActive ? 'text-white dark:text-black' : ''}`}>{tab.label}</span>
                             </button>
                         );
                     })}
@@ -229,7 +229,7 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
                             <div className="space-y-4 pb-4">
                                 {isLoadingPosts ? (
                                     <div className="flex justify-center py-12">
-                                        <div className="w-8 h-8 border-2 border-gray-200 border-t-moto-accent rounded-full animate-spin" />
+                                        <div className="w-8 h-8 border-2 border-gray-200 dark:border-white/10 border-t-moto-accent rounded-full animate-spin" />
                                     </div>
                                 ) : (
                                     <>
@@ -238,10 +238,10 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
                                         ))}
                                         {posts.length === 0 && (
                                             <div className="text-center py-16 text-gray-400">
-                                                <div className="w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mx-auto mb-4">
+                                                <div className="w-16 h-16 rounded-full bg-gray-100 dark:bg-[#111] flex items-center justify-center mx-auto mb-4">
                                                     <Grid className="w-8 h-8 opacity-50" />
                                                 </div>
-                                                <h3 className="text-sm font-bold text-gray-900 mb-1">Henüz gönderi yok</h3>
+                                                <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Henüz gönderi yok</h3>
                                                 <p className="text-xs">Paylaşımlarınız burada görünecek.</p>
                                             </div>
                                         )}
@@ -267,29 +267,29 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
                         {activeTab === 'garage' && (
                             <div className="space-y-4 px-2">
                                 {user.garage?.map(bike => (
-                                    <div key={bike._id} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex gap-4 hover:shadow-md transition-shadow">
+                                    <div key={bike._id} className="bg-white dark:bg-[#111] rounded-2xl p-4 shadow-sm border border-gray-100 dark:border-white/10 flex gap-4 hover:shadow-md transition-shadow">
                                         <div className="w-24 h-20 bg-gray-100 rounded-xl overflow-hidden shrink-0 relative">
                                             <img src={bike.image} className="w-full h-full object-cover" />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
                                         </div>
                                         <div className="flex flex-col justify-between py-1">
                                             <div>
-                                                <h3 className="font-display font-black text-gray-900 text-lg leading-tight uppercase italic">{bike.brand}</h3>
+                                                <h3 className="font-display font-black text-gray-900 dark:text-white text-lg leading-tight uppercase italic">{bike.brand}</h3>
                                                 <p className="text-sm font-bold text-gray-400">{bike.model}</p>
                                             </div>
                                             <div className="flex gap-2">
-                                                <span className="px-2 py-0.5 bg-gray-50 rounded text-[9px] font-black text-gray-500 uppercase border border-gray-200">{bike.km} KM</span>
-                                                <span className="px-2 py-0.5 bg-gray-50 rounded text-[9px] font-black text-gray-500 uppercase border border-gray-200">{bike.year}</span>
+                                                <span className="px-2 py-0.5 bg-gray-50 dark:bg-white/5 rounded text-[9px] font-black text-gray-500 dark:text-gray-400 uppercase border border-gray-200 dark:border-white/10">{bike.km} KM</span>
+                                                <span className="px-2 py-0.5 bg-gray-50 dark:bg-white/5 rounded text-[9px] font-black text-gray-500 dark:text-gray-400 uppercase border border-gray-200 dark:border-white/10">{bike.year}</span>
                                             </div>
                                         </div>
                                     </div>
                                 ))}
                                 {(!user.garage || user.garage.length === 0) && (
-                                    <div className="text-center py-12 bg-white rounded-3xl border border-dashed border-gray-200 shadow-sm mx-2">
-                                        <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-3">
-                                            <Bike className="w-8 h-8 text-gray-300" />
+                                    <div className="text-center py-12 bg-white dark:bg-[#111] rounded-3xl border border-dashed border-gray-200 dark:border-white/10 shadow-sm mx-2">
+                                        <div className="w-16 h-16 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mx-auto mb-3">
+                                            <Bike className="w-8 h-8 text-gray-300 dark:text-gray-600" />
                                         </div>
-                                        <p className="text-gray-900 text-sm font-bold">Garajınız boş</p>
+                                        <p className="text-gray-900 dark:text-white text-sm font-bold">Garajınız boş</p>
                                         <p className="text-gray-400 text-xs mt-1">İlk motosikletinizi ekleyin.</p>
                                     </div>
                                 )}
@@ -299,7 +299,7 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
                         {activeTab === 'saved' && (
                             <div className="flex flex-col items-center justify-center py-20 text-center text-gray-400">
                                 <Bookmark className="w-12 h-12 mb-4 opacity-50" />
-                                <h3 className="text-sm font-bold text-gray-900 mb-1">Henüz kaydedilen yok</h3>
+                                <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1">Henüz kaydedilen yok</h3>
                                 <p className="text-xs">Beğendiğiniz gönderileri daha sonra görmek için kaydedin.</p>
                             </div>
                         )}

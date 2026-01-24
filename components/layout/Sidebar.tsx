@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Home, Map, Compass, Bike, ShoppingBag, User, Shield, LayoutGrid } from 'lucide-react';
+import { Home, Map, Compass, Bike, ShoppingBag, User, Shield, LayoutGrid, Sun, Moon } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { ViewState } from '../../types';
 
 import { Logo } from '../ui/Logo';
+
+import { useThemeStore } from '../../store/useThemeStore';
 
 interface SidebarProps {
     activeView: ViewState;
@@ -17,6 +19,7 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ activeView, onNavigate }) => {
     const { user } = useAuthStore();
+    const { theme, toggleTheme } = useThemeStore();
 
     const navItems = [
         { id: 'home', icon: Home, label: 'Akış' },
@@ -67,6 +70,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, onNavigate }) => {
                             />
                         );
                     })}
+
+                    {/* Theme Toggle Divider & Button */}
+                    <div className="w-8 h-px bg-gray-200 dark:bg-white/10" />
+
+                    <motion.button
+                        whileTap={{ scale: 0.9 }}
+                        onClick={toggleTheme}
+                        className="p-2 rounded-full text-gray-400 dark:text-gray-500 hover:text-black dark:hover:text-white transition-colors"
+                        aria-label="Toggle Theme"
+                    >
+                        {theme === 'dark' ? (
+                            <Sun className="w-6 h-6" strokeWidth={2} />
+                        ) : (
+                            <Moon className="w-6 h-6" strokeWidth={2} />
+                        )}
+                    </motion.button>
+
 
                 </div>
             </motion.div>

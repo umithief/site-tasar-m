@@ -119,9 +119,16 @@ export const App: React.FC = () => {
 
     const [socialHubData, setSocialHubData] = useState<any>(null); // Placeholder for initial data
 
-    // Theme Management - Enforced Light Mode
-    // Theme Management - Enforced Light Mode is now handled by store default
+    // Theme Management
     const { theme } = useThemeStore();
+
+    useEffect(() => {
+        if (theme === 'dark') {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    }, [theme]);
 
 
     useEffect(() => {

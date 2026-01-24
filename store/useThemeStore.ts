@@ -2,17 +2,17 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 interface ThemeState {
-    theme: 'light';
+    theme: 'light' | 'dark';
     toggleTheme: () => void;
-    setTheme: (theme: 'light') => void;
+    setTheme: (theme: 'light' | 'dark') => void;
 }
 
 export const useThemeStore = create<ThemeState>()(
     persist(
         (set) => ({
             theme: 'light',
-            toggleTheme: () => set({ theme: 'light' }),
-            setTheme: () => set({ theme: 'light' }),
+            toggleTheme: () => set((state) => ({ theme: state.theme === 'light' ? 'dark' : 'light' })),
+            setTheme: (theme) => set({ theme }),
         }),
         {
             name: 'mv_theme_storage',

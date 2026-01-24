@@ -51,6 +51,17 @@ body {
     --moto-accent-rgb: 242 166 25;
 }
 
+/* Dark Mode Overrides */
+.dark,
+:root[class~="dark"] {
+    color-scheme: dark;
+    --bg-primary: #000000;
+    --text-primary: #ffffff;
+    --scrollbar-track: #111111;
+    --scrollbar-thumb: #333333;
+    --scrollbar-thumb-hover: #555555;
+}
+
 
 
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap');

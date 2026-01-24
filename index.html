@@ -38,19 +38,24 @@
     window.process.env.API_KEY = window.process.env.API_KEY || '';
 
     (function () {
-      // Force Light Mode Logic
-      document.documentElement.classList.remove('dark');
-      document.documentElement.classList.add('light');
-      localStorage.setItem('mv_theme', 'light');
-
-      var storedColor = localStorage.getItem('mv_color_theme');
-      if (storedColor) {
-        document.documentElement.setAttribute('data-theme', storedColor);
+      var storedTheme = localStorage.getItem('mv_theme_storage');
+      if (storedTheme) {
+        try {
+          var parsed = JSON.parse(storedTheme);
+          if (parsed.state && parsed.state.theme === 'dark') {
+            document.documentElement.classList.add('dark');
+            document.documentElement.classList.remove('light');
+          } else {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.add('light');
+          }
+        } catch (e) { }
       }
     })();
   </script>
 
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Sora:wght@400;600;700;800&display=swap"
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Sora:wght@400;600;700;800&display=swap"
     rel="stylesheet">
 
 

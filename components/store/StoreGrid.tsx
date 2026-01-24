@@ -394,24 +394,24 @@ export const StoreGrid: React.FC<StoreGridProps> = ({
                         <motion.button
                             layout
                             onClick={onOpenCart}
-                            className="bg-[#0F1012]/80 backdrop-blur-2xl border border-[#E2FF3B]/50 rounded-full h-16 flex items-center overflow-hidden shadow-[0_0_50px_rgba(0,0,0,0.6)] group relative"
+                            className="bg-white/90 dark:bg-[#0F1012]/80 backdrop-blur-2xl border border-moto-accent/50 rounded-full h-16 flex items-center overflow-hidden shadow-[0_10px_40px_rgba(0,0,0,0.1)] dark:shadow-[0_0_50px_rgba(0,0,0,0.6)] group relative"
                             animate={{ width: isCartExpanded ? 240 : 64 }}
                             transition={{ type: "spring", stiffness: 300, damping: 25 }}
                         >
                             {/* Glowing effect */}
-                            <div className="absolute inset-0 bg-[#E2FF3B]/5 group-hover:bg-[#E2FF3B]/10 transition-colors" />
+                            <div className="absolute inset-0 bg-moto-accent/5 group-hover:bg-moto-accent/10 transition-colors" />
 
                             <div className="absolute left-0 w-16 h-16 flex items-center justify-center z-10">
-                                <ShoppingBag className="w-6 h-6 text-[#E2FF3B]" strokeWidth={2.5} />
-                                <div className="absolute top-4 right-4 w-3 h-3 bg-red-500 rounded-full border-2 border-[#0F1012] flex items-center justify-center">
+                                <ShoppingBag className="w-6 h-6 text-moto-accent" strokeWidth={2.5} />
+                                <div className="absolute top-4 right-4 w-3 h-3 bg-red-500 rounded-full border-2 border-white dark:border-[#0F1012] flex items-center justify-center">
                                     <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
                                 </div>
                             </div>
 
                             <div className="pl-16 pr-8 whitespace-nowrap z-10 flex flex-col items-start leading-tight">
-                                <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Sepet Özeti</span>
+                                <span className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider">Sepet Özeti</span>
                                 <div className="flex items-baseline gap-2">
-                                    <span className="text-lg text-white font-black tracking-tight shrink-0">
+                                    <span className="text-lg text-gray-900 dark:text-white font-black tracking-tight shrink-0">
                                         Sepete Git
                                     </span>
                                     <span className="text-xs text-gray-500 font-bold">({cartCount} Ürün)</span>

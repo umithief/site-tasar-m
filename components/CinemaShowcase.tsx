@@ -153,11 +153,11 @@ export const CinemaShowcase: React.FC = () => {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.4 }}
-                    className="mt-20 flex flex-col md:flex-row justify-between items-center gap-8 border-t border-white/5 pt-12"
+                    className="mt-20 flex flex-col md:flex-row justify-between items-center gap-8 border-t border-gray-200 dark:border-white/5 pt-12"
                 >
                     <div className="flex flex-col gap-1">
-                        <span className="text-white/20 text-[10px] font-black uppercase tracking-widest leading-none">Vitrin Detayları</span>
-                        <span className="text-white/40 text-xs font-bold uppercase tracking-widest">Otomatik Akış: {isPaused ? "DURAKLATILDI" : "AKTİF"}</span>
+                        <span className="text-gray-400 dark:text-white/20 text-[10px] font-black uppercase tracking-widest leading-none">Vitrin Detayları</span>
+                        <span className="text-gray-500 dark:text-white/40 text-xs font-bold uppercase tracking-widest">Otomatik Akış: {isPaused ? "DURAKLATILDI" : "AKTİF"}</span>
                     </div>
 
                     <div className="flex gap-4">
@@ -167,21 +167,20 @@ export const CinemaShowcase: React.FC = () => {
                                 onClick={() => setActiveIndex(i)}
                                 className="group flex flex-col gap-3 py-2"
                             >
-                                <div className={`w-12 md:w-20 h-1 transition-all duration-700 rounded-full ${activeIndex === i ? 'bg-moto-accent shadow-[0_0_15px_rgba(var(--moto-accent-rgb),0.8)]' : 'bg-white/10 group-hover:bg-white/20'}`} />
-                                <span className={`text-[9px] font-black transition-all duration-500 uppercase tracking-widest ${activeIndex === i ? 'text-white opacity-100' : 'text-white/20 opacity-0 group-hover:opacity-100'}`}>0{i + 1}</span>
+                                <div className={`w-12 md:w-20 h-1 transition-all duration-700 rounded-full ${activeIndex === i ? 'bg-moto-accent shadow-[0_0_15px_rgba(var(--moto-accent-rgb),0.8)]' : 'bg-gray-300 dark:bg-white/10 group-hover:bg-gray-400 dark:group-hover:bg-white/20'}`} />
+                                <span className={`text-[9px] font-black transition-all duration-500 uppercase tracking-widest ${activeIndex === i ? 'text-gray-900 dark:text-white opacity-100' : 'text-gray-400 dark:text-white/20 opacity-0 group-hover:opacity-100'}`}>0{i + 1}</span>
                             </button>
                         ))}
                     </div>
 
-                    <div className="flex items-center gap-4 text-white/20 text-[10px] font-black uppercase tracking-widest">
+                    <div className="flex items-center gap-4 text-gray-400 dark:text-white/20 text-[10px] font-black uppercase tracking-widest">
                         <span>Kaydır</span>
-                        <div className="w-8 h-[1px] bg-white/10" />
+                        <div className="w-8 h-[1px] bg-gray-300 dark:bg-white/10" />
                         <span>Keşfet</span>
                     </div>
                 </motion.div>
             </div>
 
-            {/* PREVIEW MODAL */}
             {/* PREVIEW MODAL */}
             {previewProduct && createPortal(
                 <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
@@ -189,14 +188,14 @@ export const CinemaShowcase: React.FC = () => {
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        className="absolute inset-0 bg-black/90 backdrop-blur-md"
+                        className="absolute inset-0 bg-white/80 dark:bg-black/90 backdrop-blur-md"
                         onClick={() => setPreviewProduct(null)}
                     />
 
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9, y: 50 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
-                        className="relative z-10 w-full max-w-5xl bg-[#111] border border-white/10 rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row max-h-[90vh]"
+                        className="relative z-10 w-full max-w-5xl bg-white dark:bg-[#111] border border-gray-200 dark:border-white/10 rounded-3xl overflow-hidden shadow-2xl flex flex-col md:flex-row max-h-[90vh]"
                         onClick={(e) => e.stopPropagation()}
                     >
                         {/* Close Button */}
@@ -205,21 +204,21 @@ export const CinemaShowcase: React.FC = () => {
                                 onClick={() => setPreviewProduct(null)}
                                 variant="ghost"
                                 size="sm"
-                                className="!rounded-full w-10 h-10 p-0 border border-white/10 bg-black/50 hover:bg-white/10"
+                                className="!rounded-full w-10 h-10 p-0 border border-gray-200 dark:border-white/10 bg-white/50 dark:bg-black/50 hover:bg-gray-100 dark:hover:bg-white/10"
                             >
-                                <X className="w-5 h-5 text-white" />
+                                <X className="w-5 h-5 text-gray-900 dark:text-white" />
                             </VibeButton>
                         </div>
 
                         {/* Image Side - Fixed Height & Gradient */}
-                        <div className="w-full md:w-1/2 h-[400px] md:h-auto min-h-[400px] relative bg-black">
+                        <div className="w-full md:w-1/2 h-[400px] md:h-auto min-h-[400px] relative bg-gray-100 dark:bg-black">
                             <img
                                 src={previewProduct.image}
                                 alt={previewProduct.name}
                                 className="w-full h-full object-cover"
                             />
                             {/* Gradient fading into the text side (Right) */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent md:bg-gradient-to-l md:from-[#111] md:to-transparent" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-white via-transparent to-transparent md:bg-gradient-to-l md:from-white md:to-transparent dark:from-[#111] dark:via-transparent dark:to-transparent dark:md:from-[#111] dark:md:to-transparent" />
                         </div>
 
                         {/* Content Side */}
@@ -227,16 +226,16 @@ export const CinemaShowcase: React.FC = () => {
                             <span className="text-moto-accent text-xs font-black tracking-widest uppercase mb-2">
                                 {previewProduct.category}
                             </span>
-                            <h2 className="text-4xl md:text-5xl font-black text-white leading-[0.9] tracking-tighter mb-6">
+                            <h2 className="text-4xl md:text-5xl font-black text-gray-900 dark:text-white leading-[0.9] tracking-tighter mb-6">
                                 {previewProduct.name}
                             </h2>
 
                             <div className="flex items-baseline gap-2 mb-8">
-                                <span className="text-3xl font-mono font-bold text-white">₺{previewProduct.price.toLocaleString('tr-TR')}</span>
-                                <span className="text-white/40 text-sm font-bold line-through">₺{(previewProduct.price * 1.2).toLocaleString('tr-TR')}</span>
+                                <span className="text-3xl font-mono font-bold text-gray-900 dark:text-white">₺{previewProduct.price.toLocaleString('tr-TR')}</span>
+                                <span className="text-gray-400 dark:text-white/40 text-sm font-bold line-through">₺{(previewProduct.price * 1.2).toLocaleString('tr-TR')}</span>
                             </div>
 
-                            <p className="text-white/70 text-lg leading-relaxed mb-8 border-l-2 border-white/10 pl-6">
+                            <p className="text-gray-600 dark:text-white/70 text-lg leading-relaxed mb-8 border-l-2 border-gray-200 dark:border-white/10 pl-6">
                                 {previewProduct.description}
                             </p>
 
@@ -244,12 +243,12 @@ export const CinemaShowcase: React.FC = () => {
                                 {previewProduct.features.map((feat, i) => (
                                     <div key={i} className="flex items-start gap-2">
                                         <div className="w-1.5 h-1.5 mt-1.5 rounded-full bg-moto-accent" />
-                                        <span className="text-sm text-white/80 font-medium">{feat}</span>
+                                        <span className="text-sm text-gray-700 dark:text-white/80 font-medium">{feat}</span>
                                     </div>
                                 ))}
                             </div>
 
-                            <div className="mt-auto pt-8 border-t border-white/10">
+                            <div className="mt-auto pt-8 border-t border-gray-100 dark:border-white/10">
                                 <VibeButton
                                     onClick={() => handleAddToCart(previewProduct)}
                                     variant="primary"

@@ -133,7 +133,7 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                         {post.location && <span className="text-[10px] text-gray-500 font-medium mt-0.5">{post.location}</span>}
                     </div>
                 </div>
-                <button onClick={() => setShowOptions(true)} className="p-2 -mr-2 text-gray-500">
+                <button onClick={() => setShowOptions(true)} className="p-2 -mr-2 text-gray-500 dark:text-gray-400">
                     <MoreHorizontal className="w-5 h-5" />
                 </button>
             </div>
@@ -226,7 +226,7 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                         ) : (
                             <>
                                 {postContent.slice(0, 90)}...
-                                <button onClick={() => setIsExpanded(true)} className="text-gray-500 ml-1">devamı</button>
+                                <button onClick={() => setIsExpanded(true)} className="text-gray-500 dark:text-gray-400 ml-1">devamı</button>
                             </>
                         )}
                     </div>
@@ -234,7 +234,7 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                     {post.comments > 0 && (
                         <button
                             onClick={() => onCommentClick && onCommentClick()}
-                            className="text-gray-500 text-sm mt-1"
+                            className="text-gray-500 dark:text-gray-400 text-sm mt-1"
                         >
                             {post.comments} yorumun tümünü gör
                         </button>

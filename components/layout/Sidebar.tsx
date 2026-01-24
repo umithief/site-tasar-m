@@ -52,7 +52,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeView, onNavigate }) => {
                 className="fixed left-6 top-1/2 -translate-y-1/2 h-auto z-50 flex flex-col items-center"
             >
                 {/* GLASS RAIL CONTAINER */}
-                <div className="bg-white/80 backdrop-blur-2xl border border-gray-200 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] py-8 px-4 flex flex-col gap-8 items-center">
+                <div className="bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl border border-gray-200 dark:border-white/10 rounded-[32px] shadow-[0_20px_50px_rgba(0,0,0,0.1)] py-8 px-4 flex flex-col gap-8 items-center">
 
                     {navItems.map((item) => {
                         const isActive = activeView === item.id || (item.id === 'home' && !activeView); // Default to home if undefined?
@@ -96,7 +96,9 @@ const NavItem = ({ item, isActive, onClick }: { item: any, isActive: boolean, on
                 onMouseLeave={() => setIsHovered(false)}
                 whileHover={{ scale: 1.15 }}
                 whileTap={{ scale: 0.95 }}
-                className={`relative z-10 p-2 rounded-full transition-colors duration-300 ${isActive ? 'text-[#E2FF3B]' : 'text-gray-400 group-hover:text-white'
+                className={`relative z-10 p-2 rounded-full transition-colors duration-300 ${isActive
+                    ? 'text-black dark:text-[#E2FF3B]'
+                    : 'text-gray-400 dark:text-gray-500 group-hover:text-black dark:group-hover:text-white'
                     }`}
             >
                 <item.icon
@@ -118,7 +120,7 @@ const NavItem = ({ item, isActive, onClick }: { item: any, isActive: boolean, on
                         animate={{ opacity: 1, x: 20, scale: 1 }}
                         exit={{ opacity: 0, x: 10, scale: 0.9 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute left-full bg-gray-900 backdrop-blur-md border border-gray-800 px-3 py-1.5 rounded-xl text-xs font-bold text-white shadow-xl whitespace-nowrap z-50 pointer-events-none"
+                        className="absolute left-full bg-gray-900 border border-gray-800 px-3 py-1.5 rounded-xl text-xs font-bold text-white shadow-xl whitespace-nowrap z-50 pointer-events-none"
                     >
                         {item.label}
                         {/* Little triangle pointer */}

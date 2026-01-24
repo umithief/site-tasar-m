@@ -103,37 +103,37 @@ export const Showcase: React.FC<ShowcaseProps> = ({
             >
                 <HeroShowcase />
             </motion.div>
-            <div className="relative z-10 bg-gray-50 shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">
+            <div className="relative z-10 bg-gray-50 dark:bg-black shadow-[0_-20px_50px_rgba(0,0,0,0.5)]">
 
 
 
                 {/* Mobile Top Bar (Enhanced Visibility) */}
-                <div className="md:hidden pt-safe-top pb-3 px-4 bg-white/95 backdrop-blur-xl sticky top-0 z-30 border-b border-gray-200/50 shadow-sm transition-colors duration-500 h-20 flex flex-col justify-center">
+                <div className="md:hidden pt-safe-top pb-3 px-4 bg-white/95 dark:bg-black/95 backdrop-blur-xl sticky top-0 z-30 border-b border-gray-200/50 dark:border-white/10 shadow-sm transition-colors duration-500 h-20 flex flex-col justify-center">
                     <div className="flex justify-between items-center">
                         <div className="flex items-center gap-3">
                             <div onClick={() => onNavigate(user ? 'profile' : 'auth' as any)} className="relative cursor-pointer group">
                                 {user ? (
                                     <UserAvatar name={user.name || 'User'} size={48} className="border-2 border-white dark:border-zinc-800 shadow-md" />
                                 ) : (
-                                    <div className="w-12 h-12 rounded-full bg-gray-100 flex items-center justify-center border-2 border-white shadow-sm">
+                                    <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-zinc-800 flex items-center justify-center border-2 border-white dark:border-zinc-700 shadow-sm">
                                         <span className="text-sm font-bold text-gray-500">?</span>
                                     </div>
                                 )}
-                                <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white rounded-full"></div>
+                                <div className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white dark:border-black rounded-full"></div>
                             </div>
                             <div>
                                 <p className="text-[10px] text-gray-500 dark:text-gray-400 font-bold uppercase tracking-wider flex items-center gap-1 mb-0.5">
                                     <Sun className="w-3 h-3 text-yellow-500" />
                                     {greeting}
                                 </p>
-                                <h2 className="text-lg font-black text-gray-900 leading-none tracking-tight">{user && user.name ? user.name.split(' ')[0] : t('home.guest')}</h2>
+                                <h2 className="text-lg font-black text-gray-900 dark:text-white leading-none tracking-tight">{user && user.name ? user.name.split(' ')[0] : t('home.guest')}</h2>
                             </div>
                         </div>
 
                         <div className="flex items-center gap-2">
                             <Button
                                 onClick={onCartClick}
-                                className="bg-black text-white rounded-full w-10 h-10 p-0 flex items-center justify-center hover:bg-moto-accent hover:text-black transition-colors"
+                                className="bg-black dark:bg-white text-white dark:text-black rounded-full w-10 h-10 p-0 flex items-center justify-center hover:bg-moto-accent hover:text-black transition-colors"
                                 variant="ghost"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4Z" /><path d="M3 6h18" /><path d="M16 10a4 4 0 0 1-8 0" /></svg>
@@ -157,7 +157,7 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                                             placeholder={t('common.search_placeholder')}
                                             value={searchText}
                                             onChange={(e) => setSearchText(e.target.value)}
-                                            className="w-full h-14 bg-gray-100 rounded-2xl border-2 border-transparent focus:border-moto-accent pl-5 pr-14 text-base font-bold outline-none transition-all text-gray-900 placeholder-gray-500"
+                                            className="w-full h-14 bg-gray-100 dark:bg-zinc-800 rounded-2xl border-2 border-transparent focus:border-moto-accent pl-5 pr-14 text-base font-bold outline-none transition-all text-gray-900 dark:text-white placeholder-gray-500"
                                         />
                                         <Button type="submit" variant="ghost" className="absolute right-0 top-0 h-full w-14 text-gray-500 hover:text-moto-accent rounded-r-2xl">
                                             <ArrowRight className="w-6 h-6" />
@@ -169,7 +169,7 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                     </AnimatePresence>
 
                     <div className="hidden">
-                        <WeatherWidget variant="minimal" className="bg-gray-100 text-gray-900" />
+                        <WeatherWidget variant="minimal" className="bg-gray-100 dark:bg-zinc-800 text-gray-900 dark:text-white" />
                     </div>
                 </div>
 
@@ -207,9 +207,9 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         onClick={() => onNavigate('vlog-map')}
-                        className="max-w-[1800px] mx-auto bg-[#0a0a0a] border border-white/10 rounded-[2rem] overflow-hidden cursor-pointer group shadow-2xl relative"
+                        className="max-w-[1800px] mx-auto bg-white dark:bg-[#0a0a0a] border border-gray-200 dark:border-white/10 rounded-[2rem] overflow-hidden cursor-pointer group shadow-2xl relative"
                     >
-                        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent z-10 pointer-events-none"></div>
+                        <div className="absolute inset-0 bg-gradient-to-r from-white/90 via-white/70 to-transparent dark:from-black dark:via-black/80 dark:to-transparent z-10 pointer-events-none"></div>
                         <LazyLoadImage
                             src="https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=1600&auto=format&fit=crop"
                             className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:scale-105 transition-transform duration-1000"
@@ -224,17 +224,17 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                             <div className="flex items-center gap-3 text-red-500 font-bold tracking-[0.3em] text-xs uppercase mb-4">
                                 <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse"></span> CANLI HARİTA
                             </div>
-                            <h3 className="text-4xl md:text-7xl font-display font-black text-white mb-6 leading-[0.9]">
+                            <h3 className="text-4xl md:text-7xl font-display font-black text-gray-900 dark:text-white mb-6 leading-[0.9]">
                                 ROTA <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">KEŞFET</span>
                             </h3>
-                            <p className="text-gray-400 text-base md:text-xl max-w-lg mb-8 leading-relaxed">
+                            <p className="text-gray-600 dark:text-gray-400 text-base md:text-xl max-w-lg mb-8 leading-relaxed">
                                 {t('home.vlog_desc')}
                             </p>
 
                             <div className="flex items-center gap-4">
                                 <Button
                                     onClick={(e) => { e.stopPropagation(); onNavigate('vlog-map'); }}
-                                    className="bg-white text-black px-8 py-6 rounded-xl font-bold text-sm tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-xl hover:shadow-red-600/20"
+                                    className="bg-black dark:bg-white text-white dark:text-black px-8 py-6 rounded-xl font-bold text-sm tracking-widest hover:bg-red-600 hover:text-white transition-all shadow-xl hover:shadow-red-600/20"
                                     variant="primary"
                                 >
                                     {t('home.open_map')}
@@ -248,7 +248,7 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                         whileInView={{ opacity: 1, y: 0 }}
                         viewport={{ once: true }}
                         onClick={() => onNavigate('valuation')}
-                        className="max-w-[1800px] mx-auto bg-gradient-to-br from-[#111] to-black border border-white/10 rounded-[2rem] p-8 md:p-16 relative overflow-hidden cursor-pointer hover:border-moto-accent/50 transition-all group shadow-2xl"
+                        className="max-w-[1800px] mx-auto bg-gradient-to-br from-gray-100 to-white dark:from-[#111] dark:to-black border border-gray-200 dark:border-white/10 rounded-[2rem] p-8 md:p-16 relative overflow-hidden cursor-pointer hover:border-moto-accent/50 transition-all group shadow-2xl"
                     >
                         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-moto-accent/5 rounded-full blur-[120px] pointer-events-none"></div>
 
@@ -257,16 +257,16 @@ export const Showcase: React.FC<ShowcaseProps> = ({
                                 <div className="flex items-center gap-2 text-xs font-bold text-moto-accent uppercase tracking-[0.3em] mb-4">
                                     <Sparkles className="w-4 h-4" /> AI VALUATION
                                 </div>
-                                <h3 className="text-3xl md:text-6xl font-display font-black text-white mb-4 leading-none">
+                                <h3 className="text-3xl md:text-6xl font-display font-black text-gray-900 dark:text-white mb-4 leading-none">
                                     {t('home.valuation')}
                                 </h3>
-                                <p className="text-gray-400 text-sm md:text-lg max-w-xl leading-relaxed">
+                                <p className="text-gray-600 dark:text-gray-400 text-sm md:text-lg max-w-xl leading-relaxed">
                                     {t('home.valuation_desc')}
                                 </p>
                             </div>
 
-                            <div className="w-16 h-16 md:w-24 md:h-24 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-moto-accent group-hover:text-black group-hover:scale-110 transition-all duration-500">
-                                <Calculator className="w-8 h-8 md:w-10 md:h-10" />
+                            <div className="w-16 h-16 md:w-24 md:h-24 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 flex items-center justify-center group-hover:bg-moto-accent group-hover:text-black group-hover:scale-110 transition-all duration-500">
+                                <Calculator className="w-8 h-8 md:w-10 md:h-10 dark:text-white group-hover:text-black" />
                             </div>
                         </div>
                     </motion.div>

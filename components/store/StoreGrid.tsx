@@ -112,12 +112,12 @@ export const StoreGrid: React.FC<StoreGridProps> = ({
     };
 
     return (
-        <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-[#E2FF3B] selection:text-black relative overflow-x-hidden">
+        <div className="min-h-screen bg-gray-50 dark:bg-[#050505] text-gray-900 dark:text-white font-sans selection:bg-[#E2FF3B] selection:text-black relative overflow-x-hidden">
 
             {/* Background Texture with Heavy Blur */}
-            <div className="fixed inset-0 pointer-events-none opacity-20 z-0">
+            <div className="fixed inset-0 pointer-events-none opacity-5 dark:opacity-20 z-0">
                 <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1558981403-c5f9899a28bc?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center" />
-                <div className="absolute inset-0 bg-[#050505]/90 backdrop-blur-3xl" />
+                <div className="absolute inset-0 bg-white/90 dark:bg-[#050505]/90 backdrop-blur-3xl" />
             </div>
 
             {/* Main Layout Container */}
@@ -126,14 +126,14 @@ export const StoreGrid: React.FC<StoreGridProps> = ({
                 {/* 2. Left Sidebar: The "Filter Cockpit" */}
                 {/* Fixed width, sticky position */}
                 <aside className="hidden lg:block w-70 flex-shrink-0">
-                    <div className="sticky top-24 h-[85vh] bg-[#0F1012]/60 backdrop-blur-xl border border-white/5 rounded-[32px] p-6 flex flex-col shadow-2xl overflow-hidden">
+                    <div className="sticky top-24 h-[85vh] bg-white/60 dark:bg-[#0F1012]/60 backdrop-blur-xl border border-gray-200 dark:border-white/5 rounded-[32px] p-6 flex flex-col shadow-2xl overflow-hidden">
 
-                        <div className="flex items-center justify-between mb-8 pb-4 border-b border-white/5">
-                            <h2 className="font-bold tracking-widest text-sm text-gray-400 font-display">FİLTRELER</h2>
+                        <div className="flex items-center justify-between mb-8 pb-4 border-b border-gray-200 dark:border-white/5">
+                            <h2 className="font-bold tracking-widest text-sm text-gray-500 dark:text-gray-400 font-display">FİLTRELER</h2>
                             <motion.button
                                 whileTap={{ scale: 0.95 }}
                                 onClick={() => { setSelectedCategory(null); setSelectedBrand(null); setSearchQuery(''); }}
-                                className="text-xs text-[#E2FF3B] hover:text-white transition-colors font-medium"
+                                className="text-xs text-[#E2FF3B] hover:text-black dark:hover:text-white transition-colors font-medium decoration-black dark:decoration-white"
                             >
                                 Temizle
                             </motion.button>
@@ -149,7 +149,7 @@ export const StoreGrid: React.FC<StoreGridProps> = ({
                                     placeholder="Ürün ara..."
                                     value={searchQuery}
                                     onChange={(e) => setSearchQuery(e.target.value)}
-                                    className="w-full bg-white/5 border border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-white focus:outline-none focus:border-[#E2FF3B]/50 transition-colors placeholder:text-gray-600"
+                                    className="w-full bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 rounded-xl py-3 pl-10 pr-4 text-sm text-gray-900 dark:text-white focus:outline-none focus:border-[#E2FF3B]/50 transition-colors placeholder:text-gray-500 dark:placeholder:text-gray-600"
                                 />
                             </div>
 
@@ -157,10 +157,10 @@ export const StoreGrid: React.FC<StoreGridProps> = ({
                             <div>
                                 <h3
                                     onClick={() => toggleAccordion('categories')}
-                                    className="font-bold text-white mb-4 flex items-center justify-between cursor-pointer group select-none"
+                                    className="font-bold text-gray-900 dark:text-white mb-4 flex items-center justify-between cursor-pointer group select-none"
                                 >
                                     <span>Kategoriler</span>
-                                    <ChevronDown className={`w-4 h-4 text-gray-500 group-hover:text-white transition-transform ${accordionState.categories ? 'rotate-180' : ''}`} />
+                                    <ChevronDown className={`w-4 h-4 text-gray-500 group-hover:text-black dark:group-hover:text-white transition-transform ${accordionState.categories ? 'rotate-180' : ''}`} />
                                 </h3>
                                 <AnimatePresence>
                                     {accordionState.categories && (
@@ -174,11 +174,11 @@ export const StoreGrid: React.FC<StoreGridProps> = ({
                                                 <label key={cat.id} className="flex items-center gap-3 cursor-pointer group py-1">
                                                     <div
                                                         onClick={() => setSelectedCategory(selectedCategory === cat.id ? null : cat.id)}
-                                                        className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selectedCategory === cat.id ? 'bg-[#E2FF3B] border-[#E2FF3B]' : 'border-white/20 group-hover:border-white'}`}
+                                                        className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selectedCategory === cat.id ? 'bg-[#E2FF3B] border-[#E2FF3B]' : 'border-gray-300 dark:border-white/20 group-hover:border-black dark:group-hover:border-white'}`}
                                                     >
                                                         {selectedCategory === cat.id && <Check className="w-3 h-3 text-black" />}
                                                     </div>
-                                                    <span className={`text-sm transition-colors ${selectedCategory === cat.id ? 'text-white font-bold' : 'text-gray-400 group-hover:text-white'}`}>
+                                                    <span className={`text-sm transition-colors ${selectedCategory === cat.id ? 'text-gray-900 dark:text-white font-bold' : 'text-gray-500 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white'}`}>
                                                         {cat.label}
                                                     </span>
                                                 </label>
@@ -192,10 +192,10 @@ export const StoreGrid: React.FC<StoreGridProps> = ({
                             <div>
                                 <h3
                                     onClick={() => toggleAccordion('brands')}
-                                    className="font-bold text-white mb-4 flex items-center justify-between cursor-pointer group select-none"
+                                    className="font-bold text-gray-900 dark:text-white mb-4 flex items-center justify-between cursor-pointer group select-none"
                                 >
                                     <span>Markalar</span>
-                                    <ChevronDown className={`w-4 h-4 text-gray-500 group-hover:text-white transition-transform ${accordionState.brands ? 'rotate-180' : ''}`} />
+                                    <ChevronDown className={`w-4 h-4 text-gray-500 group-hover:text-black dark:group-hover:text-white transition-transform ${accordionState.brands ? 'rotate-180' : ''}`} />
                                 </h3>
                                 <AnimatePresence>
                                     {accordionState.brands && (
@@ -209,11 +209,11 @@ export const StoreGrid: React.FC<StoreGridProps> = ({
                                                 <label key={brand} className="flex items-center gap-3 cursor-pointer group py-1">
                                                     <div
                                                         onClick={() => setSelectedBrand(selectedBrand === brand ? null : brand)}
-                                                        className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selectedBrand === brand ? 'bg-[#E2FF3B] border-[#E2FF3B]' : 'border-white/20 group-hover:border-white'}`}
+                                                        className={`w-4 h-4 rounded border flex items-center justify-center transition-colors ${selectedBrand === brand ? 'bg-[#E2FF3B] border-[#E2FF3B]' : 'border-gray-300 dark:border-white/20 group-hover:border-black dark:group-hover:border-white'}`}
                                                     >
                                                         {selectedBrand === brand && <Check className="w-3 h-3 text-black" />}
                                                     </div>
-                                                    <span className={`text-sm transition-colors ${selectedBrand === brand ? 'text-white font-bold' : 'text-gray-400 group-hover:text-white'}`}>
+                                                    <span className={`text-sm transition-colors ${selectedBrand === brand ? 'text-gray-900 dark:text-white font-bold' : 'text-gray-500 dark:text-gray-400 group-hover:text-black dark:group-hover:text-white'}`}>
                                                         {brand}
                                                     </span>
                                                 </label>
@@ -227,10 +227,10 @@ export const StoreGrid: React.FC<StoreGridProps> = ({
                             <div>
                                 <h3
                                     onClick={() => toggleAccordion('price')}
-                                    className="font-bold text-white mb-6 flex items-center justify-between cursor-pointer group select-none"
+                                    className="font-bold text-gray-900 dark:text-white mb-6 flex items-center justify-between cursor-pointer group select-none"
                                 >
                                     <span>Fiyat Aralığı</span>
-                                    <ChevronDown className={`w-4 h-4 text-gray-500 group-hover:text-white transition-transform ${accordionState.price ? 'rotate-180' : ''}`} />
+                                    <ChevronDown className={`w-4 h-4 text-gray-500 group-hover:text-black dark:group-hover:text-white transition-transform ${accordionState.price ? 'rotate-180' : ''}`} />
                                 </h3>
                                 <AnimatePresence>
                                     {accordionState.price && (
@@ -247,9 +247,9 @@ export const StoreGrid: React.FC<StoreGridProps> = ({
                                                 step="1000"
                                                 value={priceRange}
                                                 onChange={(e) => setPriceRange(Number(e.target.value))}
-                                                className="w-full h-1 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#E2FF3B]"
+                                                className="w-full h-1 bg-gray-200 dark:bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#E2FF3B]"
                                             />
-                                            <div className="flex justify-between text-xs text-gray-400 font-mono mt-4">
+                                            <div className="flex justify-between text-xs text-gray-500 dark:text-gray-400 font-mono mt-4">
                                                 <span>₺0</span>
                                                 <span className="text-[#E2FF3B] font-bold">₺{priceRange.toLocaleString('tr-TR')}</span>
                                             </div>
@@ -272,7 +272,7 @@ export const StoreGrid: React.FC<StoreGridProps> = ({
                     {isLoading ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                             {[1, 2, 3, 4, 5, 6, 7, 8].map(i => (
-                                <div key={i} className="aspect-[3/4] rounded-3xl bg-white/5 animate-pulse" />
+                                <div key={i} className="aspect-[3/4] rounded-3xl bg-gray-200 dark:bg-white/5 animate-pulse" />
                             ))}
                         </div>
                     ) : (
@@ -285,7 +285,7 @@ export const StoreGrid: React.FC<StoreGridProps> = ({
                                         animate={{ opacity: 1, scale: 1 }}
                                         transition={{ delay: index * 0.05 }}
                                         layoutId={product._id}
-                                        className="group relative bg-[#1A1A1A]/40 backdrop-blur-md border border-white/5 rounded-3xl overflow-hidden hover:border-white/20 transition-all hover:bg-[#1A1A1A]/60 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] flex flex-col"
+                                        className="group relative bg-white dark:bg-[#1A1A1A]/40 backdrop-blur-md border border-gray-200 dark:border-white/5 rounded-3xl overflow-hidden hover:border-black dark:hover:border-white/20 transition-all hover:bg-gray-50 dark:hover:bg-[#1A1A1A]/60 hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_20px_40px_-10px_rgba(0,0,0,0.5)] flex flex-col"
                                     >
                                         {/* Wishlist Button */}
                                         <button
@@ -294,7 +294,7 @@ export const StoreGrid: React.FC<StoreGridProps> = ({
                                                 // Skipping for now or local
                                                 e.stopPropagation();
                                             }}
-                                            className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-black/40 backdrop-blur-md border border-white/5 flex items-center justify-center text-white/50 hover:text-white hover:bg-[#E2FF3B] hover:text-black hover:border-transparent transition-all active:scale-90"
+                                            className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-white/80 dark:bg-black/40 backdrop-blur-md border border-gray-200 dark:border-white/5 flex items-center justify-center text-gray-400 dark:text-white/50 hover:text-black dark:hover:text-white hover:bg-[#E2FF3B] hover:border-transparent transition-all active:scale-90"
                                         >
                                             <Heart className="w-5 h-5" />
                                         </button>
@@ -308,12 +308,12 @@ export const StoreGrid: React.FC<StoreGridProps> = ({
 
                                         {/* Image Area - Floating in center */}
                                         <div className="relative aspect-[4/5] p-8 flex items-center justify-center overflow-hidden">
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                                            <div className="absolute inset-0 bg-gradient-to-t from-black/5 to-transparent dark:from-black/20 dark:to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                                             <LazyLoadImage
                                                 src={product.image || product.images?.[0] || 'https://via.placeholder.com/400x500'}
                                                 alt={product.name}
-                                                className="w-full h-full object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.4)] transition-all duration-700 group-hover:scale-110 group-hover:-rotate-2 group-hover:-translate-y-2 origin-bottom"
+                                                className="w-full h-full object-contain drop-shadow-[0_15px_30px_rgba(0,0,0,0.1)] dark:drop-shadow-[0_15px_30px_rgba(0,0,0,0.4)] transition-all duration-700 group-hover:scale-110 group-hover:-rotate-2 group-hover:-translate-y-2 origin-bottom"
                                                 wrapperClassName="w-full h-full"
                                                 width="100%"
                                                 height="100%"
@@ -326,7 +326,7 @@ export const StoreGrid: React.FC<StoreGridProps> = ({
                                                         e.stopPropagation();
                                                         onProductClick(product);
                                                     }}
-                                                    className="px-6 py-2.5 bg-white/10 backdrop-blur-xl border border-white/20 text-white text-xs font-bold uppercase tracking-wider rounded-full hover:bg-white hover:text-black transition-colors shadow-xl"
+                                                    className="px-6 py-2.5 bg-black/80 dark:bg-white/10 backdrop-blur-xl border border-white/20 text-white text-xs font-bold uppercase tracking-wider rounded-full hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black transition-colors shadow-xl"
                                                 >
                                                     Göz At
                                                 </button>
@@ -337,24 +337,24 @@ export const StoreGrid: React.FC<StoreGridProps> = ({
                                         <div className="p-6 pt-0 mt-auto">
                                             <div className="mb-4">
                                                 <p className="text-xs text-gray-500 font-bold uppercase tracking-widest mb-1.5">{product.brand || 'Marka'}</p>
-                                                <h3 className="text-lg font-bold text-white leading-tight group-hover:text-[#E2FF3B] transition-colors truncate">
+                                                <h3 className="text-lg font-bold text-gray-900 dark:text-white leading-tight group-hover:text-moto-accent dark:group-hover:text-[#E2FF3B] transition-colors truncate">
                                                     {product.name}
                                                 </h3>
                                             </div>
 
-                                            <div className="flex items-center justify-between border-t border-white/5 pt-4">
+                                            <div className="flex items-center justify-between border-t border-gray-100 dark:border-white/5 pt-4">
                                                 <div className="flex flex-col">
                                                     {product.discountPrice ? (
                                                         <>
-                                                            <span className="text-gray-500 text-xs line-through decoration-red-500 decoration-2">
+                                                            <span className="text-gray-400 dark:text-gray-500 text-xs line-through decoration-red-500 decoration-2">
                                                                 ₺{product.price.toLocaleString('tr-TR')}
                                                             </span>
-                                                            <span className="text-white font-bold text-lg">
+                                                            <span className="text-gray-900 dark:text-white font-bold text-lg">
                                                                 ₺{product.discountPrice.toLocaleString('tr-TR')}
                                                             </span>
                                                         </>
                                                     ) : (
-                                                        <span className="text-white font-bold text-lg">
+                                                        <span className="text-gray-900 dark:text-white font-bold text-lg">
                                                             ₺{product.price.toLocaleString('tr-TR')}
                                                         </span>
                                                     )}
@@ -366,7 +366,7 @@ export const StoreGrid: React.FC<StoreGridProps> = ({
                                                         e.stopPropagation();
                                                         handleAddToCart(product);
                                                     }}
-                                                    className="w-10 h-10 rounded-full bg-[#E2FF3B] flex items-center justify-center text-black hover:bg-white transition-colors shadow-[0_0_20px_rgba(226,255,59,0.2)]"
+                                                    className="w-10 h-10 rounded-full bg-[#E2FF3B] flex items-center justify-center text-black hover:bg-black hover:text-white dark:hover:bg-white dark:hover:text-black transition-colors shadow-[0_0_20px_rgba(226,255,59,0.2)]"
                                                 >
                                                     <Plus className="w-5 h-5" strokeWidth={3} />
                                                 </motion.button>

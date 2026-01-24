@@ -56,7 +56,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             onClick={() => onClick(product)}
             onMouseEnter={() => setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}
-            className="group relative bg-gradient-to-br from-dark-elevated to-dark-card border border-white/10 rounded-3xl overflow-hidden cursor-pointer transition-all duration-500 hover:border-moto-accent/50 hover:-translate-y-2 hover:shadow-glow-lg"
+            className="group relative bg-white dark:bg-gradient-to-br dark:from-dark-elevated dark:to-dark-card border border-gray-200 dark:border-white/10 rounded-3xl overflow-hidden cursor-pointer transition-all duration-500 hover:border-moto-accent/50 hover:-translate-y-2 hover:shadow-glow-lg"
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
@@ -68,7 +68,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
             <div className="absolute -top-full left-0 w-full h-full bg-gradient-to-b from-transparent via-white/10 to-transparent rotate-12 group-hover:top-full transition-all duration-1000" />
 
             {/* Image Section */}
-            <div className="relative aspect-square overflow-hidden bg-dark-surface">
+            <div className="relative aspect-square overflow-hidden bg-gray-100 dark:bg-dark-surface">
                 <LazyLoadImage
                     src={product.image}
                     alt={product.name}
@@ -142,7 +142,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 </div>
 
                 {/* Name */}
-                <h3 className="text-white font-display font-bold text-lg leading-tight line-clamp-2 group-hover:text-moto-accent transition-colors">
+                <h3 className="text-gray-900 dark:text-white font-display font-bold text-lg leading-tight line-clamp-2 group-hover:text-moto-accent transition-colors">
                     <Highlighter text={product.name} highlight={highlight} />
                 </h3>
 
@@ -153,7 +153,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                             key={i}
                             className={`w-3 h-3 rounded-full transition-all ${i < Math.floor(product.rating)
                                 ? 'bg-gradient-to-r from-moto-accent to-neon-yellow shadow-glow-sm'
-                                : 'bg-white/10'
+                                : 'bg-gray-200 dark:bg-white/10'
                                 }`}
                         />
                     ))}
@@ -161,7 +161,7 @@ export const ProductCard: React.FC<ProductCardProps> = ({
                 </div>
 
                 {/* Price & CTA */}
-                <div className="flex items-center justify-between pt-3 border-t border-white/10">
+                <div className="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-white/10">
                     <div>
                         <p className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-moto-accent to-neon-yellow">
                             ₺{product.price.toLocaleString('tr-TR')}

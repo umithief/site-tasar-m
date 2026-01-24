@@ -452,15 +452,15 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                         <>
                             {/* Community CTA within Feed Stream (if not logged in) */}
                             {!currentUser && (
-                                <div className="flex flex-col items-center justify-center py-10 px-4 text-center bg-white/5 backdrop-blur-md border border-white/10 rounded-3xl mb-8 mt-4 mx-4">
+                                <div className="flex flex-col items-center justify-center py-10 px-4 text-center bg-white dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-3xl mb-8 mt-4 mx-4 shadow-xl dark:shadow-none">
                                     <div className="max-w-md space-y-2 mb-6">
-                                        <h2 className="text-3xl font-display font-bold text-white">Topluluğa Katıl</h2>
-                                        <p className="text-gray-400">Diğer sürücüleri takip etmek, gönderi paylaşmak ve etkinliklere katılmak için giriş yap.</p>
+                                        <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white">Topluluğa Katıl</h2>
+                                        <p className="text-gray-600 dark:text-gray-400">Diğer sürücüleri takip etmek, gönderi paylaşmak ve etkinliklere katılmak için giriş yap.</p>
                                     </div>
                                     <Button
                                         onClick={() => onNavigate && onNavigate('auth')}
                                         variant="primary"
-                                        className="px-8 py-4 rounded-xl font-bold hover:bg-white transition-all transform hover:scale-105 shadow-xl shadow-moto-accent/20"
+                                        className="px-8 py-4 rounded-xl font-bold hover:bg-black dark:hover:bg-white transition-all transform hover:scale-105 shadow-xl shadow-moto-accent/20 text-black"
                                     >
                                         Giriş Yap / Kayıt Ol
                                     </Button>

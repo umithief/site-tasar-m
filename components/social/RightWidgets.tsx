@@ -11,7 +11,7 @@ interface RightWidgetsProps {
 export const RightWidgets: React.FC<RightWidgetsProps> = ({ suggestedRiders = [], onNavigate }) => {
 
     // Glassmorphism Recipe
-    const glassStyle = "bg-white/80 backdrop-blur-2xl border border-gray-200 shadow-xl rounded-[2rem] overflow-hidden relative";
+    const glassStyle = "bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl border border-gray-200 dark:border-white/10 shadow-xl rounded-[2rem] overflow-hidden relative";
 
     return (
         <div className="flex flex-col gap-6 w-full lg:w-80 xl:w-96 sticky top-24">
@@ -75,8 +75,8 @@ export const RightWidgets: React.FC<RightWidgetsProps> = ({ suggestedRiders = []
                 className={`${glassStyle} p-6`}
             >
                 <div className="flex items-center justify-between mb-6">
-                    <h4 className="text-sm font-bold text-gray-900">Önerilen Sürücüler</h4>
-                    <button className="text-[10px] font-bold text-moto-accent hover:text-black transition-colors">TÜMÜ</button>
+                    <h4 className="text-sm font-bold text-gray-900 dark:text-white">Önerilen Sürücüler</h4>
+                    <button className="text-[10px] font-bold text-moto-accent hover:text-black dark:hover:text-white transition-colors">TÜMÜ</button>
                 </div>
 
                 <div className="space-y-4">
@@ -88,19 +88,19 @@ export const RightWidgets: React.FC<RightWidgetsProps> = ({ suggestedRiders = []
                                         src={rider.avatar}
                                         name={rider.name}
                                         size={40}
-                                        className="ring-2 ring-gray-100 group-hover/user:ring-moto-accent/50 transition-all"
+                                        className="ring-2 ring-gray-100 dark:ring-white/10 group-hover/user:ring-moto-accent/50 transition-all"
                                     />
                                     <div>
-                                        <h5 className="font-bold text-sm text-gray-900 group-hover/user:text-moto-accent transition-colors">
+                                        <h5 className="font-bold text-sm text-gray-900 dark:text-white group-hover/user:text-moto-accent transition-colors">
                                             {rider.name}
                                         </h5>
-                                        <p className="text-[10px] font-medium text-gray-500 font-mono">
+                                        <p className="text-[10px] font-medium text-gray-500 dark:text-gray-400 font-mono">
                                             {rider.bike}
                                         </p>
                                     </div>
                                 </div>
 
-                                <button className="w-9 h-9 rounded-xl bg-gray-100 border border-gray-200 flex items-center justify-center text-gray-400 hover:bg-[#E2FF3B] hover:text-black hover:scale-105 transition-all">
+                                <button className="w-9 h-9 rounded-xl bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 flex items-center justify-center text-gray-400 hover:bg-[#E2FF3B] hover:text-black hover:scale-105 transition-all">
                                     <Plus className="w-5 h-5" />
                                 </button>
                             </div>
@@ -110,13 +110,13 @@ export const RightWidgets: React.FC<RightWidgetsProps> = ({ suggestedRiders = []
                         [1, 2, 3].map((_, i) => (
                             <div key={i} className="flex items-center justify-between animate-pulse">
                                 <div className="flex items-center gap-3">
-                                    <div className="w-10 h-10 rounded-full bg-gray-200" />
+                                    <div className="w-10 h-10 rounded-full bg-gray-200 dark:bg-zinc-800" />
                                     <div className="space-y-2">
-                                        <div className="h-3 w-24 bg-gray-200 rounded" />
-                                        <div className="h-2 w-16 bg-gray-200 rounded" />
+                                        <div className="h-3 w-24 bg-gray-200 dark:bg-zinc-800 rounded" />
+                                        <div className="h-2 w-16 bg-gray-200 dark:bg-zinc-800 rounded" />
                                     </div>
                                 </div>
-                                <div className="w-9 h-9 rounded-xl bg-gray-200" />
+                                <div className="w-9 h-9 rounded-xl bg-gray-200 dark:bg-zinc-800" />
                             </div>
                         ))
                     )}
@@ -130,7 +130,7 @@ export const RightWidgets: React.FC<RightWidgetsProps> = ({ suggestedRiders = []
                 transition={{ delay: 0.3 }}
                 className={`${glassStyle} p-6`}
             >
-                <div className="flex items-center gap-2 mb-6 text-gray-900">
+                <div className="flex items-center gap-2 mb-6 text-gray-900 dark:text-white">
                     <Hash className="w-4 h-4 text-moto-accent" />
                     <h4 className="text-sm font-bold">Gündem</h4>
                 </div>
@@ -139,7 +139,7 @@ export const RightWidgets: React.FC<RightWidgetsProps> = ({ suggestedRiders = []
                     {['#GeceSürüşü', '#TekTeker', '#MotoVibeGaraj', '#PistGünü', '#YamahaR25', '#Kartepe'].map((tag, i) => (
                         <span
                             key={i}
-                            className="px-3 py-1.5 rounded-lg bg-gray-100 border border-gray-200 text-[10px] font-bold text-gray-600 cursor-pointer hover:bg-moto-accent hover:text-black hover:border-moto-accent hover:scale-105 transition-all duration-300"
+                            className="px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-[10px] font-bold text-gray-600 dark:text-gray-300 cursor-pointer hover:bg-moto-accent hover:text-black hover:border-moto-accent hover:scale-105 transition-all duration-300"
                         >
                             {tag}
                         </span>
@@ -148,10 +148,10 @@ export const RightWidgets: React.FC<RightWidgetsProps> = ({ suggestedRiders = []
             </motion.div>
 
             {/* Footer Links (Mini) */}
-            <div className="flex flex-wrap gap-x-4 gap-y-2 px-4 text-[10px] font-medium text-gray-600">
-                <a href="#" className="hover:text-gray-400 transition-colors">Gizlilik</a>
-                <a href="#" className="hover:text-gray-400 transition-colors">Kurallar</a>
-                <a href="#" className="hover:text-gray-400 transition-colors">Reklam</a>
+            <div className="flex flex-wrap gap-x-4 gap-y-2 px-4 text-[10px] font-medium text-gray-600 dark:text-gray-400">
+                <a href="#" className="hover:text-gray-400 dark:hover:text-gray-200 transition-colors">Gizlilik</a>
+                <a href="#" className="hover:text-gray-400 dark:hover:text-gray-200 transition-colors">Kurallar</a>
+                <a href="#" className="hover:text-gray-400 dark:hover:text-gray-200 transition-colors">Reklam</a>
                 <span>© 2025 MotoVibe</span>
             </div>
 

@@ -49,13 +49,13 @@ export const RouteSuggestions: React.FC = () => {
             >
                 <div className="flex flex-col">
                     <span className="text-[10px] uppercase font-black tracking-[0.2em] text-moto-accent mb-1">ÖNERİLENLER</span>
-                    <h2 className="text-xl font-display font-bold text-white tracking-tight flex items-center gap-2">
+                    <h2 className="text-xl font-display font-bold text-gray-900 dark:text-white tracking-tight flex items-center gap-2">
                         SANA ÖZEL ROTALAR
                         <div className="w-2 h-2 rounded-full bg-moto-accent animate-pulse" />
                     </h2>
                 </div>
 
-                <button className="text-xs font-bold text-zinc-500 hover:text-white flex items-center gap-1 transition-colors">
+                <button className="text-xs font-bold text-gray-500 dark:text-zinc-500 hover:text-black dark:hover:text-white flex items-center gap-1 transition-colors">
                     Tümünü Gör <ChevronRight className="w-3 h-3" />
                 </button>
             </motion.div>

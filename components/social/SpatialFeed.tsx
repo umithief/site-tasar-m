@@ -48,33 +48,33 @@ export const SpatialFeed: React.FC<SpatialFeedProps> = memo(({
                     transition={{ type: "spring", stiffness: 200, damping: 20 }}
                     className="flex flex-col items-center justify-center py-12 px-6 text-center w-full"
                 >
-                    <div className="bg-white rounded-[2.5rem] p-8 shadow-2xl border border-gray-100 max-w-sm w-full flex flex-col items-center relative overflow-hidden group">
+                    <div className="bg-white dark:bg-zinc-900 rounded-[2.5rem] p-8 shadow-2xl border border-gray-100 dark:border-white/10 max-w-sm w-full flex flex-col items-center relative overflow-hidden group">
 
                         {/* Decorative Background Pattern */}
-                        <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] [background-size:16px_16px]"></div>
+                        <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#000_1px,transparent_1px)] dark:bg-[radial-gradient(#fff_1px,transparent_1px)] [background-size:16px_16px]"></div>
 
                         {/* Icon */}
-                        <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6 relative z-10 group-hover:scale-110 transition-transform duration-500 shadow-inner">
+                        <div className="w-24 h-24 bg-gray-50 dark:bg-white/5 rounded-full flex items-center justify-center mb-6 relative z-10 group-hover:scale-110 transition-transform duration-500 shadow-inner">
                             <span className="text-5xl filter drop-shadow-md">🏍️</span>
                             {/* Animated Speed Lines */}
                             <div className="absolute -right-4 top-1/2 -translate-y-1/2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                <div className="w-4 h-0.5 bg-gray-300 rounded-full animate-pulse"></div>
-                                <div className="w-6 h-0.5 bg-gray-300 rounded-full animate-pulse delay-75"></div>
-                                <div className="w-3 h-0.5 bg-gray-300 rounded-full animate-pulse delay-150"></div>
+                                <div className="w-4 h-0.5 bg-gray-300 dark:bg-white/20 rounded-full animate-pulse"></div>
+                                <div className="w-6 h-0.5 bg-gray-300 dark:bg-white/20 rounded-full animate-pulse delay-75"></div>
+                                <div className="w-3 h-0.5 bg-gray-300 dark:bg-white/20 rounded-full animate-pulse delay-150"></div>
                             </div>
                         </div>
 
-                        <h3 className="text-2xl font-black italic uppercase tracking-tighter text-gray-900 mb-2 z-10">
+                        <h3 className="text-2xl font-black italic uppercase tracking-tighter text-gray-900 dark:text-white mb-2 z-10">
                             Henüz Kimse Yok
                         </h3>
 
-                        <p className="text-gray-500 mb-8 font-medium leading-relaxed text-sm z-10 px-4">
+                        <p className="text-gray-500 dark:text-gray-400 mb-8 font-medium leading-relaxed text-sm z-10 px-4">
                             Motorunu çalıştır ve ilk izi sen bırak! Akış şimdilik boş görünüyor.
                         </p>
 
                         <button
                             onClick={() => onNavigate?.('explore')}
-                            className="w-full py-4 bg-black text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-gray-800 active:scale-95 transition-all shadow-lg flex items-center justify-center gap-2 z-10"
+                            className="w-full py-4 bg-black dark:bg-white dark:text-black text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-gray-800 dark:hover:bg-gray-200 active:scale-95 transition-all shadow-lg flex items-center justify-center gap-2 z-10"
                         >
                             <span>Keşfe Çık</span>
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -118,7 +118,7 @@ export const SpatialFeed: React.FC<SpatialFeedProps> = memo(({
                 <div className="flex justify-center pt-8 pb-20">
                     <button
                         onClick={() => fetchNextPage()}
-                        className="px-8 py-4 rounded-full bg-white/5 border border-white/10 text-xs font-black uppercase tracking-[0.2em] text-gray-400 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all active:scale-95 flex items-center gap-2"
+                        className="px-8 py-4 rounded-full bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-xs font-black uppercase tracking-[0.2em] text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white hover:bg-black/10 dark:hover:bg-white/10 hover:border-black/20 dark:hover:border-white/20 transition-all active:scale-95 flex items-center gap-2"
                     >
                         <span>Daha Fazla Keşfet</span>
                         <span className="w-1.5 h-1.5 bg-moto-accent rounded-full animate-pulse" />

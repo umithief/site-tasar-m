@@ -29,8 +29,8 @@ export const StoryBar: React.FC<StoryBarProps> = ({ storyGroups, onStorySelect, 
                     onClick={onAddStory}
                 >
                     <div className="relative w-[70px] h-[70px]">
-                        <div className="absolute inset-0 rounded-full border-2 border-dashed border-white/20 group-hover:border-[#E2FF3B] transition-colors" />
-                        <div className="absolute inset-[4px] rounded-full overflow-hidden bg-zinc-900 flex items-center justify-center">
+                        <div className="absolute inset-0 rounded-full border-2 border-dashed border-gray-300 dark:border-white/20 group-hover:border-[#E2FF3B] transition-colors" />
+                        <div className="absolute inset-[4px] rounded-full overflow-hidden bg-gray-200 dark:bg-zinc-900 flex items-center justify-center">
                             <UserAvatar
                                 src={user?.profileImage || user?.avatar}
                                 name={user?.name || 'Sen'}
@@ -39,11 +39,11 @@ export const StoryBar: React.FC<StoryBarProps> = ({ storyGroups, onStorySelect, 
                             />
                         </div>
 
-                        <div className="absolute bottom-0 right-0 w-6 h-6 bg-[#E2FF3B] rounded-full border-2 border-black flex items-center justify-center shadow-lg">
+                        <div className="absolute bottom-0 right-0 w-6 h-6 bg-[#E2FF3B] rounded-full border-2 border-white dark:border-black flex items-center justify-center shadow-lg">
                             <Plus size={14} className="text-black stroke-[3px]" />
                         </div>
                     </div>
-                    <span className="text-[10px] font-medium text-gray-400">Senin Hikayen</span>
+                    <span className="text-[10px] font-medium text-gray-600 dark:text-gray-400">Senin Hikayen</span>
                 </motion.div>
 
                 {/* OTHER STORIES */}
@@ -61,14 +61,14 @@ export const StoryBar: React.FC<StoryBarProps> = ({ storyGroups, onStorySelect, 
                             {/* Tachometer Ring */}
                             {!group.allSeen ? (
                                 <div className="absolute inset-0 rounded-full bg-[conic-gradient(from_180deg,#E2FF3B,#00F0FF,#E2FF3B)] animate-spin-slow p-[2px]">
-                                    <div className="w-full h-full bg-black rounded-full" />
+                                    <div className="w-full h-full bg-white dark:bg-black rounded-full" />
                                 </div>
                             ) : (
-                                <div className="absolute inset-0 rounded-full border border-white/10" />
+                                <div className="absolute inset-0 rounded-full border border-gray-200 dark:border-white/10" />
                             )}
 
                             {/* Image Container */}
-                            <div className="absolute inset-[4px] rounded-full overflow-hidden border-2 border-black">
+                            <div className="absolute inset-[4px] rounded-full overflow-hidden border-2 border-white dark:border-black">
                                 <img
                                     src={group.user.avatar || `https://ui-avatars.com/api/?name=${group.user.name}&background=random`}
                                     className="w-full h-full object-cover"
@@ -76,7 +76,7 @@ export const StoryBar: React.FC<StoryBarProps> = ({ storyGroups, onStorySelect, 
                                 />
                             </div>
                         </div>
-                        <span className="text-[10px] font-medium text-white truncate max-w-[70px] text-center">
+                        <span className="text-[10px] font-medium text-gray-900 dark:text-white truncate max-w-[70px] text-center">
                             {group.user.name.split(' ')[0]}
                         </span>
                     </motion.div>

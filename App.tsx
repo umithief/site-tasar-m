@@ -501,7 +501,7 @@ export const App: React.FC = () => {
     return (
         <SocketProvider>
             <BrandingProvider>
-                <div key={animKey} className={`flex flex-col min-h-[100dvh] transition-colors duration-1000 bg-gray-50 text-gray-900 ${isFullScreenMode ? 'overflow-hidden h-screen bg-black text-white' : ''}`}>
+                <div key={animKey} className={`flex flex-col min-h-[100dvh] transition-colors duration-1000 bg-gray-50 dark:bg-black text-gray-900 dark:text-white ${isFullScreenMode ? 'overflow-hidden h-screen bg-black text-white' : ''}`}>
 
                     {!isFullScreenMode && <ScrollProgress />}
 

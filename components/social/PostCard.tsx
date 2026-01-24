@@ -112,10 +112,11 @@ export const PostCard: React.FC<PostCardProps> = memo(({ post, onLike, onComment
             className={`w-full max-w-[600px] mx-auto mb-16 group relative`}
         >
             {/* Main Card Container */}
+            {/* Main Card Container */}
             <div className={`relative rounded-[2rem] overflow-hidden transition-all duration-500 
                 ${isGlass
                     ? 'bg-transparent shadow-none border-none'
-                    : 'bg-white/80 dark:bg-black/40 backdrop-blur-xl border border-gray-200 dark:border-white/5 shadow-2xl hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)]'
+                    : 'bg-white/80 dark:bg-[#0A0A0A] backdrop-blur-xl border border-gray-200 dark:border-white/10 shadow-2xl dark:shadow-[0_0_40px_-10px_rgba(255,255,255,0.05)] hover:shadow-[0_30px_60px_-15px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_0_60px_-15px_rgba(255,255,255,0.08)]'
                 }`}
             >
 

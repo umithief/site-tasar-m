@@ -234,11 +234,11 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                         style={{ top: 'var(--mobile-header-height, 0px)' }}
                     >
                         {/* Background for the sticky area to prevent bleed-through */}
-                        <div className="absolute inset-0 bg-white/95 backdrop-blur-md border-b border-gray-200 shadow-sm z-[-1] transition-colors duration-300" />
+                        <div className="absolute inset-0 bg-white/95 dark:bg-black/95 backdrop-blur-md border-b border-gray-200 dark:border-white/10 shadow-sm z-[-1] transition-colors duration-300" />
 
                         {/* Top Navigation Tabs */}
                         <div className="bg-transparent px-4 py-2 flex items-center justify-center">
-                            <div className="flex items-center gap-6 overflow-x-auto no-scrollbar bg-gray-50 rounded-full px-6 py-2 border border-gray-200/50 transition-colors duration-300">
+                            <div className="flex items-center gap-6 overflow-x-auto no-scrollbar bg-gray-50 dark:bg-white/5 rounded-full px-6 py-2 border border-gray-200/50 dark:border-white/10 transition-colors duration-300">
                                 {[
                                     { id: 'feed', label: 'AKIŞ' },
                                     { id: 'vlog', label: 'MAP (CANLI)' },
@@ -250,14 +250,14 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                         onClick={() => setView(item.id as HubView)}
                                         className={`relative text-sm font-bold tracking-wider transition-all whitespace-nowrap py-1
                                         ${view === item.id
-                                                ? 'text-black'
-                                                : 'text-gray-500 hover:text-gray-900 '}`}
+                                                ? 'text-black dark:text-white'
+                                                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
                                     >
                                         <span>{item.label}</span>
                                         {view === item.id && (
                                             <motion.div
                                                 layoutId="activeTabUnderline"
-                                                className="absolute -bottom-1 left-0 right-0 h-[2px] bg-black shadow-none"
+                                                className="absolute -bottom-1 left-0 right-0 h-[2px] bg-black dark:bg-white shadow-none"
                                             />
                                         )}
                                     </button>
@@ -452,7 +452,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                         <>
                             {/* Community CTA within Feed Stream (if not logged in) */}
                             {!currentUser && (
-                                <div className="flex flex-col items-center justify-center py-10 px-4 text-center bg-white dark:bg-white/5 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-3xl mb-8 mt-4 mx-4 shadow-xl dark:shadow-none">
+                                <div className="flex flex-col items-center justify-center py-10 px-4 text-center bg-white dark:bg-zinc-900 backdrop-blur-md border border-gray-200 dark:border-white/10 rounded-3xl mb-8 mt-4 mx-4 shadow-xl dark:shadow-none">
                                     <div className="max-w-md space-y-2 mb-6">
                                         <h2 className="text-3xl font-display font-bold text-gray-900 dark:text-white">Topluluğa Katıl</h2>
                                         <p className="text-gray-600 dark:text-gray-400">Diğer sürücüleri takip etmek, gönderi paylaşmak ve etkinliklere katılmak için giriş yap.</p>
@@ -486,7 +486,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                         </>
                     ) : (
                         /* WIDE VIEW AREA (Map/Routes/Events) */
-                        <div className="h-[calc(100vh-140px)] sticky top-28 bg-white rounded-[2.5rem] border border-gray-200 overflow-hidden shadow-2xl">
+                        <div className="h-[calc(100vh-140px)] sticky top-28 bg-white dark:bg-zinc-900 rounded-[2.5rem] border border-gray-200 dark:border-white/10 overflow-hidden shadow-2xl">
                             {view === 'vlog' && <MotoVlogMap user={currentUser} isEmbedded onNavigate={() => { }} onAddToCart={() => { }} onProductClick={() => { }} />}
                             {view === 'routes' && <RouteExplorer user={currentUser} isEmbedded />}
                             {view === 'events' && <MotoMeetup user={currentUser} isEmbedded />}

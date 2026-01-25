@@ -367,25 +367,106 @@ const seedDatabase = async () => {
         }
 
         // Ensure new 2026 Collection Product exists or update it
-        const aeroSpeedData = {
-            name: "Aero Speed Kask",
-            description: "2026 Aero Speed Yeni Koleksiyon",
-            price: 17500,
-            category: "Kask",
-            image: "http://localhost:5000/uploads/aero_speed_kask.png",
-            images: ["http://localhost:5000/uploads/aero_speed_kask.png"],
-            rating: 5.0,
-            features: ["2026 Koleksiyon", "Aerodinamik", "Premium"],
-            stock: 10,
-            isNegotiable: true
-        };
+        try {
+            const fs = await import('fs');
+            const imagePath = path.join(__dirname, 'uploads', 'aero_speed_kask.png');
+            let base64Image = "http://localhost:5000/uploads/aero_speed_kask.png"; // Fallback
 
-        await Product.findOneAndUpdate(
-            { name: "Aero Speed Kask" },
-            aeroSpeedData,
-            { upsert: true, new: true }
-        );
-        console.log('📦 Aero Speed Kask ürünü güncellendi/eklendi.');
+            if (fs.existsSync(imagePath)) {
+                const imageBuffer = fs.readFileSync(imagePath);
+                const base64String = imageBuffer.toString('base64');
+                base64Image = `data:image/png;base64,${base64String}`;
+                console.log('📦 Görsel Base64 formatına çevrildi.');
+            }
+
+            const aeroSpeedData = {
+                name: "Aero Speed Kask",
+                description: "2026 Aero Speed Yeni Koleksiyon",
+                price: 17500,
+                category: "Kask",
+                image: base64Image,
+                images: [base64Image],
+                rating: 5.0,
+                features: ["2026 Koleksiyon", "Aerodinamik", "Premium"],
+                stock: 10,
+                isNegotiable: true
+            };
+
+            await Product.findOneAndUpdate(
+                { name: "Aero Speed Kask" },
+                aeroSpeedData,
+                { upsert: true, new: true }
+            );
+            console.log('📦 Aero Speed Kask ürünü güncellendi/eklendi.');
+        } catch (err) {
+            console.error('Görsel işleme hatası (Aero Speed):', err);
+        }
+
+        // --- NEW INTERCOMS (Base64 Upsert) ---
+        const intercoms = [
+            {
+                file: 'vibemesh_ultra.png',
+                name: 'VibeMesh Ultra',
+                desc: 'Sınırsız bağlantı için yeni nesil Mesh teknolojisi.',
+                price: 8900,
+                rating: 4.9,
+                features: ['Mesh 3.0', 'RGB LED', 'Sesli Komut'],
+                stock: 25
+            },
+            {
+                file: 'motocam_pro.png',
+                name: 'MotoCam Pro',
+                desc: '4K Kamera ve İnterkom bir arada. Her anı kaydet.',
+                price: 12500,
+                rating: 4.8,
+                features: ['4K Video', 'Döngüsel Kayıt', 'Sony Lens'],
+                stock: 15
+            },
+            {
+                file: 'slimtalk_air.png',
+                name: 'SlimTalk Air',
+                desc: 'Kaskınızla bütünleşen ultra ince aerodinamik tasarım.',
+                price: 6400,
+                rating: 4.7,
+                features: ['Ultra İnce', 'Gürültü İptali', 'Hızlı Şarj'],
+                stock: 40
+            }
+        ];
+
+        for (const item of intercoms) {
+            try {
+                const fs = await import('fs');
+                const imagePath = path.join(__dirname, 'uploads', item.file);
+                let base64Image = `http://localhost:5000/uploads/${item.file}`; // Fallback
+
+                if (fs.existsSync(imagePath)) {
+                    const imageBuffer = fs.readFileSync(imagePath);
+                    const base64String = imageBuffer.toString('base64');
+                    base64Image = `data:image/png;base64,${base64String}`;
+                    console.log(`📦 ${item.name} görseli Base64 formatına çevrildi.`);
+                }
+
+                await Product.findOneAndUpdate(
+                    { name: item.name },
+                    {
+                        name: item.name,
+                        description: item.desc,
+                        price: item.price,
+                        category: "İnterkom",
+                        image: base64Image,
+                        images: [base64Image],
+                        rating: item.rating,
+                        features: item.features,
+                        stock: item.stock,
+                        isNegotiable: false
+                    },
+                    { upsert: true, new: true }
+                );
+                console.log(`📦 ${item.name} ürünü güncellendi/eklendi.`);
+            } catch (err) {
+                console.error(`Görsel işleme hatası (${item.name}):`, err);
+            }
+        }
 
         const forumCount = await ForumTopic.countDocuments();
         if (forumCount === 0) {

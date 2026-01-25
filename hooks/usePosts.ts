@@ -3,11 +3,15 @@ import { api } from '../services/api';
 import { SocialPost } from '../types';
 
 // Fetch Feed Function
-const fetchFeed = async ({ pageParam = 1 }) => {
+const fetchFeed = async ({ pageParam = 1, queryKey }: any) => {
+    const [_key, feedType] = queryKey; // Extract feed type from key
+    const type = feedType || 'feed';
+
     // Backend should support pagination, e.g., ?page=1
-    const { data } = await api.get(`/social/feed?page=${pageParam}&limit=10`);
+    const { data } = await api.get(`/social/${type}?page=${pageParam}&limit=10`);
     // Unwrap the actual posts array from the API response envelope: { status: 'success', data: { posts: [...] } }
-    const rawPosts = data.data.posts;
+    const rawPosts = data.data.feed || data.data.posts; // Support both structures
+
     return rawPosts.map((post: any) => ({
         ...post,
         userId: post.user?._id || post.user,
@@ -27,10 +31,10 @@ const fetchFeed = async ({ pageParam = 1 }) => {
     }));
 };
 
-export const usePosts = () => {
+export const usePosts = (feedType: 'feed' | 'discover' = 'feed') => {
     const token = localStorage.getItem('token');
     return useInfiniteQuery({
-        queryKey: ['posts'],
+        queryKey: ['posts', feedType],
         queryFn: fetchFeed,
         enabled: !!token,
         getNextPageParam: (lastPage, allPages) => {

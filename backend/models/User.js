@@ -51,7 +51,11 @@ const userSchema = new mongoose.Schema({
         likes: { type: Boolean, default: true },
         comments: { type: Boolean, default: true },
         follows: { type: Boolean, default: true }
-    }
+    },
+
+    // VibeEngine Signals
+    interestVector: [{ type: String }], // Tags/Categories user interacts with
+    lastActiveGarageId: { type: String } // ID of the currently active bike in garage
 }, {
     timestamps: true,
     toJSON: { virtuals: true },

@@ -2,6 +2,8 @@ import express from 'express';
 import { protect } from '../middleware/authMiddleware.js';
 import * as postController from '../controllers/postController.js';
 
+import { getDiscoveryFeed } from '../controllers/feedController.js';
+
 const router = express.Router();
 
 // Public Routes
@@ -10,6 +12,9 @@ router.get('/search', postController.search); // Public Search
 
 // Protected Routes
 router.use(protect);
+
+// VibeEngine Discovery Feed
+router.get('/discover', getDiscoveryFeed);
 
 // Public/Explore Routes
 router.get('/explore', postController.getExplorePosts);

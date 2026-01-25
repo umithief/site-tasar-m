@@ -3,40 +3,32 @@ import { motion, useInView } from 'framer-motion';
 import { RouteCard } from './RouteCard';
 import { ChevronRight } from 'lucide-react';
 
+import { routeService } from '../../services/routeService';
+import { Route } from '../../types';
+
 export const RouteSuggestions: React.FC = () => {
     const containerRef = useRef(null);
     const isInView = useInView(containerRef, { once: true, margin: "-100px" });
+    const [routes, setRoutes] = React.useState<Route[]>([]);
+    const [isLoading, setIsLoading] = React.useState(true);
 
-    // Mock Data
-    const routes = [
-        {
-            id: '1',
-            title: 'Toroslar Geçidi & Kanyon Yolu',
-            image: 'https://images.unsplash.com/photo-1519817914152-22d216bb9170?auto=format&fit=crop&q=80&w=1000',
-            difficulty: 'ORTA (Virajlı)',
-            distance: '145 KM',
-            duration: '~3s 15dk',
-            curves: '52 Viraj'
-        },
-        {
-            id: '2',
-            title: 'Sahil Şeridi: Kaş - Kalkan',
-            image: 'https://images.unsplash.com/photo-1500382017468-9049fed747ef?auto=format&fit=crop&q=80&w=1000',
-            difficulty: 'KOLAY (Manzara)',
-            distance: '28 KM',
-            duration: '~45dk',
-            curves: '18 Viraj'
-        },
-        {
-            id: '3',
-            title: 'Ilgaz Dağı Zirve Tırmanışı',
-            image: 'https://images.unsplash.com/photo-1469854523086-cc02fe5d8800?auto=format&fit=crop&q=80&w=1000',
-            difficulty: 'ZOR (Technical)',
-            distance: '85 KM',
-            duration: '~2s 10dk',
-            curves: '110 Viraj'
-        }
-    ];
+    React.useEffect(() => {
+        const fetchRoutes = async () => {
+            try {
+                const data = await routeService.getRoutes('recommended'); // Assuming 'recommended' or similar filter
+                // If API returns fewer than 3, maybe show all. For suggestions, top 5 is good.
+                setRoutes(data.slice(0, 5));
+            } catch (error) {
+                console.error('Failed to fetch suggested routes', error);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+        fetchRoutes();
+    }, []);
+
+    if (isLoading) return <div className="py-8 text-center text-xs text-gray-400">Rotalar yükleniyor...</div>;
+    if (routes.length === 0) return null;
 
     return (
         <div ref={containerRef} className="py-8 space-y-4">
@@ -69,7 +61,7 @@ export const RouteSuggestions: React.FC = () => {
                 >
                     {routes.map((route, i) => (
                         <motion.div
-                            key={route.id}
+                            key={route._id || i}
                             initial={{ opacity: 0, x: 50 }}
                             animate={isInView ? { opacity: 1, x: 0 } : {}}
                             transition={{
@@ -79,8 +71,17 @@ export const RouteSuggestions: React.FC = () => {
                                 stiffness: 100,
                                 damping: 20
                             }}
+                            className="flex-shrink-0 w-80 md:w-96"
                         >
-                            <RouteCard route={route} />
+                            <RouteCard route={{
+                                id: route._id,
+                                title: route.title,
+                                image: route.image,
+                                difficulty: route.difficulty || 'Orta',
+                                distance: route.distance,
+                                duration: route.estimatedTime || '~2s',
+                                curves: route.stats?.curves ? `${route.stats.curves} Viraj` : 'Virajlı'
+                            }} />
                         </motion.div>
                     ))}
 
@@ -89,7 +90,7 @@ export const RouteSuggestions: React.FC = () => {
                 </div>
 
                 {/* Left Fade Indicator (Optional, if we want to show there's more) */}
-                <div className="absolute top-0 right-0 bottom-8 w-12 bg-gradient-to-l from-black/80 to-transparent pointer-events-none md:hidden" />
+                <div className="absolute top-0 right-0 bottom-8 w-12 bg-gradient-to-l from-gray-50/0 to-gray-50 dark:from-black/0 dark:to-black pointer-events-none md:hidden" />
             </div>
         </div>
     );

@@ -11,6 +11,7 @@ import { UserListModal } from '../UserListModal';
 import { MobileEditProfile } from './MobileEditProfile';
 import { PostCard } from '../social/PostCard'; // Ensure this handles mobile view via internal logic or unified props
 import { socialService } from '../../services/socialService';
+import { userService } from '../../services/userService';
 
 // Mock Data
 const MOCK_REELS = [
@@ -31,15 +32,42 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
 
     const [posts, setPosts] = useState<SocialPost[]>([]);
     const [isLoadingPosts, setIsLoadingPosts] = useState(false);
-    // Determine which user to show
-    const user = propUser || authUser;
+    const [fetchedUser, setFetchedUser] = useState<User | null>(null);
+    const [isLoadingProfile, setIsLoadingProfile] = useState(false);
+
+    // Determine target ID
+    const targetUserId = userId || (propUser?._id !== authUser?._id ? propUser?._id : undefined);
+
+    // Check if it's the own profile
+    const isOwnProfile = authUser && (userId === authUser._id || (!userId && propUser?._id === authUser._id));
+
+    // Effective User to display
+    const displayUser = isOwnProfile ? authUser : (fetchedUser || propUser);
+
+    useEffect(() => {
+        const loadProfile = async () => {
+            if (targetUserId) {
+                setIsLoadingProfile(true);
+                try {
+                    // Import userService dynamically or assume it's imported (I will add import)
+                    const data = await userService.getProfile(targetUserId);
+                    if (data) setFetchedUser(data);
+                } catch (e) {
+                    console.error("Profile fetch failed", e);
+                } finally {
+                    setIsLoadingProfile(false);
+                }
+            }
+        };
+        loadProfile();
+    }, [targetUserId]);
 
     useEffect(() => {
         const fetchPosts = async () => {
-            if (user?._id) {
+            if (displayUser?._id) {
                 setIsLoadingPosts(true);
                 try {
-                    const fetchedPosts = await socialService.getUserPosts(user._id);
+                    const fetchedPosts = await socialService.getUserPosts(displayUser._id);
                     setPosts(fetchedPosts);
                 } catch (error) {
                     console.error('Failed to fetch user posts', error);
@@ -50,10 +78,9 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
         };
 
         fetchPosts();
-    }, [user?._id]);
+    }, [displayUser?._id]);
 
-    // Check if it's the own profile
-    const isOwnProfile = authUser && user && authUser._id === user._id;
+    const user = displayUser; // Layout uses 'user' variable
     const [activeTab, setActiveTab] = useState<'posts' | 'reels' | 'garage' | 'saved'>('posts');
     const [isEditing, setIsEditing] = useState(false);
 

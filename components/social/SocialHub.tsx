@@ -41,7 +41,7 @@ interface SocialHubProps {
     onCartClick?: () => void;
 }
 
-type HubView = 'feed' | 'stories' | 'vlog' | 'routes' | 'events' | 'explore' | 'rides';
+type HubView = 'feed' | 'discover' | 'stories' | 'vlog' | 'routes' | 'events' | 'explore' | 'rides';
 
 export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate, initialData, cartCount = 0, onCartClick }) => {
     const { user: globalUser, logout } = useAuthStore();
@@ -54,7 +54,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
     const [isCreateRideOpen, setIsCreateRideOpen] = useState(false); // New state
     const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
 
-    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status, refetch } = usePosts();
+    const { data, fetchNextPage, hasNextPage, isFetchingNextPage, status, refetch } = usePosts(view === 'discover' ? 'discover' : 'feed');
     const { mutate: createPost } = useCreatePost();
     const [suggestedRiders, setSuggestedRiders] = useState<any[]>([]);
 
@@ -240,7 +240,8 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                         <div className="bg-transparent px-4 py-2 flex items-center justify-center">
                             <div className="flex items-center gap-6 overflow-x-auto no-scrollbar bg-gray-50 dark:bg-white/5 rounded-full px-6 py-2 border border-gray-200/50 dark:border-white/10 transition-colors duration-300">
                                 {[
-                                    { id: 'feed', label: 'AKIŞ' },
+                                    { id: 'feed', label: 'TAKİP' },
+                                    { id: 'discover', label: 'KEŞFET' },
                                     { id: 'vlog', label: 'MAP (CANLI)' },
                                     { id: 'rides', label: 'SÜRÜŞLER' },
                                     { id: 'routes', label: 'ROTALAR' },
@@ -436,7 +437,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                     </div> {/* End of Sticky Group */}
 
                     {/* Stories Bar (Scrollable) */}
-                    {view === 'feed' && (
+                    {(view === 'feed' || view === 'discover') && (
                         <div className="mb-0 mx-0 pb-2">
                             <StoryBar
                                 storyGroups={storyGroups}
@@ -448,7 +449,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
 
 
                     {/* View Switcher Content */}
-                    {view === 'feed' ? (
+                    {(view === 'feed' || view === 'discover') ? (
                         <>
                             {/* Community CTA within Feed Stream (if not logged in) */}
                             {!currentUser && (

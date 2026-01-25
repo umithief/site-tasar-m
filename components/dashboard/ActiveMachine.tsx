@@ -1,7 +1,14 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 
-export const ActiveMachine = () => {
+export const ActiveMachine = ({ user }: { user?: any }) => {
+    // Get primary bike (first in garage)
+    const activeBike = user?.garage?.[0];
+
+    // Simulated live data (could also come from a store)
+    const speed = 0;
+    const distance = user?.stats?.totalDistance || 0;
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -18,20 +25,22 @@ export const ActiveMachine = () => {
                 <div className="bg-gray-50 dark:bg-white/5 rounded-2xl p-4 border border-gray-100 dark:border-transparent">
                     <div className="text-[10px] text-gray-500 uppercase mb-1">ANLIK HIZ</div>
                     <div className="text-2xl font-black text-gray-900 dark:text-white font-mono flex items-end gap-1">
-                        0 <span className="text-[10px] text-gray-400 font-sans font-bold mb-1">km/h</span>
+                        {speed} <span className="text-[10px] text-gray-400 font-sans font-bold mb-1">km/h</span>
                     </div>
                 </div>
                 <div className="bg-gray-50 dark:bg-white/5 rounded-2xl p-4 border border-gray-100 dark:border-transparent">
-                    <div className="text-[10px] text-gray-500 uppercase mb-1">MESAFE</div>
+                    <div className="text-[10px] text-gray-500 uppercase mb-1">TOPLAM</div>
                     <div className="text-2xl font-black text-gray-900 dark:text-white font-mono flex items-end gap-1">
-                        0.0 <span className="text-[10px] text-gray-400 font-sans font-bold mb-1">km</span>
+                        {distance} <span className="text-[10px] text-gray-400 font-sans font-bold mb-1">km</span>
                     </div>
                 </div>
             </div>
 
             <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-white/5">
                 <span className="text-[10px] text-gray-500 font-bold">Aktif Motor</span>
-                <span className="text-xs font-bold text-gray-900 dark:text-white">Yamaha MT-07</span>
+                <span className="text-xs font-bold text-gray-900 dark:text-white">
+                    {activeBike ? `${activeBike.brand} ${activeBike.model}` : 'Motor Seçilmedi'}
+                </span>
             </div>
         </motion.div>
     );

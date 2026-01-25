@@ -39,7 +39,7 @@ export const ResponsiveDashboardLayout: React.FC<ResponsiveDashboardLayoutProps>
             {/* LEFT SIDEBAR (Desktop Only) */}
             <div className="hidden lg:block sticky top-24 h-[calc(100vh-120px)] overflow-y-auto custom-scrollbar space-y-6">
                 <RiderProfile user={user} />
-                <ActiveMachine />
+                <ActiveMachine user={user} />
                 <WeatherRadar />
             </div>
 

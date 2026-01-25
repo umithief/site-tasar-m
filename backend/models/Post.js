@@ -61,7 +61,11 @@ const postSchema = new mongoose.Schema({
 
     // Counters (managed via hooks or controllers for perf)
     likeCount: { type: Number, default: 0 },
-    commentCount: { type: Number, default: 0 }
+    commentCount: { type: Number, default: 0 },
+
+    // VibeEngine Scoring Signals
+    cachedScore: { type: Number, default: 0, index: true },
+    telemetryQuality: { type: Boolean, default: false }
 }, {
     timestamps: true,
     versionKey: false

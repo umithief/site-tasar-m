@@ -366,6 +366,24 @@ const seedDatabase = async () => {
             ]);
         }
 
+        // Ensure new 2026 Collection Product exists
+        const aeroSpeed = await Product.findOne({ name: 'Aero Speed Kask' });
+        if (!aeroSpeed) {
+            console.log('📦 Yeni koleksiyon ürünü ekleniyor: Aero Speed Kask');
+            await Product.create({
+                name: "Aero Speed Kask",
+                description: "2026 Aero Speed Yeni Koleksiyon",
+                price: 17500,
+                category: "Kask",
+                image: "http://localhost:5000/uploads/aero_speed_kask.png",
+                images: ["http://localhost:5000/uploads/aero_speed_kask.png"],
+                rating: 5.0,
+                features: ["2026 Koleksiyon", "Aerodinamik", "Premium"],
+                stock: 10,
+                isNegotiable: true
+            });
+        }
+
         const forumCount = await ForumTopic.countDocuments();
         if (forumCount === 0) {
             console.log('📦 Forum konuları veritabanına ekleniyor...');

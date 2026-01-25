@@ -6,7 +6,7 @@ import {
     Save, RefreshCw, ShoppingBag, Clock
 } from 'lucide-react';
 import axios from 'axios';
-import { CONFIG } from '../../config';
+import { CONFIG } from '../../services/config';
 
 const Toggle = ({ enabled, onChange }: { enabled: boolean; onChange: (v: boolean) => void }) => (
     <button

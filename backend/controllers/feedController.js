@@ -315,12 +315,17 @@ export const updateVibeSettings = async (req, res) => {
         );
 
         // Invalidate Config Cache
-        await redis.del('vibe:config');
+        try {
+            await redis.del('vibe:config');
 
-        // Optional: Invalidate ALL user feed caches so they get new algorithm immediately
-        const keys = await redis.keys('feed:discover:*');
-        if (keys.length > 0) {
-            await redis.del(keys);
+            // Optional: Invalidate ALL user feed caches so they get new algorithm immediately
+            const keys = await redis.keys('feed:discover:*');
+            if (keys.length > 0) {
+                await redis.del(...keys);
+            }
+        } catch (redisErr) {
+            console.warn('⚠️ VibeEngine Cache Invalidation Failed:', redisErr.message);
+            // Don't fail the request, just warn
         }
 
         res.status(200).json({ status: 'success', data: config, message: 'Settings updated & Caches cleared' });

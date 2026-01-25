@@ -14,7 +14,9 @@ interface AdminPanelProps {
     onNavigate: (view: any) => void;
 }
 
-type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'hero' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community' | 'paddock' | 'vlogs' | 'showcase' | 'reels' | 'ui-settings';
+import { AdminVibeEngine } from './admin/AdminVibeEngine';
+
+type AdminTab = 'dashboard' | 'products' | 'orders' | 'users' | 'hero' | 'categories' | 'routes' | 'stories' | 'negotiations' | 'models' | 'events' | 'community' | 'paddock' | 'vlogs' | 'showcase' | 'reels' | 'ui-settings' | 'vibe-engine';
 
 export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, onNavigate }) => {
     const [activeTab, setActiveTab] = useState<AdminTab>('dashboard');
@@ -197,12 +199,17 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
                         <AdminReelManager />
                     )}
 
+
                     {activeTab === 'ui-settings' && (
                         <AdminUISettings />
                     )}
 
+                    {activeTab === 'vibe-engine' && (
+                        <AdminVibeEngine />
+                    )}
+
                     {activeTab !== 'dashboard' && activeTab !== 'products' && activeTab !== 'orders' &&
-                        activeTab !== 'users' && activeTab !== 'categories' && activeTab !== 'routes' && activeTab !== 'ui-settings' && activeTab !== 'hero' &&
+                        activeTab !== 'users' && activeTab !== 'categories' && activeTab !== 'routes' && activeTab !== 'ui-settings' && activeTab !== 'hero' && activeTab !== 'vibe-engine' &&
                         !['stories', 'negotiations', 'models', 'events', 'community', 'paddock', 'vlogs', 'showcase', 'reels'].includes(activeTab) && (
                             <div className="p-20 text-center text-gray-500">
                                 Bu modül henüz aktif edilmedi: <b>{activeTab}</b>

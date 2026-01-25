@@ -2,41 +2,75 @@
 import Post from '../models/Post.js';
 import User from '../models/User.js';
 import Product from '../models/Product.js';
+import VibeConfig from '../models/VibeConfig.js';
 import mongoose from 'mongoose';
 import redis from '../config/redis.js';
 
+// --- Helper: Get Config (Cached) ---
+const getConfig = async () => {
+    try {
+        // Try Redis first
+        const cacheKey = 'vibe:config';
+        const cached = await redis.get(cacheKey);
+        if (cached) return JSON.parse(cached);
+    } catch (err) {
+        // Redis failure shouldn't stop flow
+    }
+
+    // Fetch or Create DB
+    let config = await VibeConfig.findById('default_config');
+    if (!config) {
+        config = await VibeConfig.create({ _id: 'default_config' });
+    }
+
+    // Cache for 1 hour
+    try {
+        await redis.set('vibe:config', JSON.stringify(config), 'EX', 3600);
+    } catch (err) { }
+
+    return config;
+};
+
 // --- Helper: Node.js VibeScore Calculator (For updates) ---
-export const calculateVibeScore = (post, viewerContext = {}) => {
+export const calculateVibeScore = (post, viewerContext = {}, config = null) => {
+    // defaults
+    const w = config?.weights || { like: 10, comment: 30, share: 50, save: 60 };
+    const m = config?.multipliers || { telemetry: 1.5, affinity: 1.3, pro: 1.2 };
+    const decay = config?.timeDecay || { enabled: true, factor: 1.8 };
+
     // 1. Engagement Score
     const likes = post.likeCount || 0;
     const comments = post.commentCount || 0;
     const shares = post.shareCount || 0;
     const saves = post.saveCount || 0;
 
-    let score = (likes * 10) + (comments * 30) + (shares * 50) + (saves * 60);
+    let score = (likes * w.like) + (comments * w.comment) + (shares * w.share) + (saves * w.save);
 
     // 2. Multipliers
     // Telemetry
     if (post.telemetryQuality || (post.telemetry && post.telemetry.speed > 0)) {
-        score *= 1.5;
+        score *= m.telemetry;
     }
 
     // Garage Match (Affinity)
     if (viewerContext.activeBikeModel && post.bikeModel &&
         viewerContext.activeBikeModel.toLowerCase() === post.bikeModel.toLowerCase()) {
-        score *= 1.3;
+        score *= m.affinity;
     }
 
     // Verified Pro
     if (post.userRank === 'Pro Rider' || post.userRank === 'MotoVibe Pro') {
-        score *= 1.2;
+        score *= m.pro;
     }
 
     // 3. Time Decay
-    const hoursSincePosted = (Date.now() - new Date(post.createdAt).getTime()) / (1000 * 60 * 60);
-    const decayFactor = Math.pow(hoursSincePosted + 2, 1.8);
+    if (decay.enabled) {
+        const hoursSincePosted = (Date.now() - new Date(post.createdAt).getTime()) / (1000 * 60 * 60);
+        const decayFactor = Math.pow(hoursSincePosted + 2, decay.factor);
+        return score / decayFactor;
+    }
 
-    return score / decayFactor;
+    return score;
 };
 
 // --- Controller: Get Personalized Feed ---
@@ -69,6 +103,9 @@ export const getDiscoveryFeed = async (req, res) => {
             // Restore order (Critical because $in does not check order)
             const feed = cachedIds.map(id => posts.find(p => p._id.toString() === id)).filter(Boolean);
 
+            // Inject sponsored content even on cache hit (dynamically)
+            await injectSponsoredContent(feed);
+
             return res.status(200).json({
                 status: 'success',
                 results: feed.length,
@@ -78,6 +115,12 @@ export const getDiscoveryFeed = async (req, res) => {
 
         // 2. CACHE MISS: Run Aggregation
         console.log(`🌪️ VibeEngine: Generating fresh feed for ${userId}`);
+
+        // Fetch Dynamic Config
+        const config = await getConfig();
+        const w = config.weights;
+        const m = config.multipliers;
+        const decay = config.timeDecay;
 
         // Get Current User Context
         let currentUser = null;
@@ -116,20 +159,20 @@ export const getDiscoveryFeed = async (req, res) => {
                     hoursOld: { $divide: [{ $subtract: [new Date(), "$createdAt"] }, 3600000] },
                     baseScore: {
                         $add: [
-                            { $multiply: [{ $ifNull: ["$likeCount", 0] }, 10] },
-                            { $multiply: [{ $ifNull: ["$commentCount", 0] }, 30] },
-                            { $multiply: [{ $ifNull: ["$shareCount", 0] }, 50] },
-                            { $multiply: [{ $ifNull: ["$saveCount", 0] }, 60] }
+                            { $multiply: [{ $ifNull: ["$likeCount", 0] }, w.like] },
+                            { $multiply: [{ $ifNull: ["$commentCount", 0] }, w.comment] },
+                            { $multiply: [{ $ifNull: ["$shareCount", 0] }, w.share] },
+                            { $multiply: [{ $ifNull: ["$saveCount", 0] }, w.save] }
                         ]
                     },
                     telemetryMult: {
-                        $cond: [{ $or: ["$telemetryQuality", { $gt: ["$telemetry.speed", 0] }] }, 1.5, 1.0]
+                        $cond: [{ $or: ["$telemetryQuality", { $gt: ["$telemetry.speed", 0] }] }, m.telemetry, 1.0]
                     },
                     affinityMult: {
-                        $cond: [{ $eq: ["$bikeModel", activeBikeModel] }, 1.3, 1.0]
+                        $cond: [{ $eq: ["$bikeModel", activeBikeModel] }, m.affinity, 1.0]
                     },
                     proMult: {
-                        $cond: [{ $in: ["$posterDef.rank", ["Pro Rider", "MotoVibe Pro"]] }, 1.2, 1.0]
+                        $cond: [{ $in: ["$posterDef.rank", ["Pro Rider", "MotoVibe Pro"]] }, m.pro, 1.0]
                     }
                 }
             },
@@ -137,9 +180,15 @@ export const getDiscoveryFeed = async (req, res) => {
             {
                 $addFields: {
                     finalVibeScore: {
-                        $divide: [
-                            { $multiply: ["$baseScore", "$telemetryMult", "$affinityMult", "$proMult"] },
-                            { $pow: [{ $add: ["$hoursOld", 2] }, 1.8] }
+                        $cond: [
+                            { $eq: [decay.enabled, true] },
+                            {
+                                $divide: [
+                                    { $multiply: ["$baseScore", "$telemetryMult", "$affinityMult", "$proMult"] },
+                                    { $pow: [{ $add: ["$hoursOld", 2] }, decay.factor] }
+                                ]
+                            },
+                            { $multiply: ["$baseScore", "$telemetryMult", "$affinityMult", "$proMult"] }
                         ]
                     }
                 }
@@ -147,9 +196,6 @@ export const getDiscoveryFeed = async (req, res) => {
             // E. Sort & Limit (Calculate top 100 for cache)
             { $sort: { finalVibeScore: -1 } },
             { $limit: 100 },
-            // F. Project ID only (for lightweight passing to next stage, but we need full docs if we return immediately)
-            // Actually, better to just project ID for caching step, then re-fetch? 
-            // No, efficient workflow: Get full docs locally, map IDs to Redis, return page slice.
             {
                 $project: {
                     baseScore: 0, telemetryMult: 0, affinityMult: 0, proMult: 0, hoursOld: 0, posterDef: 0, finalVibeScore: 0
@@ -173,66 +219,14 @@ export const getDiscoveryFeed = async (req, res) => {
         }
 
         // 4. Return Requested Page
-        // Use the hydration logic similar to cache hit to ensure consistent population
         const pageIds = rankedIds.slice(start, end + 1);
-
-        // We already have the raw docs in 'rankedPosts' but they might miss population or have extra fields defined in schema but not in aggregation result? 
-        // Aggregation returns POJOs. Ideally we want Mongoose Documents or at least populated user.
-        // Let's just fetch the specific page IDs again to be safe and consistent with "hydrate" logic.
 
         const posts = await Post.find({ _id: { $in: pageIds } })
             .populate('user', 'name username avatar rank');
 
-
-        // Hydrate posts
         let feed = pageIds.map(id => posts.find(p => p._id.toString() === id)).filter(Boolean);
 
-        // --- SPONSORED CONTENT INJECTION ---
-        // Fetch 3 random/top products to inject if feed is long enough
-        if (feed.length > 5) {
-            try {
-                const products = await mongoose.model('Product').find({
-                    stock: { $gt: 0 },
-                    rating: { $gte: 4.5 }
-                }).limit(3);
-
-                if (products.length > 0) {
-                    // Inject at index 8, 16, 24...
-                    let injectIndex = 8;
-                    let prodIndex = 0;
-
-                    while (injectIndex < feed.length && prodIndex < products.length) {
-                        const product = products[prodIndex].toObject();
-
-                        // Transform to feed item shape
-                        const sponsoredItem = {
-                            ...product,
-                            _id: `sponsored_${product._id}`, // Unique ID for key
-                            type: 'product',
-                            isSponsored: true,
-                            user: {
-                                name: 'MotoVibe Shop',
-                                username: 'motovibe_shop',
-                                avatar: 'https://motovibe.vercel.app/logo-square.png', // Fallback/Default
-                                rank: 'Official Partner'
-                            },
-                            content: product.description,
-                            images: product.images || [product.image],
-                            likes: 0,
-                            comments: 0,
-                            createdAt: new Date()
-                        };
-
-                        feed.splice(injectIndex, 0, sponsoredItem);
-                        injectIndex += 9; // Skip next 8 + the one we just added
-                        prodIndex++;
-                    }
-                }
-            } catch (err) {
-                console.error('Sponsored injection error:', err);
-                // Continue without injection
-            }
-        }
+        await injectSponsoredContent(feed);
 
         res.status(200).json({
             status: 'success',
@@ -245,5 +239,92 @@ export const getDiscoveryFeed = async (req, res) => {
     } catch (error) {
         console.error('VibeEngine Error:', error);
         res.status(500).json({ status: 'error', message: 'Feed generation failed' });
+    }
+};
+
+// --- Helper: Inject Sponsored Content ---
+const injectSponsoredContent = async (feed) => {
+    // Only inject if feed is substantial
+    if (feed.length <= 5) return;
+
+    // Fetch Config for Frequency
+    const config = await getConfig();
+    if (!config.sponsored.enabled) return;
+
+    try {
+        const products = await mongoose.model('Product').find({
+            stock: { $gt: 0 },
+            rating: { $gte: config.sponsored.minRating || 4.5 }
+        }).limit(3);
+
+        if (products.length > 0) {
+            let injectIndex = config.sponsored.frequency || 8;
+            let prodIndex = 0;
+
+            while (injectIndex < feed.length && prodIndex < products.length) {
+                const product = products[prodIndex].toObject();
+
+                const sponsoredItem = {
+                    ...product,
+                    _id: `sponsored_${product._id}`,
+                    type: 'product',
+                    isSponsored: true,
+                    user: {
+                        name: 'MotoVibe Shop',
+                        username: 'motovibe_shop',
+                        avatar: 'https://motovibe.vercel.app/logo-square.png',
+                        rank: 'Official Partner'
+                    },
+                    content: product.description,
+                    images: product.images || [product.image],
+                    likes: 0,
+                    comments: 0,
+                    createdAt: new Date()
+                };
+
+                feed.splice(injectIndex, 0, sponsoredItem);
+                injectIndex += (config.sponsored.frequency || 8) + 1;
+                prodIndex++;
+            }
+        }
+    } catch (err) {
+        console.error('Sponsored injection error:', err);
+    }
+};
+
+// --- ADMIN CONTROLLERS ---
+
+export const getVibeSettings = async (req, res) => {
+    try {
+        const config = await getConfig();
+        res.status(200).json({ status: 'success', data: config });
+    } catch (error) {
+        res.status(500).json({ status: 'error', message: error.message });
+    }
+};
+
+export const updateVibeSettings = async (req, res) => {
+    try {
+        const updates = req.body;
+
+        // Update in DB
+        const config = await VibeConfig.findByIdAndUpdate(
+            'default_config',
+            { ...updates, lastUpdated: Date.now() },
+            { new: true, upsert: true }
+        );
+
+        // Invalidate Config Cache
+        await redis.del('vibe:config');
+
+        // Optional: Invalidate ALL user feed caches so they get new algorithm immediately
+        const keys = await redis.keys('feed:discover:*');
+        if (keys.length > 0) {
+            await redis.del(keys);
+        }
+
+        res.status(200).json({ status: 'success', data: config, message: 'Settings updated & Caches cleared' });
+    } catch (error) {
+        res.status(500).json({ status: 'error', message: error.message });
     }
 };

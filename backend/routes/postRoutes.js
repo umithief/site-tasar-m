@@ -2,7 +2,7 @@ import express from 'express';
 import { protect } from '../middleware/authMiddleware.js';
 import * as postController from '../controllers/postController.js';
 
-import { getDiscoveryFeed } from '../controllers/feedController.js';
+import { getDiscoveryFeed, getVibeSettings, updateVibeSettings } from '../controllers/feedController.js';
 
 const router = express.Router();
 
@@ -12,6 +12,10 @@ router.get('/search', postController.search); // Public Search
 
 // Protected Routes
 router.use(protect);
+
+// VibeEngine Admin Routes
+router.get('/config', getVibeSettings);
+router.put('/config', updateVibeSettings);
 
 // VibeEngine Discovery Feed
 router.get('/discover', getDiscoveryFeed);

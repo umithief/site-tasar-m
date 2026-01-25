@@ -84,6 +84,26 @@ export const socialService = {
         }
     },
 
+    async savePost(postId: string): Promise<boolean> {
+        const token = localStorage.getItem('token');
+        if (!token) return false;
+
+        try {
+            const response = await fetch(`${CONFIG.API_URL}/social/${postId}/save`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+            if (!response.ok) throw new Error('Save Failed');
+            return true;
+        } catch (error) {
+            console.error('Save Error:', error);
+            return false;
+        }
+    },
+
     async commentPost(postId: string, content: string): Promise<any> {
         const token = localStorage.getItem('token');
         if (!token) return null;

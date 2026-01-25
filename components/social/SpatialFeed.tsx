@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { SocialPost, ViewState } from '../../types';
 import { ResponsivePostCard } from './ResponsivePostCard';
 import { RouteSuggestions } from './RouteSuggestions';
+import { SponsoredCard } from './SponsoredCard';
 
 interface SpatialFeedProps {
     data: any;
@@ -85,17 +86,23 @@ export const SpatialFeed: React.FC<SpatialFeedProps> = memo(({
                 </motion.div>
             )}
 
+
+
             {/* Post List */}
-            {posts.map((post: SocialPost, index: number) => (
-                <div key={post._id}>
-                    <ResponsivePostCard
-                        post={post}
-                        currentUserId={currentUser?._id}
-                        onNavigate={onNavigate}
-                        onCommentClick={() => onCommentClick(post._id)}
-                        variant="default"
-                        priority={index < 2}
-                    />
+            {posts.map((post: any, index: number) => (
+                <div key={post._id || index}>
+                    {post.type === 'product' || post.type === 'sponsored' ? (
+                        <SponsoredCard product={post} onNavigate={onNavigate} />
+                    ) : (
+                        <ResponsivePostCard
+                            post={post}
+                            currentUserId={currentUser?._id}
+                            onNavigate={onNavigate}
+                            onCommentClick={() => onCommentClick(post._id)}
+                            variant="default"
+                            priority={index < 2}
+                        />
+                    )}
 
                     {/* Inject Route Suggestions after 3rd post */}
                     {index === 2 && (

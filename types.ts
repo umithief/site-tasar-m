@@ -229,8 +229,10 @@ export interface SocialPost {
   shares: number;
   timestamp: string;
   isLiked?: boolean;
+  isSaved?: boolean;
   location?: string;
   commentList?: ForumComment[];
+  saveCount?: number;
   rideStats?: {
     maxSpeed: number;
     distance: number;
@@ -239,6 +241,8 @@ export interface SocialPost {
     avgSpeed?: number;
     leanAngle?: number;
   };
+  type?: 'post' | 'product' | 'sponsored';
+  isSponsored?: boolean;
 }
 
 export interface SocialProfile extends User {

@@ -25,6 +25,7 @@ export const PostCard: React.FC<PostCardProps> = memo(({ post, onLike, onComment
     const [isLiked, setIsLiked] = useState(post.isLiked);
     const [likesCount, setLikesCount] = useState(post.likes);
     const [postContent, setPostContent] = useState(post.content);
+    const [isSaved, setIsSaved] = useState(post.isSaved || false);
 
     const [showHeartOverlay, setShowHeartOverlay] = useState(false);
     const [showOptions, setShowOptions] = useState(false);
@@ -272,6 +273,23 @@ export const PostCard: React.FC<PostCardProps> = memo(({ post, onLike, onComment
 
                             <motion.button
                                 whileTap={{ scale: 0.95 }}
+                                onClick={async () => {
+                                    if (navigator.share) {
+                                        try {
+                                            await navigator.share({
+                                                title: `MotoVibe: ${post.userName}`,
+                                                text: post.content,
+                                                url: window.location.href
+                                            });
+                                        } catch (err) {
+                                            console.error('Share failed:', err);
+                                        }
+                                    } else {
+                                        // Fallback: Copy Link
+                                        navigator.clipboard.writeText(window.location.href);
+                                        alert('Bağlantı kopyalandı!');
+                                    }
+                                }}
                                 className="h-11 w-11 rounded-xl flex items-center justify-center border border-gray-200 dark:border-white/10 text-gray-700 dark:text-white hover:bg-gray-50 dark:hover:bg-white/5 transition-all"
                             >
                                 <Share2 className="w-5 h-5" />
@@ -280,9 +298,18 @@ export const PostCard: React.FC<PostCardProps> = memo(({ post, onLike, onComment
 
                         <motion.button
                             whileTap={{ scale: 0.95 }}
-                            className="h-11 w-11 rounded-xl flex items-center justify-center text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
+                            onClick={async () => {
+                                const newSavedState = !isSaved;
+                                setIsSaved(newSavedState);
+                                try {
+                                    await socialService.savePost(post._id);
+                                } catch (error) {
+                                    setIsSaved(!newSavedState); // Revert
+                                }
+                            }}
+                            className={`h-11 w-11 rounded-xl flex items-center justify-center transition-colors ${isSaved ? 'text-moto-accent fill-moto-accent' : 'text-gray-400 hover:text-gray-900 dark:hover:text-white'}`}
                         >
-                            <Bookmark className="w-5 h-5" />
+                            <Bookmark className={`w-5 h-5 ${isSaved ? 'fill-current' : ''}`} />
                         </motion.button>
                     </div>
 

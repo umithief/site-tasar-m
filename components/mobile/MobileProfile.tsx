@@ -9,9 +9,10 @@ import { SocialPost, User, ViewState } from '../../types';
 import { UserAvatar } from '../ui/UserAvatar';
 import { UserListModal } from '../UserListModal';
 import { MobileEditProfile } from './MobileEditProfile';
-import { PostCard } from '../social/PostCard'; // Ensure this handles mobile view via internal logic or unified props
+import { PostCard } from '../social/PostCard';
 import { socialService } from '../../services/socialService';
 import { userService } from '../../services/userService';
+import { CommentSheet } from '../social/CommentSheet';
 
 // Mock Data
 const MOCK_REELS = [
@@ -49,7 +50,6 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
             if (targetUserId) {
                 setIsLoadingProfile(true);
                 try {
-                    // Import userService dynamically or assume it's imported (I will add import)
                     const data = await userService.getProfile(targetUserId);
                     if (data) setFetchedUser(data);
                 } catch (e) {
@@ -80,9 +80,14 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
         fetchPosts();
     }, [displayUser?._id]);
 
-    const user = displayUser; // Layout uses 'user' variable
+    const user = displayUser;
     const [activeTab, setActiveTab] = useState<'posts' | 'reels' | 'garage' | 'saved'>('posts');
     const [isEditing, setIsEditing] = useState(false);
+
+    // Comment Sheet State
+    const [activePostId, setActivePostId] = useState<string | null>(null);
+    const [isCommentSheetOpen, setIsCommentSheetOpen] = useState(false);
+
 
     // User List Modal
     const [isUserListOpen, setIsUserListOpen] = useState(false);
@@ -261,7 +266,14 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
                                 ) : (
                                     <>
                                         {posts.map((post) => (
-                                            <PostCard key={post._id} post={post} />
+                                            <PostCard
+                                                key={post._id}
+                                                post={post}
+                                                onComment={(id) => {
+                                                    setActivePostId(id);
+                                                    setIsCommentSheetOpen(true);
+                                                }}
+                                            />
                                         ))}
                                         {posts.length === 0 && (
                                             <div className="text-center py-16 text-gray-400">
@@ -350,6 +362,15 @@ export const MobileProfile: React.FC<MobileProfileProps> = ({ user: propUser, us
                     />
                 )}
             </AnimatePresence>
+
+            {activePostId && (
+                <CommentSheet
+                    isOpen={isCommentSheetOpen}
+                    onClose={() => setIsCommentSheetOpen(false)}
+                    postId={activePostId}
+                    currentUser={authUser}
+                />
+            )}
         </div>
     );
 };

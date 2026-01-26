@@ -309,10 +309,30 @@ export const updateVibeSettings = async (req, res) => {
         const updates = req.body;
 
         // Update in DB
+        // Update in DB
+        // Fetch existing first to merge (Deep merge protection)
+        const existing = await VibeConfig.findById('default_config').lean();
+
+        let finalUpdates = { ...updates };
+
+        if (existing && updates.timeDecay) {
+            finalUpdates.timeDecay = {
+                ...existing.timeDecay,
+                ...updates.timeDecay
+            };
+
+            // Explicitly ensure maxAgeDays is defined if still missing
+            if (finalUpdates.timeDecay.maxAgeDays === undefined) {
+                finalUpdates.timeDecay.maxAgeDays = 30;
+            }
+        }
+
+        console.log('🔄 VibeEngine Update Payload:', JSON.stringify(finalUpdates.timeDecay, null, 2));
+
         const config = await VibeConfig.findByIdAndUpdate(
             'default_config',
-            { ...updates, lastUpdated: Date.now() },
-            { new: true, upsert: true }
+            { ...finalUpdates, lastUpdated: Date.now() },
+            { new: true, upsert: true, setDefaultsOnInsert: true }
         );
 
         // Invalidate Config Cache

@@ -51,7 +51,11 @@ export const AdminVibeEngine: React.FC = () => {
             const res = await axios.get(`${CONFIG.API_URL}/social/config`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            setConfig(res.data.data);
+            const data = res.data.data;
+            // Ensure compatibility with old configs
+            if (!data.timeDecay.maxAgeDays) data.timeDecay.maxAgeDays = 30;
+
+            setConfig(data);
             setLoading(false);
         } catch (err) {
             console.error(err);

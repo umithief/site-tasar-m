@@ -348,7 +348,7 @@ export const PostCard: React.FC<PostCardProps> = memo(({ post, onLike, onComment
 
                     {/* Content */}
                     <div className="space-y-3">
-                        {likeCount > 0 && ( /* Note: using likesCount state */
+                        {likesCount > 0 && (
                             <div className="text-sm font-bold text-gray-900 dark:text-white">
                                 {likesCount.toLocaleString()} beğenme
                             </div>

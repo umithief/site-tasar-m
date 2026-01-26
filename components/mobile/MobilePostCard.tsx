@@ -1,6 +1,6 @@
-import React, { useState, memo, useMemo } from 'react';
+import React, { useState, memo, useMemo, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Heart, MessageCircle, Share2, MoreHorizontal, Bookmark, Trash2, Edit2, Flag, ShieldAlert } from 'lucide-react';
+import { Heart, MessageCircle, Share2, MoreHorizontal, Bookmark, Trash2, Edit2, Flag, ShieldAlert, UserPlus, UserMinus, UserX, Copy } from 'lucide-react';
 import { SocialPost } from '../../types';
 import { UserAvatar } from '../ui/UserAvatar';
 import { socialService } from '../../services/socialService';
@@ -12,6 +12,8 @@ import { MobileComments } from './MobileComments'; // Import Added
 import { useAuthStore } from '../../store/authStore';
 import { useFollow } from '../../hooks/useFollow';
 import { PostActionsBar } from '../social/PostActionsBar';
+import { formatDistanceToNow } from 'date-fns';
+import { tr } from 'date-fns/locale';
 
 interface MobilePostCardProps {
     post: SocialPost;
@@ -32,11 +34,17 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
     const [postContent, setPostContent] = useState(post.content);
     const [isEditing, setIsEditing] = useState(false);
     const [editPending, setEditPending] = useState(false);
+    const [isSaved, setIsSaved] = useState(post.isSaved || false);
 
     const [lastTap, setLastTap] = useState(0);
     const [showHeartOverlay, setShowHeartOverlay] = useState(false);
     const [isExpanded, setIsExpanded] = useState(false);
     const [showOptions, setShowOptions] = useState(false);
+
+    // Comment Handling
+    const [showComments, setShowComments] = useState(false);
+    const [comments, setComments] = useState<any[]>([]);
+    const [loadingComments, setLoadingComments] = useState(false);
 
     // Live Follow Logic
     const { mutate: toggleFollow, isPending } = useFollow();
@@ -45,6 +53,7 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
     // Determine follow status from store (single source of truth)
     const isFollowing = useMemo(() => {
         if (!currentUser || !currentUser.following) return false;
+        if (currentUser._id === post.userId) return true; // Can't follow self, but treat as "following" to hide button
 
         const followingList = Array.isArray(currentUser.following)
             ? currentUser.following
@@ -55,7 +64,7 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
             if (!fId || !post.userId) return false;
             return fId.toString() === post.userId.toString();
         });
-    }, [currentUser?.following, post.userId]);
+    }, [currentUser?.following, post.userId, currentUser?._id]);
 
     const handleLike = async () => {
         if (!currentUserId) return; // Silent fail or trigger auth elsewhere
@@ -69,6 +78,16 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
         } catch (error) {
             setIsLiked(!newState);
             setLikeCount(prev => !newState ? prev + 1 : prev - 1);
+        }
+    };
+
+    const handleSave = async () => {
+        const newState = !isSaved;
+        setIsSaved(newState);
+        try {
+            await socialService.savePost(post._id);
+        } catch (error) {
+            setIsSaved(!newState);
         }
     };
 
@@ -113,10 +132,44 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
         alert('Gönderi raporlandı.');
     };
 
-    const handleShareToAdmin = async () => {
-        await socialService.shareToAdmin(post._id);
-        setShowOptions(false);
-        alert('Gönderi admine iletildi.');
+    const handleToggleFollow = () => {
+        if (!post.userId) return;
+        toggleFollow({ targetUserId: post.userId, isCurrentlyFollowing: isFollowing });
+        setShowOptions(false); // Close menu if triggered from there
+    };
+
+    const handleShowComments = async () => {
+        setShowComments(true);
+        if (comments.length === 0) {
+            setLoadingComments(true);
+            try {
+                const fetchedComments = await socialService.getComments(post._id);
+                setComments(fetchedComments);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoadingComments(false);
+            }
+        }
+    };
+
+    const handleAddComment = async (text: string) => {
+        // Optimistic update
+        const newComment = {
+            _id: Math.random().toString(),
+            content: text,
+            authorName: currentUser?.name || 'Ben',
+            authorAvatar: currentUser?.avatar || currentUser?.profileImage,
+            createdAt: new Date().toISOString()
+        };
+        setComments(prev => [...prev, newComment]);
+
+        try {
+            await socialService.commentPost(post._id, text);
+            // Refresh logic could go here
+        } catch (err) {
+            console.error('Comment failed', err);
+        }
     };
 
     return (
@@ -127,15 +180,26 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                     className="flex items-center gap-3 cursor-pointer"
                     onClick={() => onNavigate && post.userId && onNavigate('public-profile', { userId: post.userId, username: post.userName })}
                 >
-                    <UserAvatar name={post.userName} src={post.userAvatar} size={36} className="ring-2 ring-gray-50 dark:ring-black" />
+                    <UserAvatar name={post.userName} src={post.userAvatar} size={40} className="ring-2 ring-gray-50 dark:ring-black" />
                     <div className="flex flex-col">
-                        <span className="text-sm font-bold text-gray-900 dark:text-white leading-none">{post.userName}</span>
-                        {post.location && <span className="text-[10px] text-gray-500 font-medium mt-0.5">{post.location}</span>}
+                        <span className="text-[15px] font-bold text-gray-900 dark:text-white leading-none">{post.userName}</span>
+                        {post.location && <span className="text-[11px] text-gray-500 font-medium mt-1">{post.location}</span>}
                     </div>
                 </div>
-                <button onClick={() => setShowOptions(true)} className="p-2 -mr-2 text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
-                    <MoreHorizontal className="w-5 h-5" />
-                </button>
+
+                <div className="flex items-center gap-1">
+                    {!isFollowing && currentUserId !== post.userId && (
+                        <button
+                            onClick={(e) => { e.stopPropagation(); handleToggleFollow(); }}
+                            className="bg-moto-accent text-black text-[10px] font-bold px-3 py-1.5 rounded-full mr-2 hover:bg-moto-accent/90 transition-colors"
+                        >
+                            Takip Et
+                        </button>
+                    )}
+                    <button onClick={() => setShowOptions(true)} className="p-2 -mr-2 text-gray-400 dark:text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors">
+                        <MoreHorizontal className="w-5 h-5" />
+                    </button>
+                </div>
             </div>
 
             {/* Media - Dynamic Aspect Ratio */}
@@ -192,7 +256,7 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
 
                         <motion.button
                             whileTap={{ scale: 0.9 }}
-                            onClick={() => onCommentClick && onCommentClick()}
+                            onClick={handleShowComments}
                             className="flex items-center gap-1.5"
                         >
                             <MessageCircle className="w-7 h-7 text-gray-900 dark:text-white" strokeWidth={1.5} />
@@ -206,42 +270,45 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                         </motion.button>
                     </div>
 
-                    <motion.button whileTap={{ scale: 0.9 }}>
-                        <Bookmark className="w-7 h-7 text-gray-900 dark:text-white" strokeWidth={1.5} />
+                    <motion.button
+                        whileTap={{ scale: 0.9 }}
+                        onClick={handleSave}
+                    >
+                        <Bookmark className={`w-7 h-7 ${isSaved ? 'text-moto-accent fill-moto-accent' : 'text-gray-900 dark:text-white'}`} strokeWidth={1.5} />
                     </motion.button>
                 </div>
 
                 {/* Likes & Caption - Clean Text */}
-                <div className="px-2 space-y-1.5">
+                <div className="px-3 pb-4 space-y-2">
                     {likeCount > 0 && (
                         <div className="text-sm font-bold text-gray-900 dark:text-white">
                             {likeCount.toLocaleString()} beğenme
                         </div>
                     )}
 
-                    <div className="text-sm leading-relaxed text-gray-800 dark:text-gray-200">
+                    <div className="text-[15px] leading-relaxed text-gray-800 dark:text-gray-200">
                         <span className="font-bold mr-2 text-gray-900 dark:text-white">{post.userName}</span>
                         {isExpanded || !postContent || postContent.length < 90 ? (
-                            postContent
+                            <span className="font-normal">{postContent}</span>
                         ) : (
-                            <>
+                            <span className="font-normal">
                                 {postContent.slice(0, 90)}...
-                                <button onClick={() => setIsExpanded(true)} className="text-gray-500 dark:text-gray-400 ml-1">devamı</button>
-                            </>
+                                <button onClick={() => setIsExpanded(true)} className="text-gray-500 dark:text-gray-400 ml-1 font-medium">devamı</button>
+                            </span>
                         )}
                     </div>
 
                     {post.comments > 0 && (
                         <button
-                            onClick={() => onCommentClick && onCommentClick()}
-                            className="text-gray-500 dark:text-gray-400 text-sm mt-1"
+                            onClick={handleShowComments}
+                            className="text-gray-500 dark:text-gray-400 text-sm font-medium mt-1 hover:text-gray-900 dark:hover:text-white transition-colors"
                         >
                             {post.comments} yorumun tümünü gör
                         </button>
                     )}
 
-                    <div className="text-[10px] text-gray-400 uppercase tracking-wide pt-1">
-                        {new Date((post as any).createdAt || (post as any).timestamp || Date.now()).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long' })}
+                    <div className="text-[12px] text-gray-400 font-medium tracking-wide pt-1">
+                        {formatDistanceToNow(new Date((post as any).createdAt || (post as any).timestamp || Date.now()), { addSuffix: true, locale: tr })}
                     </div>
                 </div>
             </div>
@@ -261,11 +328,67 @@ export const MobilePostCard: React.FC<MobilePostCardProps> = memo(({ post, curre
                             <button onClick={() => { setIsEditing(true); setShowOptions(false); }} className="w-full p-4 flex items-center gap-3 text-gray-900 dark:text-white font-bold bg-gray-50 dark:bg-white/5 rounded-xl">
                                 <Edit2 className="w-5 h-5" /> Düzenle
                             </button>
+                            <button
+                                onClick={() => {
+                                    navigator.clipboard.writeText(window.location.href);
+                                    alert('Bağlantı kopyalandı');
+                                    setShowOptions(false);
+                                }}
+                                className="w-full p-4 flex items-center gap-3 text-gray-900 dark:text-white font-bold bg-gray-50 dark:bg-white/5 rounded-xl"
+                            >
+                                <Copy className="w-5 h-5" /> Linki Kopyala
+                            </button>
                         </>
                     ) : (
-                        <button onClick={handleReport} className="w-full p-4 flex items-center gap-3 text-red-500 font-bold bg-red-50 dark:bg-red-500/10 rounded-xl">
-                            <Flag className="w-5 h-5" /> Şikayet Et
-                        </button>
+                        <>
+                            {!isFollowing && (
+                                <button onClick={handleToggleFollow} className="w-full p-4 flex items-center gap-3 text-blue-500 font-bold bg-blue-50 dark:bg-blue-500/10 rounded-xl">
+                                    <UserPlus className="w-5 h-5" /> Takip Et
+                                </button>
+                            )}
+                            {isFollowing && (
+                                <button onClick={handleToggleFollow} className="w-full p-4 flex items-center gap-3 text-gray-700 dark:text-gray-300 font-bold bg-gray-50 dark:bg-white/5 rounded-xl">
+                                    <UserMinus className="w-5 h-5" /> Takipten Çık
+                                </button>
+                            )}
+                            <button
+                                onClick={() => {
+                                    navigator.clipboard.writeText(window.location.href);
+                                    alert('Bağlantı kopyalandı');
+                                    setShowOptions(false);
+                                }}
+                                className="w-full p-4 flex items-center gap-3 text-gray-900 dark:text-white font-bold bg-gray-50 dark:bg-white/5 rounded-xl"
+                            >
+                                <Copy className="w-5 h-5" /> Linki Kopyala
+                            </button>
+                            <button onClick={handleReport} className="w-full p-4 flex items-center gap-3 text-red-500 font-bold bg-red-50 dark:bg-red-500/10 rounded-xl">
+                                <Flag className="w-5 h-5" /> Şikayet Et
+                            </button>
+                            <button onClick={() => { alert('Kullanıcı engellendi.'); setShowOptions(false); }} className="w-full p-4 flex items-center gap-3 text-red-500 font-bold bg-red-50 dark:bg-red-500/10 rounded-xl">
+                                <UserX className="w-5 h-5" /> Engelle
+                            </button>
+                        </>
+                    )}
+                </div>
+            </MobileBottomSheet>
+
+            {/* Comments Sheet */}
+            <MobileBottomSheet
+                isOpen={showComments}
+                onClose={() => setShowComments(false)}
+                title={`Yorumlar (${post.comments})`}
+            >
+                <div className="h-[70vh]">
+                    {loadingComments ? (
+                        <div className="flex items-center justify-center h-full text-gray-500">Yorumlar yükleniyor...</div>
+                    ) : (
+                        <MobileComments
+                            postId={post._id}
+                            comments={comments}
+                            currentUserAvatar={currentUser?.avatar}
+                            onAddComment={handleAddComment}
+                            onLikeComment={() => { }}
+                        />
                     )}
                 </div>
             </MobileBottomSheet>

@@ -481,6 +481,7 @@ export const SocialHub: React.FC<SocialHubProps> = ({ user: propUser, onNavigate
                                         hasNextPage={hasNextPage}
                                         fetchNextPage={fetchNextPage}
                                         onCommentClick={handleCommentClick}
+                                        isLoading={status === 'pending'} // Pass loading state
                                     />
                                 </div>
                             </PullToRefresh>

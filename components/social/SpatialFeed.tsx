@@ -13,6 +13,7 @@ interface SpatialFeedProps {
     hasNextPage: boolean;
     fetchNextPage: () => void;
     onCommentClick: (postId: string) => void;
+    isLoading?: boolean; // New Prop
 }
 
 export const SpatialFeed: React.FC<SpatialFeedProps> = memo(({
@@ -22,7 +23,8 @@ export const SpatialFeed: React.FC<SpatialFeedProps> = memo(({
     isFetchingNextPage,
     hasNextPage,
     fetchNextPage,
-    onCommentClick
+    onCommentClick,
+    isLoading = false // Default false
 }) => {
     // Memoize posts list - deduplicate and prepare
     const posts = useMemo(() => {
@@ -37,7 +39,41 @@ export const SpatialFeed: React.FC<SpatialFeedProps> = memo(({
             });
     }, [data]);
 
-    const isEmpty = !isFetchingNextPage && posts.length === 0;
+    const isEmpty = !isLoading && !isFetchingNextPage && posts.length === 0;
+
+    // Loading State (Initial Fetch)
+    if (isLoading) {
+        return (
+            <div className="space-y-6 py-4 px-2 w-full max-w-lg mx-auto">
+                {/* VibeEngine Loading Header */}
+                <div className="flex items-center justify-center gap-3 py-6 opacity-70">
+                    <div className="w-5 h-5 rounded-full border-2 border-moto-accent border-r-transparent animate-spin" />
+                    <span className="text-xs font-bold text-gray-500 uppercase tracking-widest animate-pulse">VibeEngine Hazırlanıyor...</span>
+                </div>
+
+                {/* Skeleton Cards */}
+                {[1, 2, 3].map((i) => (
+                    <div key={i} className="bg-white dark:bg-zinc-900 border border-gray-100 dark:border-white/5 rounded-3xl p-4 space-y-4 animate-pulse">
+                        {/* Header Skeleton */}
+                        <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 bg-gray-200 dark:bg-white/10 rounded-full" />
+                            <div className="space-y-2 flex-1">
+                                <div className="w-32 h-3 bg-gray-200 dark:bg-white/10 rounded-full" />
+                                <div className="w-20 h-2 bg-gray-200 dark:bg-white/10 rounded-full" />
+                            </div>
+                        </div>
+                        {/* Image Skeleton */}
+                        <div className="w-full aspect-[4/5] bg-gray-200 dark:bg-white/10 rounded-2xl" />
+                        {/* Footer Skeleton */}
+                        <div className="space-y-2 pt-2">
+                            <div className="w-3/4 h-3 bg-gray-200 dark:bg-white/10 rounded-full" />
+                            <div className="w-1/2 h-3 bg-gray-200 dark:bg-white/10 rounded-full" />
+                        </div>
+                    </div>
+                ))}
+            </div>
+        );
+    }
 
     return (
         <div className="space-y-6 py-4 px-2 w-full max-w-lg mx-auto">

@@ -43,6 +43,8 @@ export const usePosts = (feedType: 'feed' | 'discover' = 'feed') => {
             return allPages.length + 1;
         },
         initialPageParam: 1,
+        staleTime: 60000, // 1 minute cache
+        refetchOnWindowFocus: false, // Don't refetch when switching tabs
     });
 };
 

@@ -73,6 +73,9 @@ const postSchema = new mongoose.Schema({
 
 // Indexes for feed performance
 postSchema.index({ user: 1, createdAt: -1 });
+postSchema.index({ createdAt: -1 }); // Critical for Explore global timeline
+postSchema.index({ likeCount: -1 }); // Critical for Trending
+postSchema.index({ tags: 1 }); // Quick category/tag lookup
 
 // Virtual for caption/content compatibility
 postSchema.virtual('displayContent').get(function () {

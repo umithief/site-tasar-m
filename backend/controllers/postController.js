@@ -429,7 +429,7 @@ export const getExplorePosts = catchAsync(async (req, res, next) => {
         .sort(sortOptions)
         .skip(skip)
         .limit(limit)
-        .populate('user', 'name avatar rank') // Ensure user details are populated
+        // .populate('user', 'name avatar rank') // Removed for performance: utilizing cached user fields
         .lean();
 
     const total = await Post.countDocuments(query);

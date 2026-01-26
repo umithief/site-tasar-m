@@ -131,15 +131,16 @@ export const getDiscoveryFeed = async (req, res) => {
         const activeBikeModel = currentUser?.primaryBike || '';
         const blockedUsers = currentUser?.blockedUsers || [];
 
-        // Date Filter (Last 7 Days)
-        const sevenDaysAgo = new Date();
-        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7);
+        // Date Filter (Dynamic based on Config)
+        const daysToLookBack = decay.maxAgeDays || 30; // Default to 30 if not set
+        const cutoffDate = new Date();
+        cutoffDate.setDate(cutoffDate.getDate() - daysToLookBack);
 
         const pipeline = [
             // A. Match Stage
             {
                 $match: {
-                    createdAt: { $gte: sevenDaysAgo },
+                    createdAt: { $gte: cutoffDate },
                     user: { $nin: blockedUsers.map(id => new mongoose.Types.ObjectId(id)) }
                 }
             },

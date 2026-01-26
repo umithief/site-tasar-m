@@ -250,6 +250,12 @@ export const AdminVibeEngine: React.FC = () => {
                                 ⚠️ Bu faktörü arttırmak taze içerikleri aşırı öne çıkarır. Dengeli değer: 1.5 - 2.0
                             </p>
                         </div>
+                        <Slider
+                            label="Görünürlük Penceresi (Son kaç günün içerikleri)"
+                            value={config.timeDecay.maxAgeDays || 30}
+                            min={7} max={365} step={1}
+                            onChange={(v) => setConfig({ ...config, timeDecay: { ...config.timeDecay, maxAgeDays: v } })}
+                        />
                     </div>
                 </div>
 

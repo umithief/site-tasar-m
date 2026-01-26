@@ -22,7 +22,8 @@ const vibeConfigSchema = new mongoose.Schema({
     // 3. Time Decay
     timeDecay: {
         enabled: { type: Boolean, default: true },
-        factor: { type: Number, default: 1.8 } // Power factor
+        factor: { type: Number, default: 1.8 }, // Power factor
+        maxAgeDays: { type: Number, default: 30 } // Visiblity window
     },
 
     // 4. Sponsored Content

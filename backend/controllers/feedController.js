@@ -80,7 +80,7 @@ export const getDiscoveryFeed = async (req, res) => {
         const page = parseInt(req.query.page) || 1;
         const limit = 10; // Page size
         const cacheKey = `feed:discover:${userId}`;
-        const cacheTTL = 600; // 10 minutes
+        const cacheTTL = 3600; // Increased to 1 Hour (was 10 mins)
 
         // 1. Try Fetch from Redis
         const start = (page - 1) * limit;
@@ -93,8 +93,8 @@ export const getDiscoveryFeed = async (req, res) => {
             console.warn('⚠️ Redis Cache error (skipping):', err.message);
         }
 
+        // 2. CACHE HIT: Serve IMMEDIATELY
         if (cachedIds && cachedIds.length > 0) {
-            // CACHE HIT: Hydrate posts from MongoDB
             console.log(`⚡ VibeEngine: Serving page ${page} from cache for ${userId}`);
 
             const posts = await Post.find({ _id: { $in: cachedIds } })
@@ -113,7 +113,7 @@ export const getDiscoveryFeed = async (req, res) => {
             });
         }
 
-        // 2. CACHE MISS: Run Aggregation
+        // 3. CACHE MISS: Run Aggregation (Only if no cache)
         console.log(`🌪️ VibeEngine: Generating fresh feed for ${userId}`);
 
         // Fetch Dynamic Config
@@ -211,6 +211,9 @@ export const getDiscoveryFeed = async (req, res) => {
 
         if (rankedIds.length > 0 && userId) {
             try {
+                // Determine if we should append or replace?
+                // For "discover", we replace the whole feed usually or paginated.
+                // Currently replacing entire key for simplicity.
                 await redis.del(cacheKey);
                 await redis.rpush(cacheKey, ...rankedIds);
                 await redis.expire(cacheKey, cacheTTL);

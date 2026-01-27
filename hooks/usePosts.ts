@@ -31,21 +31,61 @@ const fetchFeed = async ({ pageParam = 1, queryKey }: any) => {
     }));
 };
 
+import { useEffect } from 'react';
+
+// Helper to get persisted data
+const getPersistedData = (key: string) => {
+    try {
+        const item = localStorage.getItem(key);
+        const timestamp = localStorage.getItem(`${key}_timestamp`);
+        if (item) {
+            return {
+                data: JSON.parse(item),
+                updatedAt: timestamp ? parseInt(timestamp, 10) : 0
+            };
+        }
+    } catch (e) {
+        console.warn('Failed to load feed from cache', e);
+    }
+    return undefined;
+};
+
 export const usePosts = (feedType: 'feed' | 'discover' = 'feed') => {
     const token = localStorage.getItem('token');
-    return useInfiniteQuery({
+    const cacheKey = `vibe_feed_cache_${feedType}`;
+
+    // Load initial data synchronously
+    const persisted = getPersistedData(cacheKey);
+
+    const query = useInfiniteQuery({
         queryKey: ['posts', feedType],
         queryFn: fetchFeed,
         enabled: !!token,
         getNextPageParam: (lastPage, allPages) => {
-            // Mocking logic: stop after 5 pages or if empty
             if (!lastPage || lastPage.length === 0) return undefined;
             return allPages.length + 1;
         },
         initialPageParam: 1,
-        staleTime: 60000, // 1 minute cache
-        refetchOnWindowFocus: false, // Don't refetch when switching tabs
+        staleTime: 1000 * 60 * 5, // 5 minutes (Client Cache)
+        refetchOnWindowFocus: false,
+        // Hydrate from localStorage
+        initialData: persisted?.data,
+        initialDataUpdatedAt: persisted?.updatedAt
     });
+
+    // Save to localStorage whenever data updates
+    useEffect(() => {
+        if (query.data) {
+            try {
+                localStorage.setItem(cacheKey, JSON.stringify(query.data));
+                localStorage.setItem(`${cacheKey}_timestamp`, Date.now().toString());
+            } catch (e) {
+                console.error('Failed to persist feed cache', e);
+            }
+        }
+    }, [query.data, cacheKey]);
+
+    return query;
 };
 
 export const useLikePost = () => {

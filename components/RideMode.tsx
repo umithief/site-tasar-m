@@ -768,52 +768,30 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
             }
 
             if (points.length > 0) {
-                // 1. Draw STATIC Visual Line (Reliable & Accurate)
-                // This ensures the curated route is always visible exactly as defined
-                const visualPolyline = L.polyline(points.map((p: any) => [p.lat, p.lng]), {
-                    color: '#3b82f6', // Bright Blue
-                    opacity: 0.9,
-                    weight: 6,
-                    className: 'static-route-line',
-                    lineCap: 'round',
-                    lineJoin: 'round'
-                }).addTo(mapRef.current);
+                // GUARD: If route is already calculated/displayed, DO NOT RE-RUN
+                // This prevents the route from disappearing/flickering when user location updates
+                if (routingControlRef.current) return;
 
-                routeLineRef.current = visualPolyline;
-
-                // Fit bounds to route initially - allow padding
-                mapRef.current.fitBounds(visualPolyline.getBounds(), { padding: [50, 50], animate: true });
-
-                // 2. Add Start/End Markers
+                // For OSRM navigation, we only need the key waypoints (Start and End), 
+                // effectively recalculating the route to get turn-by-turn instructions AND the correct road path.
                 const start = points[0];
                 const end = points[points.length - 1];
-
-                const startMarker = L.marker([start.lat, start.lng], {
-                    icon: L.divIcon({ className: 'bg-green-500 w-4 h-4 rounded-full border-2 border-white shadow-lg', iconSize: [16, 16] })
-                }).addTo(mapRef.current);
-
-                const endMarker = L.marker([end.lat, end.lng], {
-                    icon: L.divIcon({ className: 'bg-red-500 w-4 h-4 rounded-full border-2 border-white shadow-lg', iconSize: [16, 16] })
-                }).addTo(mapRef.current);
-
-                routeMarkersRef.current.push(startMarker, endMarker);
-
-                // 3. Setup OSRM for Instructions Only (Ghost Routing)
                 const waypoints = [L.latLng(start.lat, start.lng), L.latLng(end.lat, end.lng)];
-                console.log("Starting navigation logic with waypoints:", waypoints);
+
+                console.log("Starting navigation with waypoints:", waypoints);
 
                 try {
                     const control = L.Routing.control({
                         waypoints: waypoints,
-                        router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/service/v1', profile: 'driving', language: 'tr' }),
+                        router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1', profile: 'driving', language: 'tr' }),
                         lineOptions: {
-                            // Make OSRM line invisible so it doesn't conflict with our static visual line
-                            styles: [{ color: 'transparent', opacity: 0, weight: 0 }]
+                            // Restore proper visual style (User requested "kesik çizgiler" / animated style)
+                            styles: [{ color: '#3b82f6', opacity: 1, weight: 6, className: 'animated-route' }]
                         },
                         show: false,
                         addWaypoints: false,
                         routeWhileDragging: false,
-                        fitSelectedRoutes: false, // Don't fight our manual fitBounds
+                        fitSelectedRoutes: true,
                         containerClassName: 'hidden-routing-container'
                     }).addTo(mapRef.current);
 
@@ -831,16 +809,22 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
 
                     control.on('routingerror', (e: any) => {
                         console.error("OSRM Routing Error:", e);
+                        // Fallback: Just draw the polyline if OSRM fails
+                        const polyline = L.polyline(points.map((p: any) => [p.lat, p.lng]), { color: '#E2FF3B', opacity: 0.8, weight: 8 }).addTo(mapRef.current);
+                        mapRef.current.fitBounds(polyline.getBounds());
                     });
 
                     routingControlRef.current = control;
                 } catch (e) {
                     console.error("OSRM Control Error", e);
+                    // Fallback in catch
+                    const polyline = L.polyline(points.map((p: any) => [p.lat, p.lng]), { color: '#3b82f6', opacity: 0.8, weight: 6, smoothFactor: 1 }).addTo(mapRef.current);
+                    try { mapRef.current.fitBounds(polyline.getBounds()); } catch (ex) { }
                 }
             }
         }
 
-    }, [route, activeTarget, currentLoc]); // Dependencies include currentLoc to restart logic when locked
+    }, [route, activeTarget, currentLoc]); // Dependencies include currentLoc to start, but guard prevents polling
 
     // Demo Loop
     useEffect(() => {

@@ -19,12 +19,21 @@ export const routeService = {
     return response.data;
   },
 
-  createRoute: async (routeData: any, token: string): Promise<Route> => {
+  createRoute: async (routeData: any, token?: string): Promise<Route> => {
     // Note: 'api' instance already handles the token via interceptors if it exists in localStorage.
     // However, if the service specifically asks for a token arg, we can leave it, but the interceptor is cleaner.
     // We'll trust the interceptor for consistency, but the method signature can stay for compatibility.
     const response = await api.post('/routes', routeData);
     return response.data;
+  },
+
+  updateRoute: async (routeData: any): Promise<Route> => {
+    const response = await api.put(`/routes/${routeData._id || routeData.id}`, routeData);
+    return response.data;
+  },
+
+  deleteRoute: async (id: string): Promise<void> => {
+    await api.delete(`/routes/${id}`);
   },
 
   seedRoutes: async (): Promise<Route[]> => {
@@ -37,47 +46,71 @@ export const routeService = {
       return [
         {
           _id: 'mock-1',
-          title: 'Şile Coastal Run',
-          description: 'Experience the breathtaking Black Sea coast with a perfect mix of high-speed straights and technical curves.',
+          title: 'Şile Sahil Yolu',
+          description: 'Mavi ve yeşilin buluştuğu bu sahil yolunda rüzgarla dans edin. Keskin virajlar ve uzun düzlüklerin mükemmel dengesi.',
           distance: '145 km',
           estimatedTime: '2h 15m',
           difficulty: 'Orta',
-          location: 'Şile, Istanbul',
-          image: 'https://images.unsplash.com/photo-1519003300449-6cb3878b2d18?q=80&w=1000&auto=format&fit=crop',
+          location: 'Şile, İstanbul',
+          image: '/assets/routes/coastal.png',
           stats: { curves: 75, roadQuality: 90, traffic: 40 },
-          tags: ['Coastal', 'Scenic', 'Fast'],
+          tags: ['Sahil', 'Manzara', 'Hızlı', 'Virajlı'],
           riderCount: 1243,
-          bestSeason: 'Spring, Summer',
+          bestSeason: 'İlkbahar, Yaz',
           difficultyMetrics: { technical: 3, scenery: 5, speed: 4 },
-          terrain: ['Asphalt'],
-          coordinates: [
-            { lat: 41.1744, lng: 29.6116 }, // Start
-            { lat: 41.1780, lng: 29.6200 }, // Waypoint
-            { lat: 41.1850, lng: 29.6300 }, // Waypoint
-            { lat: 41.1900, lng: 29.6400 }  // End
-          ]
+          terrain: ['Asfalt'],
+          coordinates: [{ lat: 41.1744, lng: 29.6116 }]
         },
         {
           _id: 'mock-2',
-          title: 'Uludağ Summit Climb',
-          description: 'A technical mountain pass challenging even the most experienced riders with its hairpin turns.',
+          title: 'Uludağ Zirve Tırmanışı',
+          description: 'Bulutların üzerine çıkmaya hazır mısın? Keskin hairpin virajları ve serin dağ havasıyla gerçek bir sürüş testi.',
           distance: '42 km',
           estimatedTime: '1h 10m',
           difficulty: 'Zor',
           location: 'Bursa',
-          image: 'https://images.unsplash.com/photo-1625026412613-2287c2b3e8c0?q=80&w=1000&auto=format&fit=crop',
+          image: '/assets/routes/mountain.png',
           stats: { curves: 95, roadQuality: 85, traffic: 30 },
-          tags: ['Mountain', 'Technical', 'Curves'],
+          tags: ['Dağ', 'Teknik', 'Viraj', 'Soğuk'],
           riderCount: 856,
-          bestSeason: 'Summer, Autumn',
+          bestSeason: 'Yaz, Sonbahar',
           difficultyMetrics: { technical: 5, scenery: 5, speed: 2 },
-          terrain: ['Asphalt'],
-          coordinates: [
-            { lat: 40.1828, lng: 29.0669 },
-            { lat: 40.1500, lng: 29.0800 },
-            { lat: 40.1200, lng: 29.1000 },
-            { lat: 40.0900, lng: 29.1300 }
-          ]
+          terrain: ['Asfalt'],
+          coordinates: [{ lat: 40.1828, lng: 29.0669 }]
+        },
+        {
+          _id: 'mock-3',
+          title: 'Belgrad Ormanı Keşfi',
+          description: 'Şehrin gürültüsünden kaçıp doğanın kalbine yolculuk. Ağaç tünelleri arasından geçen bu rota, huzurlu ve keyifli bir sürüş vadediyor.',
+          distance: '25 km',
+          estimatedTime: '45m',
+          difficulty: 'Kolay',
+          location: 'Sarıyer, İstanbul',
+          image: '/assets/routes/forest.png',
+          stats: { curves: 40, roadQuality: 70, traffic: 50 },
+          tags: ['Orman', 'Doğa', 'Kısa Rota', 'Huzur'],
+          riderCount: 2105,
+          bestSeason: 'Sonbahar, İlkbahar',
+          difficultyMetrics: { technical: 2, scenery: 4, speed: 3 },
+          terrain: ['Asfalt', 'Stabilize'],
+          coordinates: [{ lat: 41.1790, lng: 28.9800 }]
+        },
+        {
+          _id: 'mock-4',
+          title: 'İstanbul Gece Hattı',
+          description: 'Şehir uyurken asfalt senin. Köprü ışıkları, boş caddeler ve neon tabelalar eşliğinde siberpunk bir sürüş deneyimi.',
+          distance: '60 km',
+          estimatedTime: '1h 30m',
+          difficulty: 'Orta',
+          location: 'İstanbul',
+          image: '/assets/routes/city.png',
+          stats: { curves: 30, roadQuality: 95, traffic: 20 },
+          tags: ['Gece', 'Şehir', 'Fotoğraf', 'Cruise'],
+          riderCount: 3420,
+          bestSeason: 'Her Mevsim (Gece)',
+          difficultyMetrics: { technical: 2, scenery: 5, speed: 4 },
+          terrain: ['Asfalt'],
+          coordinates: [{ lat: 41.0082, lng: 28.9784 }]
         }
       ] as any[];
     }

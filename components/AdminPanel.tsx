@@ -208,6 +208,12 @@ export const AdminPanel: React.FC<AdminPanelProps> = ({ onLogout, onShowToast, o
                         <AdminVibeEngine />
                     )}
 
+                    {activeTab === 'routes' && (
+                        <RoutesLoader
+                            onShowToast={onShowToast}
+                        />
+                    )}
+
                     {activeTab !== 'dashboard' && activeTab !== 'products' && activeTab !== 'orders' &&
                         activeTab !== 'users' && activeTab !== 'categories' && activeTab !== 'routes' && activeTab !== 'ui-settings' && activeTab !== 'hero' && activeTab !== 'vibe-engine' &&
                         !['stories', 'negotiations', 'models', 'events', 'community', 'paddock', 'vlogs', 'showcase', 'reels'].includes(activeTab) && (
@@ -257,8 +263,9 @@ import { AdminHeroShowcase } from './admin/AdminHeroShowcase';
 
 import { ProductModal } from './admin/modals/ProductModal';
 import { CategoryModal } from './admin/modals/CategoryModal';
+import { RouteModal } from './admin/modals/RouteModal'; // NEW
 
-import { Product, Order, CategoryItem, Slide } from '../types';
+import { Product, Order, CategoryItem, Slide, Route } from '../types';
 
 // --- Generic Component for Simple Lists ---
 const GenericLoader = ({ fetchData, renderItem, loadingMsg, errorMsg, onShowToast }: any) => {
@@ -523,6 +530,85 @@ const CategoriesLoader = ({ onShowToast }: any) => {
 };
 
 
+
+const RoutesLoader = ({ onShowToast }: any) => {
+    const [routes, setRoutes] = useState<Route[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [editingRoute, setEditingRoute] = useState<Route | null>(null);
+
+    const loadRoutes = async () => {
+        try {
+            setLoading(true);
+            const data = await routeService.getRoutes();
+            setRoutes(data);
+        } catch (err) {
+            onShowToast('error', 'Rotalar yüklenemedi');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    React.useEffect(() => {
+        loadRoutes();
+    }, []);
+
+    const handleAddNew = () => {
+        setEditingRoute(null);
+        setIsModalOpen(true);
+    };
+
+    const handleEdit = (route: Route) => {
+        setEditingRoute(route);
+        setIsModalOpen(true);
+    };
+
+    const handleDelete = async (id: string) => {
+        if (!confirm('Bu rotayı silmek istediğinize emin misiniz?')) return;
+        try {
+            await routeService.deleteRoute(id);
+            setRoutes(prev => prev.filter(r => r._id !== id));
+            onShowToast('success', 'Rota silindi');
+        } catch (e) {
+            onShowToast('error', 'Silme işlemi başarısız');
+        }
+    };
+
+    const handleSave = async (routeData: any) => {
+        try {
+            if (editingRoute) {
+                await routeService.updateRoute(routeData);
+                onShowToast('success', 'Rota güncellendi');
+            } else {
+                await routeService.createRoute(routeData);
+                onShowToast('success', 'Rota oluşturuldu');
+            }
+            await loadRoutes();
+        } catch (e) {
+            console.error(e);
+            onShowToast('error', 'İşlem başarısız');
+        }
+    };
+
+    if (loading) return <div className="text-white text-center p-10 animate-pulse">Rotalar Yükleniyor...</div>;
+
+    return (
+        <>
+            <AdminRoutes
+                routes={routes}
+                handleAddNew={handleAddNew}
+                handleEdit={handleEdit}
+                handleDelete={handleDelete}
+            />
+            <RouteModal
+                isOpen={isModalOpen}
+                onClose={() => setIsModalOpen(false)}
+                onSave={handleSave}
+                editingRoute={editingRoute}
+            />
+        </>
+    );
+};
 
 const DashboardLoader = ({ onNavigate, onShowToast }: any) => {
     const [data, setData] = useState<any>(null);

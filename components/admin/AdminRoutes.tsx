@@ -49,7 +49,7 @@ export const AdminRoutes: React.FC<AdminRoutesProps> = ({ routes, handleAddNew, 
                                         {route.difficulty}
                                     </span>
                                 </td>
-                                <td className="p-5 text-gray-400 font-mono">{route.distance} / {route.duration}</td>
+                                <td className="p-5 text-gray-400 font-mono">{route.distance} / {route.estimatedTime}</td>
                                 <td className="p-5 pr-8 text-right">
                                     <div className="flex items-center justify-end gap-2">
                                         <button onClick={() => handleEdit(route)} className="p-2 rounded-lg hover:bg-blue-500/20 text-gray-400 hover:text-blue-500 transition-colors"><Edit2 className="w-4 h-4" /></button>

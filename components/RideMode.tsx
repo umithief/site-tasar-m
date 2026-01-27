@@ -785,6 +785,30 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
 
                 console.log("Starting navigation from User Location:", waypoints);
 
+                // Add VISUAL Markers for Start and End
+                // OSRM handles the line, but we want clear flags
+                const startMarker = L.marker([currentLoc.lat, currentLoc.lng], {
+                    icon: L.divIcon({
+                        className: 'custom-start-marker',
+                        html: '<div style="background-color: #22c55e; width: 16px; height: 16px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 10px rgba(0,0,0,0.3);"></div>',
+                        iconSize: [20, 20],
+                        iconAnchor: [10, 10]
+                    }),
+                    zIndexOffset: 900 // Below the rider but above map
+                }).addTo(mapRef.current).bindPopup("Başlangıç Konumu");
+
+                const endMarker = L.marker([end.lat, end.lng], {
+                    icon: L.divIcon({
+                        className: 'custom-end-marker',
+                        html: '<div style="background-color: #ef4444; width: 24px; height: 24px; border-radius: 50%; border: 4px solid white; box-shadow: 0 0 15px rgba(239, 68, 68, 0.6); display: flex; align-items: center; justify-content: center;"><div style="width: 8px; height: 8px; background-color: white; border-radius: 50%;"></div></div>',
+                        iconSize: [24, 24],
+                        iconAnchor: [12, 12]
+                    }),
+                    zIndexOffset: 900
+                }).addTo(mapRef.current).bindPopup("Hedef: " + route.title);
+
+                routeMarkersRef.current.push(startMarker, endMarker);
+
                 try {
                     const control = L.Routing.control({
                         waypoints: waypoints,

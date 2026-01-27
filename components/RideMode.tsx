@@ -774,11 +774,16 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
 
                 // For OSRM navigation, we only need the key waypoints (Start and End), 
                 // effectively recalculating the route to get turn-by-turn instructions AND the correct road path.
-                const start = points[0];
+                // USER REQUEST: Start point should be the User's Current Location.
                 const end = points[points.length - 1];
-                const waypoints = [L.latLng(start.lat, start.lng), L.latLng(end.lat, end.lng)];
 
-                console.log("Starting navigation with waypoints:", waypoints);
+                // Using currentLoc as start, and the route's end point as destination.
+                const waypoints = [
+                    L.latLng(currentLoc.lat, currentLoc.lng),
+                    L.latLng(end.lat, end.lng)
+                ];
+
+                console.log("Starting navigation from User Location:", waypoints);
 
                 try {
                     const control = L.Routing.control({

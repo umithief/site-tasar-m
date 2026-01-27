@@ -115,24 +115,8 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
     const [isLowPowerMode, setIsLowPowerMode] = useState(false); // PERFORMANCE MODE TOGGLE
 
     // GPS State
-    // FIX: Initialize currentLoc with route start point if available
-    const [currentLoc, setCurrentLoc] = useState<{ lat: number; lng: number } | null>(() => {
-        if (!route) return null;
-        // Handle path first (most accurate)
-        if (route.path && route.path.length > 0) {
-            return { lat: route.path[0].lat, lng: route.path[0].lng };
-        }
-        // Handle coordinates which might be object or array
-        const coords = route.coordinates as any;
-        if (coords) {
-            if (Array.isArray(coords) && coords.length > 0) {
-                return { lat: coords[0].lat, lng: coords[0].lng };
-            } else if (typeof coords.lat === 'number' && typeof coords.lng === 'number') {
-                return { lat: coords.lat, lng: coords.lng };
-            }
-        }
-        return null;
-    });
+    // FIX: Start with null to satisfy user request "wait for GPS first"
+    const [currentLoc, setCurrentLoc] = useState<{ lat: number; lng: number } | null>(null);
 
     const [isGpsEnabled, setIsGpsEnabled] = useState(true); // Default ON
     const [gpsStatus, setGpsStatus] = useState<'active' | 'searching' | 'off' | 'denied' | 'unavailable'>('searching');
@@ -707,6 +691,13 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
     useEffect(() => {
         if (!mapRef.current || typeof L === 'undefined') return;
 
+        // User Requirement: Wait for GPS before calculating/showing route
+        // This prevents the route from being drawn on a default/wrong location first
+        if (!currentLoc) {
+            setNavMessage("GPS KONUMU BEKLENİYOR...");
+            return;
+        }
+
         // 1. Cleanup
         if (routingControlRef.current) {
             try {
@@ -849,7 +840,7 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
             }
         }
 
-    }, [route, activeTarget]); // Removed currentLoc dependency to prevent redraw loops
+    }, [route, activeTarget, currentLoc]); // Dependencies include currentLoc to restart logic when locked
 
     // Demo Loop
     useEffect(() => {

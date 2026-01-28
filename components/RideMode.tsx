@@ -772,21 +772,24 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                 // This prevents the route from disappearing/flickering when user location updates
                 if (routingControlRef.current) return;
 
-                // For OSRM navigation, we only need the key waypoints (Start and End), 
-                // effectively recalculating the route to get turn-by-turn instructions AND the correct road path.
-                // USER REQUEST: Start point should be the User's Current Location.
+                // USER REQUEST: Route should be: Current -> RouteStart -> Destination
+                // This creates a 2-stage route.
+                const originalStart = points[0];
                 const end = points[points.length - 1];
 
-                // Using currentLoc as start, and the route's end point as destination.
+                // Waypoints: [You] -> [Route Start] -> [Finish]
+                // This ensures the navigation directs you TO the route first, then ON the route
                 const waypoints = [
                     L.latLng(currentLoc.lat, currentLoc.lng),
+                    L.latLng(originalStart.lat, originalStart.lng),
                     L.latLng(end.lat, end.lng)
                 ];
 
-                console.log("Starting navigation from User Location:", waypoints);
+                console.log("Starting multi-stage navigation:", waypoints);
 
-                // Add VISUAL Markers for Start and End
-                // OSRM handles the line, but we want clear flags
+                // Add VISUAL Markers
+
+                // 1. Current Location (Green) - "Starting Point"
                 const startMarker = L.marker([currentLoc.lat, currentLoc.lng], {
                     icon: L.divIcon({
                         className: 'custom-start-marker',
@@ -794,9 +797,21 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                         iconSize: [20, 20],
                         iconAnchor: [10, 10]
                     }),
-                    zIndexOffset: 900 // Below the rider but above map
-                }).addTo(mapRef.current).bindPopup("Başlangıç Konumu");
+                    zIndexOffset: 1000
+                }).addTo(mapRef.current).bindPopup("Başlangıç (Konumunuz)");
 
+                // 2. Route Start Point (Blue Diamond) - "The Start of the Track"
+                const originMarker = L.marker([originalStart.lat, originalStart.lng], {
+                    icon: L.divIcon({
+                        className: 'custom-route-start',
+                        html: '<div style="background-color: #3b82f6; width: 24px; height: 24px; transform: rotate(45deg); border: 4px solid white; box-shadow: 0 0 15px rgba(59, 130, 246, 0.6); display: flex; align-items: center; justify-content: center;"><div style="width: 6px; height: 6px; background-color: white; border-radius: 50%;"></div></div>',
+                        iconSize: [24, 24],
+                        iconAnchor: [12, 12]
+                    }),
+                    zIndexOffset: 950
+                }).addTo(mapRef.current).bindPopup("Rota Başlangıç Girişi");
+
+                // 3. Destination (Red Flag)
                 const endMarker = L.marker([end.lat, end.lng], {
                     icon: L.divIcon({
                         className: 'custom-end-marker',
@@ -807,15 +822,16 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
                     zIndexOffset: 900
                 }).addTo(mapRef.current).bindPopup("Hedef: " + route.title);
 
-                routeMarkersRef.current.push(startMarker, endMarker);
+                routeMarkersRef.current.push(startMarker, originMarker, endMarker);
 
                 try {
                     const control = L.Routing.control({
                         waypoints: waypoints,
                         router: L.Routing.osrmv1({ serviceUrl: 'https://router.project-osrm.org/route/v1', profile: 'driving', language: 'tr' }),
                         lineOptions: {
-                            // Restore proper visual style (User requested "kesik çizgiler" / animated style)
-                            styles: [{ color: '#3b82f6', opacity: 1, weight: 6, className: 'animated-route' }]
+                            styles: [
+                                { color: '#3b82f6', opacity: 0.8, weight: 6, className: 'animated-route' } // Main route
+                            ]
                         },
                         show: false,
                         addWaypoints: false,
@@ -838,16 +854,24 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
 
                     control.on('routingerror', (e: any) => {
                         console.error("OSRM Routing Error:", e);
-                        // Fallback: Just draw the polyline if OSRM fails
-                        const polyline = L.polyline(points.map((p: any) => [p.lat, p.lng]), { color: '#E2FF3B', opacity: 0.8, weight: 8 }).addTo(mapRef.current);
-                        mapRef.current.fitBounds(polyline.getBounds());
+                        // Fallback: Line from You -> Start -> End
+                        const poly = L.polyline([
+                            [currentLoc.lat, currentLoc.lng],
+                            [originalStart.lat, originalStart.lng],
+                            [end.lat, end.lng]
+                        ], { color: '#E2FF3B', opacity: 0.8, weight: 6 }).addTo(mapRef.current);
+                        mapRef.current.fitBounds(poly.getBounds());
                     });
 
                     routingControlRef.current = control;
                 } catch (e) {
                     console.error("OSRM Control Error", e);
                     // Fallback in catch
-                    const polyline = L.polyline(points.map((p: any) => [p.lat, p.lng]), { color: '#3b82f6', opacity: 0.8, weight: 6, smoothFactor: 1 }).addTo(mapRef.current);
+                    const polyline = L.polyline([
+                        [currentLoc.lat, currentLoc.lng],
+                        [originalStart.lat, originalStart.lng],
+                        [end.lat, end.lng]
+                    ], { color: '#3b82f6', opacity: 0.8, weight: 6 }).addTo(mapRef.current);
                     try { mapRef.current.fitBounds(polyline.getBounds()); } catch (ex) { }
                 }
             }

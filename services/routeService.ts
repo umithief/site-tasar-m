@@ -7,6 +7,11 @@ export const routeService = {
       const response = await api.get('/routes', {
         params: { filter }
       });
+      // Fallback if DB is empty or API fails
+      if (!response.data || response.data.length === 0) {
+        console.warn('API returned empty routes, using mock');
+        return (await routeService.seedRoutes());
+      }
       return response.data;
     } catch (e) {
       console.warn('API getRoutes failed, using mock');

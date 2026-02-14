@@ -62,8 +62,13 @@ if (MONGO_URI.includes('14531453')) {
 const upload = multer({ storage: multer.memoryStorage() });
 
 // Middleware
+const allowedOrigins = ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://motovibe.vercel.app', 'https://motovibe-frontend.onrender.com'];
+if (process.env.FRONTEND_URL) {
+    allowedOrigins.push(process.env.FRONTEND_URL);
+}
+
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://127.0.0.1:5173', 'https://motovibe.vercel.app', 'https://motovibe-frontend.onrender.com'], // Allow frontend
+    origin: allowedOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH', 'HEAD'],
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin']

@@ -145,9 +145,9 @@ export const toggleFollow = catchAsync(async (req, res, next) => {
 
         res.status(200).json({
             status: 'success',
-            message: isFollowing ? 'Takip edildi.' : 'Takipten çıkıldı.',
+            message: 'Takip edildi.',
             data: {
-                isFollowing,
+                isFollowing: true,
                 followersCount: targetUser.followers.length,
                 followingCount: currentUser.following.length
             }

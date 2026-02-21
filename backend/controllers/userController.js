@@ -99,8 +99,10 @@ export const toggleFollow = catchAsync(async (req, res, next) => {
     const { id: targetUserId } = req.params;
     const currentUserId = req.user.id;
 
-    const currentUser = await User.findById(currentUserId);
-    const targetUser = await User.findById(targetUserId);
+    const [currentUser, targetUser] = await Promise.all([
+        User.findById(currentUserId),
+        User.findById(targetUserId)
+    ]);
 
     if (!targetUser || !currentUser) {
         return next(new AppError('Kullanıcı bulunamadı.', 404));

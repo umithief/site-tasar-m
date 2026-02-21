@@ -70,7 +70,9 @@ export const RideMode: React.FC<RideModeProps> = ({ route, onNavigate }) => {
   // GPS State
   // FIX: Initialize currentLoc with route start point if available to prevent "stuck" routing logic
   const [currentLoc, setCurrentLoc] = useState<{ lat: number; lng: number } | null>(
-      route && route.coordinates ? { lat: route.coordinates.lat, lng: route.coordinates.lng } : null
+      route && route.path && route.path.length > 0
+          ? { lat: route.path[0].lat, lng: route.path[0].lng }
+          : (route && route.coordinates ? { lat: route.coordinates.lat, lng: route.coordinates.lng } : null)
   );
   
   const [isGpsEnabled, setIsGpsEnabled] = useState(false); // Default OFF
